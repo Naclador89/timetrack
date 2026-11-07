@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,10 +28,21 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
   bool _busy = false;
   String? _message;
   bool _cancelled = false;
+  final _resumed = StreamController<void>.broadcast();
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    // Coming back from the browser triggers an immediate login poll.
+    _lifecycle = AppLifecycleListener(onResume: () => _resumed.add(null));
+  }
 
   @override
   void dispose() {
     _cancelled = true;
+    _lifecycle.dispose();
+    unawaited(_resumed.close());
     for (final c in [_server, _login, _appPassword, _proxy]) {
       c.dispose();
     }
@@ -57,13 +69,19 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
           server,
           client: ref.read(httpClientFactoryProvider)(_proxy.text),
         );
-        await launchUrl(flow.loginUrl, mode: LaunchMode.externalApplication);
+        // Android: an in-app browser tab (closing it returns to TimeTrack).
+        // Desktop: the default browser.
+        await launchUrl(
+          flow.loginUrl,
+          mode: Platform.isAndroid
+              ? LaunchMode.inAppBrowserView
+              : LaunchMode.externalApplication,
+        );
         setState(() => _message = l.syncWaitingForLogin);
-        NextcloudCredentials? got;
-        for (var i = 0; i < 300 && got == null && !_cancelled; i++) {
-          await Future<void>.delayed(const Duration(seconds: 2));
-          got = await flow.poll();
-        }
+        final got = await flow.waitForApproval(
+          wakeUp: _resumed.stream,
+          cancelled: () => _cancelled,
+        );
         if (got == null) throw TimeoutException(l.syncLoginTimeout);
         creds = got;
       }

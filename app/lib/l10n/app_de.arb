@@ -137,7 +137,7 @@
   "syncLoginName": "Login-Name",
   "syncAppPassword": "App-Passwort",
   "syncConnect": "Verbinden",
-  "syncWaitingForLogin": "Bitte bestätige die Anmeldung im Browser …",
+  "syncWaitingForLogin": "Bitte bestätige die Anmeldung im Browser und kehre dann zu TimeTrack zurück …",
   "syncLoginTimeout": "Die Anmeldung wurde nicht rechtzeitig bestätigt.",
   "syncDerivingKey": "Schlüssel wird berechnet … das kann einige Sekunden dauern.",
   "syncWrongPassphrase": "Falsche Sync-Passphrase.",

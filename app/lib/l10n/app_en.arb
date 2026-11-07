@@ -265,7 +265,7 @@
   "syncLoginName": "Login name",
   "syncAppPassword": "App password",
   "syncConnect": "Connect",
-  "syncWaitingForLogin": "Please confirm the login in your browser…",
+  "syncWaitingForLogin": "Please confirm the login in the browser, then return to TimeTrack…",
   "syncLoginTimeout": "The login was not confirmed in time.",
   "syncDerivingKey": "Deriving the key… this can take a few seconds.",
   "syncWrongPassphrase": "Wrong sync passphrase.",

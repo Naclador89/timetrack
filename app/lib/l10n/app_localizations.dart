@@ -923,7 +923,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncWaitingForLogin.
   ///
   /// In en, this message translates to:
-  /// **'Please confirm the login in your browser…'**
+  /// **'Please confirm the login in the browser, then return to TimeTrack…'**
   String get syncWaitingForLogin;
 
   /// No description provided for @syncLoginTimeout.

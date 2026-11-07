@@ -452,7 +452,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncConnect => 'Connect';
 
   @override
-  String get syncWaitingForLogin => 'Please confirm the login in your browser…';
+  String get syncWaitingForLogin =>
+      'Please confirm the login in the browser, then return to TimeTrack…';
 
   @override
   String get syncLoginTimeout => 'The login was not confirmed in time.';

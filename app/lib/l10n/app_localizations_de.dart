@@ -453,7 +453,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get syncWaitingForLogin =>
-      'Bitte bestätige die Anmeldung im Browser …';
+      'Bitte bestätige die Anmeldung im Browser und kehre dann zu TimeTrack zurück …';
 
   @override
   String get syncLoginTimeout =>

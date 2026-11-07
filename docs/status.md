@@ -89,7 +89,12 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Android release APK failed with "Failed host lookup": the `INTERNET` permission was missing from the
       main manifest (Flutter only adds it to debug/profile). Fixed, together with a `<queries>` entry
       for opening the browser (Login Flow) and the launcher label "TimeTrack".
-- [ ] **User**: retest Android with the fixed APK; Windows with VPN on.
+- [x] Android: Login Flow didn't come back from the browser. Android freezes background apps
+      (cached apps freezer), which left a poll hanging on a dead connection with no timeout.
+      `LoginFlow.waitForApproval` now uses per-request timeouts, retries, a wall-clock deadline
+      (20 min) and an immediate poll on app resume. Android opens the login in a Custom Tab.
+- [ ] **User**: retest the Android login with the new APK.
+- [ ] **User**: Windows works without VPN (2026-11-07); with VPN not tested yet.
 - [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
