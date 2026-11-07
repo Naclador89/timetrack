@@ -152,7 +152,7 @@ void main() {
       );
     });
 
-    test('Wed, only 2 h train → still the full target (assumption 2)', () {
+    test('Wed, only 2 h train → still the full target', () {
       expect(credit(TripDayType.workday, target: 480, travel: 120), 480);
     });
 
@@ -164,12 +164,19 @@ void main() {
       expect(credit(TripDayType.saturday, travel: 240, other: 180), 420);
     });
 
+    test(
+      'Sat, 8 h train + 5 h on-site → the cap covers the whole day: 11 h',
+      () {
+        expect(credit(TripDayType.saturday, travel: 480, other: 300), 660);
+      },
+    );
+
     test('Sun, 6 h train → 0; on-site work still counts', () {
       expect(credit(TripDayType.sunday, travel: 360), 0);
       expect(credit(TripDayType.sunday, travel: 120, other: 180), 180);
     });
 
-    test('holiday like Sunday, day off like Saturday (assumptions 4, 5)', () {
+    test('holiday like Sunday, day off like Saturday', () {
       expect(credit(TripDayType.holiday, travel: 180, other: 120), 120);
       expect(credit(TripDayType.dayOff, travel: 180), 180);
     });
@@ -177,7 +184,8 @@ void main() {
     test('rules are settings', () {
       const rules = TravelRules(
         workday: TripWorkdayCredit.actual,
-        saturdayTravelCapMinutes: 600,
+        saturdayCapMinutes: 600,
+        saturdayCapScope: SaturdayCapScope.travelOnly,
         holiday: TripDayRule.likeSaturday,
         dayOff: TripDayRule.likeSunday,
       );
@@ -192,6 +200,11 @@ void main() {
         660,
       );
       expect(credit(TripDayType.saturday, travel: 720, rules: rules), 600);
+      expect(
+        credit(TripDayType.saturday, travel: 480, other: 300, rules: rules),
+        780,
+        reason: 'travel-only scope: work counts on top of the capped travel',
+      );
       expect(credit(TripDayType.holiday, travel: 180, rules: rules), 180);
       expect(credit(TripDayType.dayOff, travel: 180, rules: rules), 0);
     });

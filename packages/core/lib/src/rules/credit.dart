@@ -28,6 +28,16 @@ enum TripWorkdayCredit {
   actual,
 }
 
+/// What the Saturday cap limits.
+enum SaturdayCapScope {
+  /// Travel and work together: the whole Saturday counts at most the cap
+  /// (default, confirmed by the user).
+  total,
+
+  /// Only travel time; work at the destination counts on top.
+  travelOnly,
+}
+
 /// Which rule a holiday or day off on a trip follows.
 enum TripDayRule {
   /// Like a Saturday: travel counts (capped), work counts.
@@ -43,7 +53,8 @@ final class TravelRules {
   /// Creates travel rules.
   const TravelRules({
     this.workday = TripWorkdayCredit.target,
-    this.saturdayTravelCapMinutes = 660,
+    this.saturdayCapMinutes = 660,
+    this.saturdayCapScope = SaturdayCapScope.total,
     this.holiday = TripDayRule.likeSunday,
     this.dayOff = TripDayRule.likeSaturday,
   });
@@ -51,8 +62,12 @@ final class TravelRules {
   /// Credit on trip workdays (setting `travel.workday`).
   final TripWorkdayCredit workday;
 
-  /// Max travel minutes credited on a Saturday (setting `travel.saturday_cap_min`).
-  final int saturdayTravelCapMinutes;
+  /// Max minutes credited on a trip Saturday (setting `travel.saturday_cap_min`).
+  final int saturdayCapMinutes;
+
+  /// Whether the cap limits the whole day or only travel time
+  /// (setting `travel.saturday_cap_scope`).
+  final SaturdayCapScope saturdayCapScope;
 
   /// Rule for public holidays on a trip (setting `travel.holiday`).
   final TripDayRule holiday;
@@ -90,8 +105,12 @@ int tripDayCredit({
       : effectiveWorked;
   final other = effectiveWorked - travel;
   int saturday() {
-    final cap = rules.saturdayTravelCapMinutes;
-    return (travel < cap ? travel : cap) + other;
+    final cap = rules.saturdayCapMinutes;
+    int capped(int minutes) => minutes < cap ? minutes : cap;
+    return switch (rules.saturdayCapScope) {
+      SaturdayCapScope.total => capped(travel + other),
+      SaturdayCapScope.travelOnly => capped(travel) + other,
+    };
   }
 
   return switch (type) {

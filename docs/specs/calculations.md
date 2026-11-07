@@ -4,7 +4,6 @@ Status: **normative**. The `core` package implements exactly these rules. Tests 
 (`// spec: calculations.md §N`). When you change a rule, change this file in the same commit.
 
 Each rule marked **(setting)** is a user setting; the value in the rule is its default.
-Rules marked **(assumption)** were not yet confirmed by the user. Keep them configurable.
 
 ---
 
@@ -155,26 +154,31 @@ Day type of a trip day D:
 2. `sunday`: weekday 7.
 3. `saturday`: weekday 6.
 4. `workday`: weekday 1–5 with `T(D) > 0`.
-5. `day_off`: weekday 1–5 with `T(D) = 0`, for example a part-time day off. **(assumption)** treated like `saturday`.
+5. `day_off`: weekday 1–5 with `T(D) = 0`, for example a part-time day off. Treated like `saturday`
+   (default; the user works full-time Mon–Fri, so this doesn't apply to them yet).
 
 `Wt(D)` = `W_loc(D, travel)` (time in transit), `Wo(D)` = `W_eff(D) − Wt(D)` (all other work).
 
 | Day type | Credited `Cr(D)` | Setting |
 |---|---|---|
-| workday | `T(D)` exactly, even if `W_eff` is longer **or shorter** | `travel.workday = target` **(assumption 1, 2)** |
-| saturday | `min(Wt, cap) + Wo`, cap = 660 min | `travel.saturday_cap_min = 660` **(assumption 3: the cap applies to travel only)** |
+| workday | `T(D)` exactly, even if `W_eff` is longer **or shorter** | `travel.workday = target` |
+| saturday | `min(Wt + Wo, cap)`, cap = 660 min: the cap covers travel **and** work together | `travel.saturday_cap_min = 660`, `travel.saturday_cap_scope = total` (alternative `travel_only`: `min(Wt, cap) + Wo`) |
 | sunday | `Wo`; travel time counts 0 | `travel.sunday = work_only` |
-| holiday | like sunday | `travel.holiday = like_sunday` **(assumption 4)** |
-| day_off | like saturday | `travel.day_off = like_saturday` **(assumption)** |
+| holiday | like sunday | `travel.holiday = like_sunday` |
+| day_off | like saturday | `travel.day_off = like_saturday` |
 
-Assumption 1: the workday rule applies to **every** trip day, including days spent only working at the
+The workday rule applies to **every** weekday of a trip, including days spent only working at the
 destination.
+
+Confirmed by the user on 2026-11-07: every trip day is a normal day; a short trip day still gets the
+full target; the Saturday cap covers the whole day; holidays are treated like Sundays.
 
 **Examples** (T = 480 Mon–Fri):
 - Wed, 3 h train + 8 h on-site → `Cr = 480`, Δ = 0.
 - Wed, 2 h train only, trip starts at 16:00 → `Cr = 480`, Δ = 0.
 - Sat, 12 h train → `Cr = 660`, Δ = +660.
 - Sat, 4 h train + 3 h on-site → `Cr = 420`.
+- Sat, 8 h train + 5 h on-site → `Cr = 660` (the cap covers the whole day).
 - Sun, 6 h train → `Cr = 0`.
 
 ## §10 Vacation account
@@ -266,7 +270,9 @@ For each trip with `depart` and `return`. An open trip has no per-diem yet.
 - **Meal reduction** for each provided meal (`trip_meals` for D): breakfast 20 %, lunch 40 %,
   dinner 40 % **of the full-day rate** (settings). The amount never goes below 0.
 - Rate defaults to pre-fill: `DE`, valid from 2020-01-01: partial 14.00 €, full 28.00 €.
-  **Check the current values (BMF) before relying on them.**
+  Checked on 2026-11-07 against several secondary sources: still valid in 2026 (the discussed raise
+  to 16/32 € wasn't enacted), and the meal reductions are 5.60 € / 11.20 € / 11.20 €. Foreign rates
+  change yearly (BMF letter; the 2026 rates are from 5 Dec 2025) and are entered by the user.
 - Not covered: the three-month rule, several countries in one trip (the trip has one `country`),
   accommodation and travel costs.
 
