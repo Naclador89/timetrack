@@ -19,7 +19,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | Path | Content |
 |---|---|
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
-| `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. Created in M0. |
+| `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
 | `garmin/` | Connect IQ watch app and glance (Monkey C), milestone M6. |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
 | `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`. |
@@ -50,6 +50,16 @@ cd app
 ../tool/dev.sh flutter build apk --release   # Android (sideload)
 ```
 
+**Seeing the UI without clicking** (maintainer machine; synthetic clicks don't reach windows under
+Wayland): fill an isolated database with a sample week, then screenshot any screen. The app opens on
+a route given by `--dart-define=INITIAL_ROUTE=...`.
+
+```bash
+D=$(mktemp -d)
+(cd packages/core && ../../tool/dev.sh dart run tool/seed_demo.dart $D/io.github.naclador89.timetrack/timetrack.sqlite)
+tool/screenshot.sh /calendar /tmp/week.png $D     # also /today, /calendar/day/2026-11-05, /settings, /projects
+```
+
 Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*` tag or a manual trigger), because Flutter can't cross-compile to Windows.
 
 ## Conventions
@@ -61,7 +71,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - **IDs**: UUIDv7 strings.
 - **Docs in code**: every public API in `core` has `///` dartdoc; the `public_member_api_docs` lint makes CI fail without it. Comments explain *why*, not *what*. Match the style of the code around you.
 - **Tests** are named after the rule they check and cite the spec section, e.g. `test('§4 ArbZG: 6:01 h without break → 30 min missing', …)` with `// spec: calculations.md §4`.
-- **Language**: code, comments and docs in English. UI strings go through ARB localization (`de` is the default, `en` is also provided).
+- **Language**: code, comments and docs in English. UI strings go through ARB localization: add every new string to **both** `app/lib/l10n/app_en.arb` (the template) and `app_de.arb`, then run `flutter gen-l10n`. German is the user's language.
 - **Commits**: Conventional Commits (`feat(core): …`, `fix(app): …`, `docs: …`), small and focused.
 - **Never commit secrets**: no keystores, Nextcloud credentials or personal time data.
 

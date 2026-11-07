@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M1 done, next M2 (local MVP app)
+## Current milestone: M2 done on Linux (phone check pending), next M3 (Nextcloud sync)
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -53,20 +53,33 @@ _Last updated: 2026-11-07 by Claude Code._
       break start/end (with resume), start/switch/stop project with auto clock-in, start/end trip.
       Typed settings with defaults (`AppSettings`, `SettingKeys`, `saveSetting`).
       `SyncStore.watchRows` for reactive UIs.
-- [ ] App setup: Riverpod, go_router, localization (ARB, `de` default and `en`), open the database
-      with `drift_flutter` (`driftDatabase(name: 'timetrack')`), device id in `local_values`.
-- [ ] Today screen: clock in/out with location, break, favorite chips, timeline, worked vs target,
-      balance, home-office quota.
-- [ ] Project picker (search, `searchProjects`) and project editing.
-- [ ] Week view and day editor.
-- [ ] Absences, schedules, home-office rules, trips (with meals), settings (Bundesland, break mode,
-      starting balance, travel rules).
-- [ ] Desktop and phone layouts. Checked on Linux and the Android phone.
+- [x] App setup: Riverpod, go_router (adaptive shell), localization (de and en, 130 strings), SQLite
+      in the app support folder (`~/.local/share/io.github.naclador89.timetrack/`,
+      `%APPDATA%`, Android app storage), device id in `local_values`.
+- [x] Today screen: clock in/out with location chips, break, trip prompts (travel → start trip,
+      clock-out → end trip), favorite chips, project picker, worked/target/unassigned, balance,
+      home-office quota, notices.
+- [x] Project picker (search with highlights, create from search text) and projects screen with editor.
+- [x] Week view (per-day worked/target/difference, locations, absences, trips, notice marker, balance)
+      and day editor (sessions, breaks, project entries, absences; night work ends next day).
+- [x] Absences (range entry on workdays, half days, vacation account), trips (with times, country,
+      overnight), settings (state, Bavarian Assumption Day, schedules, home-office rules, starting
+      balance and date, break mode, auto clock-in, resume after break, Saturday cap).
+- [x] Checked on Linux with sample data (screenshots: Today, week, day editor, settings); widget tests
+      for the main flows.
+- [ ] **User**: try it on the Android phone (needs wireless debugging pairing, `docs/dev-setup.md` §3)
+      and on Linux for real use.
+- [ ] Not in M2 yet (later or nice to have): a visual timeline bar on Today, trip meals (needed with
+      the travel report in M4), editing vacation entitlement and carry-over in the UI (setting keys
+      exist), home-office quota by hours in the UI (core supports it), keyboard shortcut Ctrl+K for
+      the picker.
 
-**Next task**: M2, first item: the attendance and project commands in `core` (pure Dart, tested
-against `InMemorySyncStore`). Then the app setup.
-Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
-add an index by date if balances over several years get slow.
+**Next task**: M3 Nextcloud sync. Write a `WebDavRemoteFolder` implementing `RemoteFolder`
+(PROPFIND/MKCOL/PUT with `If-None-Match`/GET/DELETE, ETags) with `package:http`. Add Login Flow v2
+(`/index.php/login/v2`), a sync passphrase dialog with the key in `flutter_secure_storage`, sync
+triggers (debounce after writes, resume, periodic, network change), a status/log UI, and proxy/VPN
+handling for the company Windows PC (see Known issues). Integration tests against a local Nextcloud
+in podman.
 
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
@@ -102,3 +115,6 @@ add an index by date if balances over several years get slow.
   abstractions, repository, engine, convergence test; 132 tests green. Remaining in M1: drift store.
 - 2026-11-07, Claude Code: drift store (generic rows, ADR 0007), data-model spec, row mapping; sync
   tests also on SQLite; unknown tables and fields are now kept. **M1 done**, 148 tests green.
+- 2026-11-07, Claude Code: M2 local app: TimeTracker commands, typed settings, all screens, l10n;
+  found and fixed the database location (was Documents); checked on Linux with screenshots;
+  `tool/seed_demo.dart` and `tool/screenshot.sh` for UI checks. core 163 tests, app 3 widget tests.

@@ -7,8 +7,11 @@ are in `docs/specs/`. Update this file when you add or move a module.
 
 ```
 app/ (Flutter)                       UI, navigation, platform glue (notifications, tile, widget,
-  features/<screen>/                 watch bridge, geofence). No business rules.
-  platform/
+  app/providers.dart                 watch bridge, geofence). No business rules.
+  app/router.dart                    Riverpod providers wire store rows → core rules (Ledger,
+  features/<screen>/                 TrackerState, quotas); widgets only read providers and call
+  l10n/                              TimeTracker / SyncedRepository. go_router with an adaptive
+                                     shell (bottom bar < 720 px, rail above).
         │  uses
         ▼
 packages/core/ (pure Dart)           Everything testable without Flutter:
@@ -49,6 +52,9 @@ Rules for dependencies:
 | `core/sync/store`, `repository` (`SyncStore`, `SyncedRepository`) | sync-format §7 | done |
 | `core/data/database`, `drift_sync_store` (SQLite via drift, generic rows) | sync-format §7, ADR 0007 | done |
 | `core/data/mapping` (rows → models) | data-model | done |
+| `core/data/settings` (`AppSettings`, `SettingKeys`) | data-model §7 | done |
+| `core/tracking/time_tracker` (`TimeTracker`, `TrackerState`) | concept §2 | done |
+| `app` screens: Today, week, day editor, absences, trips, projects, settings, schedules, home-office rules | concept §5 | M2 done (local only) |
 | `core/sync/remote` (`RemoteFolder`, in-memory fake) | sync-format §2, §7 | done (WebDAV client in M3) |
 | `core/sync/engine` (`SyncEngine`, `connectSyncFolder`) | sync-format §7, §7.1 | done |
 | everything else | | planned (see `docs/status.md`) |
