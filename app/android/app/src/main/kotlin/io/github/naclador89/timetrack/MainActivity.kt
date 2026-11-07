@@ -1,4 +1,4 @@
-package de.timetrack.timetrack
+package io.github.naclador89.timetrack
 
 import io.flutter.embedding.android.FlutterActivity
 

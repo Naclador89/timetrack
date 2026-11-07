@@ -14,7 +14,7 @@ val keyProperties = Properties().apply {
 }
 
 android {
-    namespace = "de.timetrack.timetrack"
+    namespace = "io.github.naclador89.timetrack"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         // Changing the application ID later installs a separate app (local data not migrated).
-        applicationId = "de.timetrack.timetrack"
+        applicationId = "io.github.naclador89.timetrack"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
