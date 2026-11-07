@@ -11,6 +11,19 @@ with no server of its own.
   rules and a per-diem basis.
 - Reports: monthly timesheet PDF, travel report, order report, CSV, statistics.
 
+## Download
+
+Always the latest release (the repo is private, so you need to be signed in to GitHub):
+
+| Platform | Download | Install |
+|---|---|---|
+| Windows | [timetrack-windows-x64.zip](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-windows-x64.zip) | Unzip, start `timetrack.exe` (SmartScreen: *More info → Run anyway*) |
+| Android | [timetrack-android.apk](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-android.apk) | Open the APK, allow installing from this source |
+| Linux | [timetrack-linux-x64.tar.gz](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-linux-x64.tar.gz) | Unpack, start `bundle/timetrack` |
+
+All versions: [Releases](https://github.com/Naclador89/timetrack/releases). A new release is built by pushing a
+tag `vX.Y.Z` (see `.github/workflows/ci.yml`).
+
 **Status**: early development, see [`docs/status.md`](docs/status.md).
 **Contributing, including AI agents**: start with [`AGENTS.md`](AGENTS.md).
 **Concept**: [`docs/concept.md`](docs/concept.md).
