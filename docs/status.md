@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M3 done (sync works on Linux, Windows, Android); M4 (reports) in progress
+## Current milestone: M4 (reports) mostly done; release v0.1.0 published
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -98,11 +98,25 @@ _Last updated: 2026-11-07 by Claude Code._
 - [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
-**Next task**: after the user's device tests, fix what they find. Then continue M4. Already done in
-`core/lib/src/reports/reports.dart`: `buildTimesheet` (monthly rows and totals), `buildOrderReport`
-(minutes per day and order number) and `toCsv` (Excel flavour). Still to do: the app's Reports screen,
-the PDF (packages `pdf` and `printing`), CSV/JSON export via share or save, trip meals, the travel
-report (`perDiemForTrip`), and statistics charts.
+### M4: reports
+- [x] core: `buildTimesheet`, `buildOrderReport`, `toCsv` (Excel flavour).
+- [x] App tab "Berichte" (month picker): timesheet figures with PDF/CSV, order report with CSV,
+      travel expenses (per-diem incl. provided meals) with PDF/CSV, simple statistics (hours by
+      project, weeks), JSON backup of all rows. Exports: save dialog on desktop, share sheet on Android.
+- [x] Trip dialog: meals per trip day (`trip_meals`, id `<tripId>_<date>`).
+- [x] Tests: report tables/CSV/PDF/backup (German), PDF visually checked.
+- [ ] Editing per-diem rates in the UI (rows exist; defaults DE 14/28 €).
+- [ ] Restore from the JSON backup (export only so far).
+- [ ] Nicer charts (fl_chart) if wanted.
+
+### Releases
+- `v0.1.0` (2026-11-07): GitHub Release with Windows ZIP, Android APK, Linux tar.gz; README and the
+  repo's About link to `releases/latest`. Release APKs are signed with the CI debug key, which
+  changes with every run, until a release keystore is set up (`docs/dev-setup.md` §5; waiting for
+  the user's OK).
+
+**Next task**: the user re-enters the three reset settings. Then: release keystore (if approved),
+M5 Android quick access (notification, tile, widget, background sync with WorkManager).
 
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
@@ -151,3 +165,6 @@ report (`perDiemForTrip`), and statistics charts.
 - 2026-11-07, Claude Code: M3 sync implemented: WebDAV client, Login Flow v2, integration tests against
   a real Nextcloud 34 (podman), app sync controller and setup screen, per-device proxy. core 167 tests
   (+2 integration), app 4 widget tests.
+- 2026-11-07, Claude Code: Android fixes (INTERNET permission, Login Flow in a frozen app); M4 reports and
+  trip meals; incident (demo data synced) cleaned up and prevented; README downloads, About link,
+  release v0.1.0.
