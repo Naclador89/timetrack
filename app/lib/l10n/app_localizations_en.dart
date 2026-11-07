@@ -736,4 +736,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripDayButton => 'Trip day';
+
+  @override
+  String get tripNoProject => 'Trip without a project';
+
+  @override
+  String tripBookedTo(String project) {
+    return 'Booked to $project';
+  }
+
+  @override
+  String get tripBookingHint =>
+      'Trip day: record travel and on-site time only; it counts for the trip\'s project. Tap to edit the trip.';
+
+  @override
+  String get tripDays => 'Trip days';
 }

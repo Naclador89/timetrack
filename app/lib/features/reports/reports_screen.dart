@@ -129,6 +129,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   formatMinutes(sheet.balanceAfter),
                 ),
                 _figure(context, l.homeOfficeDays, '${sheet.homeOfficeDays}'),
+                _figure(context, l.tripDays, '${sheet.tripDays}'),
                 _figure(
                   context,
                   l.vacationDaysTaken,
@@ -317,7 +318,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final l = context.l10n;
     final perProject = <String, int>{};
     for (final r in sheet.rows) {
-      r.day.work.byProject.forEach(
+      r.day.bookedByProject.forEach(
         (id, m) => perProject[id] = (perProject[id] ?? 0) + m,
       );
     }

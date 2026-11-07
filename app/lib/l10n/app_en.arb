@@ -401,5 +401,16 @@
   "tripProjectNone": "No project (optional)",
   "colProject": "Project",
   "preview": "Preview and download",
-  "tripDayButton": "Trip day"
+  "tripDayButton": "Trip day",
+  "tripNoProject": "Trip without a project",
+  "tripBookedTo": "Booked to {project}",
+  "@tripBookedTo": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "tripBookingHint": "Trip day: record travel and on-site time only; it counts for the trip's project. Tap to edit the trip.",
+  "tripDays": "Trip days"
 }

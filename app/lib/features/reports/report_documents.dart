@@ -247,6 +247,7 @@ List<(String, String)> timesheetFigures(Timesheet t, ReportFormat f) {
     (l.balanceAfter, formatMinutes(t.balanceAfter)),
     (l.workedDays, '${t.workedDays}'),
     (l.homeOfficeDays, '${t.homeOfficeDays}'),
+    (l.tripDays, '${t.tripDays}'),
     (l.vacationDaysTaken, f.days(t.vacationDays)),
   ];
 }

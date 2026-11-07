@@ -1447,6 +1447,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trip day'**
   String get tripDayButton;
+
+  /// No description provided for @tripNoProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip without a project'**
+  String get tripNoProject;
+
+  /// No description provided for @tripBookedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked to {project}'**
+  String tripBookedTo(String project);
+
+  /// No description provided for @tripBookingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip day: record travel and on-site time only; it counts for the trip\'s project. Tap to edit the trip.'**
+  String get tripBookingHint;
+
+  /// No description provided for @tripDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip days'**
+  String get tripDays;
 }
 
 class _AppLocalizationsDelegate

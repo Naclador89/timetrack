@@ -75,22 +75,6 @@ Future<bool> showTripDialog(
     ) ??
     false;
 
-/// The trip touching [date] (calculations.md §9), if any.
-Trip? tripOn(
-  Iterable<Trip> trips,
-  LocalDate date,
-  HomeTimeZone zone,
-  LocalDate today,
-) {
-  for (final t in trips) {
-    final back = t.returnAt == null ? today : zone.dateOf(t.returnAt!);
-    if (!date.isBefore(zone.dateOf(t.depart)) && !date.isAfter(back)) {
-      return t;
-    }
-  }
-  return null;
-}
-
 class _TripDialog extends ConsumerStatefulWidget {
   const _TripDialog({
     this.trip,

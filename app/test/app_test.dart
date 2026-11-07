@@ -165,12 +165,17 @@ void main() {
       isTrue,
     );
 
+    // A trip day offers only travel and on-site.
+    expect(find.widgetWithText(ChoiceChip, 'Home office'), findsNothing);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Travel'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save').last);
     await tester.pumpAndSettle();
     expect(
       store.rowsOf('work_sessions').values.single.fields['location'],
-      'home',
+      'travel',
     );
+    expect(find.text('Trip without a project'), findsOneWidget);
   });
 
   testWidgets('the timesheet opens as a preview before the download', (

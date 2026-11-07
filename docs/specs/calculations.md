@@ -53,6 +53,11 @@ Per-project totals: `|∪P_p(D) ∩ WI(D)|` + Σ durations of p on D. If two spa
 projects get the overlap; it is flagged as `overlapping_project_entries`, so totals per project can
 then add up to more than the project time.
 
+**Trip days** (§9; user decision 2026-11-08): on trip days only travel and on-site time is recorded,
+no project time. If a trip touching D has a `project_id` (the earliest such trip), `U(D)` is booked
+to that project: it is added to the project's total for D (order report, statistics, with the
+destination as the activity), and the day's unassigned time is 0.
+
 ## §4 Breaks: ArbZG §4
 
 Let `W = W(D)` before any deduction.

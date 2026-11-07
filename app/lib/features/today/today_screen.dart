@@ -375,7 +375,7 @@ class _SummaryCard extends StatelessWidget {
                 figure(l.target, formatMinutes(day.target)),
                 if (day.sundayHours > 0)
                   figure(l.sundayHours, formatMinutes(day.sundayHours)),
-                figure(l.unassigned, formatMinutes(day.work.unassigned)),
+                figure(l.unassigned, formatMinutes(day.unassigned)),
                 figure(
                   l.balance,
                   '${formatMinutes(before)}  (${l.balanceToday} ${formatMinutes(after)})',

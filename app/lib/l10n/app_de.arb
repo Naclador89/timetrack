@@ -224,5 +224,9 @@
   "tripProjectNone": "Kein Projekt (optional)",
   "colProject": "Projekt",
   "preview": "Vorschau und Download",
-  "tripDayButton": "Reisetag"
+  "tripDayButton": "Reisetag",
+  "tripNoProject": "Reise ohne Projekt",
+  "tripBookedTo": "Gebucht auf {project}",
+  "tripBookingHint": "Reisetag: nur Unterwegs- und Vor-Ort-Zeit eintragen; sie zählt für das Projekt der Reise. Antippen, um die Reise zu bearbeiten.",
+  "tripDays": "Reisetage"
 }

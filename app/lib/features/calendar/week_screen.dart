@@ -150,18 +150,30 @@ class _DayRow extends StatelessWidget {
         '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
     ];
     final delta = day.delta;
+    // One symbol per day, in front (user request 2026-11-08): a plane on
+    // trip days, otherwise the location with the most worked time.
+    WorkLocation? mainLocation;
+    for (final MapEntry(key: loc, value: minutes)
+        in day.work.byLocation.entries) {
+      if (minutes > (day.work.byLocation[mainLocation] ?? 0)) {
+        mainLocation = loc;
+      }
+    }
     return ListTile(
       selected: isToday,
       onTap: () => context.go('/calendar/day/${day.date}'),
+      leading: SizedBox(
+        width: 24,
+        child: day.isTripDay
+            ? const Icon(Icons.flight)
+            : mainLocation == null
+            ? null
+            : Icon(locationIcon(mainLocation)),
+      ),
       title: Row(
         children: [
           Text(context.shortDate(day.date)),
           const SizedBox(width: 8),
-          for (final loc in day.work.byLocation.keys)
-            Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: Icon(locationIcon(loc), size: 16),
-            ),
           if (day.warnings.isNotEmpty)
             Icon(Icons.info_outline, size: 16, color: scheme.tertiary),
         ],

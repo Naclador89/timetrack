@@ -135,6 +135,44 @@ void main() {
     },
   );
 
+  test(
+    '§3 trip days: travel and on-site time is booked to the trip project',
+    () {
+      final l = ledger(
+        LedgerData(
+          schedules: [schedule],
+          trips: [
+            Trip(
+              id: 't',
+              depart: at('2026-11-03', '06:00'),
+              returnAt: at('2026-11-03', '20:00'),
+              destination: 'Stuttgart',
+              projectId: 'a',
+            ),
+          ],
+          sessions: [
+            work('2026-11-03', '06:00', '09:00', WorkLocation.travel),
+            work('2026-11-03', '09:00', '17:00', WorkLocation.onSite),
+            work('2026-11-02', '08:00', '12:00'),
+          ],
+        ),
+      );
+      final day = l.day(d('2026-11-03'));
+      expect((day.tripProjectId, day.unassigned), ('a', 0));
+      expect(day.bookedByProject, {'a': 660});
+      expect(l.day(d('2026-11-02')).unassigned, 240, reason: 'no trip');
+      final r = buildOrderReport(
+        l,
+        {'a': const Project(id: 'a', name: 'Werk Süd', orderNumber: 'A-1')},
+        from: d('2026-11-02'),
+        to: d('2026-11-03'),
+      );
+      expect(r.map((b) => (b.date, b.orderNumber, b.minutes, b.notes.join())), [
+        (d('2026-11-03'), 'A-1', 660, 'Stuttgart'),
+      ]);
+    },
+  );
+
   test('CSV: Excel flavour with ; and BOM, quoting when needed', () {
     final csv = toCsv([
       ['Datum', 'Notiz'],

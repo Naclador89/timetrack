@@ -738,4 +738,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tripDayButton => 'Reisetag';
+
+  @override
+  String get tripNoProject => 'Reise ohne Projekt';
+
+  @override
+  String tripBookedTo(String project) {
+    return 'Gebucht auf $project';
+  }
+
+  @override
+  String get tripBookingHint =>
+      'Reisetag: nur Unterwegs- und Vor-Ort-Zeit eintragen; sie zählt für das Projekt der Reise. Antippen, um die Reise zu bearbeiten.';
+
+  @override
+  String get tripDays => 'Reisetage';
 }

@@ -86,6 +86,9 @@ final class Timesheet {
   /// overtime balance counts, unlike [worked].
   int get credited => _sum((d) => d.credited);
 
+  /// Days touched by a business trip (§9).
+  int get tripDays => rows.where((r) => r.day.isTripDay).length;
+
   /// Total Sunday hours of trip Sundays, for HR (§9, not in the balance).
   int get sundayHours => _sum((d) => d.sundayHours);
 
@@ -180,7 +183,7 @@ List<OrderBooking> buildOrderReport(
     final notes = _notesByProject(ledger, d);
     final perOrder = <String, (Project?, int, List<String>)>{};
     for (final MapEntry(key: id, value: minutes)
-        in ledger.day(d).work.byProject.entries) {
+        in ledger.day(d).bookedByProject.entries) {
       final p = projects[id];
       final key = p == null
           ? '?$id'
@@ -207,7 +210,8 @@ List<OrderBooking> buildOrderReport(
   return bookings;
 }
 
-/// Non-empty summaries per project id of the entries starting on [day].
+/// Non-empty summaries per project id of the entries starting on [day], plus
+/// the destination of a trip booked to its project.
 Map<String, List<String>> _notesByProject(Ledger ledger, LocalDate day) {
   final result = <String, List<String>>{};
   void add(String projectId, String note) {
@@ -220,6 +224,9 @@ Map<String, List<String>> _notesByProject(Ledger ledger, LocalDate day) {
   }
   for (final d in ledger.data.durations) {
     if (d.date == day) add(d.projectId, d.note);
+  }
+  for (final t in ledger.tripsOn(day)) {
+    if (t.projectId case final id?) add(id, t.destination);
   }
   return result;
 }

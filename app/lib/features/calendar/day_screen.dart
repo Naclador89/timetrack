@@ -9,7 +9,7 @@ import '../../widgets/notices.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 import 'absences_screen.dart';
-import 'trips_screen.dart' show showTripDialog, tripOn;
+import 'trips_screen.dart' show showTripDialog;
 
 /// Everything recorded on one day, editable: sessions, breaks, project
 /// entries and absences.
@@ -103,7 +103,7 @@ class DayScreen extends ConsumerWidget {
                   if (day.breaks.deduction > 0)
                     l.breakDeducted(formatMinutes(day.breaks.deduction)),
                   '${l.difference} ${formatMinutes(day.delta)}',
-                  '${l.unassigned} ${formatMinutes(day.work.unassigned)}',
+                  '${l.unassigned} ${formatMinutes(day.unassigned)}',
                 ].join(' · '),
               ),
             ),
@@ -145,32 +145,39 @@ class DayScreen extends ConsumerWidget {
                 ),
               ),
           ]),
-          section(
-            l.projectEntries,
-            () => showProjectTimeDialog(context, date: date),
-            [
-              for (final p in data.durations.where((x) => x.date == date))
-                ListTile(
-                  leading: const Icon(Icons.timelapse),
-                  title: Text(
-                    '${formatMinutes(p.minutes)} · ${projects[p.projectId]?.name ?? '?'}',
+          // Trip days have no project time (user decision 2026-11-08); old
+          // entries stay visible so they can still be edited or deleted.
+          if (day.isTripDay &&
+              entries.isEmpty &&
+              !data.durations.any((x) => x.date == date))
+            _TripBookingCard(date: date)
+          else
+            section(
+              l.projectEntries,
+              () => showProjectTimeDialog(context, date: date),
+              [
+                for (final p in data.durations.where((x) => x.date == date))
+                  ListTile(
+                    leading: const Icon(Icons.timelapse),
+                    title: Text(
+                      '${formatMinutes(p.minutes)} · ${projects[p.projectId]?.name ?? '?'}',
+                    ),
+                    subtitle: p.note.isEmpty ? null : Text(p.note),
+                    onTap: () =>
+                        showProjectTimeDialog(context, date: date, duration: p),
                   ),
-                  subtitle: p.note.isEmpty ? null : Text(p.note),
-                  onTap: () =>
-                      showProjectTimeDialog(context, date: date, duration: p),
-                ),
-              for (final e in entries)
-                ListTile(
-                  leading: const Icon(Icons.work_outline),
-                  title: Text(
-                    '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
+                for (final e in entries)
+                  ListTile(
+                    leading: const Icon(Icons.work_outline),
+                    title: Text(
+                      '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
+                    ),
+                    subtitle: e.note.isEmpty ? null : Text(e.note),
+                    onTap: () =>
+                        showProjectTimeDialog(context, date: date, entry: e),
                   ),
-                  subtitle: e.note.isEmpty ? null : Text(e.note),
-                  onTap: () =>
-                      showProjectTimeDialog(context, date: date, entry: e),
-                ),
-            ],
-          ),
+              ],
+            ),
           if (day.absences.isNotEmpty)
             Card(
               child: Column(
@@ -296,22 +303,30 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
     await repo.write(widget.table, widget.id ?? repo.newId(), {
       'start_utc': isoMinute(startAt),
       'end_utc': endAt == null ? null : isoMinute(endAt),
-      if (widget.table == 'work_sessions') 'location': _location.wireName,
+      if (widget.table == 'work_sessions')
+        'location': _effectiveLocation.wireName,
       if (widget.table == 'project_entries') 'project_id': _projectId,
       if (widget.id == null) 'source': 'manual',
     });
     if (mounted) Navigator.pop(context);
   }
 
+  /// On trip days only travel and on-site time is recorded (user decision
+  /// 2026-11-08); the time goes to the trip's project (calculations.md §3).
+  static const _tripLocations = [WorkLocation.travel, WorkLocation.onSite];
+
+  bool get _isTripDay => ref.watch(ledgerProvider).day(widget.date).isTripDay;
+
+  List<WorkLocation> get _locations =>
+      _isTripDay ? _tripLocations : WorkLocation.values;
+
+  WorkLocation get _effectiveLocation =>
+      _locations.contains(_location) ? _location : WorkLocation.onSite;
+
   /// "Reisetag": selected when [widget.date] lies in a trip; tapping edits
   /// that trip, or creates one around this session (user request 2026-11-08).
   Widget _tripDayChip(BuildContext context) {
-    final trip = tripOn(
-      ref.watch(ledgerDataProvider).trips,
-      widget.date,
-      ref.watch(zoneProvider),
-      ref.watch(todayProvider),
-    );
+    final trip = ref.watch(ledgerProvider).tripsOn(widget.date).firstOrNull;
     return FilterChip(
       avatar: const Icon(Icons.luggage_outlined, size: 18),
       showCheckmark: false,
@@ -364,12 +379,12 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (final loc in WorkLocation.values)
+                    for (final loc in _locations)
                       ChoiceChip(
                         showCheckmark: false,
                         avatar: Icon(locationIcon(loc), size: 18),
                         label: Text(context.locationName(loc)),
-                        selected: _location == loc,
+                        selected: _effectiveLocation == loc,
                         onSelected: (_) => setState(() => _location = loc),
                       ),
                     _tripDayChip(context),
@@ -417,6 +432,35 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
         ),
         FilledButton(onPressed: _save, child: Text(l.save)),
       ],
+    );
+  }
+}
+
+/// Replaces the project times on trip days: the day's time is booked to the
+/// trip's project (calculations.md §3). Tap edits the trip.
+class _TripBookingCard extends ConsumerWidget {
+  const _TripBookingCard({required this.date});
+
+  final LocalDate date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final ledger = ref.watch(ledgerProvider);
+    final trip = ledger.tripsOn(date).firstOrNull;
+    final project = ref.watch(
+      projectByIdProvider,
+    )[ledger.day(date).tripProjectId];
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.flight),
+        title: Text(
+          project == null ? l.tripNoProject : l.tripBookedTo(project.name),
+        ),
+        subtitle: Text(l.tripBookingHint),
+        trailing: const Icon(Icons.edit_outlined),
+        onTap: trip == null ? null : () => showTripDialog(context, trip: trip),
+      ),
     );
   }
 }

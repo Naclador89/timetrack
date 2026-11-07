@@ -81,6 +81,7 @@ final class DayResult {
     required this.absences,
     required this.warnings,
     this.sundayHours = 0,
+    this.tripProjectId,
   });
 
   /// The evaluated day.
@@ -116,6 +117,26 @@ final class DayResult {
 
   /// Whether a business trip touches this day.
   bool get isTripDay => tripDayType != null;
+
+  /// The project of the trip on this day, if it has one. On trip days the
+  /// user records no project time (travel and on-site only); the day's
+  /// unassigned time is booked to this project instead (§3, user decision
+  /// 2026-11-08).
+  final String? tripProjectId;
+
+  /// Project time per project id including the trip project (§3): what
+  /// the order report and statistics count.
+  Map<String, int> get bookedByProject {
+    final trip = tripProjectId;
+    if (trip == null || work.unassigned == 0) return work.byProject;
+    return {
+      ...work.byProject,
+      trip: (work.byProject[trip] ?? 0) + work.unassigned,
+    };
+  }
+
+  /// Worked time not booked to any project, after the trip project (§3).
+  int get unassigned => tripProjectId == null ? work.unassigned : 0;
 }
 
 /// Evaluates days and the overtime balance from a [LedgerData] snapshot
@@ -199,6 +220,9 @@ final class Ledger {
       target: target,
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
+      tripProjectId: tripType == null
+          ? null
+          : tripsOn(date).map((t) => t.projectId).nonNulls.firstOrNull,
       sundayHours: ruleType == null
           ? 0
           : tripSundayHours(
@@ -255,15 +279,20 @@ final class Ledger {
 
   /// §9: every local date touched by `[depart, return)` is a trip day; an
   /// open trip touches every day up to now.
-  bool _isTripDay(LocalDate date) {
+  bool _isTripDay(LocalDate date) => tripsOn(date).isNotEmpty;
+
+  /// The trips touching [date] (§9), earliest departure first.
+  List<Trip> tripsOn(LocalDate date) {
     final window = zone.daySpan(date);
-    for (final trip in data.trips) {
-      final start = epochMinute(trip.depart);
-      final end = trip.returnAt == null
-          ? nowMinute
-          : epochMinute(trip.returnAt!);
-      if (start < window.end && end > window.start && end > start) return true;
-    }
-    return false;
+    return [
+      for (final trip in data.trips)
+        if ((
+              epochMinute(trip.depart),
+              trip.returnAt == null ? nowMinute : epochMinute(trip.returnAt!),
+            )
+            case (final start, final end)
+            when start < window.end && end > window.start && end > start)
+          trip,
+    ]..sort((a, b) => a.depart.compareTo(b.depart));
   }
 }
