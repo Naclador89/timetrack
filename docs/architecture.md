@@ -12,8 +12,9 @@ app/ (Flutter)                       UI, navigation, platform glue (notification
         │  uses
         ▼
 packages/core/ (pure Dart)           Everything testable without Flutter:
-  time/      LocalDate, intervals    calendar days in the home time zone, interval union/intersection
-  rules/     holidays, …             calculations.md §2–§14 as pure functions
+  time/      LocalDate, Span(Set)     calendar days in the home time zone, interval union/intersection
+  model/     plain value types      
+  rules/     day_work, arbzg, …      calculations.md §2–§14 as pure functions
   search/    project search          (M1)
   data/      drift database          tables + SyncedRepository (row + field clock + outbox in one tx) (M1)
   sync/      HLC, ops, engine,       sync-format.md (M1: engine against fakes; M3: real WebDAV)
@@ -29,6 +30,9 @@ Rules for dependencies:
 
 | Module | Spec | Status |
 |---|---|---|
-| `core/time` (LocalDate, intervals) | calculations §1 | in progress (M1) |
-| `core/rules/holidays` | calculations §6 | in progress (M1) |
+| `core/time` (`LocalDate`, `Span`/`SpanSet`, `HomeTimeZone`) | calculations §1 | done |
+| `core/model/attendance` (`WorkSession`, `WorkBreak`, `ProjectEntry`) | calculations §2–§3 | done |
+| `core/rules/day_work` (`evaluateDay`) | calculations §2–§3 | done |
+| `core/rules/arbzg` (`evaluateBreaks`, `arbzgWarnings`) | calculations §4–§5 | done |
+| `core/rules/holidays` | calculations §6 | done |
 | everything else | | planned (see `docs/status.md`) |

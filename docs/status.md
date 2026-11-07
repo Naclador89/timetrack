@@ -10,7 +10,8 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Repo skeleton: `packages/core`, `app/` (android, linux, windows), docs, ADRs 0001–0005, specs
 - [x] CI workflow and Copilot setup steps (not run yet: no GitHub repo)
 - [x] Local builds checked: Linux release bundle, Android release APK (signed with the debug key)
-- [ ] **User**: create a private GitHub repo and push
+- [x] Private GitHub repo `Naclador89/timetrack`, pushed; `gh` is logged in inside the toolbox
+      (push with `tool/dev.sh git push`)
 - [ ] **User**: start the CI build manually, download the Windows ZIP, start it on the Windows PC and
       check that the PC can reach Nextcloud (the M0 "done when" criterion)
 - [ ] Android release keystore (`docs/dev-setup.md` §5), needed before the phone installs CI-built APKs
@@ -20,9 +21,9 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] `LocalDate` (calculations §1)
 - [x] `Span` / `SpanSet` interval math (calculations §1–§2)
 - [x] Public holidays for all 16 states (calculations §6)
-- [ ] Day evaluation in the home time zone (`timezone` package): split at local midnight, `W(D)`,
-      `W_loc` (§2), project time and unassigned (§3)
-- [ ] ArbZG breaks §4 (warn/deduct), other checks §5
+- [x] Day evaluation in the home time zone (`HomeTimeZone`, `evaluateDay`): split at local midnight,
+      `W(D)`, `W_loc` (§2), project time and unassigned (§3)
+- [x] ArbZG breaks §4 (warn/deduct), other checks §5 (`evaluateBreaks`, `arbzgWarnings`)
 - [ ] Target §7, credited time and balance §8, travel crediting §9
 - [ ] Vacation account §10
 - [ ] Home office: day value, quota, forecast §11
@@ -33,9 +34,10 @@ _Last updated: 2026-11-07 by Claude Code._
 - [ ] drift database and SyncedRepository (sync-format §7, write path)
 - [ ] Sync engine against an in-memory fake WebDAV, plus the property-based convergence test (sync-format §7)
 
-**Next task**: day evaluation (`core/lib/src/rules/day.dart` or similar). Add the `timezone`
-dependency, turn a `LocalDate` into a day `Span` in the home time zone (23/25 h on DST days),
-then compute §2/§3 from sessions, breaks and project entries passed in as plain values.
+**Next task**: target time §7 (schedules with `valid_from`, holidays, `extra_holiday`), then
+credited time and overtime balance §8, and travel crediting §9. Put them in
+`core/lib/src/rules/` as pure functions over plain values, like `day_work.dart` and `arbzg.dart`.
+Model classes for schedules, absences and trips go in `core/lib/src/model/`.
 
 ## Known issues / open questions
 - Travel-rule assumptions (calculations §9) not yet confirmed by the user:
@@ -51,3 +53,6 @@ then compute §2/§3 from sessions, breaks and project entries passed in as plai
 ## Session log
 - 2026-11-07, Claude Code: agreed the concept with the user; M0 setup; started M1 (LocalDate,
   SpanSet, holidays; 26 tests green; Linux and APK builds OK).
+- 2026-11-07, Claude Code: pushed to GitHub (`Naclador89/timetrack`, private), started the first
+  manual CI run. M1: home time zone, day evaluation (§2/§3), ArbZG checks (§4/§5); 57 tests green.
+  Changed the CI concurrency so pushes no longer cancel manual or tag builds.
