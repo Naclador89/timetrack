@@ -98,8 +98,8 @@ final class DayResult {
   /// Credited time `Cr(D)` including absence credit (§8, §9).
   final int credited;
 
-  /// Sunday hours of a trip day for HR (§9): reported separately, not part
-  /// of [credited] or the balance.
+  /// Sunday and holiday hours for HR (§9): reported separately, not part of
+  /// [credited] or the balance.
   final int sundayHours;
 
   /// The §9 day type if this is a trip day, otherwise `null`.
@@ -171,13 +171,22 @@ final class Ledger {
       for (final a in data.absences)
         if (a.date == date) a,
     ];
-    final tripType = _isTripDay(date)
-        ? tripDayType(date, isHoliday: isHoliday, target: target)
-        : null;
-    final base = tripType == null
+    final type = tripDayType(date, isHoliday: isHoliday, target: target);
+    final tripType = _isTripDay(date) ? type : null;
+    // Saturdays, Sundays and holidays follow their rule on every day, trip
+    // or not (user decision 2026-11-08); workdays and days off only on trips.
+    final ruleType =
+        tripType ??
+        switch (type) {
+          TripDayType.saturday ||
+          TripDayType.sunday ||
+          TripDayType.holiday => type,
+          TripDayType.workday || TripDayType.dayOff => null,
+        };
+    final base = ruleType == null
         ? breaks.effectiveWorked
         : tripDayCredit(
-            type: tripType,
+            type: ruleType,
             target: target,
             effectiveWorked: breaks.effectiveWorked,
             travelWorked: work.workedAt(WorkLocation.travel),
@@ -190,10 +199,10 @@ final class Ledger {
       target: target,
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
-      sundayHours: tripType == null
+      sundayHours: ruleType == null
           ? 0
           : tripSundayHours(
-              type: tripType,
+              type: ruleType,
               effectiveWorked: breaks.effectiveWorked,
               rules: settings.travel,
             ),

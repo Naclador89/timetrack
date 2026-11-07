@@ -140,7 +140,7 @@ aren't supported.
 
 - **Credited time** `Cr(D)`:
   - normally `W_eff(D)`;
-  - on **trip days**, replaced by §9.
+  - on **trip days, Saturdays, Sundays and public holidays**, replaced by §9.
 - **Absence credit**: each `vacation`, `sick` or `special_leave` absence on D with fraction f adds
   `f × T(D)` to `Cr(D)`, rounded to the minute. Several absences on D add up to at most `T(D)`.
 - `comp_time` (Überstundenabbau / Gleittag) gives **no** credit, so the day's target lowers the balance.
@@ -150,12 +150,16 @@ aren't supported.
 - The UI shows "balance up to yesterday" and "today so far". Today counts `Cr(today)` so far
   against the full `T(today)`.
 
-## §9 Travel: credited time on trip days
+## §9 Trip days, weekends and holidays: credited time and Sunday hours
 
 A **trip day** is every local date touched by `[trip.depart, trip.return)`. An open trip touches all
 days up to today.
 
-Day type of a trip day D:
+**Which days follow §9** (user decision 2026-11-08): every trip day, and **every Saturday, Sunday and
+public holiday, with or without a trip**. Workdays and days off without a trip are credited normally
+(`Cr = W_eff`, §8).
+
+Day type of D:
 1. `holiday`: D is a public holiday (§6).
 2. `sunday`: weekday 7.
 3. `saturday`: weekday 6.
@@ -180,8 +184,8 @@ Confirmed by the user on 2026-11-07: every trip day is a normal day; a short tri
 full target; the Saturday cap covers the whole day; holidays are treated like Sundays. Also
 2026-11-07: on trip Sundays, travel and on-site work count as Sunday hours for HR (max 11 h); they
 appear in the monthly timesheet but don't add to the overtime balance. Days that follow the Sunday
-rule (holidays `like_sunday`, days off `like_sunday`) get Sunday hours too. Sundays without a trip
-are not affected (normal `W_eff`, §8).
+rule (holidays `like_sunday`, days off `like_sunday`) get Sunday hours too. Since 2026-11-08 the
+Saturday, Sunday and holiday rules apply on all such days, not only on trips (see above).
 
 **Examples** (T = 480 Mon–Fri):
 - Wed, 3 h train + 8 h on-site → `Cr = 480`, Δ = 0.

@@ -172,6 +172,38 @@ void main() {
     expect(l.day(d('2026-11-17')).isTripDay, isFalse);
   });
 
+  test('§9 weekends and holidays follow their rule without a trip too', () {
+    final l = ledger(
+      LedgerData(
+        schedules: [schedule],
+        sessions: [
+          work('2026-11-07', '06:00', '19:00'), // Sat, 13 h
+          work('2026-11-08', '09:00', '14:00'), // Sun, 5 h
+          work(
+            '2026-12-25',
+            '08:00',
+            '20:30',
+          ), // 1. Weihnachtstag (Fri), 12.5 h
+          work('2026-11-05', '07:00', '19:00'), // Thu, 12 h, no trip
+        ],
+      ),
+    );
+    final sat = l.day(d('2026-11-07')), sun = l.day(d('2026-11-08'));
+    final hol = l.day(d('2026-12-25')), thu = l.day(d('2026-11-05'));
+    expect(
+      [sat.isTripDay, sun.isTripDay, hol.isTripDay],
+      [false, false, false],
+    );
+    expect((sat.credited, sat.sundayHours), (660, 0), reason: 'max 11 h');
+    expect((sun.credited, sun.sundayHours), (0, 300));
+    expect((hol.credited, hol.sundayHours), (0, 660), reason: 'like Sunday');
+    expect(
+      (thu.credited, thu.sundayHours),
+      (thu.breaks.effectiveWorked, 0),
+      reason: 'workday without a trip: the actual time counts',
+    );
+  });
+
   test('§9 an open trip touches every day up to now', () {
     final l = ledger(
       LedgerData(

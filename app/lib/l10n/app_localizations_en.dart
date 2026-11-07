@@ -378,7 +378,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get travelRules => 'Travel rules';
 
   @override
-  String get saturdayCap => 'Saturday on a trip: max. hours';
+  String get saturdayCap => 'Saturday: max. hours';
 
   @override
   String get autoClockIn => 'Clock in automatically when a project starts';
@@ -672,7 +672,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get travelWorkdayActual => 'Actual time';
 
   @override
-  String get travelSaturdayHint => 'Counts as overtime, up to this cap.';
+  String get travelSaturdayHint =>
+      'Work and travel count as overtime, up to this cap.';
 
   @override
   String get saturdayCapScope => 'Saturday cap covers';
@@ -684,31 +685,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capTravelOnly => 'Travel only';
 
   @override
-  String get travelSunday => 'Sundays on a trip';
+  String get travelSunday => 'Sundays';
 
   @override
   String get travelSundayHoursHint =>
-      'Travel and work count as Sunday hours for HR (monthly timesheet), not as overtime.';
+      'Work and travel count as Sunday/holiday hours for HR (monthly timesheet), not as overtime.';
 
   @override
   String get travelSundayWorkOnlyHint =>
-      'Work on site counts as overtime, travel time doesn\'t count.';
+      'Work counts as overtime, travel time doesn\'t count.';
 
   @override
-  String get sundayHours => 'Sunday hours';
+  String get sundayHours => 'Sunday/holiday hours';
 
   @override
   String get sundayWorkOnly => 'Work only';
 
   @override
-  String get sundayCap => 'Sunday hours: max. per day';
+  String get sundayCap => 'Sunday/holiday hours: max. per day';
 
   @override
-  String get travelHoliday => 'Public holidays on a trip';
+  String get travelHoliday => 'Public holidays';
 
   @override
   String get likeSunday => 'Like Sunday';
 
   @override
   String get likeSaturday => 'Like Saturday';
+
+  @override
+  String get weekendRules => 'Weekends and public holidays';
 }

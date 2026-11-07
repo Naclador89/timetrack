@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @saturdayCap.
   ///
   /// In en, this message translates to:
-  /// **'Saturday on a trip: max. hours'**
+  /// **'Saturday: max. hours'**
   String get saturdayCap;
 
   /// No description provided for @autoClockIn.
@@ -1331,7 +1331,7 @@ abstract class AppLocalizations {
   /// No description provided for @travelSaturdayHint.
   ///
   /// In en, this message translates to:
-  /// **'Counts as overtime, up to this cap.'**
+  /// **'Work and travel count as overtime, up to this cap.'**
   String get travelSaturdayHint;
 
   /// No description provided for @saturdayCapScope.
@@ -1355,25 +1355,25 @@ abstract class AppLocalizations {
   /// No description provided for @travelSunday.
   ///
   /// In en, this message translates to:
-  /// **'Sundays on a trip'**
+  /// **'Sundays'**
   String get travelSunday;
 
   /// No description provided for @travelSundayHoursHint.
   ///
   /// In en, this message translates to:
-  /// **'Travel and work count as Sunday hours for HR (monthly timesheet), not as overtime.'**
+  /// **'Work and travel count as Sunday/holiday hours for HR (monthly timesheet), not as overtime.'**
   String get travelSundayHoursHint;
 
   /// No description provided for @travelSundayWorkOnlyHint.
   ///
   /// In en, this message translates to:
-  /// **'Work on site counts as overtime, travel time doesn\'t count.'**
+  /// **'Work counts as overtime, travel time doesn\'t count.'**
   String get travelSundayWorkOnlyHint;
 
   /// No description provided for @sundayHours.
   ///
   /// In en, this message translates to:
-  /// **'Sunday hours'**
+  /// **'Sunday/holiday hours'**
   String get sundayHours;
 
   /// No description provided for @sundayWorkOnly.
@@ -1385,13 +1385,13 @@ abstract class AppLocalizations {
   /// No description provided for @sundayCap.
   ///
   /// In en, this message translates to:
-  /// **'Sunday hours: max. per day'**
+  /// **'Sunday/holiday hours: max. per day'**
   String get sundayCap;
 
   /// No description provided for @travelHoliday.
   ///
   /// In en, this message translates to:
-  /// **'Public holidays on a trip'**
+  /// **'Public holidays'**
   String get travelHoliday;
 
   /// No description provided for @likeSunday.
@@ -1405,6 +1405,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Like Saturday'**
   String get likeSaturday;
+
+  /// No description provided for @weekendRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends and public holidays'**
+  String get weekendRules;
 }
 
 class _AppLocalizationsDelegate

@@ -170,6 +170,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           header(l.travelRules),
           // calculations.md §9; each rule is a setting, defaults as agreed.
+          // Weekdays on a trip:
           ListTile(
             leading: const Icon(Icons.work_history_outlined),
             title: Text(l.travelWorkday),
@@ -196,6 +197,8 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          header(l.weekendRules),
+          // On every Saturday, Sunday and holiday, trip or not (§9).
           ListTile(
             leading: const Icon(Icons.weekend_outlined),
             title: Text(l.saturdayCap),

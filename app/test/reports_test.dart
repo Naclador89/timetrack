@@ -121,12 +121,12 @@ void main() {
       );
       expect(sheet.rows.first.day.credited, 0);
       final table = timesheetTable(sheet, f);
-      final column = table.first.indexOf('Sonntagsstunden');
+      final column = table.first.indexOf('Sonn-/Feiertagsstunden');
       expect(column, greaterThan(0));
       expect(table[1][column], '11:00');
       expect(
         timesheetTable(buildTimesheet(sampleLedger(), 2026, 11), f).first,
-        isNot(contains('Sonntagsstunden')),
+        isNot(contains('Sonn-/Feiertagsstunden')),
       );
     },
   );

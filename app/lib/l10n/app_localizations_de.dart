@@ -378,7 +378,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get travelRules => 'Reiseregeln';
 
   @override
-  String get saturdayCap => 'Samstag auf Reise: max. Stunden';
+  String get saturdayCap => 'Samstag: max. Stunden';
 
   @override
   String get autoClockIn => 'Beim Projektstart automatisch einstempeln';
@@ -675,7 +675,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get travelSaturdayHint =>
-      'Zählt als Überstunden, höchstens bis zu dieser Grenze.';
+      'Arbeit und Reise zählen als Überstunden, höchstens bis zu dieser Grenze.';
 
   @override
   String get saturdayCapScope => 'Samstagsgrenze gilt für';
@@ -687,31 +687,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capTravelOnly => 'Nur Reisezeit';
 
   @override
-  String get travelSunday => 'Sonntage auf Reise';
+  String get travelSunday => 'Sonntage';
 
   @override
   String get travelSundayHoursHint =>
-      'Reise und Arbeit zählen als Sonntagsstunden für die Personalabteilung (Monatsbericht), nicht als Überstunden.';
+      'Arbeit und Reise zählen als Sonn-/Feiertagsstunden für die Personalabteilung (Monatsbericht), nicht als Überstunden.';
 
   @override
   String get travelSundayWorkOnlyHint =>
-      'Arbeit vor Ort zählt als Überstunden, Reisezeit zählt nicht.';
+      'Arbeit zählt als Überstunden, Reisezeit zählt nicht.';
 
   @override
-  String get sundayHours => 'Sonntagsstunden';
+  String get sundayHours => 'Sonn-/Feiertagsstunden';
 
   @override
   String get sundayWorkOnly => 'Nur Arbeit';
 
   @override
-  String get sundayCap => 'Sonntagsstunden: max. pro Tag';
+  String get sundayCap => 'Sonn-/Feiertagsstunden: max. pro Tag';
 
   @override
-  String get travelHoliday => 'Feiertage auf Reise';
+  String get travelHoliday => 'Feiertage';
 
   @override
   String get likeSunday => 'Wie Sonntag';
 
   @override
   String get likeSaturday => 'Wie Samstag';
+
+  @override
+  String get weekendRules => 'Wochenende und Feiertage';
 }
