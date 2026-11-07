@@ -726,4 +726,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get timesheetLegend =>
       'Geleistet: tatsächlich gearbeitete Zeit. Angerechnet: Zeit, die ins Stundenkonto eingeht; auf Reisen, am Wochenende und an Feiertagen nach den Regeln in den Einstellungen (Arbeit an Sonn- und Feiertagen steht gesondert als Sonn-/Feiertagsstunden). Saldo ± = Angerechnet − Soll.';
+
+  @override
+  String get tripProjectNone => 'Kein Projekt (optional)';
+
+  @override
+  String get colProject => 'Projekt';
 }

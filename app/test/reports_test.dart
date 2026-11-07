@@ -152,11 +152,22 @@ void main() {
         TripMeals(id: 'm', tripId: 't', date: d('2026-11-03'), breakfast: true),
       ],
     );
-    final reports = [TripReport(trip, days)];
+    final reports = [
+      TripReport(
+        trip,
+        days,
+        project: const Project(
+          id: 'p',
+          name: 'Werk Süd',
+          orderNumber: 'A-4711',
+        ),
+      ),
+    ];
     expect(reports.single.totalCents, 1400 + 1400 - 560);
     final table = travelTable(reports, f);
     expect(table[2].last, '8,40\u00a0€');
-    expect(table[2][4], '−5,60\u00a0€');
+    expect(table[2][5], '−5,60\u00a0€');
+    expect(table[1][2], 'Werk Süd · A-4711');
     final travel = await travelPdf(reports, 2026, 11, f, now: now);
     expect(utf8.decode(travel.sublist(0, 5)), '%PDF-');
   });

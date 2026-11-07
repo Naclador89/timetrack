@@ -103,10 +103,14 @@ final class Trip {
     this.destination = '',
     this.country = 'DE',
     this.overnight = true,
+    this.projectId,
   });
 
   /// Row id (UUIDv7).
   final String id;
+
+  /// The project the trip is for, if any (shown in the travel report).
+  final String? projectId;
 
   /// Departure instant (UTC).
   final DateTime depart;

@@ -1423,6 +1423,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target.'**
   String get timesheetLegend;
+
+  /// No description provided for @tripProjectNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No project (optional)'**
+  String get tripProjectNone;
+
+  /// No description provided for @colProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get colProject;
 }
 
 class _AppLocalizationsDelegate

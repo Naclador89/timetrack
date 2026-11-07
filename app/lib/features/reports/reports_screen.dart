@@ -253,6 +253,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final zone = ref.watch(zoneProvider);
     final rates = ref.watch(perDiemRatesProvider);
     final meals = ref.watch(tripMealsProvider);
+    final projects = ref.watch(projectByIdProvider);
     return [
       for (final trip in [
         ...ref.watch(ledgerDataProvider).trips,
@@ -261,7 +262,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 .where((d) => !d.date.isBefore(first) && !d.date.isAfter(last))
                 .toList()
             case final days when days.isNotEmpty)
-          TripReport(trip, days),
+          TripReport(trip, days, project: projects[trip.projectId]),
     ];
   }
 

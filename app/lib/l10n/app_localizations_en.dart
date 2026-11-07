@@ -724,4 +724,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get timesheetLegend =>
       'Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target.';
+
+  @override
+  String get tripProjectNone => 'No project (optional)';
+
+  @override
+  String get colProject => 'Project';
 }

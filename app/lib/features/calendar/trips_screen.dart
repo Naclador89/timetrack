@@ -5,6 +5,8 @@ import 'package:timetrack_core/timetrack_core.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../widgets/dialogs.dart';
+import '../projects/project_picker.dart';
+import '../reports/report_documents.dart' show projectLabel;
 
 /// All business trips; tap to edit, + to add one afterwards.
 class TripsScreen extends ConsumerWidget {
@@ -15,6 +17,7 @@ class TripsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final zone = ref.watch(zoneProvider);
+    final projects = ref.watch(projectByIdProvider);
     final trips = [...ref.watch(ledgerDataProvider).trips]
       ..sort((a, b) => b.depart.compareTo(a.depart));
     String when(DateTime t) =>
@@ -41,7 +44,10 @@ class TripsScreen extends ConsumerWidget {
                     : '${t.destination} (${t.country})',
               ),
               subtitle: Text(
-                '${when(t.depart)} – ${t.returnAt == null ? l.running : when(t.returnAt!)}',
+                [
+                  '${when(t.depart)} – ${t.returnAt == null ? l.running : when(t.returnAt!)}',
+                  if (projects[t.projectId] case final p?) projectLabel(p),
+                ].join('\n'),
               ),
               onTap: () => showDialog<void>(
                 context: context,
@@ -71,6 +77,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     text: widget.trip?.country ?? 'DE',
   );
   late bool _overnight = widget.trip?.overnight ?? true;
+  late String? _projectId = widget.trip?.projectId;
   late LocalDate _departDate;
   late int _departTime;
   LocalDate? _returnDate;
@@ -150,6 +157,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
           ? 'DE'
           : _country.text.trim().toUpperCase(),
       'overnight': _overnight,
+      'project_id': _projectId,
     });
     for (final d in _tripDays) {
       final meals = _meals[d] ?? (false, false, false);
@@ -164,6 +172,28 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       });
     }
     if (mounted) Navigator.pop(context);
+  }
+
+  Widget _projectTile(BuildContext context) {
+    final l = context.l10n;
+    final project = ref.watch(projectByIdProvider)[_projectId];
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.work_outline),
+      title: Text(project?.name ?? l.tripProjectNone),
+      subtitle: project == null ? null : Text(projectLabel(project)),
+      trailing: project == null
+          ? const Icon(Icons.search)
+          : IconButton(
+              icon: const Icon(Icons.clear),
+              tooltip: l.delete,
+              onPressed: () => setState(() => _projectId = null),
+            ),
+      onTap: () async {
+        final id = await showProjectPicker(context);
+        if (id != null) setState(() => _projectId = id);
+      },
+    );
   }
 
   @override
@@ -185,6 +215,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                 controller: _country,
                 decoration: InputDecoration(labelText: l.country),
               ),
+              _projectTile(context),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(l.overnight),

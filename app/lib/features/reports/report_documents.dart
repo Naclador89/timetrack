@@ -129,10 +129,13 @@ List<List<String>> orderTable(List<OrderBooking> bookings, ReportFormat f) {
 /// One trip with its per-diem days, for the travel report.
 final class TripReport {
   /// Creates the entry.
-  const TripReport(this.trip, this.days);
+  const TripReport(this.trip, this.days, {this.project});
 
   /// The trip.
   final Trip trip;
+
+  /// The trip's project, if it has one.
+  final Project? project;
 
   /// Per-diem per local date (calculations.md §13).
   final List<PerDiemDay> days;
@@ -154,6 +157,7 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
     [
       l.colDate,
       l.destination,
+      l.colProject,
       l.hoursAway,
       l.perDiem,
       l.mealsProvided,
@@ -164,12 +168,21 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
         [
           f.date(d.date),
           '${t.trip.destination} (${t.trip.country})',
+          projectLabel(t.project),
           formatMinutes(d.absenceMinutes),
           d.rateMissing ? l.rateMissing(t.trip.country) : _category(f, d),
           d.reductionCents == 0 ? '' : '−${f.money(d.reductionCents)}',
           f.money(d.amountCents),
         ],
   ];
+}
+
+/// `Name · order number` (or project number) for reports; empty without a
+/// project.
+String projectLabel(Project? p) {
+  if (p == null) return '';
+  final number = p.orderNumber.isNotEmpty ? p.orderNumber : p.projectNumber;
+  return number.isEmpty ? p.name : '${p.name} · $number';
 }
 
 /// All synced rows (including tombstones and field clocks) as JSON, so
@@ -317,9 +330,9 @@ Future<List<int>> travelPdf(
         _table(
           travelTable(trips, f),
           align: {
-            2: pw.Alignment.centerRight,
-            4: pw.Alignment.centerRight,
+            3: pw.Alignment.centerRight,
             5: pw.Alignment.centerRight,
+            6: pw.Alignment.centerRight,
           },
         ),
         pw.SizedBox(height: 8),
