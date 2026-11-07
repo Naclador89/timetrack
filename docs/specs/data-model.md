@@ -40,8 +40,18 @@ Every row also has the field `deleted` (`bool`, default `false`); deleted rows a
 | archived | bool | | `false` |
 
 ## §4 project_entries
-`project_id` string ✓, `start_utc` instant ✓, `end_utc` instant (null = running), `note` string,
-`source` enum as in §1.
+A project time is **either a duration on a date** (the usual way) **or a time span**:
+
+| Field | Type | Required | Default |
+|---|---|---|---|
+| project_id | string | ✓ | |
+| date + duration_min | date + int (minutes) | ✓ unless `start_utc` is set | |
+| start_utc | instant | ✓ unless `date` + `duration_min` are set | |
+| end_utc | instant | | `null` = timer still running |
+| note | string (short summary of the work) | | `''` |
+| source | enum as in §1 | | `app` |
+
+If `start_utc` is set, the row is a time span and `date`/`duration_min` are ignored.
 
 ## §5 absences
 `date` date ✓, `kind` enum `vacation` `sick` `special_leave` `comp_time` `extra_holiday` ✓,

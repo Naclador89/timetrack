@@ -1,3 +1,4 @@
+import '../time/local_date.dart';
 import '../time/span.dart';
 
 /// Where a work session took place (spec: calculations.md §2).
@@ -86,6 +87,7 @@ final class ProjectEntry {
     required this.projectId,
     required this.start,
     this.end,
+    this.note = '',
   });
 
   /// Row id (UUIDv7).
@@ -100,8 +102,39 @@ final class ProjectEntry {
   /// End instant (UTC), or `null` while running.
   final DateTime? end;
 
+  /// Short summary of the work done (data-model §4).
+  final String note;
+
   /// The entry as a span, with an open end evaluated at [nowMinute].
   Span spanAt(int nowMinute) => _spanOf(start, end, nowMinute);
+}
+
+/// Project time recorded as a duration on a date, without clock times
+/// (the usual way, data-model §4, calculations.md §3).
+final class ProjectDuration {
+  /// Creates a duration entry.
+  const ProjectDuration({
+    required this.id,
+    required this.projectId,
+    required this.date,
+    required this.minutes,
+    this.note = '',
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// Id of the project the time is booked on.
+  final String projectId;
+
+  /// The day the time was spent.
+  final LocalDate date;
+
+  /// Duration in minutes.
+  final int minutes;
+
+  /// Short summary of the work done.
+  final String note;
 }
 
 /// Open ends run until now. An end before the start (possible for a moment

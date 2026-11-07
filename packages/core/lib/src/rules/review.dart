@@ -18,6 +18,9 @@ enum ReviewKind {
   /// Project time outside working time, e.g. during a break.
   projectOutsideSession,
 
+  /// More project time than worked time on a day (calculations.md §3).
+  projectOverWork,
+
   /// A Working Hours Act warning; see [ReviewItem.arbzg].
   arbzg,
 
@@ -99,6 +102,15 @@ List<ReviewItem> reviewItems(
           date: d,
           kind: ReviewKind.projectOutsideSession,
           minutes: work.projectOutsideWork,
+        ),
+      );
+    }
+    if (work.projectOverWork > 0) {
+      items.add(
+        ReviewItem(
+          date: d,
+          kind: ReviewKind.projectOverWork,
+          minutes: work.projectOverWork,
         ),
       );
     }

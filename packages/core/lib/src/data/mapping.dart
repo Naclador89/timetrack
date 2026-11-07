@@ -22,6 +22,7 @@ LedgerData ledgerDataFromRows(Iterable<StoredRow> rows) {
     sessions: all('work_sessions', workSessionFromRow),
     breaks: all('breaks', workBreakFromRow),
     entries: all('project_entries', projectEntryFromRow),
+    durations: all('project_entries', projectDurationFromRow),
     schedules: all('work_schedules', workScheduleFromRow),
     absences: all('absences', absenceFromRow),
     trips: all('trips', tripFromRow),
@@ -62,7 +63,7 @@ Project? projectFromRow(StoredRow r) => _use(
   ),
 );
 
-/// data-model.md §4.
+/// data-model.md §4: a project entry with a time span (`start_utc` set).
 ProjectEntry? projectEntryFromRow(StoredRow r) => _use(
   r,
   (f) => ProjectEntry(
@@ -70,8 +71,24 @@ ProjectEntry? projectEntryFromRow(StoredRow r) => _use(
     projectId: f.string('project_id')!,
     start: f.instant('start_utc')!,
     end: f.instant('end_utc'),
+    note: f.string('note') ?? '',
   ),
 );
+
+/// data-model.md §4: a project entry recorded as a duration (no `start_utc`).
+ProjectDuration? projectDurationFromRow(StoredRow r) {
+  if (r.fields['start_utc'] != null) return null; // a time span instead
+  return _use(
+    r,
+    (f) => ProjectDuration(
+      id: r.id,
+      projectId: f.string('project_id')!,
+      date: f.date('date')!,
+      minutes: f.number('duration_min')!.toInt(),
+      note: f.string('note') ?? '',
+    ),
+  );
+}
 
 /// data-model.md §5.
 Absence? absenceFromRow(StoredRow r) => _use(

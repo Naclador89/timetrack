@@ -29,11 +29,11 @@ final class DayWork {
   /// Worked minutes `W(D)` per location (`W_loc`). Adds up to [worked].
   final Map<WorkLocation, int> byLocation;
 
-  /// Minutes of project time inside [working].
+  /// Minutes of project time: time spans inside [working] plus durations (§3).
   final int projectTime;
 
-  /// Minutes per project id, each inside [working]. They can add up to more
-  /// than [projectTime] if entries overlap ([overlappingProjectEntries]).
+  /// Minutes per project id (spans inside [working] plus durations). They can
+  /// add up to more than [projectTime] if spans overlap ([overlappingProjectEntries]).
   final Map<String, int> byProject;
 
   /// Whether sessions overlap each other (harmless to totals, §2).
@@ -48,8 +48,11 @@ final class DayWork {
   /// Worked minutes `W(D)`, before any break deduction (§4).
   int get worked => working.length;
 
-  /// Worked minutes not assigned to any project, `U(D)`.
-  int get unassigned => worked - projectTime;
+  /// Worked minutes not assigned to any project, `U(D)` (never below 0).
+  int get unassigned => worked > projectTime ? worked - projectTime : 0;
+
+  /// Project time beyond the worked time (§3, Review `project_over_work`).
+  int get projectOverWork => projectTime > worked ? projectTime - worked : 0;
 
   /// Worked minutes at [location], or 0.
   int workedAt(WorkLocation location) => byLocation[location] ?? 0;
@@ -67,6 +70,7 @@ DayWork evaluateDay({
   required List<WorkSession> sessions,
   List<WorkBreak> breaks = const [],
   List<ProjectEntry> entries = const [],
+  List<ProjectDuration> durations = const [],
 }) {
   final window = SpanSet([day]);
   final breakSet = SpanSet([for (final b in breaks) b.spanAt(nowMinute)])
@@ -111,13 +115,20 @@ DayWork evaluateDay({
   final byProject = <String, int>{
     for (final MapEntry(:key, :value) in perProject.entries)
       key: value.intersect(working).length,
-  }..removeWhere((_, minutes) => minutes == 0);
+  };
+  var durationMinutes = 0;
+  for (final d in durations) {
+    if (d.date != date || d.minutes <= 0) continue;
+    byProject[d.projectId] = (byProject[d.projectId] ?? 0) + d.minutes;
+    durationMinutes += d.minutes;
+  }
+  byProject.removeWhere((_, minutes) => minutes == 0);
 
   return DayWork(
     date: date,
     working: working,
     byLocation: byLocation,
-    projectTime: allProjects.intersect(working).length,
+    projectTime: allProjects.intersect(working).length + durationMinutes,
     byProject: byProject,
     overlappingSessions: sessionMinutes > claimed.length,
     overlappingProjectEntries: entryMinutes > allProjects.length,

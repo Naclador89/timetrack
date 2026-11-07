@@ -36,15 +36,21 @@ Overlapping or duplicated sessions, for example after a sync conflict, therefore
 **Example**: sessions 08:00–12:00 and 11:30–17:00, break 12:00–12:30 → `∪S` = 08:00–17:00 (540 min),
 minus 30 min break → `W` = 510 min.
 
-## §3 Unassigned project time
+## §3 Project time and unassigned time
 
-`P(D)` = project entries clipped to D. Project time = `|∪P(D) ∩ WI(D)|`.
-Project time **outside** working intervals isn't counted and is flagged in the Review list (§12).
+Project time comes from two kinds of `project_entries` (data-model §4):
+- **Time spans** (timer or start/end): `P(D)` = these entries clipped to D. Their project time is
+  `|∪P(D) ∩ WI(D)|`. Time outside working intervals isn't counted and is flagged in the Review list
+  (§12).
+- **Durations** (date + minutes, the usual way): each counts with its full duration on its date. It
+  isn't intersected with working time, because it has no clock time.
 
-**Unassigned** `U(D) = W(D) − project time`.
+`project time(D)` = span project time + Σ durations on D.
+**Unassigned** `U(D) = max(0, W(D) − project time(D))`.
+If the project time is larger than `W(D)`, the excess is flagged as `project_over_work` (§12).
 
-Per-project totals use `|∪P_p(D) ∩ WI(D)|` for each project p. If two project entries overlap, both
-projects get the overlap; it is flagged as `overlapping_project_entries`. Totals per project can
+Per-project totals: `|∪P_p(D) ∩ WI(D)|` + Σ durations of p on D. If two span entries overlap, both
+projects get the overlap; it is flagged as `overlapping_project_entries`, so totals per project can
 then add up to more than the project time.
 
 ## §4 Breaks: ArbZG §4
@@ -250,6 +256,7 @@ Computed, never stored:
 - `overlapping_sessions`: overlaps between sessions (harmless to totals, see §2).
 - `overlapping_project_entries` (§3).
 - `project_outside_session` (§3).
+- `project_over_work`: more project time than worked time on a day (§3).
 - ArbZG warnings (§4, §5).
 - Home-office quota warnings (§11.4).
 

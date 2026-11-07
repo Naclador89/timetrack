@@ -140,6 +140,7 @@ final class OrderBooking {
     required this.projectNumber,
     required this.projectName,
     required this.minutes,
+    this.notes = const [],
   });
 
   /// The day.
@@ -154,8 +155,11 @@ final class OrderBooking {
   /// Project name.
   final String projectName;
 
-  /// Project time inside working time (calculations.md §3).
+  /// Project time on this day (calculations.md §3).
   final int minutes;
+
+  /// The summaries ("what did I do?") of the entries behind this booking.
+  final List<String> notes;
 }
 
 /// Project time per day and order number for [from]–[to], ready to copy into
@@ -168,19 +172,21 @@ List<OrderBooking> buildOrderReport(
 }) {
   final bookings = <OrderBooking>[];
   for (var d = from; !d.isAfter(to); d = d.addDays(1)) {
-    final perOrder = <String, (Project?, int)>{};
+    final notes = _notesByProject(ledger, d);
+    final perOrder = <String, (Project?, int, List<String>)>{};
     for (final MapEntry(key: id, value: minutes)
         in ledger.day(d).work.byProject.entries) {
       final p = projects[id];
       final key = p == null
           ? '?$id'
           : (p.orderNumber.isEmpty ? '#${p.id}' : p.orderNumber);
-      final previous = perOrder[key]?.$2 ?? 0;
-      perOrder[key] = (p, previous + minutes);
+      final (_, before, previousNotes) =
+          perOrder[key] ?? (p, 0, const <String>[]);
+      perOrder[key] = (p, before + minutes, [...previousNotes, ...?notes[id]]);
     }
     final sorted = perOrder.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
-    for (final MapEntry(value: (p, minutes)) in sorted) {
+    for (final MapEntry(value: (p, minutes, notes)) in sorted) {
       bookings.add(
         OrderBooking(
           date: d,
@@ -188,11 +194,29 @@ List<OrderBooking> buildOrderReport(
           projectNumber: p?.projectNumber ?? '',
           projectName: p?.name ?? '?',
           minutes: minutes,
+          notes: notes.toSet().toList(),
         ),
       );
     }
   }
   return bookings;
+}
+
+/// Non-empty summaries per project id of the entries starting on [day].
+Map<String, List<String>> _notesByProject(Ledger ledger, LocalDate day) {
+  final result = <String, List<String>>{};
+  void add(String projectId, String note) {
+    if (note.trim().isEmpty) return;
+    (result[projectId] ??= []).add(note.trim());
+  }
+
+  for (final e in ledger.data.entries) {
+    if (ledger.zone.dateOf(e.start) == day) add(e.projectId, e.note);
+  }
+  for (final d in ledger.data.durations) {
+    if (d.date == day) add(d.projectId, d.note);
+  }
+  return result;
 }
 
 /// Formats [rows] as CSV (RFC 4180 quoting). With [excel], uses `;` and a

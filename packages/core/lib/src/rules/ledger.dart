@@ -40,6 +40,7 @@ final class LedgerData {
     this.sessions = const [],
     this.breaks = const [],
     this.entries = const [],
+    this.durations = const [],
     this.schedules = const [],
     this.absences = const [],
     this.trips = const [],
@@ -51,8 +52,11 @@ final class LedgerData {
   /// Breaks.
   final List<WorkBreak> breaks;
 
-  /// Project entries.
+  /// Project entries recorded as time spans (timer or start/end).
   final List<ProjectEntry> entries;
+
+  /// Project time recorded as durations on a date.
+  final List<ProjectDuration> durations;
 
   /// Work schedules (contracts).
   final List<WorkSchedule> schedules;
@@ -220,6 +224,10 @@ final class Ledger {
       entries: [
         for (final e in data.entries)
           if (touches(e.spanAt(nowMinute))) e,
+      ],
+      durations: [
+        for (final d in data.durations)
+          if (d.date == date) d,
       ],
     );
   });
