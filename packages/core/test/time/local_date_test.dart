@@ -41,4 +41,22 @@ void main() {
       expect({a: 1}[LocalDate(2026, 11, 7)], 1);
     });
   });
+
+  group('HomeTimeZone local time', () {
+    final zone = HomeTimeZone();
+    test('toLocal and instantAt are inverse, also in summer time', () {
+      final winter = zone.instantAt(LocalDate(2026, 11, 4), 8, 30);
+      expect(winter, DateTime.utc(2026, 11, 4, 7, 30));
+      final summer = zone.instantAt(LocalDate(2026, 7, 1), 8, 30);
+      expect(summer, DateTime.utc(2026, 7, 1, 6, 30));
+      final local = zone.toLocal(summer);
+      expect((local.hour, local.minute), (8, 30));
+    });
+  });
+
+  test('§14 formatMinutes', () {
+    expect(formatMinutes(465), '7:45');
+    expect(formatMinutes(-90), '\u22121:30');
+    expect(formatMinutes(5), '0:05');
+  });
 }

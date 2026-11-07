@@ -7,6 +7,30 @@ final class TrackerState {
   /// Creates a state.
   const TrackerState({this.session, this.breakRow, this.entry, this.trip});
 
+  /// Derives the state from stored rows of any tables (others are ignored).
+  factory TrackerState.fromRows(Iterable<StoredRow> rows) {
+    StoredRow? latestOpen(String table, String startField, String endField) {
+      StoredRow? best;
+      for (final r in rows) {
+        if (r.table != table || r.isDeleted) continue;
+        final start = r.fields[startField];
+        if (start is! String || r.fields[endField] != null) continue;
+        if (best == null ||
+            start.compareTo(best.fields[startField]! as String) > 0) {
+          best = r;
+        }
+      }
+      return best;
+    }
+
+    return TrackerState(
+      session: latestOpen('work_sessions', 'start_utc', 'end_utc'),
+      breakRow: latestOpen('breaks', 'start_utc', 'end_utc'),
+      entry: latestOpen('project_entries', 'start_utc', 'end_utc'),
+      trip: latestOpen('trips', 'depart_utc', 'return_utc'),
+    );
+  }
+
   /// The open work session (still clocked in), if any.
   final StoredRow? session;
 
@@ -76,33 +100,17 @@ final class TimeTracker {
   String get _stamp => isoMinute(_now());
 
   /// Reads the current state.
-  Future<TrackerState> state() => repository.store.transaction((tx) async {
-    StoredRow? open(List<StoredRow> rows, String startField, String endField) {
-      final running = rows.where(
-        (r) =>
-            !r.isDeleted &&
-            r.fields[startField] is String &&
-            r.fields[endField] == null,
-      );
-      if (running.isEmpty) return null;
-      return running.reduce(
-        (a, b) =>
-            (a.fields[startField]! as String).compareTo(
-                  b.fields[startField]! as String,
-                ) >=
-                0
-            ? a
-            : b,
-      );
-    }
-
-    return TrackerState(
-      session: open(await tx.rows('work_sessions'), 'start_utc', 'end_utc'),
-      breakRow: open(await tx.rows('breaks'), 'start_utc', 'end_utc'),
-      entry: open(await tx.rows('project_entries'), 'start_utc', 'end_utc'),
-      trip: open(await tx.rows('trips'), 'depart_utc', 'return_utc'),
-    );
-  });
+  Future<TrackerState> state() => repository.store.transaction(
+    (tx) async => TrackerState.fromRows([
+      for (final t in const [
+        'work_sessions',
+        'breaks',
+        'project_entries',
+        'trips',
+      ])
+        ...await tx.rows(t),
+    ]),
+  );
 
   /// Clocks in at [location]. Does nothing if already clocked in at that
   /// location; switches the location (new session) if clocked in elsewhere.

@@ -144,3 +144,11 @@ final class SpanSet {
   @override
   String toString() => 'SpanSet($spans)';
 }
+
+/// Formats [minutes] as `H:MM`, negative values as `−H:MM` with a real minus
+/// sign (spec: calculations.md §14).
+String formatMinutes(int minutes) {
+  final sign = minutes < 0 ? '\u2212' : '';
+  final m = minutes.abs();
+  return '$sign${m ~/ 60}:${(m % 60).toString().padLeft(2, '0')}';
+}

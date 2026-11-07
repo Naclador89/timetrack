@@ -42,6 +42,20 @@ final class HomeTimeZone {
   /// The local calendar date of the instant [minute] (minutes since the epoch).
   LocalDate dateOfMinute(int minute) => dateOf(instantOfEpochMinute(minute));
 
+  /// [instant] as wall-clock time in this zone (year … minute fields are local).
+  DateTime toLocal(DateTime instant) => tz.TZDateTime.from(instant, _location);
+
+  /// The UTC instant of local [hour]:[minute] on [date]. Times that don't exist
+  /// (DST gap) are moved forward like the timezone database does.
+  DateTime instantAt(LocalDate date, int hour, int minute) => tz.TZDateTime(
+    _location,
+    date.year,
+    date.month,
+    date.day,
+    hour,
+    minute,
+  ).toUtc();
+
   static tz.Location _load(String name) {
     if (!_databaseLoaded) {
       tzdata.initializeTimeZones();

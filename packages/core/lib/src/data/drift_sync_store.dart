@@ -155,3 +155,20 @@ final class _DriftTransaction implements SyncTransaction {
         LocalValuesCompanion.insert(key: _hlcKey, value: hlc.toString()),
       );
 }
+
+const _deviceIdKey = 'device_id';
+
+/// This device's sync id from `local_values`, created on first use
+/// (spec: sync-format.md §2). It is never synced.
+Future<String> loadOrCreateDeviceId(TimeTrackDatabase db) =>
+    db.transaction(() async {
+      final existing = await (db.select(
+        db.localValues,
+      )..where((t) => t.key.equals(_deviceIdKey))).getSingleOrNull();
+      if (existing != null) return existing.value;
+      final id = newDeviceId();
+      await db
+          .into(db.localValues)
+          .insert(LocalValuesCompanion.insert(key: _deviceIdKey, value: id));
+      return id;
+    });
