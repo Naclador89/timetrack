@@ -98,3 +98,21 @@ EOF
 Both files are git-ignored; **back them up**, because losing the key means reinstalling the app.
 For CI, add the repo secrets `ANDROID_KEYSTORE_BASE64` (`base64 -w0 app/android/app/release.jks`)
 and `ANDROID_KEY_PROPERTIES` (the content of `key.properties`).
+
+## 6. Local Nextcloud for integration tests
+
+A throwaway Nextcloud in podman (SQLite, admin login, only on 127.0.0.1). Tests never touch the
+user's real Nextcloud.
+
+```bash
+podman run -d --name tt-nextcloud -p 127.0.0.1:8089:80 \
+  -e SQLITE_DATABASE=nextcloud -e NEXTCLOUD_ADMIN_USER=admin -e NEXTCLOUD_ADMIN_PASSWORD=tt-test-admin-pw \
+  -e NEXTCLOUD_TRUSTED_DOMAINS="localhost 127.0.0.1" docker.io/library/nextcloud:stable
+# wait until `curl -u admin:tt-test-admin-pw -X PROPFIND http://127.0.0.1:8089/remote.php/dav/files/admin/` answers 207
+cd packages/core
+NEXTCLOUD_URL=http://127.0.0.1:8089 NEXTCLOUD_USER=admin NEXTCLOUD_PASSWORD=tt-test-admin-pw \
+  ../../tool/dev.sh dart test test/integration
+podman stop tt-nextcloud    # podman start tt-nextcloud to reuse it
+```
+
+Without these variables the integration tests are skipped (also in CI).

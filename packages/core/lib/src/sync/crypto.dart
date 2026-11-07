@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
@@ -122,12 +123,26 @@ final class SyncCipher {
   }
 }
 
-Future<SecretKey> _derive(String passphrase, EncryptionParams p) => Argon2id(
-  parallelism: p.parallelism,
-  memory: p.memoryKiB,
-  iterations: p.iterations,
-  hashLength: 32,
-).deriveKey(secretKey: SecretKey(utf8.encode(passphrase)), nonce: p.salt);
+/// Argon2id with 64 MiB takes seconds on a phone, so it runs in a separate
+/// isolate to keep the UI responsive (Android flags apps that block > 5 s).
+Future<SecretKey> _derive(String passphrase, EncryptionParams p) async {
+  final salt = p.salt;
+  final (memory, iterations, parallelism) = (
+    p.memoryKiB,
+    p.iterations,
+    p.parallelism,
+  );
+  final bytes = await Isolate.run(() async {
+    final key = await Argon2id(
+      parallelism: parallelism,
+      memory: memory,
+      iterations: iterations,
+      hashLength: 32,
+    ).deriveKey(secretKey: SecretKey(utf8.encode(passphrase)), nonce: salt);
+    return key.extractBytes();
+  });
+  return SecretKey(bytes);
+}
 
 /// Sets up encryption on the first device: random salt, derived key and key
 /// check (spec: sync-format.md §10). Lower [memoryKiB]/[iterations] only in tests.

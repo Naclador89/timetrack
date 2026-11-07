@@ -34,6 +34,7 @@ Future<SyncCipher> connectSyncFolder(
 }) async {
   final existing = await remote.read('format.json');
   if (existing != null) return _unlock(existing, passphrase);
+  await remote.makeDirectory(''); // the sync folder itself, on first use
   final (params, cipher) = await createEncryption(
     passphrase,
     memoryKiB: memoryKiB,
