@@ -42,4 +42,6 @@ Rules for dependencies:
 | `core/rules/vacation` (`vacationAccount`) | calculations §10 | done |
 | `core/rules/home_office` (day value, quota, forecast) | calculations §11 | done |
 | `core/rules/per_diem` (`perDiemForTrip`) | calculations §13 | done |
+| `core/rules/review` (`reviewItems`) | calculations §12 | done |
+| `core/model/project`, `core/search/project_search` | project-search | done |
 | everything else | | planned (see `docs/status.md`) |

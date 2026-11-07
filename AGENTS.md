@@ -22,7 +22,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. Created in M0. |
 | `garmin/` | Connect IQ watch app and glance (Monkey C), milestone M6. |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging). |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `project-search.md`. |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
