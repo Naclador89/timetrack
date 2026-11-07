@@ -184,3 +184,75 @@ final class HomeOfficeRule {
   /// What the percentage refers to.
   final QuotaBasis basis;
 }
+
+/// Per-diem rates for one country, valid from [validFrom]
+/// (spec: calculations.md §13). Amounts are integer cents.
+final class PerDiemRate {
+  /// Creates a rate row.
+  const PerDiemRate({
+    required this.id,
+    required this.country,
+    required this.validFrom,
+    required this.partialCents,
+    required this.fullCents,
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// ISO 3166-1 alpha-2 country code.
+  final String country;
+
+  /// First day the rates apply to.
+  final LocalDate validFrom;
+
+  /// Rate for a partial day (more than 8 h, or arrival/departure day).
+  final int partialCents;
+
+  /// Rate for a full 24-hour day; also the base for meal reductions.
+  final int fullCents;
+}
+
+/// The domestic rates to pre-fill (spec: calculations.md §13).
+///
+/// **Check the current values (BMF) before relying on them.**
+List<PerDiemRate> defaultPerDiemRates() => [
+  PerDiemRate(
+    id: 'default-de-2020',
+    country: 'DE',
+    validFrom: LocalDate(2020, 1, 1),
+    partialCents: 1400,
+    fullCents: 2800,
+  ),
+];
+
+/// Meals provided on one trip day; each reduces the per-diem (§13).
+final class TripMeals {
+  /// Creates a meals row.
+  const TripMeals({
+    required this.id,
+    required this.tripId,
+    required this.date,
+    this.breakfast = false,
+    this.lunch = false,
+    this.dinner = false,
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// The trip these meals belong to.
+  final String tripId;
+
+  /// The day of the meals.
+  final LocalDate date;
+
+  /// Breakfast was provided (e.g. included in the hotel price).
+  final bool breakfast;
+
+  /// Lunch was provided.
+  final bool lunch;
+
+  /// Dinner was provided.
+  final bool dinner;
+}

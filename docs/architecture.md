@@ -41,4 +41,5 @@ Rules for dependencies:
 | `core/rules/ledger` (`Ledger`: per-day results, balance) | calculations §2–§9 | done |
 | `core/rules/vacation` (`vacationAccount`) | calculations §10 | done |
 | `core/rules/home_office` (day value, quota, forecast) | calculations §11 | done |
+| `core/rules/per_diem` (`perDiemForTrip`) | calculations §13 | done |
 | everything else | | planned (see `docs/status.md`) |

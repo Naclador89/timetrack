@@ -12,6 +12,7 @@ export 'src/rules/day_work.dart';
 export 'src/rules/holidays.dart';
 export 'src/rules/home_office.dart';
 export 'src/rules/ledger.dart';
+export 'src/rules/per_diem.dart';
 export 'src/rules/target.dart';
 export 'src/rules/vacation.dart';
 export 'src/time/home_time_zone.dart';

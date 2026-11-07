@@ -28,15 +28,15 @@ _Last updated: 2026-11-07 by Claude Code._
       `tripDayCredit`, `TravelRules`)
 - [x] Vacation account §10 (`vacationAccount`)
 - [x] Home office: day value, quota, forecast, yearly count §11 (`evaluateQuota`, `homeOfficeValue`)
-- [ ] Per-diem §13
+- [x] Per-diem §13 (`perDiemForTrip`, `defaultPerDiemRates`)
 - [ ] Review list §12
 - [ ] Project search (concept §5, item 3)
 - [ ] HLC, change format, merge (sync-format §3–§6)
 - [ ] drift database and SyncedRepository (sync-format §7, write path)
 - [ ] Sync engine against an in-memory fake WebDAV, plus the property-based convergence test (sync-format §7)
 
-**Next task**: per-diem §13 (`core/lib/src/rules/per_diem.dart`; needs `per_diem_rates` and
-`trip_meals` models), then the Review list §12, then project search. After that, the sync part of
+**Next task**: the Review list §12 (combines `DayResult` flags, ArbZG and quota warnings), then
+project search. After that, the sync part of
 M1 (HLC, change format, merge, database, engine).
 Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
 add an index by date if balances over several years get slow.
@@ -59,4 +59,4 @@ add an index by date if balances over several years get slow.
   manual CI run. M1: home time zone, day evaluation (§2/§3), ArbZG checks (§4/§5); 57 tests green.
   Changed the CI concurrency so pushes no longer cancel manual or tag builds.
   Then target §7, credit and balance §8, travel crediting §9 (`Ledger` ties all daily rules
-  together); 81 tests green. Then vacation account §10 and home office §11; 92 tests green.
+  together); 81 tests green. Then vacation account §10 and home office §11; then per-diem §13; 98 tests green.
