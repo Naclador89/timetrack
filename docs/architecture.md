@@ -39,4 +39,6 @@ Rules for dependencies:
 | `core/rules/target` (`TargetCalendar`) | calculations §7 | done |
 | `core/rules/credit` (absence credit, travel rules) | calculations §8–§9 | done |
 | `core/rules/ledger` (`Ledger`: per-day results, balance) | calculations §2–§9 | done |
+| `core/rules/vacation` (`vacationAccount`) | calculations §10 | done |
+| `core/rules/home_office` (day value, quota, forecast) | calculations §11 | done |
 | everything else | | planned (see `docs/status.md`) |
