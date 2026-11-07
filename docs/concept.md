@@ -284,6 +284,6 @@ Every milestone also ends with: docs updated (`status.md`, specs, decision recor
 
 - **Background delivery of watch messages on Android**: checked in the M6 spike.
 - **Your Nextcloud**: whether it's self-hosted or run by a provider affects whether to add end-to-end encryption early. The URL is entered at M3.
-- **Windows PC**: if it's a managed work PC, a proxy or app restrictions could block the app. M0 checks this early with the portable ZIP.
+- **Windows PC**: it's company-managed and sometimes on a VPN. M0 confirmed that the portable ZIP runs and Nextcloud WebDAV is reachable. In M3, handle the system proxy and VPN changes (see `docs/status.md`).
 - **GitHub Free**: some users have recently reported "Usage blocked" in private repos without a payment method, even with minutes left. M0 checks this with the first Windows build; if it happens, use a fallback from section 7.
 - **GNOME/Wayland**: no tray icon needed for now (not chosen), which avoids the AppIndicator dependency.

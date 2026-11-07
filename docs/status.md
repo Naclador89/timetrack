@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M0 almost done (waiting for GitHub), M1 started
+## Current milestone: M0 done, M1 in progress
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -13,8 +13,8 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Local builds checked: Linux release bundle, Android release APK (signed with the debug key)
 - [x] Private GitHub repo `Naclador89/timetrack`, pushed; `gh` is logged in inside the toolbox
       (push with `tool/dev.sh git push`)
-- [ ] **User**: download the Windows ZIP (Actions → CI → run 42400905274 → artifact `windows`), start
-      it on the Windows PC and check that the PC can reach Nextcloud (the M0 "done when" criterion)
+- [x] Windows ZIP from CI starts on the user's Windows PC, and that PC reaches the Nextcloud WebDAV
+      endpoint (2026-11-07). The M0 "done when" criterion is met.
 - [ ] Actions bumped to their current majors (checkout v7, upload-artifact v7, download-artifact v8,
       setup-java v6, action-gh-release v3) to drop the Node 20 deprecation warnings. Only `test` has run
       on them so far; the build and release jobs get checked at the next tag or manual run.
@@ -46,6 +46,11 @@ Performance note: `Ledger` scans all rows for each day. That's fine for personal
 add an index by date if balances over several years get slow.
 
 ## Known issues / open questions
+- **Windows PC is company-managed and sometimes on a VPN** (user, 2026-11-07). For M3:
+  - Dart's `HttpClient` doesn't use the Windows system proxy by itself. Support the system or PAC
+    proxy (for example read it via WinHTTP) or a manual proxy setting, and test with and without the VPN.
+  - Treat network changes (VPN up or down) as a sync trigger and retry failed syncs with backoff.
+  - Keep the Windows build portable (no admin rights needed, data in `%APPDATA%`).
 - Travel-rule assumptions (calculations §9) not yet confirmed by the user:
   1. Every trip day uses the weekday rule.
   2. Short weekday trip days get the full target.
