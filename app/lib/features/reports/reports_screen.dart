@@ -219,13 +219,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   title:
                       '${l.travelReport} ${format.month(month.year, month.month)}',
                   table: travelTable(trips, format),
-                  figures: [
-                    (
-                      l.total,
-                      format.money(trips.fold(0, (a, t) => a + t.totalCents)),
-                    ),
-                  ],
-                  numericColumns: const {3, 5, 6},
+                  figures: travelFigures(trips, format),
+                  numericColumns: const {3, 4, 5, 7, 8},
                   exports: [
                     (
                       'PDF',
@@ -241,7 +236,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                         await exportBytes(
                           context,
                           bytes,
-                          'Reisekosten_$stamp.pdf',
+                          'Reisebericht_$stamp.pdf',
                           'application/pdf',
                         );
                       },
@@ -250,7 +245,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       'CSV',
                       () => csv(
                         travelTable(trips, format),
-                        'Reisekosten_$stamp.csv',
+                        'Reisebericht_$stamp.csv',
                       ),
                     ),
                   ],
@@ -298,6 +293,15 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final rates = ref.watch(perDiemRatesProvider);
     final meals = ref.watch(tripMealsProvider);
     final projects = ref.watch(projectByIdProvider);
+    final ledger = ref.watch(ledgerProvider);
+    ({int travel, int onSite}) times(LocalDate d) {
+      final work = ledger.day(d).work;
+      return (
+        travel: work.workedAt(WorkLocation.travel),
+        onSite: work.workedAt(WorkLocation.onSite),
+      );
+    }
+
     return [
       for (final trip in [
         ...ref.watch(ledgerDataProvider).trips,
@@ -306,7 +310,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 .where((d) => !d.date.isBefore(first) && !d.date.isAfter(last))
                 .toList()
             case final days when days.isNotEmpty)
-          TripReport(trip, days, project: projects[trip.projectId]),
+          TripReport(
+            trip,
+            days,
+            project: projects[trip.projectId],
+            times: {for (final d in days) d.date: times(d.date)},
+          ),
     ];
   }
 

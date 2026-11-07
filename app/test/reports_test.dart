@@ -161,12 +161,15 @@ void main() {
           name: 'Werk Süd',
           orderNumber: 'A-4711',
         ),
+        times: {d('2026-11-02'): (travel: 150, onSite: 0)},
       ),
     ];
     expect(reports.single.totalCents, 1400 + 1400 - 560);
     final table = travelTable(reports, f);
     expect(table[2].last, '8,40\u00a0€');
-    expect(table[2][5], '−5,60\u00a0€');
+    expect(table.first.sublist(3, 5), ['Unterwegs', 'Vor Ort']);
+    expect(table[1].sublist(3, 5), ['2:30', '']);
+    expect(table[2][7], '−5,60\u00a0€');
     expect(table[1][2], 'Werk Süd · A-4711');
     final travel = await travelPdf(reports, 2026, 11, f, now: now);
     expect(utf8.decode(travel.sublist(0, 5)), '%PDF-');

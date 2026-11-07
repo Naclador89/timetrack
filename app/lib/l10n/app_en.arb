@@ -291,7 +291,7 @@
   "navReports": "Reports",
   "timesheet": "Timesheet",
   "orderReport": "Order report",
-  "travelReport": "Travel expenses",
+  "travelReport": "Travel report",
   "statistics": "Statistics",
   "backupJson": "Backup of all data (JSON)",
   "savedTo": "Saved: {path}",

@@ -516,7 +516,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get orderReport => 'Auftragsbericht';
 
   @override
-  String get travelReport => 'Reisekosten';
+  String get travelReport => 'Reisebericht';
 
   @override
   String get statistics => 'Statistik';

@@ -1037,7 +1037,7 @@ abstract class AppLocalizations {
   /// No description provided for @travelReport.
   ///
   /// In en, this message translates to:
-  /// **'Travel expenses'**
+  /// **'Travel report'**
   String get travelReport;
 
   /// No description provided for @statistics.

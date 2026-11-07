@@ -129,7 +129,10 @@ List<List<String>> orderTable(List<OrderBooking> bookings, ReportFormat f) {
 /// One trip with its per-diem days, for the travel report.
 final class TripReport {
   /// Creates the entry.
-  const TripReport(this.trip, this.days, {this.project});
+  const TripReport(this.trip, this.days, {this.project, this.times = const {}});
+
+  /// Travel and on-site minutes per trip day (`W_loc`, calculations.md §2).
+  final Map<LocalDate, ({int travel, int onSite})> times;
 
   /// The trip.
   final Trip trip;
@@ -158,6 +161,8 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
       l.colDate,
       l.destination,
       l.colProject,
+      l.locationTravel,
+      l.locationOnSite,
       l.hoursAway,
       l.perDiem,
       l.mealsProvided,
@@ -169,6 +174,8 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
           f.date(d.date),
           '${t.trip.destination} (${t.trip.country})',
           projectLabel(t.project),
+          _minutesOrEmpty(t.times[d.date]?.travel),
+          _minutesOrEmpty(t.times[d.date]?.onSite),
           formatMinutes(d.absenceMinutes),
           d.rateMissing ? l.rateMissing(t.trip.country) : _category(f, d),
           d.reductionCents == 0 ? '' : '−${f.money(d.reductionCents)}',
@@ -176,6 +183,9 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
         ],
   ];
 }
+
+String _minutesOrEmpty(int? minutes) =>
+    minutes == null || minutes == 0 ? '' : formatMinutes(minutes);
 
 /// `Name · order number` (or project number) for reports; empty without a
 /// project.
@@ -205,8 +215,13 @@ String backupJson(List<StoredRow> rows, DateTime now) =>
 
 /// The PDF standard fonts only cover Windows-1252; map the few characters
 /// outside it that our texts use.
-String _pdfSafe(String s) =>
-    s.replaceAll('−', '-').replaceAll('…', '...').replaceAll('½', '1/2');
+// The built-in PDF fonts lack these glyphs (€ showed as a box).
+String _pdfSafe(String s) => s
+    .replaceAll('−', '-')
+    .replaceAll('…', '...')
+    .replaceAll('½', '1/2')
+    .replaceAll('\u00a0€', ' EUR')
+    .replaceAll('€', 'EUR');
 
 pw.Widget _table(List<List<String>> table, {Map<int, pw.Alignment>? align}) =>
     pw.TableHelper.fromTextArray(
@@ -315,6 +330,21 @@ Future<List<int>> timesheetPdf(
   return doc.save();
 }
 
+/// Totals of the travel report as (label, value): travel and on-site time,
+/// meal allowance. Shared by the PDF and the in-app preview.
+List<(String, String)> travelFigures(List<TripReport> trips, ReportFormat f) {
+  final l = f.l;
+  int sum(int Function(({int travel, int onSite})) pick) => trips.fold(
+    0,
+    (a, t) => a + t.times.values.fold(0, (b, x) => b + pick(x)),
+  );
+  return [
+    (l.locationTravel, formatMinutes(sum((x) => x.travel))),
+    (l.locationOnSite, formatMinutes(sum((x) => x.onSite))),
+    (l.total, f.money(trips.fold(0, (a, t) => a + t.totalCents))),
+  ];
+}
+
 /// The travel report as a PDF: one table row per trip day, with the total.
 Future<List<int>> travelPdf(
   List<TripReport> trips,
@@ -325,10 +355,10 @@ Future<List<int>> travelPdf(
 }) {
   final l = f.l;
   final doc = pw.Document(title: '${l.travelReport} ${f.month(year, month)}');
-  final total = trips.fold(0, (a, t) => a + t.totalCents);
   doc.addPage(
     pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
+      // Landscape: nine columns.
+      pageFormat: PdfPageFormat.a4.landscape,
       margin: const pw.EdgeInsets.all(28),
       footer: (ctx) => _footer(f, ctx, now),
       build: (ctx) => [
@@ -341,15 +371,22 @@ Future<List<int>> travelPdf(
           travelTable(trips, f),
           align: {
             3: pw.Alignment.centerRight,
+            4: pw.Alignment.centerRight,
             5: pw.Alignment.centerRight,
-            6: pw.Alignment.centerRight,
+            7: pw.Alignment.centerRight,
+            8: pw.Alignment.centerRight,
           },
         ),
         pw.SizedBox(height: 8),
         pw.Align(
           alignment: pw.Alignment.centerRight,
           child: pw.Text(
-            _pdfSafe('${l.total}: ${f.money(total)}'),
+            _pdfSafe(
+              [
+                for (final (label, value) in travelFigures(trips, f))
+                  '$label: $value',
+              ].join('   '),
+            ),
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
           ),
         ),

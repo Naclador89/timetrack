@@ -156,7 +156,7 @@
   "navReports": "Berichte",
   "timesheet": "Stundenzettel",
   "orderReport": "Auftragsbericht",
-  "travelReport": "Reisekosten",
+  "travelReport": "Reisebericht",
   "statistics": "Statistik",
   "backupJson": "Sicherung aller Daten (JSON)",
   "savedTo": "Gespeichert: {path}",

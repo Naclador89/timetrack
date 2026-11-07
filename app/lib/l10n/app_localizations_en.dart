@@ -515,7 +515,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderReport => 'Order report';
 
   @override
-  String get travelReport => 'Travel expenses';
+  String get travelReport => 'Travel report';
 
   @override
   String get statistics => 'Statistics';
