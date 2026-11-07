@@ -53,7 +53,9 @@ Every row also has the field `deleted` (`bool`, default `false`); deleted rows a
 
 ## §7 settings
 Row id = setting key (e.g. `federal_state`), field `value` (string, num or bool) ✓.
-Keys and defaults are listed in `calculations.md` where each setting is introduced.
+All keys with their defaults are in `SettingKeys` / `AppSettings` (`core/lib/src/data/settings.dart`);
+the rules they configure are in `calculations.md`. Enum values are stored in snake_case
+(`like_sunday`, `travel_only`).
 
 ## §8 home_office_rules
 `valid_from` date ✓, `period` enum `week` `month` ✓, `unit` enum `days` `hours` (default `days`),

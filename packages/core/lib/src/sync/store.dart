@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'change.dart';
 import 'hlc.dart';
 
@@ -22,6 +24,11 @@ abstract interface class SyncStore {
   /// Runs [action] atomically: either all of its writes are kept or none.
   /// Transactions don't overlap.
   Future<T> transaction<T>(Future<T> Function(SyncTransaction tx) action);
+
+  /// All rows of [tables] (including deleted ones), emitted now and again
+  /// after every committed change to them, so UIs update after local writes
+  /// and syncs alike.
+  Stream<List<StoredRow>> watchRows(Set<String> tables);
 }
 
 /// Reads and writes inside one [SyncStore.transaction].
@@ -77,6 +84,18 @@ abstract interface class SyncTransaction {
 final class InMemorySyncStore implements SyncStore {
   _MemoryState _state = _MemoryState();
   Future<void> _queue = Future.value();
+  final _commits = StreamController<void>.broadcast(sync: true);
+
+  @override
+  Stream<List<StoredRow>> watchRows(Set<String> tables) async* {
+    List<StoredRow> snapshot() => [
+      for (final t in tables) ...?_state.rows[t]?.values,
+    ];
+    yield snapshot();
+    await for (final _ in _commits.stream) {
+      yield snapshot();
+    }
+  }
 
   /// Rows of [table] (read-only snapshot), for assertions in tests.
   Map<String, StoredRow> rowsOf(String table) =>
@@ -95,6 +114,7 @@ final class InMemorySyncStore implements SyncStore {
       final draft = _state.copy();
       final value = await action(_MemoryTransaction(draft));
       _state = draft; // commit only if the action didn't throw
+      _commits.add(null);
       return value;
     });
     _queue = result.then((_) {}, onError: (_) {});

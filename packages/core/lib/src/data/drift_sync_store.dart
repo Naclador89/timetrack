@@ -19,8 +19,7 @@ final class DriftSyncStore implements SyncStore {
   Future<T> transaction<T>(Future<T> Function(SyncTransaction tx) action) =>
       db.transaction(() => action(_DriftTransaction(db)));
 
-  /// Watches all non-deleted rows of [tables], for reactive UIs: emits again
-  /// whenever a local write or a sync changes them.
+  @override
   Stream<List<StoredRow>> watchRows(Set<String> tables) =>
       (db.select(db.syncedRows)..where((r) => r.tbl.isIn(tables))).watch().map(
         (rows) => [for (final r in rows) _toStored(r)],

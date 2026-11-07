@@ -49,9 +49,10 @@ _Last updated: 2026-11-07 by Claude Code._
       convergence tests run against both the in-memory store and SQLite.
 
 ### M2: local MVP app (Flutter, no sync yet)
-- [ ] Commands in `core` for the two-layer rules (concept §2, "How the two layers interact"):
-      clock in/out, break start/end, start/switch/stop project, with auto clock-in, stop on
-      clock-out, pause on break. Written via `SyncedRepository`, unit-tested.
+- [x] Commands in `core` for the two-layer rules (`TimeTracker`): clock in/out, location change,
+      break start/end (with resume), start/switch/stop project with auto clock-in, start/end trip.
+      Typed settings with defaults (`AppSettings`, `SettingKeys`, `saveSetting`).
+      `SyncStore.watchRows` for reactive UIs.
 - [ ] App setup: Riverpod, go_router, localization (ARB, `de` default and `en`), open the database
       with `drift_flutter` (`driftDatabase(name: 'timetrack')`), device id in `local_values`.
 - [ ] Today screen: clock in/out with location, break, favorite chips, timeline, worked vs target,
