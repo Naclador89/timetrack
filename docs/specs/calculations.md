@@ -138,7 +138,8 @@ aren't supported.
   Before the first schedule, the target is 0.
 - `T_sched(D)` = the schedule's minutes for weekday(D).
 - `T(D)` = 0 if D is a public holiday (§6); otherwise `T_sched(D)`.
-- An `extra_holiday` absence with fraction f reduces the target: `T(D) = T(D) × (1 − f)`, rounded to the minute.
+- An `extra_holiday` or `short_time` (Kurzarbeit) absence with fraction f reduces the target:
+  `T(D) = T(D) × (1 − f)`, rounded to the minute.
 - A **workday** is a day with `T(D) > 0`.
 
 ## §8 Credited time and overtime balance
@@ -146,7 +147,8 @@ aren't supported.
 - **Credited time** `Cr(D)`:
   - normally `W_eff(D)`;
   - on **trip days, Saturdays, Sundays and public holidays**, replaced by §9.
-- **Absence credit**: each `vacation`, `sick` or `special_leave` absence on D with fraction f adds
+- **Absence credit**: each `vacation`, `sick`, `child_sick` or `special_leave` absence on D with
+  fraction f adds
   `f × T(D)` to `Cr(D)`, rounded to the minute. Several absences on D add up to at most `T(D)`.
 - `comp_time` (Überstundenabbau / Gleittag) gives **no** credit, so the day's target lowers the balance.
 - **Daily difference** `Δ(D) = Cr(D) − T(D)`.
@@ -302,3 +304,30 @@ For each trip with `depart` and `return`. An open trip has no per-diem yet.
 - Durations as `H:MM`, negative as `−H:MM`. Totals are computed in minutes first and formatted last,
   so the rows of a report always add up to its total.
 - Percentages are shown with no decimal places, rounded half up.
+
+## §15 Day types
+
+Every date has at most one **day type** (user request 2026-11-08), shown with an icon in the
+calendar and picked in the calendar and on Today:
+
+| Type | Stored as | What can be recorded |
+|---|---|---|
+| Büro (`office`) | `days` row | sessions at the office, project time |
+| Homeoffice (`home`) | `days` row | sessions at home, project time |
+| Dienstreise (`business_trip`) | the day lies in a `trip` (§9) | travel and on-site time (booked to the trip's project, §3) |
+| Urlaub | absence `vacation` | nothing |
+| Krank | absence `sick` | nothing |
+| Kinderkrankentag | absence `child_sick` (credits the target, §8) | nothing |
+| Gleitzeit | absence `comp_time` (no credit, costs the balance, §8) | nothing |
+| Kurzarbeit | absence `short_time` (lowers the target, §7) | nothing |
+| Feier-/Trauertag | absence `special_leave` (credits the target, §8) | nothing |
+
+**Derived type** of D: a full-day absence (its type); else a trip day → business trip; else the
+`days` row; else, if worked, home office if more than half of `W(D)` was at home, otherwise office;
+else a half-day absence; else none.
+
+**Picking a type** (`setDayType`): office or home writes the `days` row and moves the sessions
+starting on D to that location; an absence type writes one full-day absence of that kind; any type
+removes the other absences on D (`extra_holiday` stays) and, unless office/home, the `days` row.
+Business trip: the app creates or opens the trip. A day inside a trip can't get another work type
+until the trip is changed; absence types are allowed (a full-day absence wins).

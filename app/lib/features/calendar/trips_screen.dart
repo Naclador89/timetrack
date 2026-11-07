@@ -56,13 +56,15 @@ class TripsScreen extends ConsumerWidget {
 
 /// Opens the trip dialog for [trip], or for a new trip. A new trip departs
 /// on [date] (default today) at [departMinutes] and returns the same day at
-/// [returnMinutes] (minutes after midnight). Returns whether it was saved.
+/// [returnMinutes] (minutes after midnight), or has no return yet if
+/// [openEnded] (a trip starting now). Returns whether it was saved.
 Future<bool> showTripDialog(
   BuildContext context, {
   Trip? trip,
   LocalDate? date,
   int? departMinutes,
   int? returnMinutes,
+  bool openEnded = false,
 }) async =>
     await showDialog<bool>(
       context: context,
@@ -71,6 +73,7 @@ Future<bool> showTripDialog(
         date: date,
         departMinutes: departMinutes,
         returnMinutes: returnMinutes,
+        openEnded: openEnded,
       ),
     ) ??
     false;
@@ -81,12 +84,14 @@ class _TripDialog extends ConsumerStatefulWidget {
     this.date,
     this.departMinutes,
     this.returnMinutes,
+    this.openEnded = false,
   });
 
   final Trip? trip;
   final LocalDate? date;
   final int? departMinutes;
   final int? returnMinutes;
+  final bool openEnded;
 
   @override
   ConsumerState<_TripDialog> createState() => _TripDialogState();
@@ -141,11 +146,11 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
         : split(t.depart);
     _departDate = departDate;
     _departTime = departTime;
-    if (t == null) {
+    if (t == null && !widget.openEnded) {
       _returnDate = day;
       _returnTime = widget.returnMinutes ?? 19 * 60;
-    } else if (t.returnAt != null) {
-      final (d, m) = split(t.returnAt!);
+    } else if (t?.returnAt case final back?) {
+      final (d, m) = split(back);
       _returnDate = d;
       _returnTime = m;
     }

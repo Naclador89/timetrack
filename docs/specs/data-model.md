@@ -54,7 +54,8 @@ A project time is **either a duration on a date** (the usual way) **or a time sp
 If `start_utc` is set, the row is a time span and `date`/`duration_min` are ignored.
 
 ## §5 absences
-`date` date ✓, `kind` enum `vacation` `sick` `special_leave` `comp_time` `extra_holiday` ✓,
+`date` date ✓, `kind` enum `vacation` `sick` `special_leave` `child_sick` `short_time` `comp_time`
+`extra_holiday` ✓ (`child_sick` and `short_time` since 2026-11-08; older app versions skip them),
 `fraction` num (1 or 0.5, default 1), `note` string.
 
 ## §6 work_schedules
@@ -88,3 +89,9 @@ the rules they configure are in `calculations.md`. Enum values are stored in sna
 
 ## §11 per_diem_rates
 `country` string ✓, `valid_from` date ✓, `partial_cents` int ✓, `full_cents` int ✓.
+
+## §12 days
+The day type picked for a date (calculations §15). **Row id = the date** (`YYYY-MM-DD`), so picks on
+two devices merge by last-writer-wins. Only office and home office are stored here; business trips
+are `trips`, absence types are `absences`.
+`date` date ✓, `type` enum `office` `home` ✓. Since 2026-11-08.

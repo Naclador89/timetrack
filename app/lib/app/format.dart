@@ -46,6 +46,28 @@ IconData locationIcon(WorkLocation l) => switch (l) {
   WorkLocation.travel => Icons.train_outlined,
 };
 
+/// Icon of a day type (calculations.md §15), shown in front of each day in
+/// the calendar.
+IconData dayTypeIcon(DayType t) => switch (t) {
+  DayType.office => Icons.business_outlined,
+  DayType.home => Icons.home_outlined,
+  DayType.businessTrip => Icons.flight,
+  DayType.vacation => Icons.beach_access_outlined,
+  DayType.sick => Icons.sick_outlined,
+  DayType.childSick => Icons.child_care,
+  DayType.flexTime => Icons.hourglass_bottom,
+  DayType.shortTime => Icons.trending_down,
+  DayType.specialLeave => Icons.local_florist_outlined,
+};
+
+/// Name of a day type.
+String dayTypeLabel(AppLocalizations l, DayType t) => switch (t) {
+  DayType.office => l.locationOffice,
+  DayType.home => l.locationHome,
+  DayType.businessTrip => l.dayBusinessTrip,
+  _ => absenceLabel(l, t.absenceKind!),
+};
+
 /// Parses `h:mm` or decimal hours (`7,5` / `7.5`) into minutes; `null` if invalid.
 int? parseHours(String text) {
   final t = text.trim().replaceAll('−', '-');
@@ -76,6 +98,8 @@ String absenceLabel(AppLocalizations l, AbsenceKind k) => switch (k) {
   AbsenceKind.vacation => l.absenceVacation,
   AbsenceKind.sick => l.absenceSick,
   AbsenceKind.specialLeave => l.absenceSpecialLeave,
+  AbsenceKind.childSick => l.absenceChildSick,
+  AbsenceKind.shortTime => l.absenceShortTime,
   AbsenceKind.compTime => l.absenceCompTime,
   AbsenceKind.extraHoliday => l.absenceExtraHoliday,
 };

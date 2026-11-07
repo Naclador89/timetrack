@@ -141,7 +141,6 @@ class _DayRow extends StatelessWidget {
         a.fraction < 1
             ? '${context.absenceName(a.kind)} (½)'
             : context.absenceName(a.kind),
-      if (day.isTripDay) l.tripDay,
       // The row shows worked / target; say so when the account counts
       // something else (§9).
       if (day.credited != day.work.worked)
@@ -150,25 +149,14 @@ class _DayRow extends StatelessWidget {
         '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
     ];
     final delta = day.delta;
-    // One symbol per day, in front (user request 2026-11-08): a plane on
-    // trip days, otherwise the location with the most worked time.
-    WorkLocation? mainLocation;
-    for (final MapEntry(key: loc, value: minutes)
-        in day.work.byLocation.entries) {
-      if (minutes > (day.work.byLocation[mainLocation] ?? 0)) {
-        mainLocation = loc;
-      }
-    }
+    // The day type's symbol in front (calculations §15).
+    final type = day.type;
     return ListTile(
       selected: isToday,
       onTap: () => context.go('/calendar/day/${day.date}'),
       leading: SizedBox(
         width: 24,
-        child: day.isTripDay
-            ? const Icon(Icons.flight)
-            : mainLocation == null
-            ? null
-            : Icon(locationIcon(mainLocation)),
+        child: type == null ? null : Icon(dayTypeIcon(type)),
       ),
       title: Row(
         children: [

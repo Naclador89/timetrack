@@ -9,7 +9,8 @@ import '../../widgets/notices.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 import 'absences_screen.dart';
-import 'trips_screen.dart' show showTripDialog;
+import 'day_type_picker.dart';
+import 'trip_booking_card.dart';
 
 /// Everything recorded on one day, editable: sessions, breaks, project
 /// entries and absences.
@@ -47,6 +48,9 @@ class DayScreen extends ConsumerWidget {
       (e) => e.start,
     );
     final notices = reviewItems(ledger, from: date, to: date);
+    final canWork = day.type == null || day.type!.isWork;
+    final hasProjectTime =
+        entries.isNotEmpty || data.durations.any((x) => x.date == date);
 
     String range(DateTime s, DateTime? e) =>
         '${context.time(s, zone)} – ${e == null ? l.running : context.time(e, zone)}';
@@ -109,49 +113,80 @@ class DayScreen extends ConsumerWidget {
             ),
           ),
           NoticesCard(items: notices),
-          section(
-            l.sessions,
-            () => _editInterval(context, ref, 'work_sessions', null),
-            [
-              for (final s in sessions)
-                ListTile(
-                  leading: Icon(locationIcon(s.location)),
-                  title: Text(range(s.start, s.end)),
-                  subtitle: Text(context.locationName(s.location)),
-                  onTap: () => _editInterval(
-                    context,
-                    ref,
-                    'work_sessions',
-                    s.id,
-                    start: s.start,
-                    end: s.end,
-                    location: s.location,
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.dayType,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
-                ),
-            ],
-          ),
-          section(l.breaks, () => _editInterval(context, ref, 'breaks', null), [
-            for (final b in breaks)
-              ListTile(
-                leading: const Icon(Icons.coffee_outlined),
-                title: Text(range(b.start, b.end)),
-                onTap: () => _editInterval(
-                  context,
-                  ref,
-                  'breaks',
-                  b.id,
-                  start: b.start,
-                  end: b.end,
-                ),
+                  const SizedBox(height: 8),
+                  DayTypePicker(date: date),
+                ],
               ),
-          ]),
-          // Trip days have no project time (user decision 2026-11-08); old
-          // entries stay visible so they can still be edited or deleted.
-          if (day.isTripDay &&
-              entries.isEmpty &&
-              !data.durations.any((x) => x.date == date))
-            _TripBookingCard(date: date)
-          else
+            ),
+          ),
+          // What can be recorded depends on the day type (calculations §15).
+          if (!canWork && sessions.isEmpty && breaks.isEmpty)
+            Card(
+              child: ListTile(
+                leading: Icon(dayTypeIcon(day.type!)),
+                title: Text(l.absenceDayHint),
+              ),
+            ),
+          if (canWork || sessions.isNotEmpty)
+            section(
+              l.sessions,
+              () => _editInterval(context, ref, 'work_sessions', null),
+              [
+                for (final s in sessions)
+                  ListTile(
+                    leading: Icon(locationIcon(s.location)),
+                    title: Text(range(s.start, s.end)),
+                    subtitle: Text(context.locationName(s.location)),
+                    onTap: () => _editInterval(
+                      context,
+                      ref,
+                      'work_sessions',
+                      s.id,
+                      start: s.start,
+                      end: s.end,
+                      location: s.location,
+                    ),
+                  ),
+              ],
+            ),
+          if (canWork || breaks.isNotEmpty)
+            section(
+              l.breaks,
+              () => _editInterval(context, ref, 'breaks', null),
+              [
+                for (final b in breaks)
+                  ListTile(
+                    leading: const Icon(Icons.coffee_outlined),
+                    title: Text(range(b.start, b.end)),
+                    onTap: () => _editInterval(
+                      context,
+                      ref,
+                      'breaks',
+                      b.id,
+                      start: b.start,
+                      end: b.end,
+                    ),
+                  ),
+              ],
+            ),
+          // Trip days have no project time, only travel and on-site time;
+          // absence days nothing (user decisions 2026-11-08). Old entries stay
+          // visible so they can still be edited or deleted.
+          if (day.type == DayType.businessTrip && !hasProjectTime)
+            TripBookingCard(date: date)
+          else if (day.type == null ||
+              day.type!.allowsProjectTime ||
+              hasProjectTime)
             section(
               l.projectEntries,
               () => showProjectTimeDialog(context, date: date),
@@ -311,35 +346,22 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
     if (mounted) Navigator.pop(context);
   }
 
-  /// On trip days only travel and on-site time is recorded (user decision
-  /// 2026-11-08); the time goes to the trip's project (calculations.md §3).
-  static const _tripLocations = [WorkLocation.travel, WorkLocation.onSite];
+  /// The locations the day type allows (calculations §15): travel and
+  /// on-site on business trips, office or home office otherwise.
+  List<WorkLocation> get _locations {
+    final type = ref.watch(ledgerProvider).day(widget.date).type;
+    final allowed = type?.locations ?? const <WorkLocation>[];
+    return allowed.isEmpty
+        ? const [WorkLocation.office, WorkLocation.home]
+        : allowed;
+  }
 
-  bool get _isTripDay => ref.watch(ledgerProvider).day(widget.date).isTripDay;
-
-  List<WorkLocation> get _locations =>
-      _isTripDay ? _tripLocations : WorkLocation.values;
-
-  WorkLocation get _effectiveLocation =>
-      _locations.contains(_location) ? _location : WorkLocation.onSite;
-
-  /// "Reisetag": selected when [widget.date] lies in a trip; tapping edits
-  /// that trip, or creates one around this session (user request 2026-11-08).
-  Widget _tripDayChip(BuildContext context) {
-    final trip = ref.watch(ledgerProvider).tripsOn(widget.date).firstOrNull;
-    return FilterChip(
-      avatar: const Icon(Icons.luggage_outlined, size: 18),
-      showCheckmark: false,
-      label: Text(context.l10n.tripDayButton),
-      selected: trip != null,
-      onSelected: (_) => showTripDialog(
-        context,
-        trip: trip,
-        date: widget.date,
-        departMinutes: _start,
-        returnMinutes: _end != null && _end! > _start ? _end : null,
-      ),
-    );
+  WorkLocation get _effectiveLocation {
+    final allowed = _locations;
+    if (allowed.contains(_location)) return _location;
+    return allowed.contains(WorkLocation.onSite)
+        ? WorkLocation.onSite
+        : allowed.first;
   }
 
   @override
@@ -371,7 +393,7 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
               onChanged: (v) => setState(() => _end = v),
               onClear: () => setState(() => _end = null),
             ),
-            if (widget.table == 'work_sessions') ...[
+            if (widget.table == 'work_sessions' && _locations.length > 1) ...[
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,
@@ -387,7 +409,6 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
                         selected: _effectiveLocation == loc,
                         onSelected: (_) => setState(() => _location = loc),
                       ),
-                    _tripDayChip(context),
                   ],
                 ),
               ),
@@ -432,35 +453,6 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
         ),
         FilledButton(onPressed: _save, child: Text(l.save)),
       ],
-    );
-  }
-}
-
-/// Replaces the project times on trip days: the day's time is booked to the
-/// trip's project (calculations.md §3). Tap edits the trip.
-class _TripBookingCard extends ConsumerWidget {
-  const _TripBookingCard({required this.date});
-
-  final LocalDate date;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = context.l10n;
-    final ledger = ref.watch(ledgerProvider);
-    final trip = ledger.tripsOn(date).firstOrNull;
-    final project = ref.watch(
-      projectByIdProvider,
-    )[ledger.day(date).tripProjectId];
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.flight),
-        title: Text(
-          project == null ? l.tripNoProject : l.tripBookedTo(project.name),
-        ),
-        subtitle: Text(l.tripBookingHint),
-        trailing: const Icon(Icons.edit_outlined),
-        onTap: trip == null ? null : () => showTripDialog(context, trip: trip),
-      ),
     );
   }
 }

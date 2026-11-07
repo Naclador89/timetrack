@@ -243,10 +243,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get absenceSick => 'Krank';
 
   @override
-  String get absenceSpecialLeave => 'Sonderurlaub';
+  String get absenceSpecialLeave => 'Feier-/Trauertag';
 
   @override
-  String get absenceCompTime => 'Überstundenabbau';
+  String get absenceCompTime => 'Gleitzeit';
 
   @override
   String get absenceExtraHoliday => 'Freier Tag';
@@ -737,9 +737,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get preview => 'Vorschau und Download';
 
   @override
-  String get tripDayButton => 'Reisetag';
-
-  @override
   String get tripNoProject => 'Reise ohne Projekt';
 
   @override
@@ -748,9 +745,33 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get tripBookingHint =>
-      'Reisetag: nur Unterwegs- und Vor-Ort-Zeit eintragen; sie zählt für das Projekt der Reise. Antippen, um die Reise zu bearbeiten.';
+  String get tripDays => 'Reisetage';
 
   @override
-  String get tripDays => 'Reisetage';
+  String get dayBusinessTrip => 'Dienstreise';
+
+  @override
+  String get absenceChildSick => 'Kinderkrankentag';
+
+  @override
+  String get absenceShortTime => 'Kurzarbeit';
+
+  @override
+  String get dayType => 'Tagesart';
+
+  @override
+  String tripDayLocked(String trip) {
+    return 'Dieser Tag gehört zur Reise $trip. Um ihn als Büro- oder Homeoffice-Tag zu führen, passe zuerst die Reise an.';
+  }
+
+  @override
+  String get editTrip => 'Reise bearbeiten';
+
+  @override
+  String get absenceDayHint => 'An diesem Tag wird keine Arbeitszeit erfasst.';
+
+  @override
+  String tripTimes(String travel, String onSite) {
+    return 'Unterwegs $travel · Vor Ort $onSite';
+  }
 }

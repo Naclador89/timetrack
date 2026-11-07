@@ -1,4 +1,5 @@
 import '../model/attendance.dart';
+import '../model/day_type.dart';
 import '../model/planning.dart';
 import '../model/project.dart';
 import '../rules/holidays.dart';
@@ -30,6 +31,7 @@ LedgerData ledgerDataFromRows(Iterable<StoredRow> rows) {
     schedules: all('work_schedules', workScheduleFromRow),
     absences: all('absences', absenceFromRow),
     trips: all('trips', tripFromRow),
+    dayChoices: {for (final c in all('days', dayChoiceFromRow)) c.$1: c.$2},
   );
 }
 
@@ -145,6 +147,10 @@ Trip? tripFromRow(StoredRow r) => _use(
     projectId: f.string('project_id'),
   ),
 );
+
+/// data-model.md §12: the type picked for a date (office or home office).
+(LocalDate, DayType)? dayChoiceFromRow(StoredRow r) =>
+    _use(r, (f) => (f.date('date')!, DayType.parse(f.string('type')!)));
 
 /// data-model.md §10.
 TripMeals? tripMealsFromRow(StoredRow r) => _use(

@@ -5,17 +5,15 @@ import 'holidays.dart';
 /// Target time per day from schedules, public holidays and `extra_holiday`
 /// absences (spec: calculations.md §7).
 final class TargetCalendar {
-  /// Creates a calendar. [absences] may contain any kind; only
-  /// [AbsenceKind.extraHoliday] affects the target.
+  /// Creates a calendar. [absences] may contain any kind; only those that
+  /// [AbsenceKind.reducesTarget] (`extra_holiday`, `short_time`) affect it.
   TargetCalendar({
     required List<WorkSchedule> schedules,
     required this.holidays,
     List<Absence> absences = const [],
   }) : _schedules = [...schedules]
          ..sort((a, b) => b.validFrom.compareTo(a.validFrom)),
-       _extraHoliday = _sumByDate(
-         absences.where((a) => a.kind == AbsenceKind.extraHoliday),
-       );
+       _extraHoliday = _sumByDate(absences.where((a) => a.kind.reducesTarget));
 
   /// Holidays of the user's federal state.
   final HolidayCalendar holidays;
@@ -36,7 +34,8 @@ final class TargetCalendar {
   int scheduledMinutes(LocalDate date) =>
       scheduleOn(date)?.minutesOn(date) ?? 0;
 
-  /// `T(D)`: 0 on public holidays, reduced by `extra_holiday` absences.
+  /// `T(D)`: 0 on public holidays, reduced by `extra_holiday` and
+  /// `short_time` absences.
   int targetMinutes(LocalDate date) {
     if (holidays.isHoliday(date)) return 0;
     final off = (_extraHoliday[date] ?? 0).clamp(0, 1);

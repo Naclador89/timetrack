@@ -63,6 +63,7 @@ void main() {
     );
 
     await tester.tap(find.text('Home office'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Clock in'));
     await tester.pumpAndSettle();
     expect(find.text('Clocked in since 08:30'), findsOneWidget);
@@ -130,22 +131,17 @@ void main() {
     expect(find.text('Week 45'), findsOneWidget);
   });
 
-  testWidgets('session dialog: location buttons; "Trip day" creates a trip', (
-    tester,
-  ) async {
+  testWidgets('day types: business trip offers travel and on site; '
+      'vacation records nothing', (tester) async {
     final router = buildRouter();
     final (store, _) = await pumpApp(tester, router: router);
     router.go('/calendar/day/2026-11-04');
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Add').first);
-    await tester.pumpAndSettle();
-    expect(find.byType(DropdownButtonFormField<WorkLocation>), findsNothing);
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Home office'));
-    await tester.pumpAndSettle();
-    final trip = find.widgetWithText(FilterChip, 'Trip day');
-    expect(tester.widget<FilterChip>(trip).selected, isFalse);
+    for (final type in ['Office', 'Home office', 'Business trip', 'Vacation']) {
+      expect(find.widgetWithText(ChoiceChip, type), findsOneWidget);
+    }
 
-    await tester.tap(trip);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Business trip'));
     await tester.pumpAndSettle();
     expect(find.text('New trip'), findsOneWidget);
     await tester.enterText(
@@ -160,14 +156,20 @@ void main() {
     );
     expect(
       tester
-          .widget<FilterChip>(find.widgetWithText(FilterChip, 'Trip day'))
+          .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Business trip'))
           .selected,
       isTrue,
     );
+    expect(find.textContaining('Trip without a project'), findsOneWidget);
 
-    // A trip day offers only travel and on-site.
-    expect(find.widgetWithText(ChoiceChip, 'Home office'), findsNothing);
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Travel'));
+    await tester.tap(find.byTooltip('Add').first);
+    await tester.pumpAndSettle();
+    expect(
+      find.widgetWithText(ChoiceChip, 'Home office'),
+      findsOneWidget,
+      reason: 'only the day type picker behind the dialog',
+    );
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Travel').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save').last);
     await tester.pumpAndSettle();
@@ -175,7 +177,17 @@ void main() {
       store.rowsOf('work_sessions').values.single.fields['location'],
       'travel',
     );
-    expect(find.text('Trip without a project'), findsOneWidget);
+
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Vacation'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('absences').values.single.fields['kind'], 'vacation');
+    expect(
+      find.text('No working time is recorded on this day.'),
+      findsOneWidget,
+    );
+    expect(find.text('Working times'), findsNothing);
   });
 
   testWidgets('the timesheet opens as a preview before the download', (

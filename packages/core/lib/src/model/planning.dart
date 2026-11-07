@@ -39,8 +39,15 @@ enum AbsenceKind {
   /// Sick day: credits the target.
   sick,
 
-  /// Special leave (Sonderurlaub): credits the target.
+  /// Special leave (Sonderurlaub; in the app "Feier-/Trauertag"): credits
+  /// the target.
   specialLeave,
+
+  /// Child sick day (Kinderkrankentag): credits the target like [sick].
+  childSick,
+
+  /// Short-time work (Kurzarbeit): reduces the target, like [extraHoliday].
+  shortTime,
 
   /// Taking overtime off (Überstundenabbau / Gleittag): no credit, so the
   /// day's target lowers the balance.
@@ -53,6 +60,8 @@ enum AbsenceKind {
   /// The value used in sync changes and the database (`special_leave`, …).
   String get wireName => switch (this) {
     specialLeave => 'special_leave',
+    childSick => 'child_sick',
+    shortTime => 'short_time',
     compTime => 'comp_time',
     extraHoliday => 'extra_holiday',
     _ => name,
@@ -67,7 +76,13 @@ enum AbsenceKind {
 
   /// Whether this absence adds `fraction × target` to the credited time.
   bool get creditsTarget =>
-      this == vacation || this == sick || this == specialLeave;
+      this == vacation ||
+      this == sick ||
+      this == specialLeave ||
+      this == childSick;
+
+  /// Whether this absence lowers the target `T(D)` (§7) instead.
+  bool get reducesTarget => this == extraHoliday || this == shortTime;
 }
 
 /// A full-day or half-day absence on [date].

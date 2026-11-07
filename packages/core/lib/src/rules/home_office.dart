@@ -122,7 +122,7 @@ HomeOfficeQuota evaluateQuota(
     final day = ledger.day(d);
     final past = !d.isAfter(today);
     final absent = day.absences
-        .where((a) => a.kind != AbsenceKind.extraHoliday)
+        .where((a) => !a.kind.reducesTarget)
         .fold(0.0, (sum, a) => sum + a.fraction)
         .clamp(0.0, 1.0);
     final workday = day.target > 0;

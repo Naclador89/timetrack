@@ -146,8 +146,8 @@
   "absences": "Absences",
   "absenceVacation": "Vacation",
   "absenceSick": "Sick",
-  "absenceSpecialLeave": "Special leave",
-  "absenceCompTime": "Time off in lieu",
+  "absenceSpecialLeave": "Celebration/bereavement",
+  "absenceCompTime": "Flexitime",
   "absenceExtraHoliday": "Day off",
   "halfDay": "Half day",
   "addAbsence": "Add absence",
@@ -401,7 +401,6 @@
   "tripProjectNone": "No project (optional)",
   "colProject": "Project",
   "preview": "Preview and download",
-  "tripDayButton": "Trip day",
   "tripNoProject": "Trip without a project",
   "tripBookedTo": "Booked to {project}",
   "@tripBookedTo": {
@@ -411,6 +410,30 @@
       }
     }
   },
-  "tripBookingHint": "Trip day: record travel and on-site time only; it counts for the trip's project. Tap to edit the trip.",
-  "tripDays": "Trip days"
+  "tripDays": "Trip days",
+  "dayBusinessTrip": "Business trip",
+  "absenceChildSick": "Child sick day",
+  "absenceShortTime": "Short-time work",
+  "dayType": "Type of day",
+  "tripDayLocked": "This day belongs to the trip {trip}. To make it an office or home-office day, change the trip first.",
+  "@tripDayLocked": {
+    "placeholders": {
+      "trip": {
+        "type": "String"
+      }
+    }
+  },
+  "editTrip": "Edit trip",
+  "absenceDayHint": "No working time is recorded on this day.",
+  "tripTimes": "Travel {travel} · On site {onSite}",
+  "@tripTimes": {
+    "placeholders": {
+      "travel": {
+        "type": "String"
+      },
+      "onSite": {
+        "type": "String"
+      }
+    }
+  }
 }

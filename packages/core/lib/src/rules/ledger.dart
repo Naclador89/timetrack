@@ -1,4 +1,5 @@
 import '../model/attendance.dart';
+import '../model/day_type.dart';
 import '../model/planning.dart';
 import '../time/home_time_zone.dart';
 import '../time/local_date.dart';
@@ -44,7 +45,13 @@ final class LedgerData {
     this.schedules = const [],
     this.absences = const [],
     this.trips = const [],
+    this.dayChoices = const {},
   });
+
+  /// Day types picked by the user for office and home-office days
+  /// (`days` table, data-model §12). Other types come from trips and
+  /// absences (§15).
+  final Map<LocalDate, DayType> dayChoices;
 
   /// Work sessions (attendance).
   final List<WorkSession> sessions;
@@ -82,7 +89,12 @@ final class DayResult {
     required this.warnings,
     this.sundayHours = 0,
     this.tripProjectId,
+    this.type,
   });
+
+  /// The day type (§15), or `null` for a day without work, trip, absence
+  /// or choice.
+  final DayType? type;
 
   /// The evaluated day.
   final LocalDate date;
@@ -220,6 +232,7 @@ final class Ledger {
       target: target,
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
+      type: _dayType(date, work, absences, isTripDay: tripType != null),
       tripProjectId: tripType == null
           ? null
           : tripsOn(date).map((t) => t.projectId).nonNulls.firstOrNull,
@@ -279,6 +292,34 @@ final class Ledger {
 
   /// §9: every local date touched by `[depart, return)` is a trip day; an
   /// open trip touches every day up to now.
+  /// §15: a full-day absence, else a trip, else the user's choice, else the
+  /// main location of the work, else a part-day absence.
+  DayType? _dayType(
+    LocalDate date,
+    DayWork work,
+    List<Absence> absences, {
+    required bool isTripDay,
+  }) {
+    DayType? absenceType({required bool fullDay}) {
+      for (final a in absences) {
+        final type = DayType.ofAbsence(a.kind);
+        if (type != null && (!fullDay || a.fraction >= 1)) return type;
+      }
+      return null;
+    }
+
+    final full = absenceType(fullDay: true);
+    if (full != null) return full;
+    if (isTripDay) return DayType.businessTrip;
+    final choice = data.dayChoices[date];
+    if (choice != null) return choice;
+    if (work.worked > 0) {
+      final home = work.workedAt(WorkLocation.home);
+      return home * 2 > work.worked ? DayType.home : DayType.office;
+    }
+    return absenceType(fullDay: false);
+  }
+
   bool _isTripDay(LocalDate date) => tripsOn(date).isNotEmpty;
 
   /// The trips touching [date] (§9), earliest departure first.

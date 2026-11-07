@@ -527,13 +527,13 @@ abstract class AppLocalizations {
   /// No description provided for @absenceSpecialLeave.
   ///
   /// In en, this message translates to:
-  /// **'Special leave'**
+  /// **'Celebration/bereavement'**
   String get absenceSpecialLeave;
 
   /// No description provided for @absenceCompTime.
   ///
   /// In en, this message translates to:
-  /// **'Time off in lieu'**
+  /// **'Flexitime'**
   String get absenceCompTime;
 
   /// No description provided for @absenceExtraHoliday.
@@ -1442,12 +1442,6 @@ abstract class AppLocalizations {
   /// **'Preview and download'**
   String get preview;
 
-  /// No description provided for @tripDayButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Trip day'**
-  String get tripDayButton;
-
   /// No description provided for @tripNoProject.
   ///
   /// In en, this message translates to:
@@ -1460,17 +1454,59 @@ abstract class AppLocalizations {
   /// **'Booked to {project}'**
   String tripBookedTo(String project);
 
-  /// No description provided for @tripBookingHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Trip day: record travel and on-site time only; it counts for the trip\'s project. Tap to edit the trip.'**
-  String get tripBookingHint;
-
   /// No description provided for @tripDays.
   ///
   /// In en, this message translates to:
   /// **'Trip days'**
   String get tripDays;
+
+  /// No description provided for @dayBusinessTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Business trip'**
+  String get dayBusinessTrip;
+
+  /// No description provided for @absenceChildSick.
+  ///
+  /// In en, this message translates to:
+  /// **'Child sick day'**
+  String get absenceChildSick;
+
+  /// No description provided for @absenceShortTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Short-time work'**
+  String get absenceShortTime;
+
+  /// No description provided for @dayType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of day'**
+  String get dayType;
+
+  /// No description provided for @tripDayLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This day belongs to the trip {trip}. To make it an office or home-office day, change the trip first.'**
+  String tripDayLocked(String trip);
+
+  /// No description provided for @editTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit trip'**
+  String get editTrip;
+
+  /// No description provided for @absenceDayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No working time is recorded on this day.'**
+  String get absenceDayHint;
+
+  /// No description provided for @tripTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel {travel} · On site {onSite}'**
+  String tripTimes(String travel, String onSite);
 }
 
 class _AppLocalizationsDelegate

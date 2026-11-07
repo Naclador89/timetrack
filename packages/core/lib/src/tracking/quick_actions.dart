@@ -6,6 +6,7 @@ import '../rules/ledger.dart';
 import '../sync/change.dart';
 import '../sync/repository.dart';
 import '../sync/store.dart';
+import '../time/home_time_zone.dart';
 import '../time/local_date.dart';
 import '../time/span.dart';
 import 'time_tracker.dart';
@@ -55,7 +56,8 @@ Future<String?> runQuickAction(
 }) async {
   final rows = await repository.store.transaction(
     (tx) async => [
-      for (final t in const ['settings', 'work_sessions']) ...await tx.rows(t),
+      for (final t in const ['settings', 'work_sessions', 'days'])
+        ...await tx.rows(t),
     ],
   );
   final settings = AppSettings.fromRows(rows);
@@ -72,7 +74,11 @@ Future<String?> runQuickAction(
       await tracker.clockOut();
     case QuickAction.toggle:
     case QuickAction.clockIn:
-      await tracker.clockIn(location: lastLocation(rows));
+      await tracker.clockIn(
+        location:
+            _dayLocation(rows, settings, (now ?? DateTime.now)()) ??
+            lastLocation(rows),
+      );
     case QuickAction.toggleBreak:
       before.onBreak ? await tracker.endBreak() : await tracker.startBreak();
   }
@@ -82,6 +88,24 @@ Future<String?> runQuickAction(
   if (after?.fields['end_utc'] == null) return null;
   await PendingSummaries(repository.store).add(stopped.id);
   return stopped.id;
+}
+
+/// The location of today's picked day type (office or home office, §15).
+WorkLocation? _dayLocation(
+  Iterable<StoredRow> rows,
+  AppSettings settings,
+  DateTime now,
+) {
+  final today = HomeTimeZone(settings.homeTimeZone).dateOf(now);
+  for (final r in rows) {
+    if (r.table != 'days' || r.id != '$today' || r.isDeleted) continue;
+    return switch (r.fields['type']) {
+      'office' => WorkLocation.office,
+      'home' => WorkLocation.home,
+      _ => null,
+    };
+  }
+  return null;
 }
 
 /// The location of the most recent session (the default for clocking in,

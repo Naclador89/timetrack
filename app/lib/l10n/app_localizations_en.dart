@@ -243,10 +243,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get absenceSick => 'Sick';
 
   @override
-  String get absenceSpecialLeave => 'Special leave';
+  String get absenceSpecialLeave => 'Celebration/bereavement';
 
   @override
-  String get absenceCompTime => 'Time off in lieu';
+  String get absenceCompTime => 'Flexitime';
 
   @override
   String get absenceExtraHoliday => 'Day off';
@@ -735,9 +735,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get preview => 'Preview and download';
 
   @override
-  String get tripDayButton => 'Trip day';
-
-  @override
   String get tripNoProject => 'Trip without a project';
 
   @override
@@ -746,9 +743,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get tripBookingHint =>
-      'Trip day: record travel and on-site time only; it counts for the trip\'s project. Tap to edit the trip.';
+  String get tripDays => 'Trip days';
 
   @override
-  String get tripDays => 'Trip days';
+  String get dayBusinessTrip => 'Business trip';
+
+  @override
+  String get absenceChildSick => 'Child sick day';
+
+  @override
+  String get absenceShortTime => 'Short-time work';
+
+  @override
+  String get dayType => 'Type of day';
+
+  @override
+  String tripDayLocked(String trip) {
+    return 'This day belongs to the trip $trip. To make it an office or home-office day, change the trip first.';
+  }
+
+  @override
+  String get editTrip => 'Edit trip';
+
+  @override
+  String get absenceDayHint => 'No working time is recorded on this day.';
+
+  @override
+  String tripTimes(String travel, String onSite) {
+    return 'Travel $travel · On site $onSite';
+  }
 }

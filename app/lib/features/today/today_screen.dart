@@ -5,8 +5,9 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
-import '../../widgets/dialogs.dart';
 import '../../widgets/notices.dart';
+import '../calendar/day_type_picker.dart';
+import '../calendar/trip_booking_card.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 
@@ -35,7 +36,13 @@ class TodayScreen extends ConsumerWidget {
         children: [
           if (!ref.watch(isSetUpProvider)) const _SetupCard(),
           const _AttendanceCard(),
-          const _ProjectCard(),
+          // What can be recorded depends on the day type (calculations §15).
+          if (ledger.day(today).type == DayType.businessTrip)
+            TripBookingCard(date: today)
+          else if (ledger.day(today).type?.allowsProjectTime ?? true)
+            const _ProjectCard()
+          else if (ref.watch(trackerStateProvider).entry != null)
+            const _ProjectCard(),
           _SummaryCard(day: ledger.day(today), ledger: ledger, quotas: quotas),
           NoticesCard(items: notices, showDates: true),
           _TodayEntries(day: ledger.day(today)),
@@ -73,35 +80,33 @@ class _AttendanceCard extends ConsumerStatefulWidget {
 class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
   WorkLocation? _chosen;
 
-  /// The location for the next clock-in: the chosen one, else the last used.
+  /// The locations today's day type allows (calculations §15); office or
+  /// home office while no type is picked.
+  List<WorkLocation> _allowed() {
+    final type = ref.read(ledgerProvider).day(ref.read(todayProvider)).type;
+    final allowed = type?.locations ?? const <WorkLocation>[];
+    return allowed.isEmpty
+        ? const [WorkLocation.office, WorkLocation.home]
+        : allowed;
+  }
+
+  /// The location for the next clock-in: the chosen one, else the last used,
+  /// as far as today's day type allows it.
   WorkLocation _nextLocation() {
-    if (_chosen != null) return _chosen!;
+    final allowed = _allowed();
+    if (_chosen != null && allowed.contains(_chosen)) return _chosen!;
     final sessions = ref.read(ledgerDataProvider).sessions;
-    if (sessions.isEmpty) return WorkLocation.office;
-    return sessions.reduce((a, b) => a.start.isAfter(b.start) ? a : b).location;
+    final last = sessions.isEmpty
+        ? null
+        : sessions.reduce((a, b) => a.start.isAfter(b.start) ? a : b).location;
+    return allowed.contains(last) ? last! : allowed.first;
   }
 
+  /// Switches between travel and on-site on a business trip.
   Future<void> _selectLocation(WorkLocation location) async {
-    final tracker = ref.read(trackerProvider);
-    final state = ref.read(trackerStateProvider);
     setState(() => _chosen = location);
-    if (state.clockedIn) await tracker.changeLocation(location);
-    if (location == WorkLocation.travel && state.trip == null && mounted) {
-      await _askStartTrip();
-    }
-  }
-
-  Future<void> _askStartTrip() async {
-    final l = context.l10n;
-    final destination = await showTextPrompt(
-      context,
-      title: l.startTripQuestion,
-      label: l.destination,
-      okLabel: l.startTrip,
-      cancelLabel: l.notNow,
-    );
-    if (destination != null) {
-      await ref.read(trackerProvider).startTrip(destination: destination);
+    if (ref.read(trackerStateProvider).clockedIn) {
+      await ref.read(trackerProvider).changeLocation(location);
     }
   }
 
@@ -139,6 +144,9 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
     final state = ref.watch(trackerStateProvider);
     final tracker = ref.watch(trackerProvider);
     final location = state.location ?? _nextLocation();
+    final today = ref.watch(todayProvider);
+    final type = ref.watch(ledgerProvider).day(today).type;
+    final absent = type != null && !type.isWork;
     final since = state.onBreak
         ? l.onBreakSince(
             context.time(
@@ -162,51 +170,62 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
           children: [
             Text(since, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final l in WorkLocation.values)
-                  ChoiceChip(
-                    showCheckmark: false,
-                    avatar: Icon(locationIcon(l), size: 18),
-                    label: Text(context.locationName(l)),
-                    selected: location == l,
-                    onSelected: (_) => _selectLocation(l),
-                  ),
-              ],
-            ),
+            DayTypePicker(date: today, startsNow: true),
+            if (type == DayType.businessTrip) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final l in type!.locations)
+                    ChoiceChip(
+                      showCheckmark: false,
+                      avatar: Icon(locationIcon(l), size: 18),
+                      label: Text(context.locationName(l)),
+                      selected: location == l,
+                      onSelected: (_) => _selectLocation(l),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                if (state.clockedIn)
-                  FilledButton.tonalIcon(
-                    onPressed: _clockOut,
-                    icon: const Icon(Icons.logout),
-                    label: Text(l.clockOut),
-                  )
-                else
-                  FilledButton.icon(
-                    onPressed: () => tracker.clockIn(location: _nextLocation()),
-                    icon: const Icon(Icons.login),
-                    label: Text(l.clockIn),
+            if (absent && !state.clockedIn)
+              Text(l.absenceDayHint)
+            else
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: [
+                  if (state.clockedIn)
+                    FilledButton.tonalIcon(
+                      onPressed: _clockOut,
+                      icon: const Icon(Icons.logout),
+                      label: Text(l.clockOut),
+                    )
+                  else
+                    FilledButton.icon(
+                      onPressed: () =>
+                          tracker.clockIn(location: _nextLocation()),
+                      icon: const Icon(Icons.login),
+                      label: Text(l.clockIn),
+                    ),
+                  OutlinedButton.icon(
+                    onPressed: !state.clockedIn
+                        ? null
+                        : state.onBreak
+                        ? tracker.endBreak
+                        : () => withSummaryPrompt(
+                            context,
+                            ref,
+                            tracker.startBreak,
+                          ),
+                    icon: Icon(
+                      state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
+                    ),
+                    label: Text(state.onBreak ? l.endBreak : l.startBreak),
                   ),
-                OutlinedButton.icon(
-                  onPressed: !state.clockedIn
-                      ? null
-                      : state.onBreak
-                      ? tracker.endBreak
-                      : () =>
-                            withSummaryPrompt(context, ref, tracker.startBreak),
-                  icon: Icon(
-                    state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
-                  ),
-                  label: Text(state.onBreak ? l.endBreak : l.startBreak),
-                ),
-              ],
-            ),
+                ],
+              ),
             if (state.trip != null) ...[
               const Divider(height: 24),
               Row(
