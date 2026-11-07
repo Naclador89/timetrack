@@ -73,6 +73,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - **Tests** are named after the rule they check and cite the spec section, e.g. `test('§4 ArbZG: 6:01 h without break → 30 min missing', …)` with `// spec: calculations.md §4`.
 - **Language**: code, comments and docs in English. UI strings go through ARB localization: add every new string to **both** `app/lib/l10n/app_en.arb` (the template) and `app_de.arb`, then run `flutter gen-l10n`. German is the user's language.
 - **Commits**: Conventional Commits (`feat(core): …`, `fix(app): …`, `docs: …`), small and focused.
+- **Android permissions go into `app/android/app/src/main/AndroidManifest.xml`.** Flutter adds `INTERNET` only to the debug/profile manifests, so a missing permission shows up only in release builds (that's how sync broke on the phone once). Intents opened via `url_launcher` need a `<queries>` entry.
 - **Never commit secrets**: no keystores, Nextcloud credentials or personal time data.
 
 ## Definition of done

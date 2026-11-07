@@ -85,8 +85,11 @@ _Last updated: 2026-11-07 by Claude Code._
       storage (`SyncConfig`), setup screen (Login Flow in the browser or manual app password, new or
       joining passphrase, optional per-device proxy), status in settings. Widget test: a local write
       is uploaded encrypted after the debounce.
-- [ ] **User**: connect each device to the real Nextcloud (Linux, Android, Windows PC with and
-      without VPN). If the company network needs a proxy, enter it in the sync setup on that PC.
+- [x] User test 2026-11-07: sync works on Linux and the Windows company PC with the real Nextcloud.
+- [x] Android release APK failed with "Failed host lookup": the `INTERNET` permission was missing from the
+      main manifest (Flutter only adds it to debug/profile). Fixed, together with a `<queries>` entry
+      for opening the browser (Login Flow) and the launcher label "TimeTrack".
+- [ ] **User**: retest Android with the fixed APK; Windows with VPN on.
 - [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
