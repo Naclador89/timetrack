@@ -84,6 +84,9 @@ final class Timesheet {
   /// Total credited minutes.
   int get credited => _sum((d) => d.credited);
 
+  /// Total Sunday hours of trip Sundays, for HR (§9, not in the balance).
+  int get sundayHours => _sum((d) => d.sundayHours);
+
   /// Total difference; equals `balanceAfter − balanceBefore`.
   int get delta => _sum((d) => d.delta);
 

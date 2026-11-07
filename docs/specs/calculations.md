@@ -169,7 +169,7 @@ Day type of a trip day D:
 |---|---|---|
 | workday | `T(D)` exactly, even if `W_eff` is longer **or shorter** | `travel.workday = target` |
 | saturday | `min(Wt + Wo, cap)`, cap = 660 min: the cap covers travel **and** work together | `travel.saturday_cap_min = 660`, `travel.saturday_cap_scope = total` (alternative `travel_only`: `min(Wt, cap) + Wo`) |
-| sunday | `Wo`; travel time counts 0 | `travel.sunday = work_only` |
+| sunday | **0**; travel + work together become **Sunday hours** `S(D) = min(Wt + Wo, cap)`, cap = 660 min, reported for HR (extra pay), not in the balance | `travel.sunday = sunday_hours`, `travel.sunday_cap_min = 660` (alternative `work_only`: `Cr = Wo`, travel counts 0, no Sunday hours) |
 | holiday | like sunday | `travel.holiday = like_sunday` |
 | day_off | like saturday | `travel.day_off = like_saturday` |
 
@@ -177,7 +177,11 @@ The workday rule applies to **every** weekday of a trip, including days spent on
 destination.
 
 Confirmed by the user on 2026-11-07: every trip day is a normal day; a short trip day still gets the
-full target; the Saturday cap covers the whole day; holidays are treated like Sundays.
+full target; the Saturday cap covers the whole day; holidays are treated like Sundays. Also
+2026-11-07: on trip Sundays, travel and on-site work count as Sunday hours for HR (max 11 h); they
+appear in the monthly timesheet but don't add to the overtime balance. Days that follow the Sunday
+rule (holidays `like_sunday`, days off `like_sunday`) get Sunday hours too. Sundays without a trip
+are not affected (normal `W_eff`, §8).
 
 **Examples** (T = 480 Mon–Fri):
 - Wed, 3 h train + 8 h on-site → `Cr = 480`, Δ = 0.
@@ -185,7 +189,8 @@ full target; the Saturday cap covers the whole day; holidays are treated like Su
 - Sat, 12 h train → `Cr = 660`, Δ = +660.
 - Sat, 4 h train + 3 h on-site → `Cr = 420`.
 - Sat, 8 h train + 5 h on-site → `Cr = 660` (the cap covers the whole day).
-- Sun, 6 h train → `Cr = 0`.
+- Sun, 6 h train → `Cr = 0`, `S = 360`.
+- Sun, 4 h train + 9 h on-site → `Cr = 0`, `S = 660` (the cap covers the whole day).
 
 ## §10 Vacation account
 

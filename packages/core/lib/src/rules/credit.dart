@@ -38,6 +38,17 @@ enum SaturdayCapScope {
   travelOnly,
 }
 
+/// How a trip Sunday is counted.
+enum TripSundayCredit {
+  /// Travel and work together count as **Sunday hours** for HR (extra pay),
+  /// at most [TravelRules.sundayCapMinutes]; nothing is credited to the
+  /// overtime balance (default, user decision 2026-11-07).
+  sundayHours,
+
+  /// Work at the destination is credited, travel counts 0.
+  workOnly,
+}
+
 /// Which rule a holiday or day off on a trip follows.
 enum TripDayRule {
   /// Like a Saturday: travel counts (capped), work counts.
@@ -55,6 +66,8 @@ final class TravelRules {
     this.workday = TripWorkdayCredit.target,
     this.saturdayCapMinutes = 660,
     this.saturdayCapScope = SaturdayCapScope.total,
+    this.sunday = TripSundayCredit.sundayHours,
+    this.sundayCapMinutes = 660,
     this.holiday = TripDayRule.likeSunday,
     this.dayOff = TripDayRule.likeSaturday,
   });
@@ -68,6 +81,13 @@ final class TravelRules {
   /// Whether the cap limits the whole day or only travel time
   /// (setting `travel.saturday_cap_scope`).
   final SaturdayCapScope saturdayCapScope;
+
+  /// Rule for trip Sundays (setting `travel.sunday`).
+  final TripSundayCredit sunday;
+
+  /// Max Sunday hours per trip Sunday, in minutes
+  /// (setting `travel.sunday_cap_min`).
+  final int sundayCapMinutes;
 
   /// Rule for public holidays on a trip (setting `travel.holiday`).
   final TripDayRule holiday;
@@ -113,16 +133,42 @@ int tripDayCredit({
     };
   }
 
+  final sunday = rules.sunday == TripSundayCredit.sundayHours ? 0 : other;
   return switch (type) {
     TripDayType.workday =>
       rules.workday == TripWorkdayCredit.target ? target : effectiveWorked,
     TripDayType.saturday => saturday(),
-    TripDayType.sunday => other,
+    TripDayType.sunday => sunday,
     TripDayType.holiday =>
-      rules.holiday == TripDayRule.likeSaturday ? saturday() : other,
+      rules.holiday == TripDayRule.likeSaturday ? saturday() : sunday,
     TripDayType.dayOff =>
-      rules.dayOff == TripDayRule.likeSaturday ? saturday() : other,
+      rules.dayOff == TripDayRule.likeSaturday ? saturday() : sunday,
   };
+}
+
+/// Whether a trip day of [type] follows the Sunday rule under [rules].
+bool followsSundayRule(TripDayType type, TravelRules rules) => switch (type) {
+  TripDayType.sunday => true,
+  TripDayType.holiday => rules.holiday == TripDayRule.likeSunday,
+  TripDayType.dayOff => rules.dayOff == TripDayRule.likeSunday,
+  TripDayType.workday || TripDayType.saturday => false,
+};
+
+/// **Sunday hours** of a trip day (spec: calculations.md §9): with
+/// [TripSundayCredit.sundayHours], on days following the Sunday rule, travel
+/// and work together up to the cap. They are reported for extra pay and are
+/// not part of the overtime balance. Otherwise 0.
+int tripSundayHours({
+  required TripDayType type,
+  required int effectiveWorked,
+  TravelRules rules = const TravelRules(),
+}) {
+  if (rules.sunday != TripSundayCredit.sundayHours ||
+      !followsSundayRule(type, rules)) {
+    return 0;
+  }
+  final cap = rules.sundayCapMinutes;
+  return effectiveWorked < cap ? effectiveWorked : cap;
 }
 
 /// Credit from vacation, sick and special-leave absences on one day:

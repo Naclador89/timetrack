@@ -64,8 +64,12 @@ String _notes(ReportFormat f, TimesheetRow r) => [
 
 /// The monthly timesheet as a table: header row plus one row per day
 /// (concept §5, "Monthly timesheet").
+///
+/// The column "Sunday hours" (trip Sundays for HR, calculations.md §9) is
+/// only there in months that have some.
 List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
   final l = f.l;
+  final sunday = t.sundayHours > 0;
   return [
     [
       l.colDate,
@@ -76,6 +80,7 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
       l.target,
       l.credited,
       l.difference,
+      if (sunday) l.sundayHours,
       l.colNotes,
     ],
     for (final r in t.rows)
@@ -88,6 +93,8 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
         formatMinutes(r.day.target),
         formatMinutes(r.day.credited),
         formatMinutes(r.day.delta),
+        if (sunday)
+          r.day.sundayHours == 0 ? '' : formatMinutes(r.day.sundayHours),
         _notes(f, r),
       ],
   ];
@@ -219,7 +226,10 @@ Future<List<int>> timesheetPdf(
 }) {
   final l = f.l;
   final doc = pw.Document(title: '${l.timesheet} ${f.month(t.year, t.month)}');
-  final right = {for (var i = 1; i <= 7; i++) i: pw.Alignment.centerRight};
+  final lastNumber = t.sundayHours > 0 ? 8 : 7;
+  final right = {
+    for (var i = 1; i <= lastNumber; i++) i: pw.Alignment.centerRight,
+  };
   pw.Widget figure(String label, String value) => pw.Padding(
     padding: const pw.EdgeInsets.only(right: 18, bottom: 4),
     child: pw.Column(
@@ -252,6 +262,8 @@ Future<List<int>> timesheetPdf(
             figure(l.target, formatMinutes(t.target)),
             figure(l.credited, formatMinutes(t.credited)),
             figure(l.difference, formatMinutes(t.delta)),
+            if (t.sundayHours > 0)
+              figure(l.sundayHours, formatMinutes(t.sundayHours)),
             figure(l.balanceBefore, formatMinutes(t.balanceBefore)),
             figure(l.balanceAfter, formatMinutes(t.balanceAfter)),
             figure(l.workedDays, '${t.workedDays}'),

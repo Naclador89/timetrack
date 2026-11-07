@@ -163,6 +163,11 @@ void main() {
       [fri.credited, sat.credited, sun.credited, mon.credited],
       [480, 480, 0, 480],
     );
+    expect(
+      [fri.sundayHours, sat.sundayHours, sun.sundayHours, mon.sundayHours],
+      [0, 0, 360, 0],
+      reason: 'Sunday hours for HR, not in the balance',
+    );
     expect(fri.work.worked, 660, reason: 'actual times are kept');
     expect(l.day(d('2026-11-17')).isTripDay, isFalse);
   });

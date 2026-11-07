@@ -38,6 +38,12 @@ abstract final class SettingKeys {
   /// `total` or `travel_only` (§9).
   static const travelSaturdayCapScope = 'travel.saturday_cap_scope';
 
+  /// `sunday_hours` or `work_only` (§9).
+  static const travelSunday = 'travel.sunday';
+
+  /// Cap for Sunday hours per trip Sunday, in minutes (§9).
+  static const travelSundayCap = 'travel.sunday_cap_min';
+
   /// `like_sunday` or `like_saturday` (§9).
   static const travelHoliday = 'travel.holiday';
 
@@ -140,6 +146,15 @@ final class AppSettings {
           SettingKeys.travelSaturdayCapScope,
           d.saturdayCapScope,
         ),
+        sunday: enumOf(
+          TripSundayCredit.values,
+          SettingKeys.travelSunday,
+          d.sunday,
+        ),
+        sundayCapMinutes: pick<num>(
+          SettingKeys.travelSundayCap,
+          d.sundayCapMinutes,
+        ).toInt(),
         holiday: enumOf(
           TripDayRule.values,
           SettingKeys.travelHoliday,

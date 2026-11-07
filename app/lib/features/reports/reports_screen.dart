@@ -102,6 +102,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 _figure(context, l.worked, formatMinutes(sheet.worked)),
                 _figure(context, l.target, formatMinutes(sheet.target)),
                 _figure(context, l.difference, formatMinutes(sheet.delta)),
+                if (sheet.sundayHours > 0)
+                  _figure(
+                    context,
+                    l.sundayHours,
+                    formatMinutes(sheet.sundayHours),
+                  ),
                 _figure(
                   context,
                   l.balanceAfter,

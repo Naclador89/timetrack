@@ -169,9 +169,37 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
           ),
           header(l.travelRules),
+          // calculations.md §9; each rule is a setting, defaults as agreed.
+          ListTile(
+            leading: const Icon(Icons.work_history_outlined),
+            title: Text(l.travelWorkday),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.travelWorkdayHint),
+                const SizedBox(height: 8),
+                SegmentedButton<TripWorkdayCredit>(
+                  segments: [
+                    ButtonSegment(
+                      value: TripWorkdayCredit.target,
+                      label: Text(l.travelWorkdayTarget),
+                    ),
+                    ButtonSegment(
+                      value: TripWorkdayCredit.actual,
+                      label: Text(l.travelWorkdayActual),
+                    ),
+                  ],
+                  selected: {s.travel.workday},
+                  onSelectionChanged: (v) =>
+                      save(SettingKeys.travelWorkday, v.single),
+                ),
+              ],
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.weekend_outlined),
             title: Text(l.saturdayCap),
+            subtitle: Text(l.travelSaturdayHint),
             trailing: Text(formatMinutes(s.travel.saturdayCapMinutes)),
             onTap: () async {
               final v = await _askHours(
@@ -182,6 +210,89 @@ class SettingsScreen extends ConsumerWidget {
                 await save(SettingKeys.travelSaturdayCap, v);
               }
             },
+          ),
+          ListTile(
+            leading: const SizedBox(width: 24),
+            title: Text(l.saturdayCapScope),
+            subtitle: SegmentedButton<SaturdayCapScope>(
+              segments: [
+                ButtonSegment(
+                  value: SaturdayCapScope.total,
+                  label: Text(l.capTotal),
+                ),
+                ButtonSegment(
+                  value: SaturdayCapScope.travelOnly,
+                  label: Text(l.capTravelOnly),
+                ),
+              ],
+              selected: {s.travel.saturdayCapScope},
+              onSelectionChanged: (v) =>
+                  save(SettingKeys.travelSaturdayCapScope, v.single),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.wb_sunny_outlined),
+            title: Text(l.travelSunday),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.travel.sunday == TripSundayCredit.sundayHours
+                      ? l.travelSundayHoursHint
+                      : l.travelSundayWorkOnlyHint,
+                ),
+                const SizedBox(height: 8),
+                SegmentedButton<TripSundayCredit>(
+                  segments: [
+                    ButtonSegment(
+                      value: TripSundayCredit.sundayHours,
+                      label: Text(l.sundayHours),
+                    ),
+                    ButtonSegment(
+                      value: TripSundayCredit.workOnly,
+                      label: Text(l.sundayWorkOnly),
+                    ),
+                  ],
+                  selected: {s.travel.sunday},
+                  onSelectionChanged: (v) =>
+                      save(SettingKeys.travelSunday, v.single),
+                ),
+              ],
+            ),
+          ),
+          if (s.travel.sunday == TripSundayCredit.sundayHours)
+            ListTile(
+              leading: const SizedBox(width: 24),
+              title: Text(l.sundayCap),
+              trailing: Text(formatMinutes(s.travel.sundayCapMinutes)),
+              onTap: () async {
+                final v = await _askHours(
+                  context,
+                  formatMinutes(s.travel.sundayCapMinutes),
+                );
+                if (v != null && v >= 0) {
+                  await save(SettingKeys.travelSundayCap, v);
+                }
+              },
+            ),
+          ListTile(
+            leading: const Icon(Icons.celebration_outlined),
+            title: Text(l.travelHoliday),
+            subtitle: SegmentedButton<TripDayRule>(
+              segments: [
+                ButtonSegment(
+                  value: TripDayRule.likeSunday,
+                  label: Text(l.likeSunday),
+                ),
+                ButtonSegment(
+                  value: TripDayRule.likeSaturday,
+                  label: Text(l.likeSaturday),
+                ),
+              ],
+              selected: {s.travel.holiday},
+              onSelectionChanged: (v) =>
+                  save(SettingKeys.travelHoliday, v.single),
+            ),
           ),
           const SizedBox(height: 24),
         ],

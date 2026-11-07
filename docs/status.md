@@ -95,7 +95,7 @@ _Last updated: 2026-11-07 by Claude Code._
       (20 min) and an immediate poll on app resume. Android opens the login in a Custom Tab.
 - [x] User test 2026-11-07: the Android login and sync work with the fixed APK.
 - [ ] **User**: Windows works without VPN (2026-11-07); with VPN not tested yet.
-- [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
+- [x] Android background sync (WorkManager, every 15 min; also after each quick action). Network-change trigger (optional) still open.
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
 ### M4: reports
@@ -115,8 +115,27 @@ _Last updated: 2026-11-07 by Claude Code._
   changes with every run, until a release keystore is set up (`docs/dev-setup.md` §5; waiting for
   the user's OK).
 
-**Next task**: the user re-enters the three reset settings. Then: release keystore (if approved),
-M5 Android quick access (notification, tile, widget, background sync with WorkManager).
+- `v0.2.0` (2026-11-07): project time as duration with summary.
+
+### M5: Android quick access (implemented, **not yet tested on the phone**)
+- [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
+      snapshot in the home_widget preferences (`qa_*` keys, written by `lib/quick/quick_access.dart`).
+      Buttons send `timetrack://quick/<action>` to the Dart handler `onQuickAction`, which runs
+      core `runQuickAction` in a background engine, publishes, syncs, publishes again.
+- [x] Ongoing notification while clocked in: chronometer (today's total, or the break's length),
+      actions Pause/Weiter, Ausstempeln, Projekt wechseln (opens the app with the picker).
+      POST_NOTIFICATIONS asked at the first clock-in (Android 13+).
+- [x] Quick Settings tile (toggle clock in/out at the last location), home-screen widget (status,
+      chronometer, clock and break buttons).
+- [x] Background handlers open their **own** DB connection (drift's isolate sharing doesn't work
+      across Flutter engines); WAL + busy_timeout 5 s (`lib/app/services.dart`). The UI re-reads on
+      resume (`SyncStore.notifyExternalChange`).
+- [x] Summary prompt for timers stopped outside the app: queued in `local_values`
+      (`PendingSummaries`), asked when the app opens or resumes.
+- [ ] Test on the phone (user): tile, widget, notification actions, background sync, summary prompt.
+
+**Next task**: user tests M5 on the phone. The user re-enters the three reset settings. Then:
+release keystore (if approved), M6 Garmin glance.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -145,6 +164,10 @@ M5 Android quick access (notification, tile, widget, background sync with WorkMa
   working at the destination); a short trip day still gets the full target; the 11 h **Saturday cap
   covers travel and work together** (`SaturdayCapScope.total`); holidays like Sundays. Full-time
   Mon–Fri, so the day-off rule doesn't apply yet.
+- **Trip Sundays → Sunday hours** (user, 2026-11-07): travel and on-site work on a trip Sunday count
+  as Sunday hours for HR (extra pay), max 11 h, shown in the monthly timesheet, **not** in the
+  overtime balance (`travel.sunday = sunday_hours`, `travel.sunday_cap_min = 660`, calculations §9).
+  Holidays on trips follow the same rule. All travel rules are now editable in Settings.
 - **Nextcloud is provider-hosted**, so end-to-end encryption is mandatory in sync format 1
   (ADR 0006, sync-format §10). It's part of M3.
 - **App ID** `io.github.naclador89.timetrack`.
@@ -192,3 +215,5 @@ M5 Android quick access (notification, tile, widget, background sync with WorkMa
   release v0.1.0.
 - 2026-11-07, Claude Code: project time as duration (H:MM) with summary, summary prompt on timer stop;
   core 176 tests, app 9 widget tests. Version 0.2.0.
+- 2026-11-07, Claude Code: M5 Android quick access (notification, tile, widget, WorkManager sync);
+  travel settings UI and Sunday hours for HR (§9). core 182 tests, app 10 widget tests.

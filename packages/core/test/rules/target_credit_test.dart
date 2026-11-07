@@ -171,13 +171,55 @@ void main() {
       },
     );
 
-    test('Sun, 6 h train → 0; on-site work still counts', () {
-      expect(credit(TripDayType.sunday, travel: 360), 0);
-      expect(credit(TripDayType.sunday, travel: 120, other: 180), 180);
+    test(
+      'Sun → nothing credited; travel + on-site are Sunday hours, max 11 h',
+      () {
+        expect(credit(TripDayType.sunday, travel: 360), 0);
+        expect(credit(TripDayType.sunday, travel: 120, other: 180), 0);
+        int sundayHours(
+          TripDayType type,
+          int worked, [
+          TravelRules r = const TravelRules(),
+        ]) => tripSundayHours(type: type, effectiveWorked: worked, rules: r);
+        expect(sundayHours(TripDayType.sunday, 300), 300);
+        expect(sundayHours(TripDayType.sunday, 780), 660);
+        expect(sundayHours(TripDayType.saturday, 300), 0);
+        expect(sundayHours(TripDayType.workday, 300), 0);
+        expect(
+          sundayHours(TripDayType.holiday, 300),
+          300,
+          reason: 'like Sunday',
+        );
+        expect(
+          sundayHours(
+            TripDayType.sunday,
+            780,
+            const TravelRules(sundayCapMinutes: 600),
+          ),
+          600,
+        );
+        expect(
+          sundayHours(
+            TripDayType.sunday,
+            300,
+            const TravelRules(sunday: TripSundayCredit.workOnly),
+          ),
+          0,
+        );
+      },
+    );
+
+    test('Sun with work_only: travel 0, on-site work credited', () {
+      const rules = TravelRules(sunday: TripSundayCredit.workOnly);
+      expect(credit(TripDayType.sunday, travel: 360, rules: rules), 0);
+      expect(
+        credit(TripDayType.sunday, travel: 120, other: 180, rules: rules),
+        180,
+      );
     });
 
     test('holiday like Sunday, day off like Saturday', () {
-      expect(credit(TripDayType.holiday, travel: 180, other: 120), 120);
+      expect(credit(TripDayType.holiday, travel: 180, other: 120), 0);
       expect(credit(TripDayType.dayOff, travel: 180), 180);
     });
 

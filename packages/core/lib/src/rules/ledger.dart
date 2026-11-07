@@ -80,6 +80,7 @@ final class DayResult {
     required this.tripDayType,
     required this.absences,
     required this.warnings,
+    this.sundayHours = 0,
   });
 
   /// The evaluated day.
@@ -96,6 +97,10 @@ final class DayResult {
 
   /// Credited time `Cr(D)` including absence credit (§8, §9).
   final int credited;
+
+  /// Sunday hours of a trip day for HR (§9): reported separately, not part
+  /// of [credited] or the balance.
+  final int sundayHours;
 
   /// The §9 day type if this is a trip day, otherwise `null`.
   final TripDayType? tripDayType;
@@ -185,6 +190,13 @@ final class Ledger {
       target: target,
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
+      sundayHours: tripType == null
+          ? 0
+          : tripSundayHours(
+              type: tripType,
+              effectiveWorked: breaks.effectiveWorked,
+              rules: settings.travel,
+            ),
       absences: absences,
       warnings: arbzgWarnings(
         working: work.working,

@@ -659,4 +659,59 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quickToday => 'Heute';
+
+  @override
+  String get travelWorkday => 'Werktage auf Reise';
+
+  @override
+  String get travelWorkdayHint =>
+      'Gilt für Reisezeit und Arbeit beim Kunden gleichermaßen.';
+
+  @override
+  String get travelWorkdayTarget => 'Sollzeit';
+
+  @override
+  String get travelWorkdayActual => 'Tatsächliche Zeit';
+
+  @override
+  String get travelSaturdayHint =>
+      'Zählt als Überstunden, höchstens bis zu dieser Grenze.';
+
+  @override
+  String get saturdayCapScope => 'Samstagsgrenze gilt für';
+
+  @override
+  String get capTotal => 'Reise + Arbeit';
+
+  @override
+  String get capTravelOnly => 'Nur Reisezeit';
+
+  @override
+  String get travelSunday => 'Sonntage auf Reise';
+
+  @override
+  String get travelSundayHoursHint =>
+      'Reise und Arbeit zählen als Sonntagsstunden für die Personalabteilung (Monatsbericht), nicht als Überstunden.';
+
+  @override
+  String get travelSundayWorkOnlyHint =>
+      'Arbeit vor Ort zählt als Überstunden, Reisezeit zählt nicht.';
+
+  @override
+  String get sundayHours => 'Sonntagsstunden';
+
+  @override
+  String get sundayWorkOnly => 'Nur Arbeit';
+
+  @override
+  String get sundayCap => 'Sonntagsstunden: max. pro Tag';
+
+  @override
+  String get travelHoliday => 'Feiertage auf Reise';
+
+  @override
+  String get likeSunday => 'Wie Sonntag';
+
+  @override
+  String get likeSaturday => 'Wie Samstag';
 }

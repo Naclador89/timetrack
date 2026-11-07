@@ -200,5 +200,22 @@
   "switchProject": "Projekt wechseln",
   "quickWorking": "Bei der Arbeit",
   "quickOnBreak": "In der Pause",
-  "quickToday": "Heute"
+  "quickToday": "Heute",
+  "travelWorkday": "Werktage auf Reise",
+  "travelWorkdayHint": "Gilt für Reisezeit und Arbeit beim Kunden gleichermaßen.",
+  "travelWorkdayTarget": "Sollzeit",
+  "travelWorkdayActual": "Tatsächliche Zeit",
+  "travelSaturdayHint": "Zählt als Überstunden, höchstens bis zu dieser Grenze.",
+  "saturdayCapScope": "Samstagsgrenze gilt für",
+  "capTotal": "Reise + Arbeit",
+  "capTravelOnly": "Nur Reisezeit",
+  "travelSunday": "Sonntage auf Reise",
+  "travelSundayHoursHint": "Reise und Arbeit zählen als Sonntagsstunden für die Personalabteilung (Monatsbericht), nicht als Überstunden.",
+  "travelSundayWorkOnlyHint": "Arbeit vor Ort zählt als Überstunden, Reisezeit zählt nicht.",
+  "sundayHours": "Sonntagsstunden",
+  "sundayWorkOnly": "Nur Arbeit",
+  "sundayCap": "Sonntagsstunden: max. pro Tag",
+  "travelHoliday": "Feiertage auf Reise",
+  "likeSunday": "Wie Sonntag",
+  "likeSaturday": "Wie Samstag"
 }

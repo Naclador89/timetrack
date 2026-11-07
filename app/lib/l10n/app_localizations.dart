@@ -1303,6 +1303,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today'**
   String get quickToday;
+
+  /// No description provided for @travelWorkday.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays on a trip'**
+  String get travelWorkday;
+
+  /// No description provided for @travelWorkdayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to travel and on-site work alike.'**
+  String get travelWorkdayHint;
+
+  /// No description provided for @travelWorkdayTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target hours'**
+  String get travelWorkdayTarget;
+
+  /// No description provided for @travelWorkdayActual.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual time'**
+  String get travelWorkdayActual;
+
+  /// No description provided for @travelSaturdayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as overtime, up to this cap.'**
+  String get travelSaturdayHint;
+
+  /// No description provided for @saturdayCapScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday cap covers'**
+  String get saturdayCapScope;
+
+  /// No description provided for @capTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel + work'**
+  String get capTotal;
+
+  /// No description provided for @capTravelOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel only'**
+  String get capTravelOnly;
+
+  /// No description provided for @travelSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sundays on a trip'**
+  String get travelSunday;
+
+  /// No description provided for @travelSundayHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel and work count as Sunday hours for HR (monthly timesheet), not as overtime.'**
+  String get travelSundayHoursHint;
+
+  /// No description provided for @travelSundayWorkOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Work on site counts as overtime, travel time doesn\'t count.'**
+  String get travelSundayWorkOnlyHint;
+
+  /// No description provided for @sundayHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday hours'**
+  String get sundayHours;
+
+  /// No description provided for @sundayWorkOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Work only'**
+  String get sundayWorkOnly;
+
+  /// No description provided for @sundayCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday hours: max. per day'**
+  String get sundayCap;
+
+  /// No description provided for @travelHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Public holidays on a trip'**
+  String get travelHoliday;
+
+  /// No description provided for @likeSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Like Sunday'**
+  String get likeSunday;
+
+  /// No description provided for @likeSaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Like Saturday'**
+  String get likeSaturday;
 }
 
 class _AppLocalizationsDelegate

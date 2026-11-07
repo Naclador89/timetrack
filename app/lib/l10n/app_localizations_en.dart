@@ -658,4 +658,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickToday => 'Today';
+
+  @override
+  String get travelWorkday => 'Weekdays on a trip';
+
+  @override
+  String get travelWorkdayHint => 'Applies to travel and on-site work alike.';
+
+  @override
+  String get travelWorkdayTarget => 'Target hours';
+
+  @override
+  String get travelWorkdayActual => 'Actual time';
+
+  @override
+  String get travelSaturdayHint => 'Counts as overtime, up to this cap.';
+
+  @override
+  String get saturdayCapScope => 'Saturday cap covers';
+
+  @override
+  String get capTotal => 'Travel + work';
+
+  @override
+  String get capTravelOnly => 'Travel only';
+
+  @override
+  String get travelSunday => 'Sundays on a trip';
+
+  @override
+  String get travelSundayHoursHint =>
+      'Travel and work count as Sunday hours for HR (monthly timesheet), not as overtime.';
+
+  @override
+  String get travelSundayWorkOnlyHint =>
+      'Work on site counts as overtime, travel time doesn\'t count.';
+
+  @override
+  String get sundayHours => 'Sunday hours';
+
+  @override
+  String get sundayWorkOnly => 'Work only';
+
+  @override
+  String get sundayCap => 'Sunday hours: max. per day';
+
+  @override
+  String get travelHoliday => 'Public holidays on a trip';
+
+  @override
+  String get likeSunday => 'Like Sunday';
+
+  @override
+  String get likeSaturday => 'Like Saturday';
 }

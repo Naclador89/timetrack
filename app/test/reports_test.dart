@@ -79,6 +79,58 @@ void main() {
     expect(csv, startsWith('﻿Datum;Beginn'));
   });
 
+  test(
+    '§9 trip Sundays: Sunday hours column and total, not in the balance',
+    () {
+      final base = sampleLedger();
+      final ledger = Ledger(
+        data: LedgerData(
+          schedules: base.data.schedules,
+          trips: [
+            Trip(
+              id: 't',
+              depart: at('2026-11-01', '06:00'),
+              returnAt: at('2026-11-01', '22:00'),
+            ),
+          ],
+          sessions: [
+            WorkSession(
+              id: 's',
+              start: at('2026-11-01', '06:00'),
+              end: at('2026-11-01', '10:00'),
+              location: WorkLocation.travel,
+            ),
+            WorkSession(
+              id: 'o',
+              start: at('2026-11-01', '10:00'),
+              end: at('2026-11-01', '19:00'),
+              location: WorkLocation.onSite,
+            ),
+          ],
+        ),
+        zone: zone,
+        holidays: HolidayCalendar(FederalState.nw),
+        settings: LedgerSettings(balanceStart: d('2026-11-01')),
+        nowMinute: epochMinute(at('2026-11-03', '20:00')),
+      );
+      final sheet = buildTimesheet(ledger, 2026, 11);
+      expect(
+        sheet.sundayHours,
+        660,
+        reason: '4 h travel + 9 h on site, max 11 h',
+      );
+      expect(sheet.rows.first.day.credited, 0);
+      final table = timesheetTable(sheet, f);
+      final column = table.first.indexOf('Sonntagsstunden');
+      expect(column, greaterThan(0));
+      expect(table[1][column], '11:00');
+      expect(
+        timesheetTable(buildTimesheet(sampleLedger(), 2026, 11), f).first,
+        isNot(contains('Sonntagsstunden')),
+      );
+    },
+  );
+
   test('timesheet and travel PDFs are valid PDF documents', () async {
     final pdf = await timesheetPdf(
       buildTimesheet(sampleLedger(), 2026, 11),
