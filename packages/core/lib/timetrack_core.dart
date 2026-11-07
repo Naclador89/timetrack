@@ -6,6 +6,7 @@ library;
 
 export 'src/model/attendance.dart';
 export 'src/model/planning.dart';
+export 'src/model/project.dart';
 export 'src/rules/arbzg.dart';
 export 'src/rules/credit.dart';
 export 'src/rules/day_work.dart';
@@ -13,8 +14,10 @@ export 'src/rules/holidays.dart';
 export 'src/rules/home_office.dart';
 export 'src/rules/ledger.dart';
 export 'src/rules/per_diem.dart';
+export 'src/rules/review.dart';
 export 'src/rules/target.dart';
 export 'src/rules/vacation.dart';
+export 'src/search/project_search.dart';
 export 'src/time/home_time_zone.dart';
 export 'src/time/local_date.dart';
 export 'src/time/span.dart';
