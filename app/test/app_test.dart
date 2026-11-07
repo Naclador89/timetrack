@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
@@ -14,8 +15,9 @@ import 'package:timetrack_core/timetrack_core.dart';
 final fixedNow = DateTime.utc(2026, 11, 4, 7, 30);
 
 Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
-  WidgetTester tester,
-) async {
+  WidgetTester tester, {
+  GoRouter? router,
+}) async {
   final store = InMemorySyncStore();
   final repo = await SyncedRepository.open(
     store,
@@ -34,7 +36,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
         nowProvider.overrideWith((ref) => Stream.value(fixedNow)),
         syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
       ],
-      child: TimeTrackApp(router: buildRouter()),
+      child: TimeTrackApp(router: router ?? buildRouter()),
     ),
   );
   await tester.pumpAndSettle();
@@ -126,6 +128,49 @@ void main() {
     await tester.tap(find.text('Calendar').last);
     await tester.pumpAndSettle();
     expect(find.text('Week 45'), findsOneWidget);
+  });
+
+  testWidgets('session dialog: location buttons; "Trip day" creates a trip', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router);
+    router.go('/calendar/day/2026-11-04');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Add').first);
+    await tester.pumpAndSettle();
+    expect(find.byType(DropdownButtonFormField<WorkLocation>), findsNothing);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Home office'));
+    await tester.pumpAndSettle();
+    final trip = find.widgetWithText(FilterChip, 'Trip day');
+    expect(tester.widget<FilterChip>(trip).selected, isFalse);
+
+    await tester.tap(trip);
+    await tester.pumpAndSettle();
+    expect(find.text('New trip'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Destination'),
+      'Stuttgart',
+    );
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    expect(
+      store.rowsOf('trips').values.single.fields['destination'],
+      'Stuttgart',
+    );
+    expect(
+      tester
+          .widget<FilterChip>(find.widgetWithText(FilterChip, 'Trip day'))
+          .selected,
+      isTrue,
+    );
+
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    expect(
+      store.rowsOf('work_sessions').values.single.fields['location'],
+      'home',
+    );
   });
 
   testWidgets('the timesheet opens as a preview before the download', (

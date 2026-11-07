@@ -735,4 +735,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get preview => 'Vorschau und Download';
+
+  @override
+  String get tripDayButton => 'Reisetag';
 }

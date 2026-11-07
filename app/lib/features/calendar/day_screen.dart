@@ -9,6 +9,7 @@ import '../../widgets/notices.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 import 'absences_screen.dart';
+import 'trips_screen.dart' show showTripDialog, tripOn;
 
 /// Everything recorded on one day, editable: sessions, breaks, project
 /// entries and absences.
@@ -302,6 +303,30 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
     if (mounted) Navigator.pop(context);
   }
 
+  /// "Reisetag": selected when [widget.date] lies in a trip; tapping edits
+  /// that trip, or creates one around this session (user request 2026-11-08).
+  Widget _tripDayChip(BuildContext context) {
+    final trip = tripOn(
+      ref.watch(ledgerDataProvider).trips,
+      widget.date,
+      ref.watch(zoneProvider),
+      ref.watch(todayProvider),
+    );
+    return FilterChip(
+      avatar: const Icon(Icons.luggage_outlined, size: 18),
+      showCheckmark: false,
+      label: Text(context.l10n.tripDayButton),
+      selected: trip != null,
+      onSelected: (_) => showTripDialog(
+        context,
+        trip: trip,
+        date: widget.date,
+        departMinutes: _start,
+        returnMinutes: _end != null && _end! > _start ? _end : null,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -331,19 +356,27 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
               onChanged: (v) => setState(() => _end = v),
               onClear: () => setState(() => _end = null),
             ),
-            if (widget.table == 'work_sessions')
-              DropdownButtonFormField<WorkLocation>(
-                initialValue: _location,
-                decoration: InputDecoration(labelText: l.location),
-                items: [
-                  for (final loc in WorkLocation.values)
-                    DropdownMenuItem(
-                      value: loc,
-                      child: Text(context.locationName(loc)),
-                    ),
-                ],
-                onChanged: (v) => setState(() => _location = v ?? _location),
+            if (widget.table == 'work_sessions') ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final loc in WorkLocation.values)
+                      ChoiceChip(
+                        showCheckmark: false,
+                        avatar: Icon(locationIcon(loc), size: 18),
+                        label: Text(context.locationName(loc)),
+                        selected: _location == loc,
+                        onSelected: (_) => setState(() => _location = loc),
+                      ),
+                    _tripDayChip(context),
+                  ],
+                ),
               ),
+            ],
             if (widget.table == 'project_entries')
               ListTile(
                 contentPadding: EdgeInsets.zero,

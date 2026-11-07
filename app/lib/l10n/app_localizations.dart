@@ -1441,6 +1441,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preview and download'**
   String get preview;
+
+  /// No description provided for @tripDayButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip day'**
+  String get tripDayButton;
 }
 
 class _AppLocalizationsDelegate

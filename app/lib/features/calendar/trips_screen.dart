@@ -25,10 +25,7 @@ class TripsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.trips)),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showDialog<void>(
-          context: context,
-          builder: (_) => const _TripDialog(),
-        ),
+        onPressed: () => showTripDialog(context),
         icon: const Icon(Icons.add),
         label: Text(l.newTrip),
       ),
@@ -49,10 +46,7 @@ class TripsScreen extends ConsumerWidget {
                   if (projects[t.projectId] case final p?) projectLabel(p),
                 ].join('\n'),
               ),
-              onTap: () => showDialog<void>(
-                context: context,
-                builder: (_) => _TripDialog(trip: t),
-              ),
+              onTap: () => showTripDialog(context, trip: t),
             ),
         ],
       ),
@@ -60,10 +54,55 @@ class TripsScreen extends ConsumerWidget {
   }
 }
 
+/// Opens the trip dialog for [trip], or for a new trip. A new trip departs
+/// on [date] (default today) at [departMinutes] and returns the same day at
+/// [returnMinutes] (minutes after midnight). Returns whether it was saved.
+Future<bool> showTripDialog(
+  BuildContext context, {
+  Trip? trip,
+  LocalDate? date,
+  int? departMinutes,
+  int? returnMinutes,
+}) async =>
+    await showDialog<bool>(
+      context: context,
+      builder: (_) => _TripDialog(
+        trip: trip,
+        date: date,
+        departMinutes: departMinutes,
+        returnMinutes: returnMinutes,
+      ),
+    ) ??
+    false;
+
+/// The trip touching [date] (calculations.md §9), if any.
+Trip? tripOn(
+  Iterable<Trip> trips,
+  LocalDate date,
+  HomeTimeZone zone,
+  LocalDate today,
+) {
+  for (final t in trips) {
+    final back = t.returnAt == null ? today : zone.dateOf(t.returnAt!);
+    if (!date.isBefore(zone.dateOf(t.depart)) && !date.isAfter(back)) {
+      return t;
+    }
+  }
+  return null;
+}
+
 class _TripDialog extends ConsumerStatefulWidget {
-  const _TripDialog({this.trip});
+  const _TripDialog({
+    this.trip,
+    this.date,
+    this.departMinutes,
+    this.returnMinutes,
+  });
 
   final Trip? trip;
+  final LocalDate? date;
+  final int? departMinutes;
+  final int? returnMinutes;
 
   @override
   ConsumerState<_TripDialog> createState() => _TripDialogState();
@@ -112,14 +151,15 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     }
 
     final t = widget.trip;
+    final day = widget.date ?? today;
     final (departDate, departTime) = t == null
-        ? (today, 7 * 60)
+        ? (day, widget.departMinutes ?? 7 * 60)
         : split(t.depart);
     _departDate = departDate;
     _departTime = departTime;
     if (t == null) {
-      _returnDate = today;
-      _returnTime = 19 * 60;
+      _returnDate = day;
+      _returnTime = widget.returnMinutes ?? 19 * 60;
     } else if (t.returnAt != null) {
       final (d, m) = split(t.returnAt!);
       _returnDate = d;
@@ -171,7 +211,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
         'dinner': meals.$3,
       });
     }
-    if (mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context, true);
   }
 
   Widget _projectTile(BuildContext context) {
