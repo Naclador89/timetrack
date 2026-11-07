@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import 'app/providers.dart';
@@ -14,8 +15,13 @@ Future<void> main() async {
   final db = TimeTrackDatabase(
     driftDatabase(
       name: 'timetrack',
-      // Background handlers (notification, tile, widget) will open it too (M5).
-      native: const DriftNativeOptions(shareAcrossIsolates: true),
+      native: const DriftNativeOptions(
+        // Per-app data folder (~/.local/share/<app id>, %APPDATA%\<app id>,
+        // Android app storage), not the user's Documents folder.
+        databaseDirectory: getApplicationSupportDirectory,
+        // Background handlers (notification, tile, widget) will open it too (M5).
+        shareAcrossIsolates: true,
+      ),
     ),
   );
   final store = DriftSyncStore(db);
@@ -45,6 +51,7 @@ class TimeTrackApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp.router(
     onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
+    debugShowCheckedModeBanner: false,
     theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
     darkTheme: ThemeData(
       colorSchemeSeed: Colors.teal,

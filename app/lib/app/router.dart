@@ -14,8 +14,14 @@ import '../features/today/today_screen.dart';
 import 'format.dart';
 
 /// Routes. Each tab keeps its own navigation stack.
+///
+/// `--dart-define=INITIAL_ROUTE=/calendar` opens another screen first (for
+/// screenshots and manual checks).
 GoRouter buildRouter() => GoRouter(
-  initialLocation: '/today',
+  initialLocation: const String.fromEnvironment(
+    'INITIAL_ROUTE',
+    defaultValue: '/today',
+  ),
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => AdaptiveShell(shell: shell),

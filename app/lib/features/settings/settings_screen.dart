@@ -115,7 +115,8 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           DateTile(
-            label: '      ${l.balanceStart}',
+            leading: const Icon(Icons.event_outlined),
+            label: l.balanceStart,
             value: ref.watch(ledgerProvider).settings.balanceStart,
             onChanged: (d) => save(SettingKeys.balanceStartDate, '$d'),
           ),

@@ -183,6 +183,7 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
               children: [
                 for (final l in WorkLocation.values)
                   ChoiceChip(
+                    showCheckmark: false,
                     avatar: Icon(locationIcon(l), size: 18),
                     label: Text(context.locationName(l)),
                     selected: location == l,

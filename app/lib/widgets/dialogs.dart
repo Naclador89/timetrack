@@ -54,7 +54,12 @@ class DateTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    this.leading,
   });
+
+  /// Optional leading icon; with it, the tile uses normal list padding
+  /// (for settings lists) instead of none (for dialogs).
+  final Widget? leading;
 
   /// Field label.
   final String label;
@@ -67,7 +72,8 @@ class DateTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-    contentPadding: EdgeInsets.zero,
+    contentPadding: leading == null ? EdgeInsets.zero : null,
+    leading: leading,
     title: Text(label),
     subtitle: Text(context.date(value)),
     trailing: const Icon(Icons.calendar_today_outlined),
