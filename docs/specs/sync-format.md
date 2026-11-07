@@ -32,11 +32,11 @@ The root is configurable; the default is `/TimeTrack` in the user's Nextcloud
     <deviceId>/
       device.json
       ops/
-        <hlc>.jsonl.gz
+        <hlc>.jsonl.gz.enc
 ```
 
-- `format.json`: `{"format": 1, "created": "<ISO-8601 UTC>"}`. It is created by the first device if
-  missing. A client that finds `format` greater than it supports **stops syncing** and asks the user
+- `format.json`: `{"format": 1, "created": "<ISO-8601 UTC>", "encryption": {…}}` (§10). It is
+  created by the first device if missing. A client that finds `format` greater than it supports **stops syncing** and asks the user
   to update the app. It never writes.
 - `device.json`: `{"deviceId": "...", "name": "Pixel 8", "platform": "android", "created": "..."}`.
   Written once at the device's first sync and rewritten (by that device only) when the name changes.
@@ -92,7 +92,8 @@ One change is one JSON object:
 - `set`: the fields written by this change, at least one. A **create** sets all fields. A **delete**
   sets `{"deleted": true}`.
 
-A **batch file** `devices/<deviceId>/ops/<hlc>.jsonl.gz` is gzip-compressed UTF-8 JSON Lines:
+A **batch file** `devices/<deviceId>/ops/<hlc>.jsonl.gz.enc` is gzip-compressed UTF-8 JSON Lines,
+then encrypted (§10). The plaintext is:
 - Line 1 is the header: `{"format":1,"deviceId":"…","count":<n>}`.
 - Lines 2…n+1 are changes, sorted by `hlc` ascending. They were all created by this device.
 - The file name is the `hlc` of the **first** change. HLCs of one device strictly increase, so names are unique.
@@ -183,8 +184,39 @@ lists the folder again in its next cycle.
   adds fields, the client does a **full replay** once: it clears `seen_files` and `folder_etags`,
   pulls again and re-applies all files, so values written by newer clients reach the new columns.
 
-## §10 Security
+## §10 Security and end-to-end encryption
 
 - Transport is HTTPS only, with the Nextcloud **app password** from Login Flow v2. It is stored in the
   platform's secure storage and never written to the database or to logs.
-- End-to-end encryption of batch files is planned as an option (a separate format version).
+- **Every batch file is end-to-end encrypted.** The user's Nextcloud is run by a provider
+  (decided 2026-11-07, ADR 0006), so the provider must never see time data.
+
+**Sync passphrase.** The user chooses it on the first device and enters it once on every other
+device. It is separate from the Nextcloud password. Each device stores only the **derived key**, in
+secure storage, never the passphrase itself.
+
+**`format.json` → `encryption`** (written once by the first device, never changed in format 1):
+
+```json
+{"kdf": "argon2id", "salt": "<base64, 16 random bytes>", "memoryKiB": 65536, "iterations": 3,
+ "parallelism": 1, "keyCheck": "<base64>"}
+```
+
+- **Key** = Argon2id(UTF-8 passphrase, salt, parameters above) → 32 bytes.
+- **Encrypted file** = `"TTE1"` (4 ASCII bytes) ‖ nonce (12 random bytes) ‖ AES-256-GCM ciphertext
+  with its 16-byte tag. The AAD is the UTF-8 path of the file relative to the root, e.g.
+  `devices/1a2b…/ops/1794067200123-0000-1a2b….jsonl.gz.enc`, so a file can't be moved or renamed
+  unnoticed.
+- **`keyCheck`** = the same construction for the ASCII plaintext `timetrack-key-check-v1`, with AAD
+  `format.json`. A device checks the passphrase by decrypting it before it reads or writes anything.
+- If decryption fails (wrong passphrase, damaged file), the device **stops syncing** and shows an
+  error. It never writes in that state.
+- `device.json` stays unencrypted (device name and platform only).
+- Changing the passphrase isn't possible in format 1, because every file would have to be
+  re-encrypted. That can come later as compaction into a new format version.
+- **What the provider can still see**: folder and file names, so device ids and the **times of
+  changes** (the HLC in the file name, and anyway the upload times), file sizes and `device.json`.
+  No content: no projects, entries, locations or notes.
+- Implementation hint (not normative): the Dart package `cryptography` provides `Argon2id` and
+  `AesGcm.with256bits()`. On a phone, deriving the key once can take a second or two; after that
+  the stored key is used.

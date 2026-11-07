@@ -10,3 +10,4 @@ To change a decision, add a new ADR that supersedes the old one, and mark the ol
 | [0003](0003-file-sync-nextcloud.md) | Sync through files on Nextcloud (WebDAV), no server of our own |
 | [0004](0004-per-field-lww-hlc.md) | Per-field last-writer-wins with a hybrid logical clock |
 | [0005](0005-ci-github-actions-free.md) | CI on GitHub Actions, sized for the free plan |
+| [0006](0006-e2e-encryption.md) | End-to-end encryption of the sync files |

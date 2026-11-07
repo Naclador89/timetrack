@@ -19,7 +19,7 @@ _Last updated: 2026-11-07 by Claude Code._
       setup-java v6, action-gh-release v3) to drop the Node 20 deprecation warnings. Only `test` has run
       on them so far; the build and release jobs get checked at the next tag or manual run.
 - [ ] Android release keystore (`docs/dev-setup.md` §5), needed before the phone installs CI-built APKs
-- [ ] Settle the Android application ID before the first real install (currently `de.timetrack.timetrack`)
+- [x] Android application ID settled: `io.github.naclador89.timetrack` (also the Linux app ID)
 
 ### M1: core logic (pure Dart)
 - [x] `LocalDate` (calculations §1)
@@ -35,7 +35,7 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Per-diem §13 (`perDiemForTrip`, `defaultPerDiemRates`)
 - [x] Review list §12 (`reviewItems`)
 - [x] Project search (`docs/specs/project-search.md`, `searchProjects`)
-- [ ] HLC, change format, merge (sync-format §3–§6)
+- [ ] HLC, change format, merge (sync-format §3–§6); encryption of batch files (§10, `cryptography` package)
 - [ ] drift database and SyncedRepository (sync-format §7, write path)
 - [ ] Sync engine against an in-memory fake WebDAV, plus the property-based convergence test (sync-format §7)
 
@@ -46,21 +46,23 @@ convergence test.
 Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
 add an index by date if balances over several years get slow.
 
+## Decisions taken with the user (2026-11-07)
+- **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
+  working at the destination); a short trip day still gets the full target; the 11 h **Saturday cap
+  covers travel and work together** (`SaturdayCapScope.total`); holidays like Sundays. Full-time
+  Mon–Fri, so the day-off rule doesn't apply yet.
+- **Nextcloud is provider-hosted**, so end-to-end encryption is mandatory in sync format 1
+  (ADR 0006, sync-format §10). It's part of M3.
+- **App ID** `io.github.naclador89.timetrack`.
+- **Per-diem rates** DE 14/28 € checked against secondary sources; still valid in 2026.
+
 ## Known issues / open questions
 - **Windows PC is company-managed and sometimes on a VPN** (user, 2026-11-07). For M3:
   - Dart's `HttpClient` doesn't use the Windows system proxy by itself. Support the system or PAC
     proxy (for example read it via WinHTTP) or a manual proxy setting, and test with and without the VPN.
   - Treat network changes (VPN up or down) as a sync trigger and retry failed syncs with backoff.
   - Keep the Windows build portable (no admin rights needed, data in `%APPDATA%`).
-- Travel-rule assumptions (calculations §9) not yet confirmed by the user:
-  1. Every trip day uses the weekday rule.
-  2. Short weekday trip days get the full target.
-  3. The Saturday cap applies to travel time only.
-  4. Holidays are treated like Sundays.
-  5. A weekday without target is treated like a Saturday.
-- Nextcloud: self-hosted or run by a provider? This decides how early to add end-to-end encryption.
-  Ask at M3.
-- The default per-diem rates (DE 14/28 €) must be checked (calculations §13).
+- No open questions for the user right now.
 
 ## Session log
 - 2026-11-07, Claude Code: agreed the concept with the user; M0 setup; started M1 (LocalDate,
@@ -72,3 +74,5 @@ add an index by date if balances over several years get slow.
   together); 81 tests green. Then vacation account §10 and home office §11; then per-diem §13; 98 tests green.
 - 2026-11-07, Claude Code: M0 confirmed by the user (the Windows ZIP runs on the company PC and WebDAV
   is reachable). Review list §12, project search (new spec `project-search.md`); 108 tests green.
+- 2026-11-07, Claude Code: resolved all open questions with the user (see Decisions). Saturday cap
+  now covers the whole day; E2E encryption added to sync format 1 (ADR 0006); app ID changed; 109 tests.

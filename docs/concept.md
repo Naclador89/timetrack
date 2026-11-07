@@ -33,7 +33,7 @@ Assumptions (easy to change): UI in German and English; federal state (Bundeslan
 └──────┬──────┘        └──────┬──────┘         └──────┬──────┘
        └────── WebDAV over HTTPS (Nextcloud app password) ──┘
                               ▼
-        Nextcloud  /TimeTrack/devices/<deviceId>/ops/*.jsonl.gz
+        Nextcloud  /TimeTrack/devices/<deviceId>/ops/*.jsonl.gz.enc
  fēnix 7 Pro ── Connect IQ SDK (BLE) ──► Android app
 ```
 
@@ -94,7 +94,7 @@ Local only: `outbox`, `pending_batch`, `seen_files`, `sync_state`, HLC state, de
   | Trip day | Credited working time |
   |---|---|
   | Mon–Fri workday | exactly the day's **target** (a "normal workday"), even if work + travel took longer; no overtime, no minus |
-  | Saturday | 🚆 travel time counts as **overtime**, max **11 h** (setting); work on-site counts as usual |
+  | Saturday | 🚆 travel and on-site work count as **overtime**, max **11 h** for the whole day (setting) |
   | Sunday | 🚆 travel time is **not counted**; work on-site counts as usual |
   | Public holiday | like Sunday (setting) |
 
@@ -114,7 +114,7 @@ Local only: `outbox`, `pending_batch`, `seen_files`, `sync_state`, HLC state, de
 /TimeTrack/
   format.json                       # format version (newer format → app asks to be updated)
   devices/<deviceId>/device.json    # name, platform
-  devices/<deviceId>/ops/<hlc>.jsonl.gz   # files that are never changed after upload
+  devices/<deviceId>/ops/<hlc>.jsonl.gz.enc   # encrypted, never changed after upload
 ```
 Each device writes **only to its own folder**, so two devices never write the same file and file conflicts can't happen.
 
@@ -137,7 +137,9 @@ Applying a change is **idempotent and order-independent**: a field is updated on
 
 **Sign-in**: Nextcloud **Login Flow v2**. You enter the server URL, a browser opens, you approve, and the app receives its own app password, so you never type a password into the app.
 
-**Later**: compaction (a device merges its own old files; applying changes twice is harmless) and optional end-to-end encryption (AES-GCM, key derived from a passphrase) if your Nextcloud is run by a provider.
+**End-to-end encryption** (decided 2026-11-07, since your Nextcloud is run by a provider): every sync file is encrypted with AES-256-GCM, using a key derived from a sync passphrase you enter once per device. The provider only sees file names and sizes. Details: `docs/specs/sync-format.md` §10, ADR 0006.
+
+**Later**: compaction (a device merges its own old files; applying changes twice is harmless).
 
 ## 5. UI (Material 3, phone and desktop layouts)
 
@@ -249,7 +251,7 @@ Goal: any agent (GitHub Copilot, Claude Code, …) or person can take over at an
 | M0 | Toolbox, Flutter and Android SDK, repo + GitHub, CI builds an empty app for all 3 platforms, `AGENTS.md`, `docs/` skeleton with the concept, first decision records and `status.md` | The Windows ZIP from CI starts on your Windows PC and that PC can reach Nextcloud |
 | M1 | `core`: models, DB, interval math, ArbZG, holidays, overtime and vacation, home-office quota, travel crediting and per-diem, project search, HLC, change merging, sync engine against fakes | `dart test` is green, including the sync convergence tests |
 | M2 | Local MVP app: Today (with location and quota), day editor, week view, projects, absences, schedules, home-office rules, trips, project picker and settings | Usable every day on Linux and Android, still without sync |
-| M3 | Nextcloud sync: WebDAV client, Login Flow v2, triggers, status and log, Review list | Two real devices stay in sync through your Nextcloud |
+| M3 | Nextcloud sync: WebDAV client, Login Flow v2, end-to-end encryption, proxy/VPN handling, triggers, status and log, Review list | Two real devices stay in sync through your Nextcloud |
 | M4 | Reports: statistics, monthly PDF, order report, travel report, CSV and JSON backup | The PDF and travel report for one month match figures calculated by hand |
 | M5 | E1 Android quick access | Clock in/out from the tile, widget and notification without opening the app |
 | M6 | E2 Garmin glance (after a feasibility spike) | Clock in on the watch; the desktop shows it after the next sync |
@@ -276,14 +278,14 @@ Every milestone also ends with: docs updated (`status.md`, specs, decision recor
 
 ## Risks / open points
 
-- **Travel rules, assumed until you confirm** (each one is a setting, so changing it is cheap):
-  1. The weekday rule applies to **every** day of a trip, including days spent only working at the destination.
-  2. A weekday trip day that is **shorter** than the target is also credited the full target.
-  3. The 11 h Saturday cap applies to travel time only.
+- **Travel rules, confirmed 2026-11-07**:
+  1. The weekday rule applies to **every** day of a trip.
+  2. A shorter weekday trip day also gets the full target.
+  3. The 11 h Saturday cap covers travel **and** work together.
   4. Public holidays are treated like Sundays.
 
 - **Background delivery of watch messages on Android**: checked in the M6 spike.
-- **Your Nextcloud**: whether it's self-hosted or run by a provider affects whether to add end-to-end encryption early. The URL is entered at M3.
+- **Your Nextcloud** is run by a provider, so end-to-end encryption is part of M3 (ADR 0006). The URL is entered at M3.
 - **Windows PC**: it's company-managed and sometimes on a VPN. M0 confirmed that the portable ZIP runs and Nextcloud WebDAV is reachable. In M3, handle the system proxy and VPN changes (see `docs/status.md`).
 - **GitHub Free**: some users have recently reported "Usage blocked" in private repos without a payment method, even with minutes left. M0 checks this with the first Windows build; if it happens, use a fallback from section 7.
 - **GNOME/Wayland**: no tray icon needed for now (not chosen), which avoids the AppIndicator dependency.
