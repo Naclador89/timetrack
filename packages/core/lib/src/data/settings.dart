@@ -208,7 +208,12 @@ String _snake(String camel) =>
     camel.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}');
 
 /// Saves one setting through the repository (a synced `settings` row).
-Future<void> saveSetting(SyncedRepository repo, String key, Object? value) =>
-    repo.write('settings', key, {
-      'value': value is Enum ? settingValueOf(value) : value,
-    });
+Future<void> saveSetting(
+  SyncedRepository repo,
+  String key,
+  Object? value,
+) => repo.write('settings', key, {
+  'value': value is Enum ? settingValueOf(value) : value,
+  // A setting is never meant to stay deleted; this revives a tombstoned row.
+  'deleted': false,
+});
