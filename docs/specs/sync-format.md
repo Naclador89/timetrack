@@ -166,9 +166,12 @@ values**, so even if two devices both correct the same row, LWW ends in the same
 
 ### §7.2 Triggers
 
-5 s after a local write (debounced); on app start and resume; every 60 s while in the foreground; on
-a network change. On Android: WorkManager every 15 min (network required), plus a one-off job after
-background writes (notification, tile, widget, watch).
+5 s after a local write (debounced); on app start and resume; every 60 s while the app runs.
+Failed cycles are simply retried by the next trigger.
+
+Implementation status: done in `app/lib/sync/sync_controller.dart`. Still open: an explicit
+network-change trigger (the 60 s timer covers it for now), and Android background sync via
+WorkManager (every 15 min plus a one-off job after background writes), planned with M5.
 
 ## §8 Compaction (optional, later)
 

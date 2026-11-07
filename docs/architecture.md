@@ -55,6 +55,9 @@ Rules for dependencies:
 | `core/data/settings` (`AppSettings`, `SettingKeys`) | data-model §7 | done |
 | `core/tracking/time_tracker` (`TimeTracker`, `TrackerState`) | concept §2 | done |
 | `app` screens: Today, week, day editor, absences, trips, projects, settings, schedules, home-office rules | concept §5 | M2 done (local only) |
-| `core/sync/remote` (`RemoteFolder`, in-memory fake) | sync-format §2, §7 | done (WebDAV client in M3) |
+| `core/sync/remote` (`RemoteFolder`, in-memory fake) | sync-format §2, §7 | done |
+| `core/sync/webdav` (`WebDavRemoteFolder`, `LoginFlow`) | sync-format §2, §7, §10 | done |
+| `core/testing.dart` (`fakeNextcloud` for tests) | | done |
+| `app/lib/sync` (`SyncController`, `SyncConfig` in secure storage) | sync-format §7.2 | done |
 | `core/sync/engine` (`SyncEngine`, `connectSyncFolder`) | sync-format §7, §7.1 | done |
 | everything else | | planned (see `docs/status.md`) |

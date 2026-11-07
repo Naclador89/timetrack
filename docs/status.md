@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M2 done on Linux (phone check pending), next M3 (Nextcloud sync)
+## Current milestone: M3 (Nextcloud sync) implemented; waiting for tests on the user's devices
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -74,12 +74,24 @@ _Last updated: 2026-11-07 by Claude Code._
       exist), home-office quota by hours in the UI (core supports it), keyboard shortcut Ctrl+K for
       the picker.
 
-**Next task**: M3 Nextcloud sync. Write a `WebDavRemoteFolder` implementing `RemoteFolder`
-(PROPFIND/MKCOL/PUT with `If-None-Match`/GET/DELETE, ETags) with `package:http`. Add Login Flow v2
-(`/index.php/login/v2`), a sync passphrase dialog with the key in `flutter_secure_storage`, sync
-triggers (debounce after writes, resume, periodic, network change), a status/log UI, and proxy/VPN
-handling for the company Windows PC (see Known issues). Integration tests against a local Nextcloud
-in podman.
+### M3: Nextcloud sync
+- [x] `WebDavRemoteFolder` (PROPFIND/GET/PUT with `If-None-Match`/MKCOL/DELETE, ETags, path encoding)
+      and Login Flow v2 (`LoginFlow`, `NextcloudCredentials`) in `core`.
+- [x] Simulated Nextcloud for tests (`package:timetrack_core/testing.dart`, `fakeNextcloud`).
+- [x] Integration tests against a real Nextcloud 34 in podman (`docs/dev-setup.md` §6): 412,
+      ETag propagation, encrypted sync of two devices, wrong passphrase, third device joining.
+- [x] Key derivation (Argon2id, 64 MiB) runs in `Isolate.run`, so the UI doesn't freeze.
+- [x] App: `SyncController` (debounce 5 s after writes, every 60 s, on resume), config in secure
+      storage (`SyncConfig`), setup screen (Login Flow in the browser or manual app password, new or
+      joining passphrase, optional per-device proxy), status in settings. Widget test: a local write
+      is uploaded encrypted after the debounce.
+- [ ] **User**: connect each device to the real Nextcloud (Linux, Android, Windows PC with and
+      without VPN). If the company network needs a proxy, enter it in the sync setup on that PC.
+- [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
+- [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
+
+**Next task**: after the user's device tests: fix what they find, then M4 (reports: monthly PDF, order
+report, travel report with meals, CSV/JSON export, statistics).
 
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
@@ -118,3 +130,6 @@ in podman.
 - 2026-11-07, Claude Code: M2 local app: TimeTracker commands, typed settings, all screens, l10n;
   found and fixed the database location (was Documents); checked on Linux with screenshots;
   `tool/seed_demo.dart` and `tool/screenshot.sh` for UI checks. core 163 tests, app 3 widget tests.
+- 2026-11-07, Claude Code: M3 sync implemented: WebDAV client, Login Flow v2, integration tests against
+  a real Nextcloud 34 (podman), app sync controller and setup screen, per-device proxy. core 167 tests
+  (+2 integration), app 4 widget tests.
