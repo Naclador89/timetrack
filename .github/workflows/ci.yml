@@ -11,9 +11,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Newer pushes cancel older test runs of the same branch, but never a manual or tag build.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
 
 env:
   FLUTTER_VERSION_FILE: app/pubspec.yaml
