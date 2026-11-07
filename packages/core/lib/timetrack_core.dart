@@ -11,6 +11,7 @@ export 'src/data/settings.dart';
 export 'src/model/attendance.dart';
 export 'src/model/planning.dart';
 export 'src/model/project.dart';
+export 'src/reports/reports.dart';
 export 'src/rules/arbzg.dart';
 export 'src/rules/credit.dart';
 export 'src/rules/day_work.dart';

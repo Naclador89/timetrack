@@ -90,8 +90,11 @@ _Last updated: 2026-11-07 by Claude Code._
 - [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
-**Next task**: after the user's device tests: fix what they find, then M4 (reports: monthly PDF, order
-report, travel report with meals, CSV/JSON export, statistics).
+**Next task**: after the user's device tests, fix what they find. Then continue M4. Already done in
+`core/lib/src/reports/reports.dart`: `buildTimesheet` (monthly rows and totals), `buildOrderReport`
+(minutes per day and order number) and `toCsv` (Excel flavour). Still to do: the app's Reports screen,
+the PDF (packages `pdf` and `printing`), CSV/JSON export via share or save, trip meals, the travel
+report (`perDiemForTrip`), and statistics charts.
 
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
