@@ -5,6 +5,7 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../sync/sync_controller.dart';
 import '../../widgets/dialogs.dart';
 
 /// Official names of the federal states (proper names, not translated).
@@ -50,6 +51,22 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l.navSettings)),
       body: ListView(
         children: [
+          header(l.sync),
+          ListTile(
+            leading: Icon(switch (ref.watch(syncControllerProvider).phase) {
+              SyncPhase.notConfigured => Icons.cloud_off_outlined,
+              SyncPhase.error => Icons.sync_problem,
+              _ => Icons.cloud_done_outlined,
+            }),
+            title: Text(l.sync),
+            subtitle: Text(switch (ref.watch(syncControllerProvider)) {
+              SyncStatus(phase: SyncPhase.notConfigured) => l.syncNotConnected,
+              SyncStatus(phase: SyncPhase.error) => l.syncError,
+              final st => st.root?.host ?? '',
+            }),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go('/settings/sync'),
+          ),
           header(l.general),
           ListTile(
             leading: const Icon(Icons.map_outlined),

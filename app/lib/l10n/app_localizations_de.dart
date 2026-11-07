@@ -428,4 +428,81 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get to => 'Bis';
+
+  @override
+  String get sync => 'Synchronisation';
+
+  @override
+  String get syncIntro =>
+      'Synchronisiere dieses Gerät über deine Nextcloud mit deinen anderen Geräten. Alle Daten werden vor dem Hochladen mit einer Sync-Passphrase Ende-zu-Ende-verschlüsselt.';
+
+  @override
+  String get syncServer => 'Nextcloud-Adresse';
+
+  @override
+  String get syncManual => 'Login-Namen und App-Passwort selbst eingeben';
+
+  @override
+  String get syncLoginName => 'Login-Name';
+
+  @override
+  String get syncAppPassword => 'App-Passwort';
+
+  @override
+  String get syncConnect => 'Verbinden';
+
+  @override
+  String get syncWaitingForLogin =>
+      'Bitte bestätige die Anmeldung im Browser …';
+
+  @override
+  String get syncLoginTimeout =>
+      'Die Anmeldung wurde nicht rechtzeitig bestätigt.';
+
+  @override
+  String get syncDerivingKey =>
+      'Schlüssel wird berechnet … das kann einige Sekunden dauern.';
+
+  @override
+  String get syncWrongPassphrase => 'Falsche Sync-Passphrase.';
+
+  @override
+  String get syncPassphrase => 'Sync-Passphrase';
+
+  @override
+  String get syncPassphraseNew =>
+      'Wähle eine Passphrase. Du brauchst sie einmal auf jedem weiteren Gerät. Ohne sie sind die Daten in der Nextcloud nicht lesbar.';
+
+  @override
+  String get syncPassphraseJoin =>
+      'Gib die Passphrase ein, die du auf deinem ersten Gerät gewählt hast.';
+
+  @override
+  String get syncPassphraseRepeat => 'Passphrase wiederholen';
+
+  @override
+  String get syncPassphraseShort => 'Mindestens 8 Zeichen';
+
+  @override
+  String get syncPassphraseMismatch => 'Die Passphrasen stimmen nicht überein';
+
+  @override
+  String syncLastSuccess(String time) {
+    return 'Zuletzt synchronisiert um $time';
+  }
+
+  @override
+  String get syncNow => 'Jetzt synchronisieren';
+
+  @override
+  String get syncDisconnect => 'Verbindung trennen';
+
+  @override
+  String get syncNotConnected => 'Nicht verbunden';
+
+  @override
+  String get syncError => 'Synchronisation fehlgeschlagen';
+
+  @override
+  String get syncProxy => 'Proxy für dieses Gerät (optional, Host:Port)';
 }

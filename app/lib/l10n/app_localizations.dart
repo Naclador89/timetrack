@@ -877,6 +877,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'To'**
   String get to;
+
+  /// No description provided for @sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get sync;
+
+  /// No description provided for @syncIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync this device with your other devices through your Nextcloud. All data is end-to-end encrypted with a sync passphrase before it is uploaded.'**
+  String get syncIntro;
+
+  /// No description provided for @syncServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Nextcloud address'**
+  String get syncServer;
+
+  /// No description provided for @syncManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter login name and app password manually'**
+  String get syncManual;
+
+  /// No description provided for @syncLoginName.
+  ///
+  /// In en, this message translates to:
+  /// **'Login name'**
+  String get syncLoginName;
+
+  /// No description provided for @syncAppPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'App password'**
+  String get syncAppPassword;
+
+  /// No description provided for @syncConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get syncConnect;
+
+  /// No description provided for @syncWaitingForLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm the login in your browser…'**
+  String get syncWaitingForLogin;
+
+  /// No description provided for @syncLoginTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The login was not confirmed in time.'**
+  String get syncLoginTimeout;
+
+  /// No description provided for @syncDerivingKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Deriving the key… this can take a few seconds.'**
+  String get syncDerivingKey;
+
+  /// No description provided for @syncWrongPassphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong sync passphrase.'**
+  String get syncWrongPassphrase;
+
+  /// No description provided for @syncPassphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync passphrase'**
+  String get syncPassphrase;
+
+  /// No description provided for @syncPassphraseNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a passphrase. You\'ll need it once on every further device. Without it, the data on Nextcloud can\'t be read.'**
+  String get syncPassphraseNew;
+
+  /// No description provided for @syncPassphraseJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the passphrase you chose on your first device.'**
+  String get syncPassphraseJoin;
+
+  /// No description provided for @syncPassphraseRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat passphrase'**
+  String get syncPassphraseRepeat;
+
+  /// No description provided for @syncPassphraseShort.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get syncPassphraseShort;
+
+  /// No description provided for @syncPassphraseMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The passphrases don\'t match'**
+  String get syncPassphraseMismatch;
+
+  /// No description provided for @syncLastSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced at {time}'**
+  String syncLastSuccess(String time);
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @syncDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get syncDisconnect;
+
+  /// No description provided for @syncNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get syncNotConnected;
+
+  /// No description provided for @syncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed'**
+  String get syncError;
+
+  /// No description provided for @syncProxy.
+  ///
+  /// In en, this message translates to:
+  /// **'Proxy for this device (optional, host:port)'**
+  String get syncProxy;
 }
 
 class _AppLocalizationsDelegate

@@ -257,5 +257,35 @@
   "nextWeek": "Next week",
   "thisWeek": "This week",
   "from": "From",
-  "to": "To"
+  "to": "To",
+  "sync": "Sync",
+  "syncIntro": "Sync this device with your other devices through your Nextcloud. All data is end-to-end encrypted with a sync passphrase before it is uploaded.",
+  "syncServer": "Nextcloud address",
+  "syncManual": "Enter login name and app password manually",
+  "syncLoginName": "Login name",
+  "syncAppPassword": "App password",
+  "syncConnect": "Connect",
+  "syncWaitingForLogin": "Please confirm the login in your browser…",
+  "syncLoginTimeout": "The login was not confirmed in time.",
+  "syncDerivingKey": "Deriving the key… this can take a few seconds.",
+  "syncWrongPassphrase": "Wrong sync passphrase.",
+  "syncPassphrase": "Sync passphrase",
+  "syncPassphraseNew": "Choose a passphrase. You'll need it once on every further device. Without it, the data on Nextcloud can't be read.",
+  "syncPassphraseJoin": "Enter the passphrase you chose on your first device.",
+  "syncPassphraseRepeat": "Repeat passphrase",
+  "syncPassphraseShort": "At least 8 characters",
+  "syncPassphraseMismatch": "The passphrases don't match",
+  "syncLastSuccess": "Last synced at {time}",
+  "syncNow": "Sync now",
+  "syncDisconnect": "Disconnect",
+  "syncNotConnected": "Not connected",
+  "syncError": "Sync failed",
+  "@syncLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncProxy": "Proxy for this device (optional, host:port)"
 }

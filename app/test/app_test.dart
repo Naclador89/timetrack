@@ -4,6 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
+import 'package:timetrack/sync/sync_controller.dart';
+
+import 'helpers.dart';
+
 import 'package:timetrack_core/timetrack_core.dart';
 
 /// Wednesday 4 Nov 2026, 08:30 in Berlin.
@@ -28,6 +32,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
         repositoryProvider.overrideWithValue(repo),
         clockProvider.overrideWithValue(() => fixedNow),
         nowProvider.overrideWith((ref) => Stream.value(fixedNow)),
+        syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
       ],
       child: TimeTrackApp(router: buildRouter()),
     ),

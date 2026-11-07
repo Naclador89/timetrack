@@ -10,6 +10,7 @@ import '../features/projects/projects_screen.dart';
 import '../features/settings/home_office_rules_screen.dart';
 import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
 import 'format.dart';
 
@@ -70,6 +71,7 @@ GoRouter buildRouter() => GoRouter(
                   path: 'schedules',
                   builder: (_, _) => const SchedulesScreen(),
                 ),
+                GoRoute(path: 'sync', builder: (_, _) => const SyncScreen()),
                 GoRoute(
                   path: 'home-office',
                   builder: (_, _) => const HomeOfficeRulesScreen(),

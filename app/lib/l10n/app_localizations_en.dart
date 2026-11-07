@@ -428,4 +428,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get to => 'To';
+
+  @override
+  String get sync => 'Sync';
+
+  @override
+  String get syncIntro =>
+      'Sync this device with your other devices through your Nextcloud. All data is end-to-end encrypted with a sync passphrase before it is uploaded.';
+
+  @override
+  String get syncServer => 'Nextcloud address';
+
+  @override
+  String get syncManual => 'Enter login name and app password manually';
+
+  @override
+  String get syncLoginName => 'Login name';
+
+  @override
+  String get syncAppPassword => 'App password';
+
+  @override
+  String get syncConnect => 'Connect';
+
+  @override
+  String get syncWaitingForLogin => 'Please confirm the login in your browser…';
+
+  @override
+  String get syncLoginTimeout => 'The login was not confirmed in time.';
+
+  @override
+  String get syncDerivingKey =>
+      'Deriving the key… this can take a few seconds.';
+
+  @override
+  String get syncWrongPassphrase => 'Wrong sync passphrase.';
+
+  @override
+  String get syncPassphrase => 'Sync passphrase';
+
+  @override
+  String get syncPassphraseNew =>
+      'Choose a passphrase. You\'ll need it once on every further device. Without it, the data on Nextcloud can\'t be read.';
+
+  @override
+  String get syncPassphraseJoin =>
+      'Enter the passphrase you chose on your first device.';
+
+  @override
+  String get syncPassphraseRepeat => 'Repeat passphrase';
+
+  @override
+  String get syncPassphraseShort => 'At least 8 characters';
+
+  @override
+  String get syncPassphraseMismatch => 'The passphrases don\'t match';
+
+  @override
+  String syncLastSuccess(String time) {
+    return 'Last synced at $time';
+  }
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get syncDisconnect => 'Disconnect';
+
+  @override
+  String get syncNotConnected => 'Not connected';
+
+  @override
+  String get syncError => 'Sync failed';
+
+  @override
+  String get syncProxy => 'Proxy for this device (optional, host:port)';
 }

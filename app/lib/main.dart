@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +11,7 @@ import 'package:timetrack_core/timetrack_core.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'l10n/app_localizations.dart';
+import 'sync/sync_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,15 +28,18 @@ Future<void> main() async {
     ),
   );
   final store = DriftSyncStore(db);
+  final localWrites = StreamController<void>.broadcast();
   final repository = await SyncedRepository.open(
     store,
     await loadOrCreateDeviceId(db),
+    onLocalWrite: () => localWrites.add(null),
   );
   runApp(
     ProviderScope(
       overrides: [
         storeProvider.overrideWithValue(store),
         repositoryProvider.overrideWithValue(repository),
+        localWritesProvider.overrideWithValue(localWrites.stream),
       ],
       child: TimeTrackApp(router: buildRouter()),
     ),
@@ -66,5 +72,40 @@ class TimeTrackApp extends StatelessWidget {
     ],
     supportedLocales: const [Locale('de'), Locale('en')],
     routerConfig: router,
+    builder: (context, child) => _SyncLifecycle(child: child!),
   );
+}
+
+/// Starts the sync controller and syncs when the app returns to the foreground.
+class _SyncLifecycle extends ConsumerStatefulWidget {
+  const _SyncLifecycle({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_SyncLifecycle> createState() => _SyncLifecycleState();
+}
+
+class _SyncLifecycleState extends ConsumerState<_SyncLifecycle> {
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(
+      onResume: () => ref.read(syncControllerProvider.notifier).onResume(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(syncControllerProvider); // keeps the controller alive
+    return widget.child;
+  }
 }
