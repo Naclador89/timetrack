@@ -180,8 +180,9 @@ destination.
 ## §10 Vacation account
 
 For calendar year Y:
-- **Entitlement** = `annual_vacation_days` of the schedule valid on Y-01-01, unless overridden by
-  setting `vacation.entitlement.<Y>`.
+- **Entitlement** = `annual_vacation_days` of the schedule valid on Y-01-01. If there is none (first
+  schedule starts during Y), the first schedule starting in Y is used. Setting
+  `vacation.entitlement.<Y>` overrides both, for example for a pro-rata first year.
 - **Carry-over** = setting `vacation.carry_over.<Y>` (default 0).
 - **Taken** = Σ fraction of `vacation` absences on **workdays** (§7) in Y up to today.
 - **Planned** = the same for days after today.

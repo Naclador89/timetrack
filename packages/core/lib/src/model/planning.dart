@@ -123,3 +123,64 @@ final class Trip {
   /// Whether the trip includes an overnight stay (§13 "Mitternachtsregel").
   final bool overnight;
 }
+
+/// Length of a home-office quota period (spec: calculations.md §11.2).
+enum QuotaPeriod {
+  /// ISO week, Monday–Sunday.
+  week,
+
+  /// Calendar month.
+  month,
+}
+
+/// What a home-office quota counts.
+enum QuotaUnit {
+  /// Home-office days (by the day rule, §11.1).
+  days,
+
+  /// Hours worked at home.
+  hours,
+}
+
+/// What a home-office percentage refers to.
+enum QuotaBasis {
+  /// Days actually worked so far in the period (default).
+  worked,
+
+  /// Scheduled workdays of the whole period, minus absences.
+  scheduled,
+}
+
+/// One version of a home-office quota rule (spec: calculations.md §11.2).
+///
+/// Rows with the same [period] and [unit] are versions of one rule; the
+/// version valid on the first day of a period applies to the whole period.
+final class HomeOfficeRule {
+  /// Creates a rule version.
+  const HomeOfficeRule({
+    required this.id,
+    required this.validFrom,
+    required this.period,
+    this.unit = QuotaUnit.days,
+    required this.maxPercent,
+    this.basis = QuotaBasis.worked,
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// First day this version applies to.
+  final LocalDate validFrom;
+
+  /// Week or month.
+  final QuotaPeriod period;
+
+  /// Days or hours.
+  final QuotaUnit unit;
+
+  /// Allowed home-office share in percent, e.g. 40.
+  final int maxPercent;
+
+  /// What the percentage refers to.
+  final QuotaBasis basis;
+}
