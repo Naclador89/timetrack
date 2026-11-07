@@ -35,14 +35,24 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Per-diem §13 (`perDiemForTrip`, `defaultPerDiemRates`)
 - [x] Review list §12 (`reviewItems`)
 - [x] Project search (`docs/specs/project-search.md`, `searchProjects`)
-- [ ] HLC, change format, merge (sync-format §3–§6); encryption of batch files (§10, `cryptography` package)
-- [ ] drift database and SyncedRepository (sync-format §7, write path)
-- [ ] Sync engine against an in-memory fake WebDAV, plus the property-based convergence test (sync-format §7)
+- [x] HLC, change format, merge (sync-format §3–§6): `Hlc`, `HlcClock`, `Change`, `applyChange`,
+      `encodeBatch`/`decodeBatch`
+- [x] End-to-end encryption (§10): `createEncryption`, `unlockEncryption`, `SyncCipher`
+      (Argon2id + AES-256-GCM via `cryptography`)
+- [x] Store abstraction `SyncStore` (+ `InMemorySyncStore`) and `SyncedRepository` (write path, §7)
+- [x] Remote abstraction `RemoteFolder` (+ `InMemoryRemoteFolder`, which updates folder ETags like Nextcloud)
+- [x] `SyncEngine` (push, pull, resolve §7.1) and `connectSyncFolder` (set up or join with passphrase)
+- [x] Property-based convergence test: 3 devices, clock skew, random edits, syncs and connection
+      losses, 30 seeds. Mutation-checked: it fails if merge or resolve is broken.
+- [ ] drift database implementing `SyncStore` (tables for all synced rows plus local sync state),
+      and mapping complete rows to the model classes for `Ledger`
 
-**Next task**: the sync part of M1, starting with the HLC (sync-format §3) and the change format
-and merge (§5–§6) as pure Dart in `core/lib/src/sync/`. Then the drift database with the
-synced repository, and the sync engine against an in-memory fake WebDAV, plus the property-based
-convergence test.
+**Next task**: the drift database (`core/lib/src/data/`). Implement `SyncStore` on SQLite: one table
+per synced table (all data columns nullable, plus `field_clock` JSON and `deleted`) and local tables
+`outbox`, `pending_batch`, `seen_files`, `folder_etags`, `hlc_state`. Then map complete rows to
+`WorkSession`, `Project`, … (skip incomplete ones, sync-format §6). Run the existing engine and
+convergence tests against it too (e.g. parameterise `SimDevice` by store). That completes M1;
+M2 (the app UI) follows.
 Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
 add an index by date if balances over several years get slow.
 
@@ -76,3 +86,5 @@ add an index by date if balances over several years get slow.
   is reachable). Review list §12, project search (new spec `project-search.md`); 108 tests green.
 - 2026-11-07, Claude Code: resolved all open questions with the user (see Decisions). Saturday cap
   now covers the whole day; E2E encryption added to sync format 1 (ADR 0006); app ID changed; 109 tests.
+- 2026-11-07, Claude Code: sync core: HLC, change format, merge, E2E encryption, store and remote
+  abstractions, repository, engine, convergence test; 132 tests green. Remaining in M1: drift store.

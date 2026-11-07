@@ -44,4 +44,9 @@ Rules for dependencies:
 | `core/rules/per_diem` (`perDiemForTrip`) | calculations §13 | done |
 | `core/rules/review` (`reviewItems`) | calculations §12 | done |
 | `core/model/project`, `core/search/project_search` | project-search | done |
+| `core/sync/hlc`, `change`, `batch` (clock, changes, merge, batch files) | sync-format §3–§6 | done |
+| `core/sync/crypto` (Argon2id key, AES-256-GCM files) | sync-format §10 | done |
+| `core/sync/store`, `repository` (`SyncStore`, `SyncedRepository`) | sync-format §7 | done (in-memory store; drift store next) |
+| `core/sync/remote` (`RemoteFolder`, in-memory fake) | sync-format §2, §7 | done (WebDAV client in M3) |
+| `core/sync/engine` (`SyncEngine`, `connectSyncFolder`) | sync-format §7, §7.1 | done |
 | everything else | | planned (see `docs/status.md`) |
