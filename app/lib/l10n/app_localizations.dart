@@ -1225,6 +1225,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Created with TimeTrack on {date}'**
   String generatedBy(String date);
+
+  /// No description provided for @addProjectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add project time'**
+  String get addProjectTime;
+
+  /// No description provided for @durationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (h:mm)'**
+  String get durationHours;
+
+  /// No description provided for @withClockTime.
+  ///
+  /// In en, this message translates to:
+  /// **'With start time'**
+  String get withClockTime;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @summaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?'**
+  String get summaryHint;
+
+  /// No description provided for @summaryQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do for {project}?'**
+  String summaryQuestion(String project);
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// No description provided for @warnProjectOverWork.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} more project time than working time'**
+  String warnProjectOverWork(String minutes);
 }
 
 class _AppLocalizationsDelegate

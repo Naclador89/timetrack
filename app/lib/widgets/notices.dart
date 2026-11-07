@@ -12,6 +12,7 @@ String noticeText(BuildContext context, ReviewItem item) {
     ReviewKind.overlappingSessions => l.warnOverlapSessions,
     ReviewKind.overlappingProjectEntries => l.warnOverlapProjects,
     ReviewKind.projectOutsideSession => l.warnProjectOutside(m),
+    ReviewKind.projectOverWork => l.warnProjectOverWork(m),
     ReviewKind.homeOfficeQuota => l.warnQuota,
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing => l.warnBreakMissing(m),

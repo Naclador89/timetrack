@@ -615,4 +615,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String generatedBy(String date) {
     return 'Created with TimeTrack on $date';
   }
+
+  @override
+  String get addProjectTime => 'Add project time';
+
+  @override
+  String get durationHours => 'Duration (h:mm)';
+
+  @override
+  String get withClockTime => 'With start time';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get summaryHint => 'What did you do?';
+
+  @override
+  String summaryQuestion(String project) {
+    return 'What did you do for $project?';
+  }
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String warnProjectOverWork(String minutes) {
+    return '$minutes more project time than working time';
+  }
 }

@@ -187,5 +187,14 @@
   "weeks": "Wochen",
   "previousMonth": "Vorheriger Monat",
   "nextMonth": "Nächster Monat",
-  "generatedBy": "Erstellt mit TimeTrack am {date}"
+  "generatedBy": "Erstellt mit TimeTrack am {date}",
+  "addProjectTime": "Projektzeit eintragen",
+  "durationHours": "Dauer (Std:Min)",
+  "withClockTime": "Mit Uhrzeit",
+  "summary": "Zusammenfassung",
+  "summaryHint": "Was hast du gemacht?",
+  "summaryQuestion": "Was hast du für {project} gemacht?",
+  "skip": "Überspringen",
+  "activity": "Tätigkeit",
+  "warnProjectOverWork": "{minutes} mehr Projektzeit als Arbeitszeit"
 }

@@ -97,7 +97,14 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
 List<List<String>> orderTable(List<OrderBooking> bookings, ReportFormat f) {
   final l = f.l;
   return [
-    [l.colDate, l.orderNumber, l.projectNumber, l.projectName, l.worked],
+    [
+      l.colDate,
+      l.orderNumber,
+      l.projectNumber,
+      l.projectName,
+      l.worked,
+      l.activity,
+    ],
     for (final b in bookings)
       [
         f.date(b.date),
@@ -105,6 +112,7 @@ List<List<String>> orderTable(List<OrderBooking> bookings, ReportFormat f) {
         b.projectNumber,
         b.projectName,
         formatMinutes(b.minutes),
+        b.notes.join('; '),
       ],
   ];
 }

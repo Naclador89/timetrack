@@ -7,6 +7,7 @@ import '../../app/providers.dart';
 import '../../widgets/dialogs.dart';
 import '../../widgets/notices.dart';
 import '../projects/project_picker.dart';
+import '../projects/project_time_dialog.dart';
 import 'absences_screen.dart';
 
 /// Everything recorded on one day, editable: sessions, breaks, project
@@ -141,22 +142,27 @@ class DayScreen extends ConsumerWidget {
           ]),
           section(
             l.projectEntries,
-            () => _editInterval(context, ref, 'project_entries', null),
+            () => showProjectTimeDialog(context, date: date),
             [
+              for (final p in data.durations.where((x) => x.date == date))
+                ListTile(
+                  leading: const Icon(Icons.timelapse),
+                  title: Text(
+                    '${formatMinutes(p.minutes)} · ${projects[p.projectId]?.name ?? '?'}',
+                  ),
+                  subtitle: p.note.isEmpty ? null : Text(p.note),
+                  onTap: () =>
+                      showProjectTimeDialog(context, date: date, duration: p),
+                ),
               for (final e in entries)
                 ListTile(
                   leading: const Icon(Icons.work_outline),
-                  title: Text(range(e.start, e.end)),
-                  subtitle: Text(projects[e.projectId]?.name ?? '?'),
-                  onTap: () => _editInterval(
-                    context,
-                    ref,
-                    'project_entries',
-                    e.id,
-                    start: e.start,
-                    end: e.end,
-                    projectId: e.projectId,
+                  title: Text(
+                    '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
                   ),
+                  subtitle: e.note.isEmpty ? null : Text(e.note),
+                  onTap: () =>
+                      showProjectTimeDialog(context, date: date, entry: e),
                 ),
             ],
           ),

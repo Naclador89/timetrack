@@ -133,3 +133,87 @@ class TimeTile extends StatelessWidget {
     );
   }
 }
+
+/// Asks for one line (or a few lines) of text; returns it trimmed, or `null`
+/// if the user chose [cancelLabel]. The dialog owns its controller, so it
+/// stays valid during the closing animation.
+Future<String?> showTextPrompt(
+  BuildContext context, {
+  required String title,
+  required String okLabel,
+  required String cancelLabel,
+  String initial = '',
+  String? label,
+  String? hint,
+  int maxLines = 1,
+}) => showDialog<String>(
+  context: context,
+  builder: (_) => _TextPrompt(
+    title: title,
+    okLabel: okLabel,
+    cancelLabel: cancelLabel,
+    initial: initial,
+    label: label,
+    hint: hint,
+    maxLines: maxLines,
+  ),
+);
+
+class _TextPrompt extends StatefulWidget {
+  const _TextPrompt({
+    required this.title,
+    required this.okLabel,
+    required this.cancelLabel,
+    required this.initial,
+    required this.label,
+    required this.hint,
+    required this.maxLines,
+  });
+
+  final String title;
+  final String okLabel;
+  final String cancelLabel;
+  final String initial;
+  final String? label;
+  final String? hint;
+  final int maxLines;
+
+  @override
+  State<_TextPrompt> createState() => _TextPromptState();
+}
+
+class _TextPromptState extends State<_TextPrompt> {
+  late final _controller = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _ok() => Navigator.pop(context, _controller.text.trim());
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(widget.title),
+    content: TextField(
+      controller: _controller,
+      autofocus: true,
+      maxLines: widget.maxLines,
+      minLines: 1,
+      textCapitalization: TextCapitalization.sentences,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hint,
+      ),
+      onSubmitted: widget.maxLines == 1 ? (_) => _ok() : null,
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(widget.cancelLabel),
+      ),
+      FilledButton(onPressed: _ok, child: Text(widget.okLabel)),
+    ],
+  );
+}

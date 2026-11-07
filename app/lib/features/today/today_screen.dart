@@ -5,8 +5,10 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../widgets/dialogs.dart';
 import '../../widgets/notices.dart';
 import '../projects/project_picker.dart';
+import '../projects/project_time_dialog.dart';
 
 /// The home screen: clock in/out, breaks, projects and today's numbers.
 class TodayScreen extends ConsumerWidget {
@@ -90,40 +92,23 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
   }
 
   Future<void> _askStartTrip() async {
-    final destination = TextEditingController();
-    final start = await showDialog<bool>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(c.l10n.startTripQuestion),
-        content: TextField(
-          controller: destination,
-          autofocus: true,
-          decoration: InputDecoration(labelText: c.l10n.destination),
-          onSubmitted: (_) => Navigator.pop(c, true),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c, false),
-            child: Text(c.l10n.notNow),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(c, true),
-            child: Text(c.l10n.startTrip),
-          ),
-        ],
-      ),
+    final l = context.l10n;
+    final destination = await showTextPrompt(
+      context,
+      title: l.startTripQuestion,
+      label: l.destination,
+      okLabel: l.startTrip,
+      cancelLabel: l.notNow,
     );
-    if (start == true) {
-      await ref
-          .read(trackerProvider)
-          .startTrip(destination: destination.text.trim());
+    if (destination != null) {
+      await ref.read(trackerProvider).startTrip(destination: destination);
     }
-    destination.dispose();
   }
 
   Future<void> _clockOut() async {
     final state = ref.read(trackerStateProvider);
-    await ref.read(trackerProvider).clockOut();
+    await withSummaryPrompt(context, ref, ref.read(trackerProvider).clockOut);
+    if (!mounted) return;
     if (state.trip != null &&
         state.location == WorkLocation.travel &&
         mounted) {
@@ -213,7 +198,8 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
                       ? null
                       : state.onBreak
                       ? tracker.endBreak
-                      : tracker.startBreak,
+                      : () =>
+                            withSummaryPrompt(context, ref, tracker.startBreak),
                   icon: Icon(
                     state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
                   ),
@@ -266,8 +252,11 @@ class _ProjectCard extends ConsumerWidget {
     final favorites = ref
         .watch(projectsProvider)
         .where((p) => p.favorite && !p.archived);
-    Future<void> start(String id) =>
-        tracker.startProject(id, location: state.location);
+    Future<void> start(String id) => withSummaryPrompt(
+      context,
+      ref,
+      () => tracker.startProject(id, location: state.location),
+    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -300,7 +289,8 @@ class _ProjectCard extends ConsumerWidget {
                   : IconButton(
                       tooltip: l.stopProject,
                       icon: const Icon(Icons.stop_circle_outlined),
-                      onPressed: tracker.stopProject,
+                      onPressed: () =>
+                          withSummaryPrompt(context, ref, tracker.stopProject),
                     ),
             ),
             Wrap(
@@ -325,6 +315,14 @@ class _ProjectCard extends ConsumerWidget {
                     final id = await showProjectPicker(context);
                     if (id != null) await start(id);
                   },
+                ),
+                ActionChip(
+                  avatar: const Icon(Icons.more_time, size: 18),
+                  label: Text(l.addProjectTime),
+                  onPressed: () => showProjectTimeDialog(
+                    context,
+                    date: ref.read(todayProvider),
+                  ),
                 ),
               ],
             ),
@@ -428,7 +426,10 @@ class _TodayEntries extends ConsumerWidget {
       ..sort((a, b) => a.start.compareTo(b.start));
     final entries = data.entries.where((e) => today(e.spanAt(now))).toList()
       ..sort((a, b) => a.start.compareTo(b.start));
-    if (sessions.isEmpty && entries.isEmpty) return const SizedBox.shrink();
+    final durations = data.durations.where((d) => d.date == day.date).toList();
+    if (sessions.isEmpty && entries.isEmpty && durations.isEmpty) {
+      return const SizedBox.shrink();
+    }
     String range(DateTime s, DateTime? e) =>
         '${context.time(s, zone)} – ${e == null ? context.l10n.running : context.time(e, zone)}';
     return Card(
@@ -449,8 +450,19 @@ class _TodayEntries extends ConsumerWidget {
                 ListTile(
                   dense: true,
                   leading: const Icon(Icons.work_outline),
-                  title: Text(range(e.start, e.end)),
-                  subtitle: Text(projects[e.projectId]?.name ?? '?'),
+                  title: Text(
+                    '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
+                  ),
+                  subtitle: e.note.isEmpty ? null : Text(e.note),
+                ),
+              for (final d in durations)
+                ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.timelapse),
+                  title: Text(
+                    '${formatMinutes(d.minutes)} · ${projects[d.projectId]?.name ?? '?'}',
+                  ),
+                  subtitle: d.note.isEmpty ? null : Text(d.note),
                 ),
             ],
           ),

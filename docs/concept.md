@@ -9,7 +9,7 @@ You want one personal app on **Linux (Fedora/GNOME)**, **Windows** and **Android
 | Stack | **Flutter** (Dart): one codebase, native builds for all 3 platforms |
 | Work context | **Employee**: target hours, overtime balance, vacation/sick days, public holidays, German Working Hours Act (ArbZG) checks |
 | Time model | **Two layers**: attendance (clock in/out + breaks), with project timers running inside it. Time not assigned to a project is shown as "unassigned". |
-| Projects | Each project has a **name, project number and order number**. A single search covers all three, plus the client. Project time is mainly recorded as a **duration (H:MM) with a short summary**; a start/end time is optional (planned, see `docs/status.md`) |
+| Projects | Each project has a **name, project number and order number**. A single search covers all three, plus the client. Project time is mainly recorded as a **duration (H:MM) with a short summary**; a start/end time is optional. Stopping the timer always asks for a summary |
 | Docs for agents | AGENTS.md, specs, decision records, a status/handoff log and dartdoc, so any agent (GitHub Copilot, Claude Code, …) can continue at any time |
 | Home office | Every session has a **location** (office / home / on-site / travel). Allowed home-office share as a **weekly or monthly percentage**, with "remaining" display, forecast and warning |
 | Travel | **Trips** with travel calendar, **travel time** recorded separately, your employer's crediting rules (weekday = normal day, Saturday = overtime up to 11 h, Sunday = not counted), **per-diem basis** for expense claims |

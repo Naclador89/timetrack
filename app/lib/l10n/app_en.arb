@@ -343,5 +343,28 @@
         "type": "String"
       }
     }
+  },
+  "addProjectTime": "Add project time",
+  "durationHours": "Duration (h:mm)",
+  "withClockTime": "With start time",
+  "summary": "Summary",
+  "summaryHint": "What did you do?",
+  "summaryQuestion": "What did you do for {project}?",
+  "@summaryQuestion": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "skip": "Skip",
+  "activity": "Activity",
+  "warnProjectOverWork": "{minutes} more project time than working time",
+  "@warnProjectOverWork": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
   }
 }

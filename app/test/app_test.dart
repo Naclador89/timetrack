@@ -71,6 +71,11 @@ void main() {
 
     await tester.tap(find.text('Break'));
     await tester.pumpAndSettle();
+    // Stopping the running project always asks for a summary.
+    expect(find.text('What did you do for Werk Süd?'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).last, 'Zeichnungen geprüft');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
     expect(find.text('On break since 08:30'), findsOneWidget);
     expect(find.text('No project running'), findsOneWidget);
 
@@ -78,6 +83,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Not clocked in'), findsOneWidget);
 
+    final entries = await store.transaction((tx) => tx.rows('project_entries'));
+    expect(entries.single.fields['note'], 'Zeichnungen geprüft');
     final sessions = await store.transaction((tx) => tx.rows('work_sessions'));
     expect(sessions.single.fields, containsPair('location', 'home'));
     expect(sessions.single.fields['end_utc'], '2026-11-04T07:30:00Z');
@@ -119,5 +126,43 @@ void main() {
     await tester.tap(find.text('Calendar').last);
     await tester.pumpAndSettle();
     expect(find.text('Week 45'), findsOneWidget);
+  });
+
+  testWidgets('project time as a duration with a summary', (tester) async {
+    final (store, repo) = await pumpApp(tester);
+    await repo.write('projects', 'p1', {
+      'name': 'Werk Süd',
+      'order_number': 'A-778812',
+    });
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add project time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Choose project').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Werk Süd').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Duration (h:mm)'),
+      '1:30',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Summary'),
+      'Angebot geschrieben',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    final row = (await store.transaction((tx) => tx.rows('project_entries')))
+        .single;
+    expect(row.fields, containsPair('duration_min', 90));
+    expect(row.fields, containsPair('date', '2026-11-04'));
+    expect(row.fields, containsPair('note', 'Angebot geschrieben'));
+    expect(row.fields['start_utc'], isNull);
+    expect(
+      find.textContaining('1:30 · Werk Süd'),
+      findsOneWidget,
+      reason: "shown in today's list",
+    );
   });
 }

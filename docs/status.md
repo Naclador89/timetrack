@@ -118,7 +118,7 @@ _Last updated: 2026-11-07 by Claude Code._
 **Next task**: the user re-enters the three reset settings. Then: release keystore (if approved),
 M5 Android quick access (notification, tile, widget, background sync with WorkManager).
 
-## Planned changes (requested by the user 2026-11-07, not started)
+## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
    project, as `H:MM`. A start/end time stays possible but is secondary. Sketch:
@@ -129,13 +129,16 @@ M5 Android quick access (notification, tile, widget, background sync with WorkMa
      (never below 0). Durations above the worked time go into the Review list.
    - UI: a quick "Projektzeit eintragen" dialog (project via search, date, H:MM, summary) on Today and
      in the day editor. The timer stays as an option.
+   - Done: `ProjectDuration` (core), `projectDurationFromRow`, §3 and §12 (`projectOverWork`) in
+     `evaluateDay`/`reviewItems`, `app/lib/features/projects/project_time_dialog.dart`.
 2. **A short summary per project time** ("what did I do?"). The `note` field already exists in
    `project_entries` (data-model §4) but has no UI yet:
    - entry in the quick dialog and the day editor;
    - optionally asked when stopping a running project timer;
    - shown in the day editor and the order report (an extra column "Tätigkeit"/"Activity" in CSV).
-   Open question for the user when implementing: should stopping the timer always ask for a summary,
-   or only offer it?
+   Decided by the user: stopping a running project timer (stop, switch, break, clock out) **always
+   asks** for a summary; the user may skip it. Done: `withSummaryPrompt`, notes shown in the day
+   editor and Today, column "Tätigkeit" in the order report.
 
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
@@ -187,3 +190,5 @@ M5 Android quick access (notification, tile, widget, background sync with WorkMa
 - 2026-11-07, Claude Code: Android fixes (INTERNET permission, Login Flow in a frozen app); M4 reports and
   trip meals; incident (demo data synced) cleaned up and prevented; README downloads, About link,
   release v0.1.0.
+- 2026-11-07, Claude Code: project time as duration (H:MM) with summary, summary prompt on timer stop;
+  core 176 tests, app 9 widget tests. Version 0.2.0.

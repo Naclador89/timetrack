@@ -148,7 +148,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 title: Text(
                   '${context.shortDate(b.date)} · ${b.orderNumber.isEmpty ? b.projectName : b.orderNumber}',
                 ),
-                subtitle: b.orderNumber.isEmpty ? null : Text(b.projectName),
+                subtitle: Text(
+                  [
+                    if (b.orderNumber.isNotEmpty) b.projectName,
+                    ...b.notes,
+                  ].join(' · '),
+                ),
+
                 trailing: Text(formatMinutes(b.minutes)),
               ),
             if (bookings.isNotEmpty)
