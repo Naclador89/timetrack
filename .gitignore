@@ -1,0 +1,17 @@
+# Dart / Flutter
+.dart_tool/
+build/
+coverage/
+*.iml
+.idea/
+.vscode/
+
+# Secrets – never commit (see docs/dev-setup.md)
+key.properties
+*.jks
+*.keystore
+.env
+
+# Local personal data
+*.sqlite
+*.db
