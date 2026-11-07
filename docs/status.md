@@ -8,12 +8,16 @@ _Last updated: 2026-11-07 by Claude Code._
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
 - [x] Repo skeleton: `packages/core`, `app/` (android, linux, windows), docs, ADRs 0001–0005, specs
-- [x] CI workflow and Copilot setup steps (not run yet: no GitHub repo)
+- [x] CI workflow and Copilot setup steps. First manual run green: test 1:42, Linux 1:22,
+      Android 4:54, Windows 7:56, so about 25 billed minutes for a full build
 - [x] Local builds checked: Linux release bundle, Android release APK (signed with the debug key)
 - [x] Private GitHub repo `Naclador89/timetrack`, pushed; `gh` is logged in inside the toolbox
       (push with `tool/dev.sh git push`)
-- [ ] **User**: start the CI build manually, download the Windows ZIP, start it on the Windows PC and
-      check that the PC can reach Nextcloud (the M0 "done when" criterion)
+- [ ] **User**: download the Windows ZIP (Actions → CI → run 42400905274 → artifact `windows`), start
+      it on the Windows PC and check that the PC can reach Nextcloud (the M0 "done when" criterion)
+- [ ] Actions bumped to their current majors (checkout v7, upload-artifact v7, download-artifact v8,
+      setup-java v6, action-gh-release v3) to drop the Node 20 deprecation warnings. Only `test` has run
+      on them so far; the build and release jobs get checked at the next tag or manual run.
 - [ ] Android release keystore (`docs/dev-setup.md` §5), needed before the phone installs CI-built APKs
 - [ ] Settle the Android application ID before the first real install (currently `de.timetrack.timetrack`)
 
