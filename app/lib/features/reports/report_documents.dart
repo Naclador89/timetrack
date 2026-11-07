@@ -233,6 +233,24 @@ pw.Widget _footer(ReportFormat f, pw.Context ctx, DateTime now) => pw.Row(
   ],
 );
 
+/// The month totals of the timesheet as (label, value), for the PDF and the
+/// in-app preview.
+List<(String, String)> timesheetFigures(Timesheet t, ReportFormat f) {
+  final l = f.l;
+  return [
+    (l.worked, formatMinutes(t.worked)),
+    (l.credited, formatMinutes(t.credited)),
+    (l.target, formatMinutes(t.target)),
+    (l.difference, formatMinutes(t.delta)),
+    if (t.sundayHours > 0) (l.sundayHours, formatMinutes(t.sundayHours)),
+    (l.balanceBefore, formatMinutes(t.balanceBefore)),
+    (l.balanceAfter, formatMinutes(t.balanceAfter)),
+    (l.workedDays, '${t.workedDays}'),
+    (l.homeOfficeDays, '${t.homeOfficeDays}'),
+    (l.vacationDaysTaken, f.days(t.vacationDays)),
+  ];
+}
+
 /// The monthly timesheet as a PDF (A4, with totals and a signature line).
 Future<List<int>> timesheetPdf(
   Timesheet t,
@@ -273,17 +291,8 @@ Future<List<int>> timesheetPdf(
         pw.SizedBox(height: 12),
         pw.Wrap(
           children: [
-            figure(l.worked, formatMinutes(t.worked)),
-            figure(l.credited, formatMinutes(t.credited)),
-            figure(l.target, formatMinutes(t.target)),
-            figure(l.difference, formatMinutes(t.delta)),
-            if (t.sundayHours > 0)
-              figure(l.sundayHours, formatMinutes(t.sundayHours)),
-            figure(l.balanceBefore, formatMinutes(t.balanceBefore)),
-            figure(l.balanceAfter, formatMinutes(t.balanceAfter)),
-            figure(l.workedDays, '${t.workedDays}'),
-            figure(l.homeOfficeDays, '${t.homeOfficeDays}'),
-            figure(l.vacationDaysTaken, f.days(t.vacationDays)),
+            for (final (label, value) in timesheetFigures(t, f))
+              figure(label, value),
           ],
         ),
         pw.SizedBox(height: 8),

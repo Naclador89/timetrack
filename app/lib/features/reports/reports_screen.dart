@@ -9,6 +9,7 @@ import '../../app/providers.dart';
 import '../../widgets/export.dart';
 import '../calendar/week_screen.dart' show isoWeekNumber;
 import 'report_documents.dart';
+import 'report_preview.dart';
 
 /// Monthly reports: timesheet, order report, travel expenses, statistics and
 /// the JSON backup (concept §5, item 5).
@@ -68,6 +69,19 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       ],
     );
 
+    // Timesheet and travel report open a preview first; PDF and CSV are
+    // downloaded from there (user request 2026-11-08).
+    Widget preview(ReportPreviewScreen screen) => Align(
+      alignment: Alignment.centerLeft,
+      child: FilledButton.tonalIcon(
+        onPressed: () =>
+            Navigator.of(context)
+                .push(MaterialPageRoute<void>(builder: (_) => screen)),
+        icon: const Icon(Icons.preview_outlined),
+        label: Text(l.preview),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(l.navReports)),
       body: ListView(
@@ -100,6 +114,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               runSpacing: 8,
               children: [
                 _figure(context, l.worked, formatMinutes(sheet.worked)),
+                _figure(context, l.credited, formatMinutes(sheet.credited)),
                 _figure(context, l.target, formatMinutes(sheet.target)),
                 _figure(context, l.difference, formatMinutes(sheet.delta)),
                 if (sheet.sundayHours > 0)
@@ -122,28 +137,40 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            actions([
-              (
-                'PDF',
-                () async {
-                  final bytes = await timesheetPdf(sheet, format, now: now);
-                  if (!context.mounted) return;
-                  await exportBytes(
-                    context,
-                    bytes,
-                    'Stundenzettel_$stamp.pdf',
-                    'application/pdf',
-                  );
+            preview(
+              ReportPreviewScreen(
+                title:
+                    '${l.timesheet} ${format.month(month.year, month.month)}',
+                table: timesheetTable(sheet, format),
+                figures: timesheetFigures(sheet, format),
+                legend: l.timesheetLegend,
+                numericColumns: {
+                  for (var i = 1; i <= (sheet.sundayHours > 0 ? 8 : 7); i++) i,
                 },
+                exports: [
+                  (
+                    'PDF',
+                    () async {
+                      final bytes = await timesheetPdf(sheet, format, now: now);
+                      if (!context.mounted) return;
+                      await exportBytes(
+                        context,
+                        bytes,
+                        'Stundenzettel_$stamp.pdf',
+                        'application/pdf',
+                      );
+                    },
+                  ),
+                  (
+                    'CSV',
+                    () => csv(
+                      timesheetTable(sheet, format),
+                      'Stundenzettel_$stamp.csv',
+                    ),
+                  ),
+                ],
               ),
-              (
-                'CSV',
-                () => csv(
-                  timesheetTable(sheet, format),
-                  'Stundenzettel_$stamp.csv',
-                ),
-              ),
-            ]),
+            ),
           ]),
           _section(context, l.orderReport, [
             if (bookings.isEmpty) Text(l.noBookings),
@@ -186,32 +213,48 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 trailing: Text(format.money(t.totalCents)),
               ),
             if (trips.isNotEmpty)
-              actions([
-                (
-                  'PDF',
-                  () async {
-                    final bytes = await travelPdf(
-                      trips,
-                      month.year,
-                      month.month,
-                      format,
-                      now: now,
-                    );
-                    if (!context.mounted) return;
-                    await exportBytes(
-                      context,
-                      bytes,
-                      'Reisekosten_$stamp.pdf',
-                      'application/pdf',
-                    );
-                  },
+              preview(
+                ReportPreviewScreen(
+                  title:
+                      '${l.travelReport} ${format.month(month.year, month.month)}',
+                  table: travelTable(trips, format),
+                  figures: [
+                    (
+                      l.total,
+                      format.money(trips.fold(0, (a, t) => a + t.totalCents)),
+                    ),
+                  ],
+                  numericColumns: const {3, 5, 6},
+                  exports: [
+                    (
+                      'PDF',
+                      () async {
+                        final bytes = await travelPdf(
+                          trips,
+                          month.year,
+                          month.month,
+                          format,
+                          now: now,
+                        );
+                        if (!context.mounted) return;
+                        await exportBytes(
+                          context,
+                          bytes,
+                          'Reisekosten_$stamp.pdf',
+                          'application/pdf',
+                        );
+                      },
+                    ),
+                    (
+                      'CSV',
+                      () => csv(
+                        travelTable(trips, format),
+                        'Reisekosten_$stamp.csv',
+                      ),
+                    ),
+                  ],
                 ),
-                (
-                  'CSV',
-                  () =>
-                      csv(travelTable(trips, format), 'Reisekosten_$stamp.csv'),
-                ),
-              ]),
+              ),
           ]),
           _section(
             context,

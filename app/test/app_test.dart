@@ -128,6 +128,22 @@ void main() {
     expect(find.text('Week 45'), findsOneWidget);
   });
 
+  testWidgets('the timesheet opens as a preview before the download', (
+    tester,
+  ) async {
+    await pumpApp(tester);
+    await tester.tap(find.text('Reports').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Preview and download').first);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Timesheet'), findsWidgets);
+    for (final header in ['Worked', 'Credited', 'Target', 'Balance ±']) {
+      expect(find.text(header), findsWidgets);
+    }
+    expect(find.text('PDF'), findsOneWidget);
+    expect(find.text('CSV'), findsOneWidget);
+  });
+
   testWidgets('project time as a duration with a summary', (tester) async {
     final (store, repo) = await pumpApp(tester);
     await repo.write('projects', 'p1', {

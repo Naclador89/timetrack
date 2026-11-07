@@ -732,4 +732,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get colProject => 'Projekt';
+
+  @override
+  String get preview => 'Vorschau und Download';
 }

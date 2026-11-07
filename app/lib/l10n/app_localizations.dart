@@ -1435,6 +1435,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Project'**
   String get colProject;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview and download'**
+  String get preview;
 }
 
 class _AppLocalizationsDelegate

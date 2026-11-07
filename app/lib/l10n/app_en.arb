@@ -399,5 +399,6 @@
   },
   "timesheetLegend": "Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target.",
   "tripProjectNone": "No project (optional)",
-  "colProject": "Project"
+  "colProject": "Project",
+  "preview": "Preview and download"
 }

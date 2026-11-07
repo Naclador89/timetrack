@@ -117,7 +117,7 @@ _Last updated: 2026-11-07 by Claude Code._
 
 - `v0.2.0` (2026-11-07): project time as duration with summary.
 
-### M5: Android quick access (implemented, **not yet tested on the phone**)
+### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
       snapshot in the home_widget preferences (`qa_*` keys, written by `lib/quick/quick_access.dart`).
       Buttons send `timetrack://quick/<action>` to the Dart handler `onQuickAction`, which runs
@@ -132,10 +132,20 @@ _Last updated: 2026-11-07 by Claude Code._
       resume (`SyncStore.notifyExternalChange`).
 - [x] Summary prompt for timers stopped outside the app: queued in `local_values`
       (`PendingSummaries`), asked when the app opens or resumes.
-- [ ] Test on the phone (user): tile, widget, notification actions, background sync, summary prompt.
+- [x] Tested on the phone by the user (2026-11-08): "everything seems to work".
 
-**Next task**: user tests M5 on the phone. The user re-enters the three reset settings. Then:
-release keystore (if approved), M6 Garmin glance.
+### Changes requested 2026-11-08 (before release v0.3.0), done
+- [x] Actual vs. credited time told apart everywhere: Geleistet (`W`) and Angerechnet (`Cr`) side by
+      side on Today, day, week, reports and the timesheet (legend; break column = gaps only, a
+      deducted missing break is noted).
+- [x] A project per trip (`trips.project_id`, picker in the trip dialog, column in the travel report).
+- [x] Preview of timesheet and travel report in the app (`report_preview.dart`); PDF/CSV are
+      downloaded from the preview.
+- [x] Saturday, Sunday and holiday rules apply on **every** such day, not only on trips
+      (calculations §9; holidays like Sundays, confirmed by the user).
+
+**Next task**: the user checks the 2026-11-08 changes, then tag release v0.3.0 (Windows build).
+The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -168,6 +178,8 @@ release keystore (if approved), M6 Garmin glance.
   as Sunday hours for HR (extra pay), max 11 h, shown in the monthly timesheet, **not** in the
   overtime balance (`travel.sunday = sunday_hours`, `travel.sunday_cap_min = 660`, calculations §9).
   Holidays on trips follow the same rule. All travel rules are now editable in Settings.
+- **Weekend and holiday rules apply on every day** (user, 2026-11-08), trip or not: Saturday work is
+  overtime up to the cap, Sunday and holiday work become Sunday/holiday hours (not in the balance).
 - **Nextcloud is provider-hosted**, so end-to-end encryption is mandatory in sync format 1
   (ADR 0006, sync-format §10). It's part of M3.
 - **App ID** `io.github.naclador89.timetrack`.
@@ -217,3 +229,5 @@ release keystore (if approved), M6 Garmin glance.
   core 176 tests, app 9 widget tests. Version 0.2.0.
 - 2026-11-07, Claude Code: M5 Android quick access (notification, tile, widget, WorkManager sync);
   travel settings UI and Sunday hours for HR (§9). core 182 tests, app 10 widget tests.
+- 2026-11-08, Claude Code: user confirmed M5 on the phone. Worked vs. credited everywhere, project per
+  trip, report preview, weekend/holiday rules on all days. core 183 tests, app 11 widget tests.
