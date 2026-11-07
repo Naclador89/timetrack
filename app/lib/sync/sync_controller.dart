@@ -21,6 +21,7 @@ final class SyncConfig {
     required this.appPassword,
     required this.keyBytes,
     this.proxy = '',
+    this.deviceId = '',
   });
 
   /// Reads the JSON form.
@@ -30,6 +31,7 @@ final class SyncConfig {
     appPassword: json['appPassword']! as String,
     keyBytes: base64Decode(json['key']! as String),
     proxy: json['proxy'] as String? ?? '',
+    deviceId: json['deviceId'] as String? ?? '',
   );
 
   /// WebDAV URL of the sync folder.
@@ -48,6 +50,21 @@ final class SyncConfig {
   /// means the `HTTPS_PROXY`/`HTTP_PROXY` environment variables, else direct.
   final String proxy;
 
+  /// The device id of the database this connection belongs to. The secure
+  /// storage is per app id, not per database: without this binding, a second
+  /// database (a demo or screenshot build) would sync with the real account.
+  final String deviceId;
+
+  /// This config bound to [id].
+  SyncConfig boundTo(String id) => SyncConfig(
+    root: root,
+    loginName: loginName,
+    appPassword: appPassword,
+    keyBytes: keyBytes,
+    proxy: proxy,
+    deviceId: id,
+  );
+
   /// The JSON form.
   Map<String, Object?> toJson() => {
     'root': '$root',
@@ -55,6 +72,7 @@ final class SyncConfig {
     'appPassword': appPassword,
     'key': base64Encode(keyBytes),
     'proxy': proxy,
+    'deviceId': deviceId,
   };
 }
 
@@ -171,9 +189,29 @@ class SyncController extends Notifier<SyncStatus> {
     return const SyncStatus(SyncPhase.notConfigured);
   }
 
+  /// Set with `--dart-define=TIMETRACK_DISABLE_SYNC=true` for demo and
+  /// screenshot builds (tool/screenshot.sh), so they never touch a real account.
+  static const _syncDisabled = bool.fromEnvironment('TIMETRACK_DISABLE_SYNC');
+
   Future<void> _init() async {
-    final config = await ref.read(syncConfigStoreProvider).load();
-    if (config != null) _start(config);
+    if (_syncDisabled) return;
+    final store = ref.read(syncConfigStoreProvider);
+    var config = await store.load();
+    if (config == null) return;
+    final own = ref.read(repositoryProvider).clock.deviceId;
+    if (config.deviceId.isEmpty) {
+      // Configs from before the binding existed: bind to this database.
+      config = config.boundTo(own);
+      await store.save(config);
+    }
+    if (config.deviceId != own) {
+      state = SyncStatus(
+        SyncPhase.error,
+        error: StateError('Sync connection belongs to another database'),
+      );
+      return;
+    }
+    _start(config);
   }
 
   void _start(SyncConfig config) {
@@ -241,8 +279,9 @@ class SyncController extends Notifier<SyncStatus> {
 
   /// Saves [config] and starts syncing.
   Future<void> connect(SyncConfig config) async {
-    await ref.read(syncConfigStoreProvider).save(config);
-    _start(config);
+    final bound = config.boundTo(ref.read(repositoryProvider).clock.deviceId);
+    await ref.read(syncConfigStoreProvider).save(bound);
+    _start(bound);
   }
 
   /// Forgets the connection. Local data and the files on Nextcloud stay.

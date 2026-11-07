@@ -115,6 +115,13 @@ report (`perDiemForTrip`), and statistics charts.
 - **Per-diem rates** DE 14/28 € checked against secondary sources; still valid in 2026.
 
 ## Known issues / open questions
+- **Incident 2026-11-07 (resolved):** a screenshot build with the sample database found the user's
+  sync connection in the OS keyring (stored per app id) and uploaded the sample week to the real
+  Nextcloud (device folder `devices/c75e1649ff1b05c3`). Cleaned up with the user's consent: 19
+  tombstones and 3 settings reset to "unset" (`federal_state`, `starting_balance`,
+  `balance_start_date`), which the user re-enters. Keep that device folder: other devices need its
+  tombstones. Prevention: `SyncConfig.deviceId` binds the connection to its database,
+  `TIMETRACK_DISABLE_SYNC` for demo/screenshot builds, `saveSetting` writes `deleted: false`.
 - **Windows PC is company-managed and sometimes on a VPN** (user, 2026-11-07). For M3:
   - Dart's `HttpClient` doesn't use the Windows system proxy by itself. Support the system or PAC
     proxy (for example read it via WinHTTP) or a manual proxy setting, and test with and without the VPN.

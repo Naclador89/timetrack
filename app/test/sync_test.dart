@@ -103,4 +103,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('cloud.example.com'), findsOneWidget);
   });
+
+  testWidgets('a connection bound to another database does not sync', (
+    tester,
+  ) async {
+    final files = InMemoryRemoteFolder();
+    final client = fakeNextcloud(files);
+    final config = MemorySyncConfigStore()
+      ..config = SyncConfig(
+        root: root,
+        loginName: 'alice',
+        appPassword: 'secret',
+        keyBytes: List.filled(32, 1),
+        deviceId: 'ffffffffffffffff', // not this database
+      );
+    final repo = await SyncedRepository.open(
+      InMemorySyncStore(),
+      'aaaaaaaaaaaaaaaa',
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          storeProvider.overrideWithValue(repo.store),
+          repositoryProvider.overrideWithValue(repo),
+          clockProvider.overrideWithValue(() => fixedNow),
+          nowProvider.overrideWith((ref) => Stream.value(fixedNow)),
+          syncConfigStoreProvider.overrideWithValue(config),
+          httpClientFactoryProvider.overrideWithValue((_) => client),
+        ],
+        child: TimeTrackApp(router: buildRouter()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(files.filePaths, isEmpty, reason: 'no request may reach the server');
+  });
 }

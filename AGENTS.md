@@ -74,6 +74,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - **Language**: code, comments and docs in English. UI strings go through ARB localization: add every new string to **both** `app/lib/l10n/app_en.arb` (the template) and `app_de.arb`, then run `flutter gen-l10n`. German is the user's language.
 - **Commits**: Conventional Commits (`feat(core): …`, `fix(app): …`, `docs: …`), small and focused.
 - **Android permissions go into `app/android/app/src/main/AndroidManifest.xml`.** Flutter adds `INTERNET` only to the debug/profile manifests, so a missing permission shows up only in release builds (that's how sync broke on the phone once). Intents opened via `url_launcher` need a `<queries>` entry.
+- **Demo data never meets real accounts.** The sync connection lives in the OS keyring per *app id*, not per database. A demo or screenshot build of the same app would find it, so it must be built with `--dart-define=TIMETRACK_DISABLE_SYNC=true` (`tool/screenshot.sh` does this). The connection is also bound to the device id of its database (`SyncConfig.deviceId`). On 2026-11-07 a screenshot run once uploaded sample data to the user's Nextcloud; it was cleaned up with tombstones.
 - **Never commit secrets**: no keystores, Nextcloud credentials or personal time data.
 
 ## Definition of done

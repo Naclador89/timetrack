@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Builds the Linux app opening at ROUTE, runs it with an isolated data folder,
+# Builds the Linux app opening at ROUTE, runs it with an isolated data folder and
+# sync disabled (it must never reach the user's real Nextcloud),
 # and saves a screenshot of its window. Maintainer machine only (toolbox
 # `flutter` with xwd, ImageMagick and xdotool; X11 via XWayland).
 #
@@ -13,7 +14,7 @@ OUT=$(realpath -m "${2:?output png}")
 DATA=$(realpath -m "${3:-$(mktemp -d)}")
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT/app"
-"$ROOT/tool/dev.sh" flutter build linux --debug --dart-define=INITIAL_ROUTE="$ROUTE" >/dev/null
+"$ROOT/tool/dev.sh" flutter build linux --debug --dart-define=INITIAL_ROUTE="$ROUTE" --dart-define=TIMETRACK_DISABLE_SYNC=true >/dev/null
 "$ROOT/tool/dev.sh" bash -c '
   export XDG_DATA_HOME="$1" GDK_BACKEND=x11
   build/linux/x64/debug/bundle/timetrack >/dev/null 2>&1 &
