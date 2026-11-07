@@ -18,14 +18,16 @@ const _tables = ['work_sessions', 'project_entries', 'projects'];
 String _iso(int millis) =>
     '${DateTime.fromMillisecondsSinceEpoch(millis ~/ 60000 * 60000, isUtc: true).toIso8601String().substring(0, 16)}:00Z';
 
-Future<void> _runScenario(int seed, {int steps = 120}) async {
+Future<void> _runScenario(int seed, StoreKind kind, {int steps = 120}) async {
   final random = Random(seed);
   final server = InMemoryRemoteFolder();
   var time = 1794000000000;
   final devices = <SimDevice>[];
   for (final id in _ids) {
     final skew = random.nextInt(600001) - 300000; // ±5 minutes
-    devices.add(await SimDevice.create(id, server, now: () => time + skew));
+    devices.add(
+      await SimDevice.create(id, server, now: () => time + skew, kind: kind),
+    );
   }
   final localWrites = <String>{};
 
@@ -106,7 +108,7 @@ Future<void> _runScenario(int seed, {int steps = 120}) async {
   );
 
   for (final d in devices) {
-    final actual = d.store.allRows;
+    final actual = await d.allRows();
     expect(
       actual.keys.toSet(),
       expected.keys.toSet(),
@@ -125,15 +127,12 @@ Future<void> _runScenario(int seed, {int steps = 120}) async {
       );
     }
     for (final table in ['work_sessions', 'project_entries']) {
-      final open = d.store
-          .rowsOf(table)
-          .values
-          .where(
-            (r) =>
-                !r.isDeleted &&
-                r.fields['end_utc'] == null &&
-                r.fields['start_utc'] is String,
-          );
+      final open = (await d.rowsOf(table)).values.where(
+        (r) =>
+            !r.isDeleted &&
+            r.fields['end_utc'] == null &&
+            r.fields['start_utc'] is String,
+      );
       expect(
         open.length,
         lessThanOrEqualTo(1),
@@ -144,9 +143,12 @@ Future<void> _runScenario(int seed, {int steps = 120}) async {
 }
 
 void main() {
-  test('§1/§6/§7 three devices converge under random edits, syncs and connection losses', () async {
-    for (var seed = 1; seed <= 30; seed++) {
-      await _runScenario(seed);
-    }
-  }, timeout: const Timeout(Duration(minutes: 5)));
+  for (final kind in StoreKind.values) {
+    test('§1/§6/§7 three devices converge under random edits, syncs and '
+        'connection losses (${kind.name} store)', () async {
+      for (var seed = 1; seed <= 30; seed++) {
+        await _runScenario(seed, kind);
+      }
+    }, timeout: const Timeout(Duration(minutes: 5)));
+  }
 }

@@ -1,4 +1,20 @@
+import 'package:drift/drift.dart' show driftRuntimeOptions;
+import 'package:drift/native.dart';
 import 'package:timetrack_core/timetrack_core.dart';
+
+/// Which [SyncStore] a simulated device uses.
+enum StoreKind {
+  memory,
+  sqlite;
+
+  SyncStore create() {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+    return switch (this) {
+      memory => InMemorySyncStore(),
+      sqlite => DriftSyncStore(TimeTrackDatabase(NativeDatabase.memory())),
+    };
+  }
+}
 
 /// A remote folder that can simulate lost connections at chosen moments.
 final class FlakyRemote implements RemoteFolder {
@@ -64,8 +80,9 @@ final class SimDevice {
     InMemoryRemoteFolder server, {
     String passphrase = 'correct horse',
     int Function()? now,
+    StoreKind kind = StoreKind.memory,
   }) async {
-    final store = InMemorySyncStore();
+    final store = kind.create();
     final remote = FlakyRemote(server);
     final cipher = await connectSyncFolder(
       remote,
@@ -84,10 +101,21 @@ final class SimDevice {
   }
 
   final String id;
-  final InMemorySyncStore store;
+  final SyncStore store;
   final SyncedRepository repository;
   final SyncEngine engine;
   final FlakyRemote remote;
+
+  /// Rows of [table], read through the [SyncStore] interface.
+  Future<Map<String, StoredRow>> rowsOf(String table) async => {
+    for (final r in await store.transaction((tx) => tx.rows(table))) r.id: r,
+  };
+
+  /// All rows of all synced tables, keyed `table/id`.
+  Future<Map<String, StoredRow>> allRows() async => {
+    for (final table in syncedTables)
+      for (final r in (await rowsOf(table)).values) '$table/${r.id}': r,
+  };
 
   /// Syncs and swallows simulated connection errors.
   Future<SyncReport?> trySync() async {

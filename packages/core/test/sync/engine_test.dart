@@ -9,14 +9,20 @@ import 'sync_test_support.dart';
 const a = 'aaaaaaaaaaaaaaaa', b = 'bbbbbbbbbbbbbbbb';
 
 void main() {
+  for (final kind in StoreKind.values) {
+    group(kind.name, () => _engineTests(kind));
+  }
+}
+
+void _engineTests(StoreKind kind) {
   late InMemoryRemoteFolder server;
   setUp(() => server = InMemoryRemoteFolder());
 
   test(
     '§7 a write on one device reaches the other; files are encrypted',
     () async {
-      final da = await SimDevice.create(a, server);
-      final db = await SimDevice.create(b, server);
+      final da = await SimDevice.create(a, server, kind: kind);
+      final db = await SimDevice.create(b, server, kind: kind);
       await da.repository.write('work_sessions', 's1', {
         'start_utc': '2026-11-07T08:00:00Z',
         'location': 'home',
@@ -25,7 +31,7 @@ void main() {
       final report = await db.engine.sync();
       expect((report.downloadedFiles, report.appliedChanges), (1, 1));
       expect(
-        db.store.rowsOf('work_sessions')['s1']!.fields['location'],
+        (await db.rowsOf('work_sessions'))['s1']!.fields['location'],
         'home',
       );
 
@@ -39,8 +45,8 @@ void main() {
   );
 
   test('§7 nothing new → nothing downloaded (folder ETag unchanged)', () async {
-    final da = await SimDevice.create(a, server);
-    final db = await SimDevice.create(b, server);
+    final da = await SimDevice.create(a, server, kind: kind);
+    final db = await SimDevice.create(b, server, kind: kind);
     await da.repository.write('projects', 'p', {'name': 'X'});
     await da.engine.sync();
     await db.engine.sync();
@@ -50,8 +56,8 @@ void main() {
   test(
     '§7 connection lost after upload: retry reuses the name, no duplicate',
     () async {
-      final da = await SimDevice.create(a, server);
-      final db = await SimDevice.create(b, server);
+      final da = await SimDevice.create(a, server, kind: kind);
+      final db = await SimDevice.create(b, server, kind: kind);
       await da.engine.sync(); // prepare first, so the fault hits the batch
       await da.repository.write('projects', 'p', {'name': 'X'});
       da.remote.failAfterNextCreate = true;
@@ -64,15 +70,15 @@ void main() {
         hasLength(2),
       );
       await db.engine.sync();
-      expect(db.store.rowsOf('projects')['p']!.fields['name'], 'Y');
+      expect((await db.rowsOf('projects'))['p']!.fields['name'], 'Y');
     },
   );
 
   test(
     '§7 connection lost before upload or during download: nothing lost',
     () async {
-      final da = await SimDevice.create(a, server);
-      final db = await SimDevice.create(b, server);
+      final da = await SimDevice.create(a, server, kind: kind);
+      final db = await SimDevice.create(b, server, kind: kind);
       await da.engine.sync(); // prepare first, so the fault hits the batch
       await da.repository.write('projects', 'p', {'name': 'X'});
       da.remote.failBeforeNextCreate = true;
@@ -81,13 +87,13 @@ void main() {
       db.remote.failNextRead = true;
       expect(await db.trySync(), isNull);
       await db.engine.sync();
-      expect(db.store.rowsOf('projects')['p']!.fields['name'], 'X');
+      expect((await db.rowsOf('projects'))['p']!.fields['name'], 'X');
     },
   );
 
   test('§7.1 two sessions opened offline: the older one is closed at the newer start', () async {
-    final da = await SimDevice.create(a, server);
-    final db = await SimDevice.create(b, server);
+    final da = await SimDevice.create(a, server, kind: kind);
+    final db = await SimDevice.create(b, server, kind: kind);
     await da.repository.write('work_sessions', 'early', {
       'start_utc': '2026-11-07T08:00:00Z',
       'end_utc': null,
@@ -102,33 +108,33 @@ void main() {
     await db.engine.sync();
     await da.engine.sync();
     for (final d in [da, db]) {
-      final rows = d.store.rowsOf('work_sessions');
+      final rows = (await d.rowsOf('work_sessions'));
       expect(rows['early']!.fields['end_utc'], '2026-11-07T08:05:00Z');
       expect(rows['late']!.fields['end_utc'], isNull);
     }
   });
 
   test('§10 a wrong passphrase on a further device is rejected', () async {
-    await SimDevice.create(a, server);
+    await SimDevice.create(a, server, kind: kind);
     await expectLater(
-      SimDevice.create(b, server, passphrase: 'wrong'),
+      SimDevice.create(b, server, passphrase: 'wrong', kind: kind),
       throwsA(isA<SyncCryptoException>()),
     );
   });
 
   test('§10 a damaged file stops the sync without applying anything', () async {
-    final da = await SimDevice.create(a, server);
-    final db = await SimDevice.create(b, server);
+    final da = await SimDevice.create(a, server, kind: kind);
+    final db = await SimDevice.create(b, server, kind: kind);
     await da.repository.write('projects', 'p', {'name': 'X'});
     await da.engine.sync();
     final file = server.filePaths.firstWhere((p) => p.contains('/ops/'));
     server.tamper(file, [...server.rawFile(file)!]..[30] ^= 1);
     await expectLater(db.engine.sync(), throwsA(isA<SyncCryptoException>()));
-    expect(db.store.rowsOf('projects'), isEmpty);
+    expect((await db.rowsOf('projects')), isEmpty);
   });
 
   test('§9 a newer remote format stops the sync', () async {
-    final da = await SimDevice.create(a, server);
+    final da = await SimDevice.create(a, server, kind: kind);
     final json = jsonDecode(
       utf8.decode(server.rawFile('format.json')!),
     ) as Map<String, Object?>;

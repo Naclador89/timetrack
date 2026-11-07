@@ -1,7 +1,8 @@
 import 'hlc.dart';
 
-/// The synced tables (spec: sync-format.md §4). Changes to other tables are
-/// ignored when merging, so newer app versions can add tables.
+/// The synced tables this app version knows (spec: sync-format.md §4,
+/// data-model.md). Changes to other tables are stored too but not used, so
+/// newer app versions can add tables.
 const syncedTables = {
   'work_sessions',
   'breaks',

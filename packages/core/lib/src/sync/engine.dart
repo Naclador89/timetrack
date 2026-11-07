@@ -240,7 +240,6 @@ final class SyncEngine {
         final clock = repository.clock;
         for (final change in batch) {
           clock.receive(change.hlc);
-          if (!syncedTables.contains(change.table)) continue;
           await tx.putRow(
             applyChange(await tx.row(change.table, change.id), change),
           );

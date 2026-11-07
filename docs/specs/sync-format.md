@@ -108,7 +108,8 @@ To apply a change `op`:
    field_clock[field]` (string comparison), set `row[field] = value` and `field_clock[field] = op.hlc`.
    Otherwise ignore that field.
 3. Update the local HLC with `op.hlc` (§3, receiving).
-4. Unknown tables are skipped. Unknown fields are stored nowhere (see §9 for replay).
+4. Changes to **unknown tables and fields are stored as well** (the database keeps rows generically,
+   ADR 0007). The app ignores what it doesn't know, and a newer app version finds the data already there.
 
 Files from different devices can arrive in any order, so an update can arrive before its create.
 The row then has `null` in fields not written yet. All synced data columns are therefore nullable in
@@ -180,9 +181,9 @@ lists the folder again in its next cycle.
 
 - `format` in `format.json` and in the batch header changes **only** for incompatible changes to this
   spec. Clients refuse to read a newer `format`.
-- **Adding** tables or fields is compatible. Older clients ignore them (§6.4). When a client update
-  adds fields, the client does a **full replay** once: it clears `seen_files` and `folder_etags`,
-  pulls again and re-applies all files, so values written by newer clients reach the new columns.
+- **Adding** tables or fields is compatible. Older clients store them without understanding them
+  (§6.4), so no replay is needed after an update. A full replay (clear `seen_files` and
+  `folder_etags`, then pull everything again) is still available as a repair tool (`resetSeen`).
 
 ## §10 Security and end-to-end encryption
 

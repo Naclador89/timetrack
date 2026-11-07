@@ -4,6 +4,9 @@
 /// the sync implements `docs/specs/sync-format.md`.
 library;
 
+export 'src/data/database.dart';
+export 'src/data/drift_sync_store.dart';
+export 'src/data/mapping.dart';
 export 'src/model/attendance.dart';
 export 'src/model/planning.dart';
 export 'src/model/project.dart';
