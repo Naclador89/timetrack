@@ -4,6 +4,10 @@
 /// the sync implements `docs/specs/sync-format.md`.
 library;
 
+export 'src/model/attendance.dart';
+export 'src/rules/arbzg.dart';
+export 'src/rules/day_work.dart';
 export 'src/rules/holidays.dart';
+export 'src/time/home_time_zone.dart';
 export 'src/time/local_date.dart';
 export 'src/time/span.dart';

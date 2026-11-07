@@ -57,8 +57,9 @@ Let `W = W(D)` before any deduction.
   that are **≥ 15 min** each. A gap is either a recorded break or time between clock-out and clock-in.
   Gaps shorter than 15 min don't count.
 - **Missing break** `M = max(0, R(W) − C)`.
-- **Continuous work check**: every stretch of working intervals not separated by a countable gap
-  (≥ 15 min) must be ≤ 360 min, otherwise warning `work_over_6h_without_break`.
+- **Continuous work check**: the worked minutes of every stretch of working intervals not separated
+  by a countable gap (≥ 15 min) must be ≤ 360, otherwise warning `work_over_6h_without_break`.
+  Gaps shorter than 15 min neither count as a break nor as work.
 - **Mode (setting)**:
   - `warn` (default): `W_eff = W`. If `M > 0` → warning `break_missing` with M minutes.
   - `deduct`: deduct the **smallest** whole-minute `d ≥ 0` with `C + d ≥ R(W − d)` and set `W_eff = W − d`.
