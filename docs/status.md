@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M0 done, M1 in progress
+## Current milestone: M1 done, next M2 (local MVP app)
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -44,15 +44,26 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] `SyncEngine` (push, pull, resolve §7.1) and `connectSyncFolder` (set up or join with passphrase)
 - [x] Property-based convergence test: 3 devices, clock skew, random edits, syncs and connection
       losses, 30 seeds. Mutation-checked: it fails if merge or resolve is broken.
-- [ ] drift database implementing `SyncStore` (tables for all synced rows plus local sync state),
-      and mapping complete rows to the model classes for `Ledger`
+- [x] drift database implementing `SyncStore` (generic rows, ADR 0007) and mapping complete rows to
+      the model classes (`docs/specs/data-model.md`, `ledgerDataFromRows`). The engine and
+      convergence tests run against both the in-memory store and SQLite.
 
-**Next task**: the drift database (`core/lib/src/data/`). Implement `SyncStore` on SQLite: one table
-per synced table (all data columns nullable, plus `field_clock` JSON and `deleted`) and local tables
-`outbox`, `pending_batch`, `seen_files`, `folder_etags`, `hlc_state`. Then map complete rows to
-`WorkSession`, `Project`, … (skip incomplete ones, sync-format §6). Run the existing engine and
-convergence tests against it too (e.g. parameterise `SimDevice` by store). That completes M1;
-M2 (the app UI) follows.
+### M2: local MVP app (Flutter, no sync yet)
+- [ ] Commands in `core` for the two-layer rules (concept §2, "How the two layers interact"):
+      clock in/out, break start/end, start/switch/stop project, with auto clock-in, stop on
+      clock-out, pause on break. Written via `SyncedRepository`, unit-tested.
+- [ ] App setup: Riverpod, go_router, localization (ARB, `de` default and `en`), open the database
+      with `drift_flutter` (`driftDatabase(name: 'timetrack')`), device id in `local_values`.
+- [ ] Today screen: clock in/out with location, break, favorite chips, timeline, worked vs target,
+      balance, home-office quota.
+- [ ] Project picker (search, `searchProjects`) and project editing.
+- [ ] Week view and day editor.
+- [ ] Absences, schedules, home-office rules, trips (with meals), settings (Bundesland, break mode,
+      starting balance, travel rules).
+- [ ] Desktop and phone layouts. Checked on Linux and the Android phone.
+
+**Next task**: M2, first item: the attendance and project commands in `core` (pure Dart, tested
+against `InMemorySyncStore`). Then the app setup.
 Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
 add an index by date if balances over several years get slow.
 
@@ -88,3 +99,5 @@ add an index by date if balances over several years get slow.
   now covers the whole day; E2E encryption added to sync format 1 (ADR 0006); app ID changed; 109 tests.
 - 2026-11-07, Claude Code: sync core: HLC, change format, merge, E2E encryption, store and remote
   abstractions, repository, engine, convergence test; 132 tests green. Remaining in M1: drift store.
+- 2026-11-07, Claude Code: drift store (generic rows, ADR 0007), data-model spec, row mapping; sync
+  tests also on SQLite; unknown tables and fields are now kept. **M1 done**, 148 tests green.

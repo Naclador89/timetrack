@@ -16,7 +16,7 @@ packages/core/ (pure Dart)           Everything testable without Flutter:
   model/     plain value types      
   rules/     day_work, arbzg, …      calculations.md §2–§14 as pure functions
   search/    project search          (M1)
-  data/      drift database          tables + SyncedRepository (row + field clock + outbox in one tx) (M1)
+  data/      drift database          generic synced rows + local sync state (ADR 0007), mapping to models
   sync/      HLC, ops, engine,       sync-format.md (M1: engine against fakes; M3: real WebDAV)
              WebDAV client
 ```
@@ -46,7 +46,9 @@ Rules for dependencies:
 | `core/model/project`, `core/search/project_search` | project-search | done |
 | `core/sync/hlc`, `change`, `batch` (clock, changes, merge, batch files) | sync-format §3–§6 | done |
 | `core/sync/crypto` (Argon2id key, AES-256-GCM files) | sync-format §10 | done |
-| `core/sync/store`, `repository` (`SyncStore`, `SyncedRepository`) | sync-format §7 | done (in-memory store; drift store next) |
+| `core/sync/store`, `repository` (`SyncStore`, `SyncedRepository`) | sync-format §7 | done |
+| `core/data/database`, `drift_sync_store` (SQLite via drift, generic rows) | sync-format §7, ADR 0007 | done |
+| `core/data/mapping` (rows → models) | data-model | done |
 | `core/sync/remote` (`RemoteFolder`, in-memory fake) | sync-format §2, §7 | done (WebDAV client in M3) |
 | `core/sync/engine` (`SyncEngine`, `connectSyncFolder`) | sync-format §7, §7.1 | done |
 | everything else | | planned (see `docs/status.md`) |

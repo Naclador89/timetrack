@@ -22,7 +22,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. Created in M0. |
 | `garmin/` | Connect IQ watch app and glance (Monkey C), milestone M6. |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `project-search.md`. |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`. |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
@@ -38,6 +38,8 @@ cd packages/core
 ../../tool/dev.sh dart format --set-exit-if-changed .
 ../../tool/dev.sh dart analyze --fatal-infos
 ../../tool/dev.sh dart test
+# after changing drift tables in lib/src/data/database.dart (generated code is committed):
+../../tool/dev.sh dart run build_runner build --delete-conflicting-outputs && ../../tool/dev.sh dart format .
 
 # app (Flutter)
 cd app
@@ -54,7 +56,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 
 - **Logic goes in `core`, UI in `app`.** If you write an `if` about time rules in a widget, it belongs in `core`.
 - **Specs first.** When you change a rule or the sync format, update `docs/specs/*` in the same commit. Changing the sync format also needs a format-version bump and a new ADR.
-- **Synced data is only written through the synced repository** (row, field clock and outbox in one transaction; see `docs/specs/sync-format.md`). Never write synced tables directly.
+- **Synced data is only written through `SyncedRepository`** (row, field clock and outbox in one transaction; see `docs/specs/sync-format.md`). Never write `synced_rows` directly. Field names and types come from `docs/specs/data-model.md`, and reading goes through `core/lib/src/data/mapping.dart`.
 - **Time**: store instants in UTC, truncated to the full minute. Work out calendar days in the configured home time zone (default `Europe/Berlin`). Durations are whole minutes (`int`).
 - **IDs**: UUIDv7 strings.
 - **Docs in code**: every public API in `core` has `///` dartdoc; the `public_member_api_docs` lint makes CI fail without it. Comments explain *why*, not *what*. Match the style of the code around you.
