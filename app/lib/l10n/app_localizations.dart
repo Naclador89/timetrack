@@ -1,0 +1,914 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_de.dart';
+import 'app_localizations_en.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
+    Locale('en'),
+  ];
+
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TimeTrack'**
+  String get appTitle;
+
+  /// No description provided for @navToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get navToday;
+
+  /// No description provided for @navCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get navCalendar;
+
+  /// No description provided for @navProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get navProjects;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
+
+  /// No description provided for @clockIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in'**
+  String get clockIn;
+
+  /// No description provided for @clockOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock out'**
+  String get clockOut;
+
+  /// No description provided for @startBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Break'**
+  String get startBreak;
+
+  /// No description provided for @endBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'End break'**
+  String get endBreak;
+
+  /// No description provided for @notClockedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not clocked in'**
+  String get notClockedIn;
+
+  /// No description provided for @clockedInSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in since {time}'**
+  String clockedInSince(String time);
+
+  /// No description provided for @onBreakSince.
+  ///
+  /// In en, this message translates to:
+  /// **'On break since {time}'**
+  String onBreakSince(String time);
+
+  /// No description provided for @locationOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get locationOffice;
+
+  /// No description provided for @locationHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home office'**
+  String get locationHome;
+
+  /// No description provided for @locationOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'On site'**
+  String get locationOnSite;
+
+  /// No description provided for @locationTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get locationTravel;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @worked.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked'**
+  String get worked;
+
+  /// No description provided for @target.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get target;
+
+  /// No description provided for @credited.
+  ///
+  /// In en, this message translates to:
+  /// **'Credited'**
+  String get credited;
+
+  /// No description provided for @difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get difference;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime balance'**
+  String get balance;
+
+  /// No description provided for @balanceToday.
+  ///
+  /// In en, this message translates to:
+  /// **'incl. today'**
+  String get balanceToday;
+
+  /// No description provided for @unassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Without project'**
+  String get unassigned;
+
+  /// No description provided for @chooseProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose project'**
+  String get chooseProject;
+
+  /// No description provided for @stopProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop project'**
+  String get stopProject;
+
+  /// No description provided for @noProjectRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'No project running'**
+  String get noProjectRunning;
+
+  /// No description provided for @homeOfficeWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Home office this week: {used} of {allowed} days, {left} left'**
+  String homeOfficeWeek(String used, String allowed, String left);
+
+  /// No description provided for @homeOfficeMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Home office this month: {used} of {allowed} days, {left} left'**
+  String homeOfficeMonth(String used, String allowed, String left);
+
+  /// No description provided for @setupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your federal state and work schedule in the settings, so targets and balances are right.'**
+  String get setupHint;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// No description provided for @startTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Start trip'**
+  String get startTrip;
+
+  /// No description provided for @endTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'End trip'**
+  String get endTrip;
+
+  /// No description provided for @onTripTo.
+  ///
+  /// In en, this message translates to:
+  /// **'On a trip to {destination}'**
+  String onTripTo(String destination);
+
+  /// No description provided for @onTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'On a trip'**
+  String get onTrip;
+
+  /// No description provided for @startTripQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a business trip?'**
+  String get startTripQuestion;
+
+  /// No description provided for @endTripQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Has the trip ended?'**
+  String get endTripQuestion;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get destination;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country code'**
+  String get country;
+
+  /// No description provided for @overnight.
+  ///
+  /// In en, this message translates to:
+  /// **'With overnight stay'**
+  String get overnight;
+
+  /// No description provided for @depart.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get depart;
+
+  /// No description provided for @returnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get returnTime;
+
+  /// No description provided for @notices.
+  ///
+  /// In en, this message translates to:
+  /// **'Notices'**
+  String get notices;
+
+  /// No description provided for @warnBreakMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} break missing (ArbZG §4)'**
+  String warnBreakMissing(String minutes);
+
+  /// No description provided for @warnOver6h.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 6 h without a break (ArbZG §4)'**
+  String get warnOver6h;
+
+  /// No description provided for @warnOver10h.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 10 h worked (ArbZG §3)'**
+  String get warnOver10h;
+
+  /// No description provided for @warnRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {minutes} rest since the previous day (ArbZG §5)'**
+  String warnRest(String minutes);
+
+  /// No description provided for @warnSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Work on a Sunday or public holiday'**
+  String get warnSunday;
+
+  /// No description provided for @warnOpenSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in for a long time – forgot to clock out?'**
+  String get warnOpenSession;
+
+  /// No description provided for @warnOverlapSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlapping working times'**
+  String get warnOverlapSessions;
+
+  /// No description provided for @warnOverlapProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlapping project times'**
+  String get warnOverlapProjects;
+
+  /// No description provided for @warnProjectOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} project time outside working time'**
+  String warnProjectOutside(String minutes);
+
+  /// No description provided for @warnQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Another home-office day would exceed your quota'**
+  String get warnQuota;
+
+  /// No description provided for @weekNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {number}'**
+  String weekNumber(String number);
+
+  /// No description provided for @weekTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get weekTotal;
+
+  /// No description provided for @sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Working times'**
+  String get sessions;
+
+  /// No description provided for @breaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks'**
+  String get breaks;
+
+  /// No description provided for @projectEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Project times'**
+  String get projectEntries;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @end.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get end;
+
+  /// No description provided for @running.
+  ///
+  /// In en, this message translates to:
+  /// **'running'**
+  String get running;
+
+  /// No description provided for @absence.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence'**
+  String get absence;
+
+  /// No description provided for @absences.
+  ///
+  /// In en, this message translates to:
+  /// **'Absences'**
+  String get absences;
+
+  /// No description provided for @absenceVacation.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation'**
+  String get absenceVacation;
+
+  /// No description provided for @absenceSick.
+  ///
+  /// In en, this message translates to:
+  /// **'Sick'**
+  String get absenceSick;
+
+  /// No description provided for @absenceSpecialLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Special leave'**
+  String get absenceSpecialLeave;
+
+  /// No description provided for @absenceCompTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time off in lieu'**
+  String get absenceCompTime;
+
+  /// No description provided for @absenceExtraHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Day off'**
+  String get absenceExtraHoliday;
+
+  /// No description provided for @halfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Half day'**
+  String get halfDay;
+
+  /// No description provided for @addAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Add absence'**
+  String get addAbsence;
+
+  /// No description provided for @trips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get trips;
+
+  /// No description provided for @newTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'New trip'**
+  String get newTrip;
+
+  /// No description provided for @holiday.
+  ///
+  /// In en, this message translates to:
+  /// **'Public holiday'**
+  String get holiday;
+
+  /// No description provided for @tripDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get tripDay;
+
+  /// No description provided for @newProject.
+  ///
+  /// In en, this message translates to:
+  /// **'New project'**
+  String get newProject;
+
+  /// No description provided for @editProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit project'**
+  String get editProject;
+
+  /// No description provided for @projectName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get projectName;
+
+  /// No description provided for @projectNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Project number'**
+  String get projectNumber;
+
+  /// No description provided for @orderNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get orderNumber;
+
+  /// No description provided for @client.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get client;
+
+  /// No description provided for @favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favorite;
+
+  /// No description provided for @archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archived;
+
+  /// No description provided for @searchProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, project or order number'**
+  String get searchProjects;
+
+  /// No description provided for @showArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Show archived'**
+  String get showArchived;
+
+  /// No description provided for @createProjectNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Create project “{name}”'**
+  String createProjectNamed(String name);
+
+  /// No description provided for @noProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects yet'**
+  String get noProjects;
+
+  /// No description provided for @federalState.
+  ///
+  /// In en, this message translates to:
+  /// **'Federal state'**
+  String get federalState;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @schedules.
+  ///
+  /// In en, this message translates to:
+  /// **'Work schedules'**
+  String get schedules;
+
+  /// No description provided for @newSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'New schedule'**
+  String get newSchedule;
+
+  /// No description provided for @validFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid from'**
+  String get validFrom;
+
+  /// No description provided for @hoursPerWeekday.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours per weekday (h:mm)'**
+  String get hoursPerWeekday;
+
+  /// No description provided for @vacationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation days per year'**
+  String get vacationDays;
+
+  /// No description provided for @perWeekSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} per week, {days} vacation days'**
+  String perWeekSummary(String hours, String days);
+
+  /// No description provided for @breakRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing breaks'**
+  String get breakRule;
+
+  /// No description provided for @breakWarn.
+  ///
+  /// In en, this message translates to:
+  /// **'Warn only'**
+  String get breakWarn;
+
+  /// No description provided for @breakDeduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Deduct automatically'**
+  String get breakDeduct;
+
+  /// No description provided for @startingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting balance (h:mm, may be negative)'**
+  String get startingBalance;
+
+  /// No description provided for @balanceStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance counted from'**
+  String get balanceStart;
+
+  /// No description provided for @homeOfficeRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Home-office rules'**
+  String get homeOfficeRules;
+
+  /// No description provided for @newRule.
+  ///
+  /// In en, this message translates to:
+  /// **'New rule'**
+  String get newRule;
+
+  /// No description provided for @perWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'per week'**
+  String get perWeek;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get perMonth;
+
+  /// No description provided for @maxPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Max. share in %'**
+  String get maxPercent;
+
+  /// No description provided for @basisWorked.
+  ///
+  /// In en, this message translates to:
+  /// **'of days worked'**
+  String get basisWorked;
+
+  /// No description provided for @basisScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'of scheduled workdays'**
+  String get basisScheduled;
+
+  /// No description provided for @ruleSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} % {period} {basis}'**
+  String ruleSummary(String percent, String period, String basis);
+
+  /// No description provided for @travelRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel rules'**
+  String get travelRules;
+
+  /// No description provided for @saturdayCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday on a trip: max. hours'**
+  String get saturdayCap;
+
+  /// No description provided for @autoClockIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in automatically when a project starts'**
+  String get autoClockIn;
+
+  /// No description provided for @resumeAfterBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume the project after a break'**
+  String get resumeAfterBreak;
+
+  /// No description provided for @general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// No description provided for @vacationLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation {year}: {remaining} of {total} days left'**
+  String vacationLeft(String year, String remaining, String total);
+
+  /// No description provided for @vacationTakenPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'{taken} taken, {planned} planned'**
+  String vacationTakenPlanned(String taken, String planned);
+
+  /// No description provided for @deleteQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this entry?'**
+  String get deleteQuestion;
+
+  /// No description provided for @endBeforeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'The end must be after the start'**
+  String get endBeforeStart;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @invalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid value'**
+  String get invalidValue;
+
+  /// No description provided for @nothingRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded'**
+  String get nothingRecorded;
+
+  /// No description provided for @previousWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous week'**
+  String get previousWeek;
+
+  /// No description provided for @nextWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get nextWeek;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['de', 'en'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'de':
+      return AppLocalizationsDe();
+    case 'en':
+      return AppLocalizationsEn();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

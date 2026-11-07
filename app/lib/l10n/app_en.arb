@@ -1,0 +1,261 @@
+{
+  "@@locale": "en",
+  "appTitle": "TimeTrack",
+  "navToday": "Today",
+  "navCalendar": "Calendar",
+  "navProjects": "Projects",
+  "navSettings": "Settings",
+  "clockIn": "Clock in",
+  "clockOut": "Clock out",
+  "startBreak": "Break",
+  "endBreak": "End break",
+  "notClockedIn": "Not clocked in",
+  "clockedInSince": "Clocked in since {time}",
+  "@clockedInSince": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "onBreakSince": "On break since {time}",
+  "@onBreakSince": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "locationOffice": "Office",
+  "locationHome": "Home office",
+  "locationOnSite": "On site",
+  "locationTravel": "Travel",
+  "location": "Location",
+  "worked": "Worked",
+  "target": "Target",
+  "credited": "Credited",
+  "difference": "Difference",
+  "balance": "Overtime balance",
+  "balanceToday": "incl. today",
+  "unassigned": "Without project",
+  "chooseProject": "Choose project",
+  "stopProject": "Stop project",
+  "noProjectRunning": "No project running",
+  "homeOfficeWeek": "Home office this week: {used} of {allowed} days, {left} left",
+  "@homeOfficeWeek": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "allowed": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "homeOfficeMonth": "Home office this month: {used} of {allowed} days, {left} left",
+  "@homeOfficeMonth": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "allowed": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "setupHint": "Set your federal state and work schedule in the settings, so targets and balances are right.",
+  "openSettings": "Open settings",
+  "startTrip": "Start trip",
+  "endTrip": "End trip",
+  "onTripTo": "On a trip to {destination}",
+  "@onTripTo": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "onTrip": "On a trip",
+  "startTripQuestion": "Start a business trip?",
+  "endTripQuestion": "Has the trip ended?",
+  "notNow": "Not now",
+  "destination": "Destination",
+  "country": "Country code",
+  "overnight": "With overnight stay",
+  "depart": "Departure",
+  "returnTime": "Return",
+  "notices": "Notices",
+  "warnBreakMissing": "{minutes} break missing (ArbZG §4)",
+  "@warnBreakMissing": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "warnOver6h": "More than 6 h without a break (ArbZG §4)",
+  "warnOver10h": "More than 10 h worked (ArbZG §3)",
+  "warnRest": "Only {minutes} rest since the previous day (ArbZG §5)",
+  "@warnRest": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "warnSunday": "Work on a Sunday or public holiday",
+  "warnOpenSession": "Clocked in for a long time – forgot to clock out?",
+  "warnOverlapSessions": "Overlapping working times",
+  "warnOverlapProjects": "Overlapping project times",
+  "warnProjectOutside": "{minutes} project time outside working time",
+  "@warnProjectOutside": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "warnQuota": "Another home-office day would exceed your quota",
+  "weekNumber": "Week {number}",
+  "@weekNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "weekTotal": "Week",
+  "sessions": "Working times",
+  "breaks": "Breaks",
+  "projectEntries": "Project times",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "cancel": "Cancel",
+  "start": "Start",
+  "end": "End",
+  "running": "running",
+  "absence": "Absence",
+  "absences": "Absences",
+  "absenceVacation": "Vacation",
+  "absenceSick": "Sick",
+  "absenceSpecialLeave": "Special leave",
+  "absenceCompTime": "Time off in lieu",
+  "absenceExtraHoliday": "Day off",
+  "halfDay": "Half day",
+  "addAbsence": "Add absence",
+  "trips": "Trips",
+  "newTrip": "New trip",
+  "holiday": "Public holiday",
+  "tripDay": "Trip",
+  "newProject": "New project",
+  "editProject": "Edit project",
+  "projectName": "Name",
+  "projectNumber": "Project number",
+  "orderNumber": "Order number",
+  "client": "Client",
+  "favorite": "Favorite",
+  "archived": "Archived",
+  "searchProjects": "Name, project or order number",
+  "showArchived": "Show archived",
+  "createProjectNamed": "Create project “{name}”",
+  "@createProjectNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjects": "No projects yet",
+  "federalState": "Federal state",
+  "notSet": "Not set",
+  "schedules": "Work schedules",
+  "newSchedule": "New schedule",
+  "validFrom": "Valid from",
+  "hoursPerWeekday": "Hours per weekday (h:mm)",
+  "vacationDays": "Vacation days per year",
+  "perWeekSummary": "{hours} per week, {days} vacation days",
+  "@perWeekSummary": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "breakRule": "Missing breaks",
+  "breakWarn": "Warn only",
+  "breakDeduct": "Deduct automatically",
+  "startingBalance": "Starting balance (h:mm, may be negative)",
+  "balanceStart": "Balance counted from",
+  "homeOfficeRules": "Home-office rules",
+  "newRule": "New rule",
+  "perWeek": "per week",
+  "perMonth": "per month",
+  "maxPercent": "Max. share in %",
+  "basisWorked": "of days worked",
+  "basisScheduled": "of scheduled workdays",
+  "ruleSummary": "{percent} % {period} {basis}",
+  "@ruleSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      },
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "travelRules": "Travel rules",
+  "saturdayCap": "Saturday on a trip: max. hours",
+  "autoClockIn": "Clock in automatically when a project starts",
+  "resumeAfterBreak": "Resume the project after a break",
+  "general": "General",
+  "vacationLeft": "Vacation {year}: {remaining} of {total} days left",
+  "@vacationLeft": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "vacationTakenPlanned": "{taken} taken, {planned} planned",
+  "@vacationTakenPlanned": {
+    "placeholders": {
+      "taken": {
+        "type": "String"
+      },
+      "planned": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteQuestion": "Delete this entry?",
+  "endBeforeStart": "The end must be after the start",
+  "required": "Required",
+  "invalidValue": "Invalid value",
+  "nothingRecorded": "Nothing recorded",
+  "previousWeek": "Previous week",
+  "nextWeek": "Next week",
+  "thisWeek": "This week",
+  "from": "From",
+  "to": "To"
+}

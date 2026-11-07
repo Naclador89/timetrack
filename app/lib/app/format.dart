@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:timetrack_core/timetrack_core.dart';
+
+import '../l10n/app_localizations.dart';
+
+/// Locale-aware formatting for the UI. Durations use the spec format
+/// (`formatMinutes`, calculations.md §14).
+extension Formatting on BuildContext {
+  /// The generated strings.
+  AppLocalizations get l10n => AppLocalizations.of(this);
+
+  String get _locale => Localizations.localeOf(this).toLanguageTag();
+
+  /// Local wall-clock time of [instant] in [zone], e.g. `08:05`.
+  String time(DateTime instant, HomeTimeZone zone) =>
+      DateFormat.Hm(_locale).format(zone.toLocal(instant));
+
+  /// Long date, e.g. `Mittwoch, 4. November`.
+  String longDate(LocalDate d) => DateFormat.MMMMEEEEd(_locale).format(_dt(d));
+
+  /// Short date with weekday, e.g. `Mi., 04.11.`.
+  String shortDate(LocalDate d) =>
+      '${DateFormat.E(_locale).format(_dt(d))}, ${DateFormat.Md(_locale).format(_dt(d))}';
+
+  /// Numeric date, e.g. `04.11.2026`.
+  String date(LocalDate d) => DateFormat.yMd(_locale).format(_dt(d));
+
+  /// Days with up to one decimal, e.g. `2,5`.
+  String days(num value) => NumberFormat('#0.#', _locale).format(value);
+
+  /// Name of a work location.
+  String locationName(WorkLocation l) => switch (l) {
+    WorkLocation.office => l10n.locationOffice,
+    WorkLocation.home => l10n.locationHome,
+    WorkLocation.onSite => l10n.locationOnSite,
+    WorkLocation.travel => l10n.locationTravel,
+  };
+
+  /// Name of an absence kind.
+  String absenceName(AbsenceKind k) => switch (k) {
+    AbsenceKind.vacation => l10n.absenceVacation,
+    AbsenceKind.sick => l10n.absenceSick,
+    AbsenceKind.specialLeave => l10n.absenceSpecialLeave,
+    AbsenceKind.compTime => l10n.absenceCompTime,
+    AbsenceKind.extraHoliday => l10n.absenceExtraHoliday,
+  };
+
+  static DateTime _dt(LocalDate d) => DateTime(d.year, d.month, d.day);
+}
+
+/// Icon for a work location.
+IconData locationIcon(WorkLocation l) => switch (l) {
+  WorkLocation.office => Icons.business_outlined,
+  WorkLocation.home => Icons.home_outlined,
+  WorkLocation.onSite => Icons.place_outlined,
+  WorkLocation.travel => Icons.train_outlined,
+};
+
+/// Parses `h:mm` or decimal hours (`7,5` / `7.5`) into minutes; `null` if invalid.
+int? parseHours(String text) {
+  final t = text.trim().replaceAll('−', '-');
+  final negative = t.startsWith('-');
+  final body = negative ? t.substring(1) : t;
+  int? minutes;
+  final hm = RegExp(r'^(\d{1,3}):([0-5]\d)$').firstMatch(body);
+  if (hm != null) {
+    minutes = int.parse(hm[1]!) * 60 + int.parse(hm[2]!);
+  } else {
+    final dec = double.tryParse(body.replaceAll(',', '.'));
+    if (dec != null && dec >= 0) minutes = (dec * 60).round();
+  }
+  if (minutes == null) return null;
+  return negative ? -minutes : minutes;
+}
