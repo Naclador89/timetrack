@@ -76,6 +76,23 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   LocalDate? _returnDate;
   int? _returnTime;
   String? _error;
+  late final String _id =
+      widget.trip?.id ?? ref.read(repositoryProvider).newId();
+
+  /// Provided meals per trip day: (breakfast, lunch, dinner), §13.
+  late final Map<LocalDate, (bool, bool, bool)> _meals = {
+    for (final m in ref.read(tripMealsProvider))
+      if (m.tripId == _id) m.date: (m.breakfast, m.lunch, m.dinner),
+  };
+  late final Map<LocalDate, (bool, bool, bool)> _storedMeals = {..._meals};
+
+  /// Trip days for the meal checkboxes (only for closed trips up to 31 days).
+  List<LocalDate> get _tripDays {
+    final back = _returnDate;
+    if (back == null || back.isBefore(_departDate)) return const [];
+    if (_departDate.daysUntil(back) > 30) return const [];
+    return [for (var d = _departDate; !d.isAfter(back); d = d.addDays(1)) d];
+  }
 
   @override
   void initState() {
@@ -125,7 +142,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       return;
     }
     final repo = ref.read(repositoryProvider);
-    await repo.write('trips', widget.trip?.id ?? repo.newId(), {
+    await repo.write('trips', _id, {
       'depart_utc': isoMinute(depart),
       'return_utc': back == null ? null : isoMinute(back),
       'destination': _destination.text.trim(),
@@ -134,6 +151,18 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
           : _country.text.trim().toUpperCase(),
       'overnight': _overnight,
     });
+    for (final d in _tripDays) {
+      final meals = _meals[d] ?? (false, false, false);
+      if (meals == (_storedMeals[d] ?? (false, false, false))) continue;
+      // One row per trip and day, so edits on two devices merge (sync-format §6).
+      await repo.write('trip_meals', '${_id}_$d', {
+        'trip_id': _id,
+        'date': '$d',
+        'breakfast': meals.$1,
+        'lunch': meals.$2,
+        'dinner': meals.$3,
+      });
+    }
     if (mounted) Navigator.pop(context);
   }
 
@@ -192,6 +221,52 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                   _returnTime = null;
                 }),
               ),
+              if (_tripDays.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l.mealsProvided,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                for (final d in _tripDays)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        SizedBox(width: 92, child: Text(context.shortDate(d))),
+                        for (final (index, label) in [
+                          (0, l.breakfast),
+                          (1, l.lunch),
+                          (2, l.dinner),
+                        ])
+                          FilterChip(
+                            label: Text(label),
+                            selected: switch (_meals[d] ??
+                                (false, false, false)) {
+                              (final b, final lu, final di) => [
+                                b,
+                                lu,
+                                di,
+                              ][index],
+                            },
+                            onSelected: (on) => setState(() {
+                              final (b, lu, di) =
+                                  _meals[d] ?? (false, false, false);
+                              _meals[d] = (
+                                index == 0 ? on : b,
+                                index == 1 ? on : lu,
+                                index == 2 ? on : di,
+                              );
+                            }),
+                          ),
+                      ],
+                    ),
+                  ),
+              ],
               if (_error != null)
                 Text(
                   _error!,

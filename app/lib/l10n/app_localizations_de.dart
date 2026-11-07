@@ -505,4 +505,115 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get syncProxy => 'Proxy für dieses Gerät (optional, Host:Port)';
+
+  @override
+  String get navReports => 'Berichte';
+
+  @override
+  String get timesheet => 'Stundenzettel';
+
+  @override
+  String get orderReport => 'Auftragsbericht';
+
+  @override
+  String get travelReport => 'Reisekosten';
+
+  @override
+  String get statistics => 'Statistik';
+
+  @override
+  String get backupJson => 'Sicherung aller Daten (JSON)';
+
+  @override
+  String savedTo(String path) {
+    return 'Gespeichert: $path';
+  }
+
+  @override
+  String get colDate => 'Datum';
+
+  @override
+  String get colBreak => 'Pause';
+
+  @override
+  String get colNotes => 'Hinweise';
+
+  @override
+  String get balanceBefore => 'Saldo Monatsanfang';
+
+  @override
+  String get balanceAfter => 'Saldo Monatsende';
+
+  @override
+  String get homeOfficeDays => 'Homeoffice-Tage';
+
+  @override
+  String get vacationDaysTaken => 'Urlaubstage';
+
+  @override
+  String get workedDays => 'Arbeitstage';
+
+  @override
+  String get signature => 'Datum, Unterschrift';
+
+  @override
+  String get perDiem => 'Verpflegungsmehraufwand';
+
+  @override
+  String get perDiemPartial => 'An-/Abreise bzw. > 8 Std.';
+
+  @override
+  String get perDiemFull => 'ganzer Tag';
+
+  @override
+  String get perDiemNone => 'keine Pauschale';
+
+  @override
+  String get mealsProvided => 'Gestellte Mahlzeiten';
+
+  @override
+  String get breakfast => 'Frühstück';
+
+  @override
+  String get lunch => 'Mittagessen';
+
+  @override
+  String get dinner => 'Abendessen';
+
+  @override
+  String get hoursAway => 'Abwesenheit';
+
+  @override
+  String get amount => 'Betrag';
+
+  @override
+  String get total => 'Summe';
+
+  @override
+  String get noTrips => 'Keine Reisen in diesem Monat';
+
+  @override
+  String get noBookings => 'Keine Projektzeiten in diesem Monat';
+
+  @override
+  String rateMissing(String country) {
+    return 'Kein Satz für $country';
+  }
+
+  @override
+  String get hoursByProject => 'Stunden nach Projekt';
+
+  @override
+  String get weeks => 'Wochen';
+
+  @override
+  String get previousMonth => 'Vorheriger Monat';
+
+  @override
+  String get nextMonth => 'Nächster Monat';
+
+  @override
+  String generatedBy(String date) {
+    return 'Erstellt mit TimeTrack am $date';
+  }
 }

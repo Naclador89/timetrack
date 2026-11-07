@@ -504,4 +504,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncProxy => 'Proxy for this device (optional, host:port)';
+
+  @override
+  String get navReports => 'Reports';
+
+  @override
+  String get timesheet => 'Timesheet';
+
+  @override
+  String get orderReport => 'Order report';
+
+  @override
+  String get travelReport => 'Travel expenses';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get backupJson => 'Backup of all data (JSON)';
+
+  @override
+  String savedTo(String path) {
+    return 'Saved: $path';
+  }
+
+  @override
+  String get colDate => 'Date';
+
+  @override
+  String get colBreak => 'Break';
+
+  @override
+  String get colNotes => 'Notes';
+
+  @override
+  String get balanceBefore => 'Balance at start of month';
+
+  @override
+  String get balanceAfter => 'Balance at end';
+
+  @override
+  String get homeOfficeDays => 'Home-office days';
+
+  @override
+  String get vacationDaysTaken => 'Vacation days';
+
+  @override
+  String get workedDays => 'Days worked';
+
+  @override
+  String get signature => 'Date, signature';
+
+  @override
+  String get perDiem => 'Meal allowance';
+
+  @override
+  String get perDiemPartial => 'partial day';
+
+  @override
+  String get perDiemFull => 'full day';
+
+  @override
+  String get perDiemNone => 'no allowance';
+
+  @override
+  String get mealsProvided => 'Meals provided';
+
+  @override
+  String get breakfast => 'Breakfast';
+
+  @override
+  String get lunch => 'Lunch';
+
+  @override
+  String get dinner => 'Dinner';
+
+  @override
+  String get hoursAway => 'Hours away';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get noTrips => 'No trips in this month';
+
+  @override
+  String get noBookings => 'No project times in this month';
+
+  @override
+  String rateMissing(String country) {
+    return 'No rate for $country';
+  }
+
+  @override
+  String get hoursByProject => 'Hours by project';
+
+  @override
+  String get weeks => 'Weeks';
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
+  String generatedBy(String date) {
+    return 'Created with TimeTrack on $date';
+  }
 }

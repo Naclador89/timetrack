@@ -111,7 +111,7 @@ void main() {
 
   testWidgets('the other tabs open', (tester) async {
     await pumpApp(tester);
-    for (final tab in ['Calendar', 'Projects', 'Settings']) {
+    for (final tab in ['Calendar', 'Projects', 'Reports', 'Settings']) {
       await tester.tap(find.text(tab).last);
       await tester.pumpAndSettle();
     }

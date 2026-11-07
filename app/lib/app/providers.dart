@@ -171,3 +171,21 @@ final isSetUpProvider = Provider<bool>(
       ref.watch(settingsProvider).federalState != null &&
       ref.watch(ledgerDataProvider).schedules.isNotEmpty,
 );
+
+/// Meals provided on trip days (reduce the per-diem, calculations.md §13).
+final tripMealsProvider = Provider<List<TripMeals>>(
+  (ref) => [
+    for (final r in ref.watch(_rows))
+      if (r.table == 'trip_meals') ?tripMealsFromRow(r),
+  ],
+);
+
+/// Per-diem rates: the user's own rows first (they win ties), then the
+/// pre-filled domestic defaults.
+final perDiemRatesProvider = Provider<List<PerDiemRate>>(
+  (ref) => [
+    for (final r in ref.watch(_rows))
+      if (r.table == 'per_diem_rates') ?perDiemRateFromRow(r),
+    ...defaultPerDiemRates(),
+  ],
+);

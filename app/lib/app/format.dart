@@ -30,21 +30,10 @@ extension Formatting on BuildContext {
   String days(num value) => NumberFormat('#0.#', _locale).format(value);
 
   /// Name of a work location.
-  String locationName(WorkLocation l) => switch (l) {
-    WorkLocation.office => l10n.locationOffice,
-    WorkLocation.home => l10n.locationHome,
-    WorkLocation.onSite => l10n.locationOnSite,
-    WorkLocation.travel => l10n.locationTravel,
-  };
+  String locationName(WorkLocation l) => locationLabel(l10n, l);
 
   /// Name of an absence kind.
-  String absenceName(AbsenceKind k) => switch (k) {
-    AbsenceKind.vacation => l10n.absenceVacation,
-    AbsenceKind.sick => l10n.absenceSick,
-    AbsenceKind.specialLeave => l10n.absenceSpecialLeave,
-    AbsenceKind.compTime => l10n.absenceCompTime,
-    AbsenceKind.extraHoliday => l10n.absenceExtraHoliday,
-  };
+  String absenceName(AbsenceKind k) => absenceLabel(l10n, k);
 
   static DateTime _dt(LocalDate d) => DateTime(d.year, d.month, d.day);
 }
@@ -73,3 +62,20 @@ int? parseHours(String text) {
   if (minutes == null) return null;
   return negative ? -minutes : minutes;
 }
+
+/// Name of a work location (also usable without a BuildContext, e.g. in exports).
+String locationLabel(AppLocalizations l, WorkLocation loc) => switch (loc) {
+  WorkLocation.office => l.locationOffice,
+  WorkLocation.home => l.locationHome,
+  WorkLocation.onSite => l.locationOnSite,
+  WorkLocation.travel => l.locationTravel,
+};
+
+/// Name of an absence kind (also usable without a BuildContext).
+String absenceLabel(AppLocalizations l, AbsenceKind k) => switch (k) {
+  AbsenceKind.vacation => l.absenceVacation,
+  AbsenceKind.sick => l.absenceSick,
+  AbsenceKind.specialLeave => l.absenceSpecialLeave,
+  AbsenceKind.compTime => l.absenceCompTime,
+  AbsenceKind.extraHoliday => l.absenceExtraHoliday,
+};

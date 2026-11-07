@@ -287,5 +287,61 @@
       }
     }
   },
-  "syncProxy": "Proxy for this device (optional, host:port)"
+  "syncProxy": "Proxy for this device (optional, host:port)",
+  "navReports": "Reports",
+  "timesheet": "Timesheet",
+  "orderReport": "Order report",
+  "travelReport": "Travel expenses",
+  "statistics": "Statistics",
+  "backupJson": "Backup of all data (JSON)",
+  "savedTo": "Saved: {path}",
+  "@savedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "colDate": "Date",
+  "colBreak": "Break",
+  "colNotes": "Notes",
+  "balanceBefore": "Balance at start of month",
+  "balanceAfter": "Balance at end",
+  "homeOfficeDays": "Home-office days",
+  "vacationDaysTaken": "Vacation days",
+  "workedDays": "Days worked",
+  "signature": "Date, signature",
+  "perDiem": "Meal allowance",
+  "perDiemPartial": "partial day",
+  "perDiemFull": "full day",
+  "perDiemNone": "no allowance",
+  "mealsProvided": "Meals provided",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "dinner": "Dinner",
+  "hoursAway": "Hours away",
+  "amount": "Amount",
+  "total": "Total",
+  "noTrips": "No trips in this month",
+  "noBookings": "No project times in this month",
+  "rateMissing": "No rate for {country}",
+  "@rateMissing": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "hoursByProject": "Hours by project",
+  "weeks": "Weeks",
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month",
+  "generatedBy": "Created with TimeTrack on {date}",
+  "@generatedBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

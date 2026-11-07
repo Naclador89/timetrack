@@ -1015,6 +1015,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Proxy for this device (optional, host:port)'**
   String get syncProxy;
+
+  /// No description provided for @navReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get navReports;
+
+  /// No description provided for @timesheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Timesheet'**
+  String get timesheet;
+
+  /// No description provided for @orderReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Order report'**
+  String get orderReport;
+
+  /// No description provided for @travelReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel expenses'**
+  String get travelReport;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @backupJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup of all data (JSON)'**
+  String get backupJson;
+
+  /// No description provided for @savedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved: {path}'**
+  String savedTo(String path);
+
+  /// No description provided for @colDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get colDate;
+
+  /// No description provided for @colBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Break'**
+  String get colBreak;
+
+  /// No description provided for @colNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get colNotes;
+
+  /// No description provided for @balanceBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance at start of month'**
+  String get balanceBefore;
+
+  /// No description provided for @balanceAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance at end'**
+  String get balanceAfter;
+
+  /// No description provided for @homeOfficeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Home-office days'**
+  String get homeOfficeDays;
+
+  /// No description provided for @vacationDaysTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation days'**
+  String get vacationDaysTaken;
+
+  /// No description provided for @workedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days worked'**
+  String get workedDays;
+
+  /// No description provided for @signature.
+  ///
+  /// In en, this message translates to:
+  /// **'Date, signature'**
+  String get signature;
+
+  /// No description provided for @perDiem.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal allowance'**
+  String get perDiem;
+
+  /// No description provided for @perDiemPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'partial day'**
+  String get perDiemPartial;
+
+  /// No description provided for @perDiemFull.
+  ///
+  /// In en, this message translates to:
+  /// **'full day'**
+  String get perDiemFull;
+
+  /// No description provided for @perDiemNone.
+  ///
+  /// In en, this message translates to:
+  /// **'no allowance'**
+  String get perDiemNone;
+
+  /// No description provided for @mealsProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals provided'**
+  String get mealsProvided;
+
+  /// No description provided for @breakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get breakfast;
+
+  /// No description provided for @lunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get lunch;
+
+  /// No description provided for @dinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get dinner;
+
+  /// No description provided for @hoursAway.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours away'**
+  String get hoursAway;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @noTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips in this month'**
+  String get noTrips;
+
+  /// No description provided for @noBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No project times in this month'**
+  String get noBookings;
+
+  /// No description provided for @rateMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'No rate for {country}'**
+  String rateMissing(String country);
+
+  /// No description provided for @hoursByProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours by project'**
+  String get hoursByProject;
+
+  /// No description provided for @weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Weeks'**
+  String get weeks;
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
+  /// No description provided for @generatedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created with TimeTrack on {date}'**
+  String generatedBy(String date);
 }
 
 class _AppLocalizationsDelegate

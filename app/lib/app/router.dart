@@ -7,6 +7,7 @@ import '../features/calendar/day_screen.dart';
 import '../features/calendar/trips_screen.dart';
 import '../features/calendar/week_screen.dart';
 import '../features/projects/projects_screen.dart';
+import '../features/reports/reports_screen.dart';
 import '../features/settings/home_office_rules_screen.dart';
 import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -63,6 +64,11 @@ GoRouter buildRouter() => GoRouter(
         ),
         StatefulShellBranch(
           routes: [
+            GoRoute(path: '/reports', builder: (_, _) => const ReportsScreen()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
             GoRoute(
               path: '/settings',
               builder: (_, _) => const SettingsScreen(),
@@ -100,6 +106,7 @@ class AdaptiveShell extends StatelessWidget {
       (Icons.today_outlined, Icons.today, l.navToday),
       (Icons.calendar_month_outlined, Icons.calendar_month, l.navCalendar),
       (Icons.work_outline, Icons.work, l.navProjects),
+      (Icons.assessment_outlined, Icons.assessment, l.navReports),
       (Icons.settings_outlined, Icons.settings, l.navSettings),
     ];
     void go(int i) =>
