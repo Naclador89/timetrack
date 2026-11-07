@@ -5,87 +5,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
+import 'package:timetrack_core/testing.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 const _davRoot = '/remote.php/dav/files/alice/Zeit Erfassung/';
 final _rootUrl = Uri.parse(
   'https://cloud.example.com${Uri.encodeFull(_davRoot)}',
 );
-const _auth = 'Basic YWxpY2U6c2VjcmV0'; // alice:secret
-
-/// A tiny Nextcloud-like WebDAV server.
-MockClient fakeNextcloud(
-  InMemoryRemoteFolder files, {
-  List<String>? log,
-}) => MockClient((request) async {
-  log?.add('${request.method} ${request.url.path}');
-  if (request.headers['Authorization'] != _auth) return http.Response('', 401);
-  final decoded = Uri.decodeComponent(request.url.path);
-  if (!decoded.startsWith(_davRoot.substring(0, _davRoot.length - 1))) {
-    return http.Response('', 404);
-  }
-  final path = decoded.length <= _davRoot.length
-      ? ''
-      : decoded.substring(_davRoot.length).replaceAll(RegExp(r'/$'), '');
-  switch (request.method) {
-    case 'PROPFIND':
-      final self = await files.stat(path);
-      if (self == null) return http.Response('', 404);
-      final entries = [
-        self,
-        if (request.headers['Depth'] == '1' && self.isDirectory)
-          ...await files.list(path),
-      ];
-      String href(RemoteEntry e) => Uri.encodeFull(
-        _davRoot + e.path + (e.isDirectory && e.path.isNotEmpty ? '/' : ''),
-      );
-      final xml = StringBuffer(
-        '<?xml version="1.0"?><d:multistatus xmlns:d="DAV:">',
-      );
-      for (final e in entries) {
-        xml.write(
-          '<d:response><d:href>${href(e)}</d:href><d:propstat><d:prop>'
-          '<d:getetag>&quot;${e.etag}&quot;</d:getetag>'
-          '<d:resourcetype>${e.isDirectory ? '<d:collection/>' : ''}</d:resourcetype>'
-          '</d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>',
-        );
-      }
-      xml.write('</d:multistatus>');
-      return http.Response(xml.toString(), 207);
-    case 'GET':
-      final bytes = await files.read(path);
-      return bytes == null
-          ? http.Response('', 404)
-          : http.Response.bytes(bytes, 200);
-    case 'PUT':
-      try {
-        if (request.headers['If-None-Match'] == '*') {
-          return http.Response(
-            '',
-            await files.createFile(path, request.bodyBytes) ? 201 : 412,
-          );
-        }
-        final existed = await files.stat(path) != null;
-        await files.writeFile(path, request.bodyBytes);
-        return http.Response('', existed ? 204 : 201);
-      } on StateError {
-        return http.Response('', 409);
-      }
-    case 'MKCOL':
-      if (await files.stat(path) != null) return http.Response('', 405);
-      try {
-        await files.makeDirectory(path);
-        return http.Response('', 201);
-      } on StateError {
-        return http.Response('', 409);
-      }
-    case 'DELETE':
-      if (await files.stat(path) == null) return http.Response('', 404);
-      await files.delete(path);
-      return http.Response('', 204);
-  }
-  return http.Response('', 405);
-});
 
 WebDavRemoteFolder dav(MockClient client, {String password = 'secret'}) =>
     WebDavRemoteFolder(
@@ -102,7 +28,7 @@ void main() {
   test(
     'maps folders, files, ETags and paths with spaces and umlauts',
     () async {
-      final remote = dav(fakeNextcloud(files));
+      final remote = dav(fakeNextcloud(files, davRoot: _davRoot));
       await remote.makeDirectory('devices');
       await remote.makeDirectory('devices'); // 405 = exists → fine
       await remote.makeDirectory('devices/Gerät 1');
@@ -141,10 +67,13 @@ void main() {
 
   test('a missing parent folder and wrong credentials are errors', () async {
     await expectLater(
-      dav(fakeNextcloud(files)).makeDirectory('a/b'),
+      dav(fakeNextcloud(files, davRoot: _davRoot)).makeDirectory('a/b'),
       throwsA(isA<RemoteException>()),
     );
-    final denied = dav(fakeNextcloud(files), password: 'wrong');
+    final denied = dav(
+      fakeNextcloud(files, davRoot: _davRoot),
+      password: 'wrong',
+    );
     await expectLater(
       denied.list(''),
       throwsA(
@@ -159,7 +88,7 @@ void main() {
 
   test('§7 two devices sync through WebDAV end to end', () async {
     final log = <String>[];
-    final server = fakeNextcloud(files, log: log);
+    final server = fakeNextcloud(files, davRoot: _davRoot, log: log);
     Future<SyncEngine> device(String id) async {
       final remote = dav(server);
       final cipher = await connectSyncFolder(
