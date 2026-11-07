@@ -118,6 +118,25 @@ _Last updated: 2026-11-07 by Claude Code._
 **Next task**: the user re-enters the three reset settings. Then: release keystore (if approved),
 M5 Android quick access (notification, tile, widget, background sync with WorkManager).
 
+## Planned changes (requested by the user 2026-11-07, not started)
+
+1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
+   project, as `H:MM`. A start/end time stays possible but is secondary. Sketch:
+   - data-model §4: `project_entries` get `date` and `duration_min`. Required is `project_id` plus
+     either `start_utc` (a time span, as today) or `date` + `duration_min`.
+   - calculations §3: duration entries count on their date with their duration (no interval). Project
+     time = interval entries inside working time + durations. Unassigned = worked − project time
+     (never below 0). Durations above the worked time go into the Review list.
+   - UI: a quick "Projektzeit eintragen" dialog (project via search, date, H:MM, summary) on Today and
+     in the day editor. The timer stays as an option.
+2. **A short summary per project time** ("what did I do?"). The `note` field already exists in
+   `project_entries` (data-model §4) but has no UI yet:
+   - entry in the quick dialog and the day editor;
+   - optionally asked when stopping a running project timer;
+   - shown in the day editor and the order report (an extra column "Tätigkeit"/"Activity" in CSV).
+   Open question for the user when implementing: should stopping the timer always ask for a summary,
+   or only offer it?
+
 ## Decisions taken with the user (2026-11-07)
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
   working at the destination); a short trip day still gets the full target; the 11 h **Saturday cap
