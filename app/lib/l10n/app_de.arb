@@ -196,5 +196,9 @@
   "summaryQuestion": "Was hast du für {project} gemacht?",
   "skip": "Überspringen",
   "activity": "Tätigkeit",
-  "warnProjectOverWork": "{minutes} mehr Projektzeit als Arbeitszeit"
+  "warnProjectOverWork": "{minutes} mehr Projektzeit als Arbeitszeit",
+  "switchProject": "Projekt wechseln",
+  "quickWorking": "Bei der Arbeit",
+  "quickOnBreak": "In der Pause",
+  "quickToday": "Heute"
 }

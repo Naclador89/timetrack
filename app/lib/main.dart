@@ -1,44 +1,31 @@
 import 'dart:async';
 
-import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:timetrack_core/timetrack_core.dart';
 
 import 'app/providers.dart';
 import 'app/router.dart';
+import 'app/services.dart';
 import 'l10n/app_localizations.dart';
+import 'quick/quick_access.dart';
+import 'quick/quick_access_host.dart';
 import 'sync/sync_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final db = TimeTrackDatabase(
-    driftDatabase(
-      name: 'timetrack',
-      native: const DriftNativeOptions(
-        // Per-app data folder (~/.local/share/<app id>, %APPDATA%\<app id>,
-        // Android app storage), not the user's Documents folder.
-        databaseDirectory: getApplicationSupportDirectory,
-        // Background handlers (notification, tile, widget) will open it too (M5).
-        shareAcrossIsolates: true,
-      ),
-    ),
-  );
-  final store = DriftSyncStore(db);
   final localWrites = StreamController<void>.broadcast();
-  final repository = await SyncedRepository.open(
-    store,
-    await loadOrCreateDeviceId(db),
+  final services = await AppServices.open(
+    shareAcrossIsolates: true,
     onLocalWrite: () => localWrites.add(null),
   );
+  await initQuickAccess();
   runApp(
     ProviderScope(
       overrides: [
-        storeProvider.overrideWithValue(store),
-        repositoryProvider.overrideWithValue(repository),
+        storeProvider.overrideWithValue(services.store),
+        repositoryProvider.overrideWithValue(services.repository),
         localWritesProvider.overrideWithValue(localWrites.stream),
       ],
       child: TimeTrackApp(router: buildRouter()),
@@ -72,7 +59,12 @@ class TimeTrackApp extends StatelessWidget {
     ],
     supportedLocales: const [Locale('de'), Locale('en')],
     routerConfig: router,
-    builder: (context, child) => _SyncLifecycle(child: child!),
+    builder: (context, child) => _SyncLifecycle(
+      child: QuickAccessHost(
+        navigatorKey: router.routerDelegate.navigatorKey,
+        child: child!,
+      ),
+    ),
   );
 }
 

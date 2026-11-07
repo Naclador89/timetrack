@@ -1279,6 +1279,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} more project time than working time'**
   String warnProjectOverWork(String minutes);
+
+  /// No description provided for @switchProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch project'**
+  String get switchProject;
+
+  /// No description provided for @quickWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get quickWorking;
+
+  /// No description provided for @quickOnBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'On a break'**
+  String get quickOnBreak;
+
+  /// No description provided for @quickToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get quickToday;
 }
 
 class _AppLocalizationsDelegate

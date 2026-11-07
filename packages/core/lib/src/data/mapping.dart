@@ -1,9 +1,13 @@
 import '../model/attendance.dart';
 import '../model/planning.dart';
 import '../model/project.dart';
+import '../rules/holidays.dart';
 import '../rules/ledger.dart';
 import '../sync/change.dart';
+import '../time/home_time_zone.dart';
 import '../time/local_date.dart';
+import '../time/span.dart';
+import 'settings.dart';
 
 /// Turns stored rows into model classes (spec: data-model.md).
 ///
@@ -195,4 +199,34 @@ extension type _Fields(Map<String, Object?> map) {
     final v = string(key);
     return v == null ? null : LocalDate.parse(v);
   }
+}
+
+/// The [Ledger] the app evaluates: [rows] with their settings, at [now].
+///
+/// Without a configured state it uses NW holidays, and the balance starts at
+/// the first schedule (or today) unless `balance_start_date` is set.
+Ledger appLedger(Iterable<StoredRow> rows, DateTime now) {
+  final data = ledgerDataFromRows(rows);
+  final settings = AppSettings.fromRows(rows);
+  final zone = HomeTimeZone(settings.homeTimeZone);
+  final firstSchedule = data.schedules.isEmpty
+      ? null
+      : data.schedules
+            .map((s) => s.validFrom)
+            .reduce((a, b) => a.isBefore(b) ? a : b);
+  return Ledger(
+    data: data,
+    zone: zone,
+    holidays: HolidayCalendar(
+      settings.federalState ?? FederalState.nw,
+      options: settings.holidayOptions,
+    ),
+    settings: LedgerSettings(
+      balanceStart: settings.balanceStart ?? firstSchedule ?? zone.dateOf(now),
+      startingBalance: settings.startingBalance,
+      breakMode: settings.breakMode,
+      travel: settings.travel,
+    ),
+    nowMinute: epochMinute(now),
+  );
 }

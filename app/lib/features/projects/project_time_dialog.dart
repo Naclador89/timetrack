@@ -238,9 +238,23 @@ Future<void> withSummaryPrompt(
   final before = ref.read(trackerStateProvider).entry;
   await action();
   if (before == null || !context.mounted) return;
+  await askSummary(context, ref, before.id);
+}
+
+/// Asks for the summary of the project entry [entryId] if it has ended
+/// (also for timers stopped from the notification, tile or widget, which
+/// queue the entry in `PendingSummaries`). The user may skip it.
+Future<void> askSummary(
+  BuildContext context,
+  WidgetRef ref,
+  String entryId,
+) async {
   final repo = ref.read(repositoryProvider);
-  final after = await repo.get('project_entries', before.id);
-  if (after == null || after.fields['end_utc'] == null || !context.mounted) {
+  final after = await repo.get('project_entries', entryId);
+  if (after == null ||
+      after.isDeleted ||
+      after.fields['end_utc'] == null ||
+      !context.mounted) {
     return;
   }
   final project = ref.read(projectByIdProvider)[after.fields['project_id']];
@@ -255,6 +269,6 @@ Future<void> withSummaryPrompt(
     maxLines: 3,
   );
   if (note != null) {
-    await repo.write('project_entries', before.id, {'note': note});
+    await repo.write('project_entries', entryId, {'note': note});
   }
 }

@@ -366,5 +366,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "switchProject": "Switch project",
+  "quickWorking": "Working",
+  "quickOnBreak": "On a break",
+  "quickToday": "Today"
 }

@@ -647,4 +647,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String warnProjectOverWork(String minutes) {
     return '$minutes mehr Projektzeit als Arbeitszeit';
   }
+
+  @override
+  String get switchProject => 'Projekt wechseln';
+
+  @override
+  String get quickWorking => 'Bei der Arbeit';
+
+  @override
+  String get quickOnBreak => 'In der Pause';
+
+  @override
+  String get quickToday => 'Heute';
 }

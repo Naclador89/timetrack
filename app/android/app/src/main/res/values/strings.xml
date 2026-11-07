@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Native texts only (tile label, widget picker). Everything else comes from Dart (ARB). -->
+<resources>
+    <string name="app_name">TimeTrack</string>
+    <string name="quick_widget_description">Clock in and out, breaks, today\'s total</string>
+</resources>

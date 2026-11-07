@@ -138,6 +138,61 @@ final localWritesProvider = Provider<Stream<void>>(
   (ref) => const Stream.empty(),
 );
 
+/// Set with `--dart-define=TIMETRACK_DISABLE_SYNC=true` for demo and
+/// screenshot builds (tool/screenshot.sh), so they never touch a real account.
+const syncDisabled = bool.fromEnvironment('TIMETRACK_DISABLE_SYNC');
+
+/// The engine for [config] on [repository]. Used by [SyncController] and by
+/// the Android background handlers (lib/quick/).
+SyncEngine buildSyncEngine(
+  SyncedRepository repository,
+  SyncConfig config,
+  http.Client client,
+) => SyncEngine(
+  repository: repository,
+  remote: WebDavRemoteFolder(
+    root: config.root,
+    username: config.loginName,
+    appPassword: config.appPassword,
+    client: client,
+  ),
+  cipher: SyncCipher(SecretKey(config.keyBytes)),
+  deviceName: _deviceName(),
+  platform: Platform.operatingSystem,
+);
+
+String _deviceName() {
+  try {
+    return Platform.isAndroid ? 'Android' : Platform.localHostname;
+  } on Object {
+    return Platform.operatingSystem;
+  }
+}
+
+/// Runs one sync cycle outside the UI (Android background handlers). Does
+/// nothing unless a connection is saved **and bound to this database**
+/// (never binds one itself, see AGENTS.md "Demo data never meets real
+/// accounts"). Errors are swallowed: the next trigger retries.
+Future<void> syncInBackground(SyncedRepository repository) async {
+  if (syncDisabled) return;
+  try {
+    final config = await SecureSyncConfigStore().load();
+    if (config == null || config.deviceId != repository.clock.deviceId) return;
+    final client = proxiedClient(config.proxy);
+    try {
+      await buildSyncEngine(
+        repository,
+        config,
+        client,
+      ).sync().timeout(const Duration(seconds: 60));
+    } finally {
+      client.close();
+    }
+  } on Object {
+    // Offline, server down, timeout: the next trigger retries.
+  }
+}
+
 /// What the sync is doing.
 enum SyncPhase {
   /// No Nextcloud connected.
@@ -189,12 +244,8 @@ class SyncController extends Notifier<SyncStatus> {
     return const SyncStatus(SyncPhase.notConfigured);
   }
 
-  /// Set with `--dart-define=TIMETRACK_DISABLE_SYNC=true` for demo and
-  /// screenshot builds (tool/screenshot.sh), so they never touch a real account.
-  static const _syncDisabled = bool.fromEnvironment('TIMETRACK_DISABLE_SYNC');
-
   Future<void> _init() async {
-    if (_syncDisabled) return;
+    if (syncDisabled) return;
     final store = ref.read(syncConfigStoreProvider);
     var config = await store.load();
     if (config == null) return;
@@ -215,30 +266,15 @@ class SyncController extends Notifier<SyncStatus> {
   }
 
   void _start(SyncConfig config) {
-    _engine = SyncEngine(
-      repository: ref.read(repositoryProvider),
-      remote: WebDavRemoteFolder(
-        root: config.root,
-        username: config.loginName,
-        appPassword: config.appPassword,
-        client: ref.read(httpClientFactoryProvider)(config.proxy),
-      ),
-      cipher: SyncCipher(SecretKey(config.keyBytes)),
-      deviceName: _deviceName(),
-      platform: Platform.operatingSystem,
+    _engine = buildSyncEngine(
+      ref.read(repositoryProvider),
+      config,
+      ref.read(httpClientFactoryProvider)(config.proxy),
     );
     state = SyncStatus(SyncPhase.idle, root: config.root);
     _periodic?.cancel();
     _periodic = Timer.periodic(const Duration(seconds: 60), (_) => syncNow());
     unawaited(syncNow());
-  }
-
-  static String _deviceName() {
-    try {
-      return Platform.isAndroid ? 'Android' : Platform.localHostname;
-    } on Object {
-      return Platform.operatingSystem;
-    }
   }
 
   /// Runs one cycle now (no-op if not configured or already running).

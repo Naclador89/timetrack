@@ -35,4 +35,5 @@ export 'src/sync/webdav.dart';
 export 'src/time/home_time_zone.dart';
 export 'src/time/local_date.dart';
 export 'src/time/span.dart';
+export 'src/tracking/quick_actions.dart';
 export 'src/tracking/time_tracker.dart';

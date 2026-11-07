@@ -24,6 +24,9 @@ final class DriftSyncStore implements SyncStore {
       (db.select(db.syncedRows)..where((r) => r.tbl.isIn(tables))).watch().map(
         (rows) => [for (final r in rows) _toStored(r)],
       );
+
+  @override
+  void notifyExternalChange() => db.markTablesUpdated({db.syncedRows});
 }
 
 StoredRow _toStored(SyncedRowData r) => StoredRow(
@@ -154,6 +157,24 @@ final class _DriftTransaction implements SyncTransaction {
       .insertOnConflictUpdate(
         LocalValuesCompanion.insert(key: _hlcKey, value: hlc.toString()),
       );
+
+  @override
+  Future<String?> localValue(String key) async => (await (db.select(
+    db.localValues,
+  )..where((t) => t.key.equals(key))).getSingleOrNull())?.value;
+
+  @override
+  Future<void> setLocalValue(String key, String? value) async {
+    if (value == null) {
+      await (db.delete(db.localValues)..where((t) => t.key.equals(key))).go();
+    } else {
+      await db
+          .into(db.localValues)
+          .insertOnConflictUpdate(
+            LocalValuesCompanion.insert(key: key, value: value),
+          );
+    }
+  }
 }
 
 const _deviceIdKey = 'device_id';

@@ -29,6 +29,10 @@ abstract interface class SyncStore {
   /// after every committed change to them, so UIs update after local writes
   /// and syncs alike.
   Stream<List<StoredRow>> watchRows(Set<String> tables);
+
+  /// Re-emits all [watchRows] streams. Call after another database connection
+  /// may have written (Android background handlers open their own connection).
+  void notifyExternalChange();
 }
 
 /// Reads and writes inside one [SyncStore.transaction].
@@ -78,6 +82,12 @@ abstract interface class SyncTransaction {
 
   /// Persists the HLC state.
   Future<void> setLastHlc(Hlc hlc);
+
+  /// A device-local value (never synced), or `null`.
+  Future<String?> localValue(String key);
+
+  /// Sets or, with `null`, removes a device-local value.
+  Future<void> setLocalValue(String key, String? value);
 }
 
 /// A [SyncStore] kept in memory, for tests and simulations.
@@ -109,6 +119,9 @@ final class InMemorySyncStore implements SyncStore {
   };
 
   @override
+  void notifyExternalChange() => _commits.add(null);
+
+  @override
   Future<T> transaction<T>(Future<T> Function(SyncTransaction tx) action) {
     final result = _queue.then((_) async {
       final draft = _state.copy();
@@ -129,6 +142,7 @@ final class _MemoryState {
   Map<String, String> seen = {};
   Map<String, String> folders = {};
   Hlc? hlc;
+  Map<String, String> local = {};
 
   _MemoryState copy() => _MemoryState()
     ..rows = {
@@ -138,7 +152,8 @@ final class _MemoryState {
     ..pending = pending
     ..seen = {...seen}
     ..folders = {...folders}
-    ..hlc = hlc;
+    ..hlc = hlc
+    ..local = {...local};
 }
 
 final class _MemoryTransaction implements SyncTransaction {
@@ -197,4 +212,11 @@ final class _MemoryTransaction implements SyncTransaction {
 
   @override
   Future<void> setLastHlc(Hlc hlc) async => _s.hlc = hlc;
+
+  @override
+  Future<String?> localValue(String key) async => _s.local[key];
+
+  @override
+  Future<void> setLocalValue(String key, String? value) async =>
+      value == null ? _s.local.remove(key) : _s.local[key] = value;
 }
