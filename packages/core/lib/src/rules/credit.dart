@@ -1,0 +1,117 @@
+import '../model/planning.dart';
+import '../time/local_date.dart';
+
+/// Day types for the travel rules (spec: calculations.md §9).
+enum TripDayType {
+  /// Monday–Friday with a target.
+  workday,
+
+  /// Saturday.
+  saturday,
+
+  /// Sunday.
+  sunday,
+
+  /// Public holiday (any weekday).
+  holiday,
+
+  /// Monday–Friday without a target, e.g. a part-time day off.
+  dayOff,
+}
+
+/// How a trip workday is credited.
+enum TripWorkdayCredit {
+  /// Exactly the day's target, however long the day was (default).
+  target,
+
+  /// The actual (effective) worked time.
+  actual,
+}
+
+/// Which rule a holiday or day off on a trip follows.
+enum TripDayRule {
+  /// Like a Saturday: travel counts (capped), work counts.
+  likeSaturday,
+
+  /// Like a Sunday: travel doesn't count, work counts.
+  likeSunday,
+}
+
+/// The employer's travel rules. Each value is a setting; the defaults are the
+/// rules the user described (spec: calculations.md §9).
+final class TravelRules {
+  /// Creates travel rules.
+  const TravelRules({
+    this.workday = TripWorkdayCredit.target,
+    this.saturdayTravelCapMinutes = 660,
+    this.holiday = TripDayRule.likeSunday,
+    this.dayOff = TripDayRule.likeSaturday,
+  });
+
+  /// Credit on trip workdays (setting `travel.workday`).
+  final TripWorkdayCredit workday;
+
+  /// Max travel minutes credited on a Saturday (setting `travel.saturday_cap_min`).
+  final int saturdayTravelCapMinutes;
+
+  /// Rule for public holidays on a trip (setting `travel.holiday`).
+  final TripDayRule holiday;
+
+  /// Rule for weekdays without target on a trip (setting `travel.day_off`).
+  final TripDayRule dayOff;
+}
+
+/// The §9 day type of [date], given whether it is a public holiday and its
+/// target `T(D)`.
+TripDayType tripDayType(
+  LocalDate date, {
+  required bool isHoliday,
+  required int target,
+}) {
+  if (isHoliday) return TripDayType.holiday;
+  if (date.weekday == DateTime.sunday) return TripDayType.sunday;
+  if (date.weekday == DateTime.saturday) return TripDayType.saturday;
+  return target > 0 ? TripDayType.workday : TripDayType.dayOff;
+}
+
+/// Credited minutes of a **trip day** before absence credit
+/// (spec: calculations.md §9).
+///
+/// [effectiveWorked] is `W_eff(D)`; [travelWorked] is `W_loc(D, travel)`.
+int tripDayCredit({
+  required TripDayType type,
+  required int target,
+  required int effectiveWorked,
+  required int travelWorked,
+  TravelRules rules = const TravelRules(),
+}) {
+  final travel = travelWorked < effectiveWorked
+      ? travelWorked
+      : effectiveWorked;
+  final other = effectiveWorked - travel;
+  int saturday() {
+    final cap = rules.saturdayTravelCapMinutes;
+    return (travel < cap ? travel : cap) + other;
+  }
+
+  return switch (type) {
+    TripDayType.workday =>
+      rules.workday == TripWorkdayCredit.target ? target : effectiveWorked,
+    TripDayType.saturday => saturday(),
+    TripDayType.sunday => other,
+    TripDayType.holiday =>
+      rules.holiday == TripDayRule.likeSaturday ? saturday() : other,
+    TripDayType.dayOff =>
+      rules.dayOff == TripDayRule.likeSaturday ? saturday() : other,
+  };
+}
+
+/// Credit from vacation, sick and special-leave absences on one day:
+/// `Σ fraction × T(D)`, at most `T(D)` (spec: calculations.md §8).
+int absenceCredit(Iterable<Absence> absencesOnDay, int target) {
+  final share = absencesOnDay
+      .where((a) => a.kind.creditsTarget)
+      .fold(0.0, (sum, a) => sum + a.fraction);
+  final credit = (share.clamp(0, 1) * target).round();
+  return credit;
+}
