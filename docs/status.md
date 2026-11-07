@@ -3,7 +3,7 @@
 _Last updated: 2026-11-07 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M3 (Nextcloud sync) implemented; waiting for tests on the user's devices
+## Current milestone: M3 done (sync works on Linux, Windows, Android); M4 (reports) in progress
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -93,7 +93,7 @@ _Last updated: 2026-11-07 by Claude Code._
       (cached apps freezer), which left a poll hanging on a dead connection with no timeout.
       `LoginFlow.waitForApproval` now uses per-request timeouts, retries, a wall-clock deadline
       (20 min) and an immediate poll on app resume. Android opens the login in a Custom Tab.
-- [ ] **User**: retest the Android login with the new APK.
+- [x] User test 2026-11-07: the Android login and sync work with the fixed APK.
 - [ ] **User**: Windows works without VPN (2026-11-07); with VPN not tested yet.
 - [ ] Android background sync (WorkManager), planned with M5. Network-change trigger (optional).
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
