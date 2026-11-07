@@ -1,3 +1,4 @@
+import 'dart:async';
 // spec: sync-format.md §2, §7 — WebDAV mapping, tested against a simulated
 // Nextcloud (MockClient backed by InMemoryRemoteFolder).
 import 'dart:convert';
@@ -122,6 +123,96 @@ void main() {
   });
 
   group('Login Flow v2', () {
+    MockClient flowServer(Future<http.Response> Function(int poll) onPoll) {
+      var polls = 0;
+      return MockClient((r) async {
+        if (r.url.path.endsWith('/login/v2')) {
+          return http.Response(
+            jsonEncode({
+              'poll': {
+                'token': 't',
+                'endpoint': 'https://c.example.com/index.php/login/v2/poll',
+              },
+              'login': 'https://c.example.com/index.php/login/v2/flow/x',
+            }),
+            200,
+          );
+        }
+        return onPoll(polls++);
+      });
+    }
+
+    final approved = http.Response(
+      jsonEncode({
+        'server': 'https://c.example.com',
+        'loginName': 'alice',
+        'appPassword': 'pw',
+      }),
+      200,
+    );
+
+    test(
+      'waitForApproval survives a hanging request and network errors',
+      () async {
+        final hang =
+            Completer<http.Response>(); // never completes: a dead connection
+        final client = flowServer(
+          (n) => switch (n) {
+            0 => hang.future,
+            1 => throw http.ClientException('connection reset'),
+            2 => Future.value(http.Response('', 404)),
+            3 => Future.value(http.Response('', 503)),
+            _ => Future.value(approved),
+          },
+        );
+        final flow = await LoginFlow.start(
+          Uri.parse('https://c.example.com'),
+          client: client,
+        );
+        final creds = await flow.waitForApproval(
+          interval: const Duration(milliseconds: 5),
+          requestTimeout: const Duration(milliseconds: 50),
+        );
+        expect(creds?.appPassword, 'pw');
+      },
+    );
+
+    test(
+      'waitForApproval polls at once on wakeUp and stops when cancelled',
+      () async {
+        final wake = StreamController<void>();
+        var answered = false;
+        final client = flowServer(
+          (_) async => answered ? approved : http.Response('', 404),
+        );
+        final flow = await LoginFlow.start(
+          Uri.parse('https://c.example.com'),
+          client: client,
+        );
+        final waiting = flow.waitForApproval(
+          interval: const Duration(hours: 1),
+          wakeUp: wake.stream,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        answered = true;
+        wake.add(null); // e.g. the app came back from the browser
+        expect((await waiting)?.loginName, 'alice');
+
+        var cancel = false;
+        final flow2 = await LoginFlow.start(
+          Uri.parse('https://c.example.com'),
+          client: flowServer((_) async => http.Response('', 404)),
+        );
+        final waiting2 = flow2.waitForApproval(
+          interval: const Duration(milliseconds: 5),
+          cancelled: () => cancel,
+        );
+        cancel = true;
+        expect(await waiting2, isNull);
+        await wake.close();
+      },
+    );
+
     test('start, pending, then credentials and the WebDAV root', () async {
       var approved = false;
       final client = MockClient((r) async {

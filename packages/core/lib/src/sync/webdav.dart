@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -267,5 +268,44 @@ final class LoginFlow {
       loginName: json['loginName']! as String,
       appPassword: json['appPassword']! as String,
     );
+  }
+
+  /// Polls until the user has approved the login, and returns the
+  /// credentials; `null` if [cancelled] returns true or the flow expired.
+  ///
+  /// Built for mobile: Android freezes apps in the background while the user
+  /// is in the browser, which can leave a request hanging on a dead
+  /// connection. So every poll has a [requestTimeout], network errors only
+  /// lead to the next attempt, the deadline is wall-clock time ([expiry],
+  /// Nextcloud tokens live 20 minutes), and [wakeUp] (e.g. "app resumed")
+  /// triggers an immediate poll instead of waiting for [interval].
+  Future<NextcloudCredentials?> waitForApproval({
+    Duration interval = const Duration(seconds: 2),
+    Duration requestTimeout = const Duration(seconds: 10),
+    Duration expiry = const Duration(minutes: 20),
+    Stream<void>? wakeUp,
+    bool Function()? cancelled,
+  }) async {
+    final deadline = DateTime.now().add(expiry);
+    final wake = StreamController<void>.broadcast();
+    final subscription = wakeUp?.listen(wake.add);
+    try {
+      while (DateTime.now().isBefore(deadline) &&
+          !(cancelled?.call() ?? false)) {
+        try {
+          final credentials = await poll().timeout(requestTimeout);
+          if (credentials != null) return credentials;
+        } on TimeoutException {
+          // Hanging request (frozen app, dead connection): just poll again.
+        } on Exception {
+          // Network hiccup or a transient server error: retry until the deadline.
+        }
+        await Future.any([Future<void>.delayed(interval), wake.stream.first]);
+      }
+      return null;
+    } finally {
+      await subscription?.cancel();
+      await wake.close();
+    }
   }
 }
