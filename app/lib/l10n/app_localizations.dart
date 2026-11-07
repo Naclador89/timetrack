@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @difference.
   ///
   /// In en, this message translates to:
-  /// **'Difference'**
+  /// **'Balance ±'**
   String get difference;
 
   /// No description provided for @balance.
@@ -1411,6 +1411,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weekends and public holidays'**
   String get weekendRules;
+
+  /// No description provided for @breakDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing break deducted: {minutes}'**
+  String breakDeducted(String minutes);
+
+  /// No description provided for @timesheetLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target.'**
+  String get timesheetLegend;
 }
 
 class _AppLocalizationsDelegate

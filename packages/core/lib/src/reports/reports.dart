@@ -28,8 +28,9 @@ final class TimesheetRow {
   /// Last end of work (minutes since the epoch), `null` if no work.
   final int? lastEnd;
 
-  /// Time between first start and last end that wasn't worked, plus any
-  /// automatic break deduction (calculations.md §4).
+  /// Time between first start and last end that wasn't worked, so that
+  /// end − start − break = the actual worked time. A missing break deducted
+  /// automatically (§4) is in `day.breaks.deduction`, not here.
   final int breakMinutes;
 
   /// Locations worked at, in a stable order.
@@ -75,13 +76,14 @@ final class Timesheet {
 
   int _sum(int Function(DayResult) f) => rows.fold(0, (a, r) => a + f(r.day));
 
-  /// Total worked minutes.
+  /// Total actually worked minutes (`W`, §2).
   int get worked => _sum((d) => d.work.worked);
 
   /// Total target minutes.
   int get target => _sum((d) => d.target);
 
-  /// Total credited minutes.
+  /// Total minutes credited against the target (`Cr`, §8, §9): what the
+  /// overtime balance counts, unlike [worked].
   int get credited => _sum((d) => d.credited);
 
   /// Total Sunday hours of trip Sundays, for HR (§9, not in the balance).
@@ -116,7 +118,7 @@ Timesheet buildTimesheet(Ledger ledger, int year, int month) {
         holiday: ledger.holidays.holidayOn(d)?.name,
         firstStart: spans.isEmpty ? null : spans.first.start,
         lastEnd: spans.isEmpty ? null : spans.last.end,
-        breakMinutes: gaps + day.breaks.deduction,
+        breakMinutes: gaps,
       ),
     );
     homeOffice += homeOfficeValue(day, HomeOfficeDayRule.majority).toInt();

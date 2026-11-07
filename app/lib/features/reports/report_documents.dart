@@ -59,6 +59,8 @@ String _notes(ReportFormat f, TimesheetRow r) => [
         ? '${absenceLabel(f.l, a.kind)} ½'
         : absenceLabel(f.l, a.kind),
   if (r.day.isTripDay) f.l.tripDay,
+  if (r.day.breaks.deduction > 0)
+    f.l.breakDeducted(formatMinutes(r.day.breaks.deduction)),
   ...r.locations.map((loc) => locationLabel(f.l, loc)),
 ].join(', ');
 
@@ -77,8 +79,8 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
       l.end,
       l.colBreak,
       l.worked,
-      l.target,
       l.credited,
+      l.target,
       l.difference,
       if (sunday) l.sundayHours,
       l.colNotes,
@@ -90,8 +92,8 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
         f.clock(r.lastEnd),
         r.breakMinutes == 0 ? '' : formatMinutes(r.breakMinutes),
         r.day.work.worked == 0 ? '' : formatMinutes(r.day.work.worked),
-        formatMinutes(r.day.target),
         formatMinutes(r.day.credited),
+        formatMinutes(r.day.target),
         formatMinutes(r.day.delta),
         if (sunday)
           r.day.sundayHours == 0 ? '' : formatMinutes(r.day.sundayHours),
@@ -259,8 +261,8 @@ Future<List<int>> timesheetPdf(
         pw.Wrap(
           children: [
             figure(l.worked, formatMinutes(t.worked)),
-            figure(l.target, formatMinutes(t.target)),
             figure(l.credited, formatMinutes(t.credited)),
+            figure(l.target, formatMinutes(t.target)),
             figure(l.difference, formatMinutes(t.delta)),
             if (t.sundayHours > 0)
               figure(l.sundayHours, formatMinutes(t.sundayHours)),
@@ -271,7 +273,12 @@ Future<List<int>> timesheetPdf(
             figure(l.vacationDaysTaken, f.days(t.vacationDays)),
           ],
         ),
-        pw.SizedBox(height: 36),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          _pdfSafe(l.timesheetLegend),
+          style: const pw.TextStyle(fontSize: 7),
+        ),
+        pw.SizedBox(height: 28),
         pw.Container(
           width: 220,
           decoration: const pw.BoxDecoration(

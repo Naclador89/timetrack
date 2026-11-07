@@ -95,6 +95,7 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
               title: Text(l.weekTotal),
               subtitle: Text(
                 '${l.worked} ${formatMinutes(sum((d) => d.work.worked))} · '
+                '${l.credited} ${formatMinutes(sum((d) => d.credited))} · '
                 '${l.target} ${formatMinutes(sum((d) => d.target))} · '
                 '${l.difference} ${formatMinutes(sum((d) => d.delta))}',
               ),
@@ -141,6 +142,12 @@ class _DayRow extends StatelessWidget {
             ? '${context.absenceName(a.kind)} (½)'
             : context.absenceName(a.kind),
       if (day.isTripDay) l.tripDay,
+      // The row shows worked / target; say so when the account counts
+      // something else (§9).
+      if (day.credited != day.work.worked)
+        '${l.credited} ${formatMinutes(day.credited)}',
+      if (day.sundayHours > 0)
+        '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
     ];
     final delta = day.delta;
     return ListTile(

@@ -65,7 +65,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get location => 'Ort';
 
   @override
-  String get worked => 'Gearbeitet';
+  String get worked => 'Geleistet';
 
   @override
   String get target => 'Soll';
@@ -74,7 +74,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get credited => 'Angerechnet';
 
   @override
-  String get difference => 'Differenz';
+  String get difference => 'Saldo ±';
 
   @override
   String get balance => 'Überstundensaldo';
@@ -717,4 +717,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weekendRules => 'Wochenende und Feiertage';
+
+  @override
+  String breakDeducted(String minutes) {
+    return 'Fehlende Pause abgezogen: $minutes';
+  }
+
+  @override
+  String get timesheetLegend =>
+      'Geleistet: tatsächlich gearbeitete Zeit. Angerechnet: Zeit, die ins Stundenkonto eingeht; auf Reisen, am Wochenende und an Feiertagen nach den Regeln in den Einstellungen (Arbeit an Sonn- und Feiertagen steht gesondert als Sonn-/Feiertagsstunden). Saldo ± = Angerechnet − Soll.';
 }

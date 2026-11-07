@@ -34,7 +34,7 @@
   "worked": "Worked",
   "target": "Target",
   "credited": "Credited",
-  "difference": "Difference",
+  "difference": "Balance ±",
   "balance": "Overtime balance",
   "balanceToday": "incl. today",
   "unassigned": "Without project",
@@ -388,5 +388,14 @@
   "travelHoliday": "Public holidays",
   "likeSunday": "Like Sunday",
   "likeSaturday": "Like Saturday",
-  "weekendRules": "Weekends and public holidays"
+  "weekendRules": "Weekends and public holidays",
+  "breakDeducted": "Missing break deducted: {minutes}",
+  "@breakDeducted": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "timesheetLegend": "Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target."
 }

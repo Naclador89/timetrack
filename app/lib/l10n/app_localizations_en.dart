@@ -74,7 +74,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get credited => 'Credited';
 
   @override
-  String get difference => 'Difference';
+  String get difference => 'Balance ±';
 
   @override
   String get balance => 'Overtime balance';
@@ -715,4 +715,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weekendRules => 'Weekends and public holidays';
+
+  @override
+  String breakDeducted(String minutes) {
+    return 'Missing break deducted: $minutes';
+  }
+
+  @override
+  String get timesheetLegend =>
+      'Worked: the time actually worked. Credited: the time that goes into the overtime account; on trips, weekends and public holidays it follows the rules in the settings (Sunday and holiday work is listed separately as Sunday/holiday hours). Balance ± = credited − target.';
 }

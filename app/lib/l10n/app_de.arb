@@ -17,10 +17,10 @@
   "locationOnSite": "Vor Ort",
   "locationTravel": "Unterwegs",
   "location": "Ort",
-  "worked": "Gearbeitet",
+  "worked": "Geleistet",
   "target": "Soll",
   "credited": "Angerechnet",
-  "difference": "Differenz",
+  "difference": "Saldo ±",
   "balance": "Überstundensaldo",
   "balanceToday": "inkl. heute",
   "unassigned": "Ohne Projekt",
@@ -218,5 +218,7 @@
   "travelHoliday": "Feiertage",
   "likeSunday": "Wie Sonntag",
   "likeSaturday": "Wie Samstag",
-  "weekendRules": "Wochenende und Feiertage"
+  "weekendRules": "Wochenende und Feiertage",
+  "breakDeducted": "Fehlende Pause abgezogen: {minutes}",
+  "timesheetLegend": "Geleistet: tatsächlich gearbeitete Zeit. Angerechnet: Zeit, die ins Stundenkonto eingeht; auf Reisen, am Wochenende und an Feiertagen nach den Regeln in den Einstellungen (Arbeit an Sonn- und Feiertagen steht gesondert als Sonn-/Feiertagsstunden). Saldo ± = Angerechnet − Soll."
 }

@@ -368,10 +368,13 @@ class _SummaryCard extends StatelessWidget {
               spacing: 32,
               runSpacing: 12,
               children: [
+                // Actual vs. credited: they differ on trips, weekends and
+                // holidays (§9), so both are always shown.
                 figure(l.worked, formatMinutes(day.work.worked)),
+                figure(l.credited, formatMinutes(day.credited)),
                 figure(l.target, formatMinutes(day.target)),
-                if (day.credited != day.breaks.effectiveWorked)
-                  figure(l.credited, formatMinutes(day.credited)),
+                if (day.sundayHours > 0)
+                  figure(l.sundayHours, formatMinutes(day.sundayHours)),
                 figure(l.unassigned, formatMinutes(day.work.unassigned)),
                 figure(
                   l.balance,

@@ -89,14 +89,18 @@ class DayScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               title: Text(
-                '${l.worked} ${formatMinutes(day.work.worked)} · ${l.target} ${formatMinutes(day.target)}',
+                '${l.worked} ${formatMinutes(day.work.worked)} · '
+                '${l.credited} ${formatMinutes(day.credited)} · '
+                '${l.target} ${formatMinutes(day.target)}',
               ),
               subtitle: Text(
                 [
                   if (holiday != null) holiday.name,
                   if (day.isTripDay) l.tripDay,
-                  if (day.credited != day.breaks.effectiveWorked)
-                    '${l.credited} ${formatMinutes(day.credited)}',
+                  if (day.sundayHours > 0)
+                    '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
+                  if (day.breaks.deduction > 0)
+                    l.breakDeducted(formatMinutes(day.breaks.deduction)),
                   '${l.difference} ${formatMinutes(day.delta)}',
                   '${l.unassigned} ${formatMinutes(day.work.unassigned)}',
                 ].join(' · '),
