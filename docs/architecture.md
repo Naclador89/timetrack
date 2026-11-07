@@ -35,4 +35,8 @@ Rules for dependencies:
 | `core/rules/day_work` (`evaluateDay`) | calculations §2–§3 | done |
 | `core/rules/arbzg` (`evaluateBreaks`, `arbzgWarnings`) | calculations §4–§5 | done |
 | `core/rules/holidays` | calculations §6 | done |
+| `core/model/planning` (`WorkSchedule`, `Absence`, `Trip`) | calculations §7–§9 | done |
+| `core/rules/target` (`TargetCalendar`) | calculations §7 | done |
+| `core/rules/credit` (absence credit, travel rules) | calculations §8–§9 | done |
+| `core/rules/ledger` (`Ledger`: per-day results, balance) | calculations §2–§9 | done |
 | everything else | | planned (see `docs/status.md`) |

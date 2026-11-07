@@ -24,7 +24,8 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Day evaluation in the home time zone (`HomeTimeZone`, `evaluateDay`): split at local midnight,
       `W(D)`, `W_loc` (§2), project time and unassigned (§3)
 - [x] ArbZG breaks §4 (warn/deduct), other checks §5 (`evaluateBreaks`, `arbzgWarnings`)
-- [ ] Target §7, credited time and balance §8, travel crediting §9
+- [x] Target §7 (`TargetCalendar`), credited time and balance §8, travel crediting §9 (`Ledger`,
+      `tripDayCredit`, `TravelRules`)
 - [ ] Vacation account §10
 - [ ] Home office: day value, quota, forecast §11
 - [ ] Per-diem §13
@@ -34,10 +35,10 @@ _Last updated: 2026-11-07 by Claude Code._
 - [ ] drift database and SyncedRepository (sync-format §7, write path)
 - [ ] Sync engine against an in-memory fake WebDAV, plus the property-based convergence test (sync-format §7)
 
-**Next task**: target time §7 (schedules with `valid_from`, holidays, `extra_holiday`), then
-credited time and overtime balance §8, and travel crediting §9. Put them in
-`core/lib/src/rules/` as pure functions over plain values, like `day_work.dart` and `arbzg.dart`.
-Model classes for schedules, absences and trips go in `core/lib/src/model/`.
+**Next task**: vacation account §10, then home office §11 (day value, quota, forecast). Both fit
+into `Ledger` (`core/lib/src/rules/ledger.dart`), which already evaluates every day.
+Performance note: `Ledger` scans all rows for each day. That's fine for personal data volumes, but
+add an index by date if balances over several years get slow.
 
 ## Known issues / open questions
 - Travel-rule assumptions (calculations §9) not yet confirmed by the user:
@@ -56,3 +57,5 @@ Model classes for schedules, absences and trips go in `core/lib/src/model/`.
 - 2026-11-07, Claude Code: pushed to GitHub (`Naclador89/timetrack`, private), started the first
   manual CI run. M1: home time zone, day evaluation (§2/§3), ArbZG checks (§4/§5); 57 tests green.
   Changed the CI concurrency so pushes no longer cancel manual or tag builds.
+  Then target §7, credit and balance §8, travel crediting §9 (`Ledger` ties all daily rules
+  together); 81 tests green.
