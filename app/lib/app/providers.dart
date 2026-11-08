@@ -219,6 +219,19 @@ final noticesProvider =
       );
     });
 
+/// The notices of a `(from, to)` range that are shown as cards: their
+/// category is on and they weren't dismissed (calculations §12). None
+/// means the range is complete.
+final openNoticesProvider =
+    Provider.family<List<ReviewItem>, (LocalDate, LocalDate)>((ref, range) {
+      final settings = ref.watch(settingsProvider);
+      return splitNotices(
+        ref.watch(noticesProvider(range)),
+        shows: (c) => settings.showsNotice(c.wireName),
+        dismissed: ref.watch(dismissedNoticesProvider),
+      ).shown;
+    });
+
 /// The days of a `(from, to)` range with notices, shown or hidden: the
 /// small marker in the calendar.
 final noticeDaysProvider =

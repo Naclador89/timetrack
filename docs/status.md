@@ -296,7 +296,10 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       Allgemein → Erinnerungen (Android/Windows), Android: one-off WorkManager task `reminder` at the
       next due time + `ReminderNotice.kt` (channel "Erinnerungen", action Pause/Ausstempeln); debug
       APK builds. **User**: check the reminders on the phone. Windows reminders come with the tray.
-- [ ] Week check (grouped notices, review flow, complete week/month)
+- [x] Week check (calculations §12, "Checking a week or month"): the week view sums its notices in
+      one card ("6 Hinweise an 4 Tagen", a line per day) with "Woche prüfen"; the check steps
+      through them (fix, Ausblenden, Überspringen, "Alles erledigt"); "Woche vollständig" /
+      "Monat vollständig" (reports) when nothing is open (`openNoticesProvider`, `runReviewFlow`).
 - [ ] Project page with hour budget
 - [ ] Vacation planner with bridge days (calculations §10.1)
 - [ ] Windows tray icon (work-pc.md §3)

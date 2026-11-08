@@ -314,6 +314,13 @@ dismissed items still put a small marker on their day in the calendar, and the d
 ("n hidden notices", dismissed ones can be shown again). "More than 6 h without a break" is not shown
 when the same day has the missing-break item (one fix covers both).
 
+**Checking a week or month** (user request 2026-11-08): a range is **complete** when it has no
+shown items (category on, not dismissed) up to today. The week view sums its items in one card
+("5 Hinweise an 3 Tagen", a line per day) with **Woche prüfen**, or shows "Woche vollständig"; the
+timesheet in the reports shows "Monat vollständig" or the open count with **Monat prüfen**. Checking
+steps through the items one at a time: the fix, **Ausblenden** (dismiss for good) or
+**Überspringen**; a fix that only opens the day ends the check there; at the end "Alles erledigt".
+
 ## §13 Per-diem basis (Verpflegungsmehraufwand)
 
 For each trip with `depart` and `return`. An open trip has no per-diem yet.

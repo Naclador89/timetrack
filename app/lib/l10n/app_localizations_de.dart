@@ -1598,4 +1598,54 @@ class AppLocalizationsDe extends AppLocalizations {
   String clockedOutAt(String time) {
     return 'Ausgestempelt um $time';
   }
+
+  @override
+  String get weekCheck => 'Woche prüfen';
+
+  @override
+  String get monthCheck => 'Monat prüfen';
+
+  @override
+  String noticeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Hinweise',
+      one: '1 Hinweis',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String noticeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'an $count Tagen',
+      one: 'an 1 Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weekComplete => 'Woche vollständig';
+
+  @override
+  String get monthComplete => 'Monat vollständig';
+
+  @override
+  String reviewStep(int index, int total) {
+    return '$index von $total';
+  }
+
+  @override
+  String get hideNotice => 'Ausblenden';
+
+  @override
+  String get allDone => 'Alles erledigt';
+
+  @override
+  String skippedCount(int count) {
+    return '$count übersprungen';
+  }
 }

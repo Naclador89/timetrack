@@ -992,5 +992,46 @@
         "type": "String"
       }
     }
+  },
+  "weekCheck": "Check week",
+  "monthCheck": "Check month",
+  "noticeCount": "{count, plural, =1{1 notice} other{{count} notices}}",
+  "@noticeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noticeDays": "{count, plural, =1{on 1 day} other{on {count} days}}",
+  "@noticeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekComplete": "Week complete",
+  "monthComplete": "Month complete",
+  "reviewStep": "{index} of {total}",
+  "@reviewStep": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hideNotice": "Hide",
+  "allDone": "All done",
+  "skippedCount": "{count} skipped",
+  "@skippedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

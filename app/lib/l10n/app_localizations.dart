@@ -2899,6 +2899,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clocked out at {time}'**
   String clockedOutAt(String time);
+
+  /// No description provided for @weekCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check week'**
+  String get weekCheck;
+
+  /// No description provided for @monthCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check month'**
+  String get monthCheck;
+
+  /// No description provided for @noticeCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 notice} other{{count} notices}}'**
+  String noticeCount(int count);
+
+  /// No description provided for @noticeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{on 1 day} other{on {count} days}}'**
+  String noticeDays(int count);
+
+  /// No description provided for @weekComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Week complete'**
+  String get weekComplete;
+
+  /// No description provided for @monthComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Month complete'**
+  String get monthComplete;
+
+  /// No description provided for @reviewStep.
+  ///
+  /// In en, this message translates to:
+  /// **'{index} of {total}'**
+  String reviewStep(int index, int total);
+
+  /// No description provided for @hideNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hideNotice;
+
+  /// No description provided for @allDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All done'**
+  String get allDone;
+
+  /// No description provided for @skippedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} skipped'**
+  String skippedCount(int count);
 }
 
 class _AppLocalizationsDelegate

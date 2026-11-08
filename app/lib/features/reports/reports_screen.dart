@@ -10,6 +10,7 @@ import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/charts.dart';
+import '../../widgets/attention.dart';
 import '../../widgets/export.dart';
 import '../../widgets/motion.dart';
 import '../../widgets/sparkline.dart';
@@ -164,6 +165,15 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 ),
               ],
             ),
+            if (!month.isAfter(today)) ...[
+              const SizedBox(height: 12),
+              ReviewStatus(
+                from: month,
+                to: last.isAfter(today) ? today : last,
+                completeLabel: l.monthComplete,
+                checkLabel: l.monthCheck,
+              ),
+            ],
             const SizedBox(height: 12),
             preview(
               ReportPreviewScreen(

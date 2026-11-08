@@ -231,7 +231,7 @@ class _WeekView extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!monday.isAfter(today))
-          AttentionCards(from: monday, to: last, collapseAfter: 2),
+          AttentionCards(from: monday, to: last, grouped: true),
         Card(
           child: Column(
             children: [

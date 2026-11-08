@@ -1,14 +1,82 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../app/back_navigation.dart';
 import '../app/format.dart';
 import '../app/providers.dart';
+import '../app/theme.dart';
 import '../features/projects/project_time_dialog.dart';
 import 'interval_dialog.dart';
 import 'notices.dart';
+
+/// One notice with its fix, as shown in the cards and the review flow.
+typedef AttentionItem = ({
+  ReviewItem item,
+  String key,
+  IconData icon,
+  String text,
+  String actionLabel,
+  Future<void> Function() onAction,
+  bool opensDay,
+});
+
+/// The notices of [from]–[to] with their fixes: the [shown] ones (category
+/// on, not dismissed; calculations §12) and the [hidden] ones. [watch]
+/// rebuilds the caller on changes; the review flow reads instead.
+({List<AttentionItem> shown, List<ReviewItem> hidden}) attentionItems(
+  BuildContext context,
+  WidgetRef ref, {
+  required LocalDate from,
+  required LocalDate to,
+  bool includeQuota = false,
+  bool watch = true,
+}) {
+  T get<T>(ProviderListenable<T> p) => watch ? ref.watch(p) : ref.read(p);
+  final settings = get(settingsProvider);
+  final quotas = includeQuota
+      ? get(homeOfficeQuotasProvider)
+      : const <HomeOfficeQuota>[];
+  final items = [
+    ...get(noticesProvider((from, to))),
+    ...reviewItems(
+      get(ledgerProvider),
+      from: from,
+      to: to,
+      quotas: quotas,
+    ).where((i) => i.kind == ReviewKind.homeOfficeQuota),
+  ];
+  final (:shown, :hidden) = splitNotices(
+    items,
+    shows: (c) => settings.showsNotice(c.wireName),
+    dismissed: get(dismissedNoticesProvider),
+  );
+  return (
+    shown: [
+      for (final item in shown)
+        if (_fix(context, ref, item) case (
+          final icon,
+          final label,
+          final fix,
+          final opensDay,
+        ))
+          (
+            item: item,
+            key: noticeKey(item),
+            icon: icon,
+            text: noticeText(context, item),
+            actionLabel: label,
+            onAction: fix,
+            opensDay: opensDay,
+          ),
+    ],
+    hidden: hidden,
+  );
+}
 
 /// Review items (calculations.md §12) as cards with a one-tap fix: add the
 /// missing break, set the end of a forgotten session, assign unassigned
@@ -29,7 +97,12 @@ class AttentionCards extends ConsumerWidget {
     this.includeTrip = false,
     this.collapseAfter,
     this.showHidden = false,
+    this.grouped = false,
   });
+
+  /// One summary card with a line per day and "Woche prüfen" instead of a
+  /// card per notice (the week view).
+  final bool grouped;
 
   /// List hidden notices of these days small, below the cards.
   final bool showHidden;
@@ -58,40 +131,29 @@ class AttentionCards extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final dismissed = ref.watch(dismissedNoticesProvider);
     final state = ref.watch(trackerStateProvider);
-    final quotas = includeQuota
-        ? ref.watch(homeOfficeQuotasProvider)
-        : const <HomeOfficeQuota>[];
-    final items = [
-      ...ref.watch(noticesProvider((from, to))),
-      ...reviewItems(
-        ref.watch(ledgerProvider),
-        from: from,
-        to: to,
-        quotas: quotas,
-      ).where((i) => i.kind == ReviewKind.homeOfficeQuota),
-    ];
-    final (:shown, :hidden) = splitNotices(
-      items,
-      shows: (c) => settings.showsNotice(c.wireName),
-      dismissed: dismissed,
+    final (:shown, :hidden) = attentionItems(
+      context,
+      ref,
+      from: from,
+      to: to,
+      includeQuota: includeQuota,
     );
-    final cards = <Widget>[];
-    for (final item in shown) {
-      final key = noticeKey(item);
-      final (icon, label, fix) = _fix(context, ref, item);
-      cards.add(
-        _AttentionCard(
-          key: ValueKey(key),
-          icon: icon,
-          text: showDates
-              ? '${context.shortDate(item.date)} · ${noticeText(context, item)}'
-              : noticeText(context, item),
-          actionLabel: label,
-          onAction: fix,
-          onDismiss: () => _dismiss(context, ref, item),
-        ),
-      );
+    if (grouped) {
+      return _WeekSummary(items: shown, from: from, to: to);
     }
+    final cards = <Widget>[
+      for (final a in shown)
+        _AttentionCard(
+          key: ValueKey(a.key),
+          icon: a.icon,
+          text: showDates
+              ? '${context.shortDate(a.item.date)} · ${a.text}'
+              : a.text,
+          actionLabel: a.actionLabel,
+          onAction: () => unawaited(a.onAction()),
+          onDismiss: () => dismissNotice(context, ref, a.item),
+        ),
+    ];
     if (includeTrip &&
         settings.showsNotice(NoticeCategory.openTrip.wireName) &&
         state.trip != null &&
@@ -124,100 +186,105 @@ class AttentionCards extends ConsumerWidget {
       ],
     );
   }
+}
 
-  /// Hides [item] for good (synced) and offers to undo it.
-  Future<void> _dismiss(
-    BuildContext context,
-    WidgetRef ref,
-    ReviewItem item,
-  ) async {
-    final repo = ref.read(repositoryProvider);
-    final key = noticeKey(item);
-    await repo.write('dismissed_notices', key, {
-      'date': '${item.date}',
-      'deleted': false,
-    });
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.noticeDismissed),
-          action: SnackBarAction(
-            label: context.l10n.undo,
-            onPressed: () => repo.delete('dismissed_notices', key),
-          ),
+/// Hides [item] for good (synced) and offers to undo it.
+Future<void> dismissNotice(
+  BuildContext context,
+  WidgetRef ref,
+  ReviewItem item,
+) async {
+  final repo = ref.read(repositoryProvider);
+  final key = noticeKey(item);
+  await repo.write('dismissed_notices', key, {
+    'date': '${item.date}',
+    'deleted': false,
+  });
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.noticeDismissed),
+        action: SnackBarAction(
+          label: context.l10n.undo,
+          onPressed: () => repo.delete('dismissed_notices', key),
         ),
-      );
+      ),
+    );
+}
+
+/// The icon, the fix's label and the fix of [item], and whether the fix
+/// only opens the day.
+(IconData, String, Future<void> Function(), bool) _fix(
+  BuildContext context,
+  WidgetRef ref,
+  ReviewItem item,
+) {
+  final l = context.l10n;
+  final zone = ref.read(zoneProvider);
+  Future<void> openDay() async => context.go(dayLocation(context, item.date));
+  int local(int epochMinute) {
+    final t = zone.toLocal(instantOfEpochMinute(epochMinute));
+    return t.hour * 60 + t.minute;
   }
 
-  (IconData, String, VoidCallback) _fix(
-    BuildContext context,
-    WidgetRef ref,
-    ReviewItem item,
-  ) {
-    final l = context.l10n;
-    final zone = ref.read(zoneProvider);
-    void openDay() => context.go(dayLocation(context, item.date));
-    int local(int epochMinute) {
-      final t = zone.toLocal(instantOfEpochMinute(epochMinute));
-      return t.hour * 60 + t.minute;
-    }
-
-    switch (item) {
-      case ReviewItem(
-        kind: ReviewKind.arbzg,
-        arbzg: ArbzgWarningKind.breakMissing ||
-            ArbzgWarningKind.workOver6hWithoutBreak,
-      ):
-        return (
-          Icons.coffee_outlined,
-          l.fixAddBreak,
-          () {
-            final day = ref.read(ledgerProvider).day(item.date);
-            final minutes = item.minutes > 0 ? item.minutes : 30;
-            final span = suggestBreak(day, minutes);
-            showIntervalDialog(
-              context,
-              date: item.date,
-              table: 'breaks',
-              initialStart: span == null ? null : local(span.start),
-              initialEnd: span == null ? null : local(span.end),
-            );
-          },
-        );
-      case ReviewItem(kind: ReviewKind.openSessionTooLong, :final refId?):
-        return (
-          Icons.timer_off_outlined,
-          l.fixSetEnd,
-          () {
-            final session = ref
-                .read(ledgerDataProvider)
-                .sessions
-                .where((s) => s.id == refId)
-                .firstOrNull;
-            if (session == null) return;
-            showIntervalDialog(
-              context,
-              date: item.date,
-              table: 'work_sessions',
-              id: session.id,
-              start: session.start,
-              location: session.location,
-            );
-          },
-        );
-      case ReviewItem(kind: ReviewKind.unassigned):
-        return (
-          Icons.work_outline,
-          l.fixAssign,
-          () => assignUnassigned(context, ref, item.date),
-        );
-      case ReviewItem(kind: ReviewKind.homeOfficeQuota):
-        return (Icons.home_outlined, l.openDay, openDay);
-      default:
-        return (Icons.info_outline, l.openDay, openDay);
-    }
+  switch (item) {
+    case ReviewItem(
+      kind: ReviewKind.arbzg,
+      arbzg: ArbzgWarningKind.breakMissing ||
+          ArbzgWarningKind.workOver6hWithoutBreak,
+    ):
+      return (
+        Icons.coffee_outlined,
+        l.fixAddBreak,
+        () {
+          final day = ref.read(ledgerProvider).day(item.date);
+          final minutes = item.minutes > 0 ? item.minutes : 30;
+          final span = suggestBreak(day, minutes);
+          return showIntervalDialog(
+            context,
+            date: item.date,
+            table: 'breaks',
+            initialStart: span == null ? null : local(span.start),
+            initialEnd: span == null ? null : local(span.end),
+          );
+        },
+        false,
+      );
+    case ReviewItem(kind: ReviewKind.openSessionTooLong, :final refId?):
+      return (
+        Icons.timer_off_outlined,
+        l.fixSetEnd,
+        () async {
+          final session = ref
+              .read(ledgerDataProvider)
+              .sessions
+              .where((s) => s.id == refId)
+              .firstOrNull;
+          if (session == null) return;
+          await showIntervalDialog(
+            context,
+            date: item.date,
+            table: 'work_sessions',
+            id: session.id,
+            start: session.start,
+            location: session.location,
+          );
+        },
+        false,
+      );
+    case ReviewItem(kind: ReviewKind.unassigned):
+      return (
+        Icons.work_outline,
+        l.fixAssign,
+        () => assignUnassigned(context, ref, item.date),
+        false,
+      );
+    case ReviewItem(kind: ReviewKind.homeOfficeQuota):
+      return (Icons.home_outlined, l.openDay, openDay, true);
+    default:
+      return (Icons.info_outline, l.openDay, openDay, true);
   }
 }
 
@@ -409,6 +476,337 @@ class _CollapsibleState extends State<_Collapsible> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// The week's notices in one card: how many on how many days, a line per
+/// day and "Woche prüfen"; with none left, "Woche vollständig".
+class _WeekSummary extends ConsumerWidget {
+  const _WeekSummary({
+    required this.items,
+    required this.from,
+    required this.to,
+  });
+
+  final List<AttentionItem> items;
+  final LocalDate from;
+  final LocalDate to;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    if (items.isEmpty) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Chip(
+            avatar: Icon(Icons.check_circle, color: scheme.deltaColor(1)),
+            label: Text(l.weekComplete),
+          ),
+        ),
+      );
+    }
+    final byDay = <LocalDate, List<AttentionItem>>{};
+    for (final a in items) {
+      (byDay[a.item.date] ??= []).add(a);
+    }
+    final days = byDay.keys.toList()..sort();
+    final on = TextStyle(color: scheme.onTertiaryContainer);
+    return Card(
+      color: scheme.tertiaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.checklist, color: scheme.onTertiaryContainer),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${l.noticeCount(items.length)} ${l.noticeDays(days.length)}',
+                    style: theme.textTheme.titleSmall?.merge(on),
+                  ),
+                ),
+                FilledButton.tonal(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: scheme.surface.withValues(alpha: 0.6),
+                  ),
+                  onPressed: () => runReviewFlow(
+                    context,
+                    ref,
+                    from: from,
+                    to: to,
+                    title: l.weekCheck,
+                  ),
+                  child: Text(l.weekCheck),
+                ),
+              ],
+            ),
+            for (final d in days)
+              InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () => runReviewFlow(
+                  context,
+                  ref,
+                  from: from,
+                  to: to,
+                  startAt: d,
+                  title: l.weekCheck,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 84,
+                        child: Text(
+                          context.shortDate(d),
+                          style: on.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          byDay[d]!.map((a) => a.text).join(' · '),
+                          style: on,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _Step { fix, hide, skip }
+
+/// Steps through the open notices of [from]–[to] one at a time, each with
+/// its fix, "hide for good" and "skip" (calculations §12, checking a week or
+/// month). [startAt] begins with that day. A fix that only opens the day
+/// ends the flow there.
+Future<void> runReviewFlow(
+  BuildContext context,
+  WidgetRef ref, {
+  required LocalDate from,
+  required LocalDate to,
+  required String title,
+  LocalDate? startAt,
+}) async {
+  final skipped = <String>{};
+  var handled = 0;
+  List<AttentionItem> open() =>
+      attentionItems(context, ref, from: from, to: to, watch: false).shown;
+  while (true) {
+    if (!context.mounted) return;
+    final all = open().where((a) => !skipped.contains(a.key)).toList();
+    final start = startAt;
+    final queue = start == null
+        ? all
+        : [
+            ...all.where((a) => !a.item.date.isBefore(start)),
+            ...all.where((a) => a.item.date.isBefore(start)),
+          ];
+    if (queue.isEmpty) {
+      if (handled + skipped.length > 0) {
+        await _showDone(context, skipped.length);
+      }
+      return;
+    }
+    final current = queue.first;
+    final step = await showDialog<_Step>(
+      context: context,
+      builder: (_) => _FlowStep(
+        title: title,
+        item: current,
+        index: handled + skipped.length + 1,
+        total: handled + skipped.length + queue.length,
+      ),
+    );
+    if (step == null || !context.mounted) return;
+    final before = {for (final a in open()) a.key};
+    switch (step) {
+      case _Step.fix when current.opensDay:
+        await current.onAction();
+        return;
+      case _Step.fix:
+        await current.onAction();
+      case _Step.hide:
+        await dismissNotice(context, ref, current.item);
+      case _Step.skip:
+        skipped.add(current.key);
+        continue;
+    }
+    await _untilChanged(ref, (from, to), before);
+    if (!open().any((a) => a.key == current.key)) handled++;
+  }
+}
+
+/// Waits until the open notices differ from [before] (the write went
+/// through), at most a moment: a cancelled fix changes nothing.
+Future<void> _untilChanged(
+  WidgetRef ref,
+  (LocalDate, LocalDate) range,
+  Set<String> before,
+) async {
+  bool changed() {
+    final now = {
+      for (final i in ref.read(openNoticesProvider(range))) noticeKey(i),
+    };
+    return now.length != before.length || !now.containsAll(before);
+  }
+
+  for (var i = 0; i < 10 && !changed(); i++) {
+    await Future<void>.delayed(Duration.zero);
+  }
+}
+
+Future<void> _showDone(BuildContext context, int skipped) => showDialog<void>(
+  context: context,
+  builder: (context) {
+    final l = context.l10n;
+    return AlertDialog(
+      icon: Icon(
+        Icons.check_circle,
+        color: Theme.of(context).colorScheme.deltaColor(1),
+      ),
+      title: Text(l.allDone),
+      content: skipped > 0 ? Text(l.skippedCount(skipped)) : null,
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
+        ),
+      ],
+    );
+  },
+);
+
+/// One notice of the review flow: its day, text and the three choices.
+class _FlowStep extends StatelessWidget {
+  const _FlowStep({
+    required this.title,
+    required this.item,
+    required this.index,
+    required this.total,
+  });
+
+  final String title;
+  final AttentionItem item;
+  final int index;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: Row(
+        children: [
+          Expanded(child: Text(title)),
+          Text(l.reviewStep(index, total), style: theme.textTheme.labelLarge),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.longDate(item.item.date),
+            style: theme.textTheme.labelLarge,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(item.icon),
+              const SizedBox(width: 12),
+              Expanded(child: Text(item.text)),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, _Step.hide),
+          child: Text(l.hideNotice),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _Step.skip),
+          child: Text(l.skip),
+        ),
+        FilledButton(
+          autofocus: true,
+          onPressed: () => Navigator.pop(context, _Step.fix),
+          child: Text(item.actionLabel),
+        ),
+      ],
+    );
+  }
+}
+
+/// "Monat vollständig", or how many notices are open with a button that
+/// checks them one by one (reports, before handing in the timesheet).
+class ReviewStatus extends ConsumerWidget {
+  /// Creates the status of [from]–[to].
+  const ReviewStatus({
+    super.key,
+    required this.from,
+    required this.to,
+    required this.completeLabel,
+    required this.checkLabel,
+  });
+
+  /// First day.
+  final LocalDate from;
+
+  /// Last day.
+  final LocalDate to;
+
+  /// Shown when nothing is open.
+  final String completeLabel;
+
+  /// The button and the flow's title.
+  final String checkLabel;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final open = ref.watch(openNoticesProvider((from, to)));
+    if (open.isEmpty) {
+      return Chip(
+        avatar: Icon(Icons.check_circle, color: scheme.deltaColor(1)),
+        label: Text(completeLabel),
+      );
+    }
+    final days = {for (final i in open) i.date}.length;
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      children: [
+        Icon(Icons.checklist, color: scheme.tertiary),
+        Text('${l.noticeCount(open.length)} ${l.noticeDays(days)}'),
+        TextButton(
+          onPressed: () => runReviewFlow(
+            context,
+            ref,
+            from: from,
+            to: to,
+            title: checkLabel,
+          ),
+          child: Text(checkLabel),
+        ),
+      ],
     );
   }
 }

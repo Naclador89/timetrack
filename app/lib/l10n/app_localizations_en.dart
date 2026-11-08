@@ -1591,4 +1591,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String clockedOutAt(String time) {
     return 'Clocked out at $time';
   }
+
+  @override
+  String get weekCheck => 'Check week';
+
+  @override
+  String get monthCheck => 'Check month';
+
+  @override
+  String noticeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count notices',
+      one: '1 notice',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String noticeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'on $count days',
+      one: 'on 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weekComplete => 'Week complete';
+
+  @override
+  String get monthComplete => 'Month complete';
+
+  @override
+  String reviewStep(int index, int total) {
+    return '$index of $total';
+  }
+
+  @override
+  String get hideNotice => 'Hide';
+
+  @override
+  String get allDone => 'All done';
+
+  @override
+  String skippedCount(int count) {
+    return '$count skipped';
+  }
 }

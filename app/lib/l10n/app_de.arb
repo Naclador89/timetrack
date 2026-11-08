@@ -466,5 +466,15 @@
   "otherTime": "Andere Zeit…",
   "stillWorking": "Ich arbeite noch",
   "forgottenTimeInvalid": "Bitte eine Zeit zwischen {from} und jetzt wählen.",
-  "clockedOutAt": "Ausgestempelt um {time}"
+  "clockedOutAt": "Ausgestempelt um {time}",
+  "weekCheck": "Woche prüfen",
+  "monthCheck": "Monat prüfen",
+  "noticeCount": "{count, plural, =1{1 Hinweis} other{{count} Hinweise}}",
+  "noticeDays": "{count, plural, =1{an 1 Tag} other{an {count} Tagen}}",
+  "weekComplete": "Woche vollständig",
+  "monthComplete": "Monat vollständig",
+  "reviewStep": "{index} von {total}",
+  "hideNotice": "Ausblenden",
+  "allDone": "Alles erledigt",
+  "skippedCount": "{count} übersprungen"
 }
