@@ -120,9 +120,9 @@ _Last updated: 2026-11-08 by Claude Code._
 
 ### Releases
 - `v0.1.0` (2026-11-07): GitHub Release with Windows ZIP, Android APK, Linux tar.gz; README and the
-  repo's About link to `releases/latest`. Release APKs are signed with the CI debug key, which
-  changes with every run, until a release keystore is set up (`docs/dev-setup.md` §5; waiting for
-  the user's OK).
+  repo's About link to `releases/latest`. It was signed with the CI debug key; since v0.3.0 every
+  APK carries the permanent release key (`docs/dev-setup.md` §5, set up 2026-11-08; checked again
+  on v0.5.0: certificate SHA-256 `23:D0:B2:…:A4:E8`).
 
 - `v0.2.0` (2026-11-07): project time as duration with summary.
   (v0.1.0 and v0.2.0 exist only in the old private repo `timetrack-private`.)
