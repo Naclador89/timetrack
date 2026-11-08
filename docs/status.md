@@ -136,6 +136,7 @@ _Last updated: 2026-11-08 by Claude Code._
   vacation planner, Windows tray). The first release that reaches v0.4.1 through the updater.
 - `v0.5.1` (2026-11-08): work-PC feedback: usual break settings, undo snack bars that go away,
   new month view, no target before the balance start, "Mit Windows starten" as its own switch.
+- `v0.5.2` (2026-11-09): a day type can be removed again ("Tagesart entfernen", with undo).
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
