@@ -18,7 +18,8 @@ _Last updated: 2026-11-08 by Claude Code._
 - [ ] Actions bumped to their current majors (checkout v7, upload-artifact v7, download-artifact v8,
       setup-java v6, action-gh-release v3) to drop the Node 20 deprecation warnings. Only `test` has run
       on them so far; the build and release jobs get checked at the next tag or manual run.
-- [ ] Android release keystore (`docs/dev-setup.md` §5), needed before the phone installs CI-built APKs
+- [x] Android release keystore (`docs/dev-setup.md` §5, 2026-11-08): local `key.properties` + `release.jks`
+      (git-ignored), CI secrets set; local and CI APKs now share one key. The phone needs one reinstall.
 - [x] Android application ID settled: `io.github.naclador89.timetrack` (also the Linux app ID)
 
 ### M1: core logic (pure Dart)
@@ -223,7 +224,8 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] Polish: the day view's quick-entry button folds to its icon while scrolling down
       (`CollapsingFab`); the booking sheet's time switch reads "Startzeit angeben" with a hint.
 
-**Next tasks**, one at a time (user, 2026-11-08): release keystore. The user checks the builds on the phone and re-enters the three reset settings.
+**Next tasks**: the user backs up the keystore, reinstalls the app on the phone once (new key),
+checks the builds and re-enters the three reset settings.
 **The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)

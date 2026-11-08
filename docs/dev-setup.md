@@ -96,6 +96,12 @@ EOF
 ```
 
 Both files are git-ignored; **back them up**, because losing the key means reinstalling the app.
+
+**Set up on 2026-11-08** (RSA 4096, PKCS12, alias `timetrack`, random password in `key.properties`;
+certificate `CN=TimeTrack, O=Naclador89`, SHA-256
+`23:D0:B2:19:7F:93:57:8B:DF:92:4F:54:EA:93:34:93:B8:2E:F5:0D:48:4A:21:08:F6:2D:DA:CB:3B:75:A4:E8`).
+Both files exist on the maintainer machine; the user keeps a backup. The two CI secrets are set.
+Builds before that date were signed with debug keys, so switching needed one reinstall on the phone.
 For CI, add the repo secrets `ANDROID_KEYSTORE_BASE64` (`base64 -w0 app/android/app/release.jks`)
 and `ANDROID_KEY_PROPERTIES` (the content of `key.properties`).
 
