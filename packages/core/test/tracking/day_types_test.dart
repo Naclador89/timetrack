@@ -120,4 +120,24 @@ void main() {
       expect(DayType.parse(t.wireName), t);
     }
   });
+
+  test('§15 removing the type: back to none, extra holiday stays', () async {
+    final sat = LocalDate(2026, 11, 7);
+    await setDayType(repo, sat, DayType.vacation, zone: zone);
+    await repo.write('absences', 'x', {
+      'date': '$sat',
+      'kind': 'extra_holiday',
+      'fraction': 0.5,
+    });
+    expect(ledger().day(sat).type, DayType.vacation);
+    final deleted = await clearDayType(repo, sat);
+    expect(deleted.single.$1, 'absences');
+    expect(ledger().day(sat).type, isNull);
+    expect(live('absences').single.id, 'x');
+
+    await set(DayType.home);
+    expect(await clearDayType(repo, wed), [('days', '2026-11-04')]);
+    expect(ledger().day(wed).type, isNull);
+    expect(await clearDayType(repo, wed), isEmpty);
+  });
 }

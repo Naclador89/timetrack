@@ -342,6 +342,9 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - [x] Windows: separate switch "Mit Windows starten" (the HKCU Run key, work-pc.md §1); "Arbeits-PC"
       is now only the question after sign-in (`local_values` `start_prompt`, default on so
       existing setups keep asking) and turns the autostart on with it.
+- [x] A day type can be removed (calculations §15, `clearDayType`): "Tagesart entfernen" in the
+      picker deletes the `days` row and the day's absences (not `extra_holiday`), with undo; a trip
+      day points to the trip.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -459,3 +462,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
   tests, 63 widget tests green.
 - 2026-11-08, Claude Code: Windows autostart as its own setting, split from "Arbeits-PC".
   65 widget tests green.
+- 2026-11-08, Claude Code: day types can be removed (with undo). 275 core, 66 widget tests green.

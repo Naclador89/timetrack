@@ -1152,5 +1152,9 @@
   "beforeBalanceStart": "Before the balance starts ({date}): no target, no overtime",
   "@beforeBalanceStart": {"placeholders": {"date": {"type": "String"}}},
   "autostart": "Start with Windows",
-  "autostartHint": "Starts TimeTrack when you sign in to Windows (this user only)."
+  "autostartHint": "Starts TimeTrack when you sign in to Windows (this user only).",
+  "removeDayType": "Remove day type",
+  "dayTypeRemoved": "Day type removed",
+  "tripDayRemove": "This day belongs to the trip {trip}. To remove it, change the trip.",
+  "@tripDayRemove": {"placeholders": {"trip": {"type": "String"}}}
 }

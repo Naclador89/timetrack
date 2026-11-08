@@ -3199,6 +3199,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Starts TimeTrack when you sign in to Windows (this user only).'**
   String get autostartHint;
+
+  /// No description provided for @removeDayType.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove day type'**
+  String get removeDayType;
+
+  /// No description provided for @dayTypeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Day type removed'**
+  String get dayTypeRemoved;
+
+  /// No description provided for @tripDayRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'This day belongs to the trip {trip}. To remove it, change the trip.'**
+  String tripDayRemove(String trip);
 }
 
 class _AppLocalizationsDelegate

@@ -424,6 +424,11 @@ removes the other absences on D (`extra_holiday` stays) and, unless office/home,
 Business trip: the app creates or opens the trip. A day inside a trip can't get another work type
 until the trip is changed; absence types are allowed (a full-day absence wins).
 
+**Removing the type** (`clearDayType`, user request 2026-11-08, e.g. a weekend picked by mistake):
+deletes the `days` row and the absences on D (`extra_holiday` stays); sessions and trips stay, so
+the day falls back to its derived type (worked → office/home, else none). The app offers undo. A
+day inside a trip stays a business trip; the app points to the trip instead.
+
 ## §16 Explaining a day's numbers
 
 `explainDay` breaks `Cr(D)` and `T(D)` into the steps above, so the app can show *why* a figure is

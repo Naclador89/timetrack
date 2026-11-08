@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack/widgets/interval_dialog.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
@@ -103,5 +104,31 @@ void main() {
     expect(find.textContaining('Before the balance starts'), findsOneWidget);
     expect(find.textContaining('176'), findsNothing);
     expect(find.textContaining('−8:00'), findsNothing);
+  });
+
+  testWidgets('§15 a day type picked by mistake can be removed, with undo', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      seed: (repo) => setDayType(
+        repo,
+        LocalDate(2026, 11, 7),
+        DayType.vacation,
+        zone: HomeTimeZone(),
+      ),
+    );
+    final context = tester.element(find.byType(Scaffold).first);
+    GoRouterHelper(context).go('/calendar/day/2026-11-07');
+    await settle(tester);
+    await tester.tap(find.widgetWithText(ActionChip, 'Vacation'));
+    await settle(tester);
+    await tester.tap(find.text('Remove day type'));
+    await settle(tester);
+    expect(find.text('Day type removed'), findsOneWidget);
+    expect(find.widgetWithText(ActionChip, 'Day type'), findsOneWidget);
+    await tester.tap(find.text('Undo'));
+    await settle(tester);
+    expect(find.widgetWithText(ActionChip, 'Vacation'), findsOneWidget);
   });
 }

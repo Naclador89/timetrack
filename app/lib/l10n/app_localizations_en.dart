@@ -1789,4 +1789,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get autostartHint =>
       'Starts TimeTrack when you sign in to Windows (this user only).';
+
+  @override
+  String get removeDayType => 'Remove day type';
+
+  @override
+  String get dayTypeRemoved => 'Day type removed';
+
+  @override
+  String tripDayRemove(String trip) {
+    return 'This day belongs to the trip $trip. To remove it, change the trip.';
+  }
 }

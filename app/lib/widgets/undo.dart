@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timetrack_core/timetrack_core.dart';
 
 import '../app/format.dart';
 import '../app/providers.dart';
@@ -19,16 +20,41 @@ Future<void> deleteWithUndo(
   for (final (table, id) in rows) {
     await repo.delete(table, id);
   }
+  _offerRestore(messenger, repo, rows, message ?? l.deleted, l.undo);
+}
+
+/// Shows [message] with an undo that brings back the rows just [deleted]
+/// elsewhere (e.g. by `clearDayType`).
+void offerUndoDelete(
+  BuildContext context,
+  WidgetRef ref,
+  List<(String, String)> deleted,
+  String message,
+) => _offerRestore(
+  ScaffoldMessenger.of(context),
+  ref.read(repositoryProvider),
+  deleted,
+  message,
+  context.l10n.undo,
+);
+
+void _offerRestore(
+  ScaffoldMessengerState messenger,
+  SyncedRepository repo,
+  List<(String, String)> rows,
+  String message,
+  String undo,
+) {
   messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        content: Text(message ?? l.deleted),
+        content: Text(message),
         duration: const Duration(seconds: 5),
         // With an action Flutter would keep it until tapped.
         persist: false,
         action: SnackBarAction(
-          label: l.undo,
+          label: undo,
           onPressed: () async {
             for (final (table, id) in rows) {
               await repo.write(table, id, const {'deleted': false});

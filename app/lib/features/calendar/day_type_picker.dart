@@ -5,6 +5,7 @@ import 'package:timetrack_core/timetrack_core.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
+import '../../widgets/undo.dart';
 import 'trips_screen.dart';
 
 /// The day's type as one chip ("🏠 Homeoffice ▾"); tap to pick another
@@ -42,8 +43,12 @@ class DayTypeChip extends ConsumerWidget {
       ),
       side: color == null ? null : BorderSide(color: color),
       onPressed: () async {
-        final type = await showDayTypeSheet(context, current);
-        if (type != null && context.mounted) {
+        final picked = await showDayTypeSheet(context, current);
+        if (picked == null || !context.mounted) return;
+        final (type,) = picked;
+        if (type == null) {
+          await removeDayType(context, ref, date);
+        } else {
           await pickDayType(context, ref, date, type, startsNow: startsNow);
         }
       },
@@ -51,9 +56,10 @@ class DayTypeChip extends ConsumerWidget {
   }
 }
 
-/// The nine day types in a sheet; returns the one tapped.
-Future<DayType?> showDayTypeSheet(BuildContext context, DayType? current) =>
-    showModalBottomSheet<DayType>(
+/// The nine day types in a sheet; returns the one tapped, `(null,)` for
+/// "remove" (only offered while [current] is set), `null` if dismissed.
+Future<(DayType?,)?> showDayTypeSheet(BuildContext context, DayType? current) =>
+    showModalBottomSheet<(DayType?,)>(
       context: context,
       builder: (c) {
         final l = c.l10n;
@@ -63,7 +69,7 @@ Future<DayType?> showDayTypeSheet(BuildContext context, DayType? current) =>
           final color = scheme.dayTypeColor(t);
           return InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: () => Navigator.pop(c, t),
+            onTap: () => Navigator.pop(c, (t,)),
             child: Ink(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -110,12 +116,64 @@ Future<DayType?> showDayTypeSheet(BuildContext context, DayType? current) =>
                   physics: const NeverScrollableScrollPhysics(),
                   children: [for (final t in DayType.values) tile(t)],
                 ),
+                if (current != null) ...[
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => Navigator.pop(c, (null,)),
+                      icon: const Icon(Icons.clear),
+                      label: Text(l.removeDayType),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         );
       },
     );
+
+/// Removes the day type of [date] (calculations.md §15) with undo. A day
+/// inside a trip stays a business trip: the user is sent to the trip.
+Future<void> removeDayType(
+  BuildContext context,
+  WidgetRef ref,
+  LocalDate date,
+) async {
+  final l = context.l10n;
+  final trip = ref.read(ledgerProvider).tripsOn(date).firstOrNull;
+  final deleted = await clearDayType(ref.read(repositoryProvider), date);
+  if (!context.mounted) return;
+  if (deleted.isNotEmpty) {
+    offerUndoDelete(context, ref, deleted, l.dayTypeRemoved);
+    return;
+  }
+  if (trip == null) return;
+  final edit = await showDialog<bool>(
+    context: context,
+    builder: (c) => AlertDialog(
+      content: Text(
+        l.tripDayRemove(
+          trip.destination.isEmpty ? l.tripDay : trip.destination,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(c, false),
+          child: Text(l.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(c, true),
+          child: Text(l.editTrip),
+        ),
+      ],
+    ),
+  );
+  if (edit == true && context.mounted) {
+    await showTripDialog(context, trip: trip);
+  }
+}
 
 /// Sets [type] for [date]. A business trip is created (or kept) through the
 /// trip dialog; a day inside a trip can only become office or home office

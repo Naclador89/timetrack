@@ -76,3 +76,29 @@ Future<void> setDayType(
     await repository.delete('days', '$date');
   }
 }
+
+/// Removes the day type chosen for [date] (calculations.md §15): the `days`
+/// row and the day's absences (except `extra_holiday`, which is not a day
+/// type). Work sessions and trips are kept; a trip day stays a business trip
+/// until the trip changes. Returns the deleted rows as `(table, id)`, for
+/// undo.
+Future<List<(String, String)>> clearDayType(
+  SyncedRepository repository,
+  LocalDate date,
+) async {
+  final (absences, choice) = await repository.store.transaction(
+    (tx) async => (await tx.rows('absences'), await tx.row('days', '$date')),
+  );
+  final deleted = <(String, String)>[
+    for (final a in absences)
+      if (!a.isDeleted &&
+          a.fields['date'] == '$date' &&
+          a.fields['kind'] != AbsenceKind.extraHoliday.wireName)
+        ('absences', a.id),
+    if (choice != null && !choice.isDeleted) ('days', '$date'),
+  ];
+  for (final (table, id) in deleted) {
+    await repository.delete(table, id);
+  }
+  return deleted;
+}

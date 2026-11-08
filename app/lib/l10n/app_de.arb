@@ -516,5 +516,8 @@
   "defaultBreakHint": "Vorschlag beim Eintragen einer Pause",
   "beforeBalanceStart": "Vor Beginn des Überstundensaldos ({date}): kein Soll, keine Überstunden",
   "autostart": "Mit Windows starten",
-  "autostartHint": "Startet TimeTrack beim Anmelden an Windows (nur für diesen Benutzer)."
+  "autostartHint": "Startet TimeTrack beim Anmelden an Windows (nur für diesen Benutzer).",
+  "removeDayType": "Tagesart entfernen",
+  "dayTypeRemoved": "Tagesart entfernt",
+  "tripDayRemove": "Dieser Tag gehört zur Reise {trip}. Um ihn zu entfernen, passe die Reise an."
 }
