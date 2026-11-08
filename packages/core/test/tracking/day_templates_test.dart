@@ -87,4 +87,43 @@ void main() {
     final gaps = ledger().day(wed).work.unassignedSpans.spans;
     expect([for (final g in gaps) g.length], [60, 120]);
   });
+
+  test('§12 unassigned review item only for finished days', () async {
+    await repo.write('work_sessions', 's', {
+      'start_utc': '2026-11-04T07:00:00Z',
+      'end_utc': '2026-11-04T13:00:00Z',
+      'location': 'office',
+    });
+    List<ReviewItem> items() => reviewItems(
+      ledger(),
+      from: wed,
+      to: LocalDate(2026, 11, 6),
+      includeUnassigned: true,
+    ).where((i) => i.kind == ReviewKind.unassigned).toList();
+    expect(items().single.minutes, 360);
+    await repo.write('work_sessions', 'open', {
+      'start_utc': '2026-11-06T07:00:00Z',
+      'location': 'office',
+    });
+    expect(items().length, 1, reason: 'today is still running');
+    await repo.write('trips', 't', {
+      'depart_utc': '2026-11-04T05:00:00Z',
+      'return_utc': '2026-11-04T18:00:00Z',
+    });
+    expect(items(), isEmpty, reason: 'trip days have no project time');
+  });
+
+  test(
+    '§4 a missing break goes in the middle of the longest stretch',
+    () async {
+      await repo.write('work_sessions', 's', {
+        'start_utc': '2026-11-04T07:00:00Z',
+        'end_utc': '2026-11-04T14:00:00Z',
+        'location': 'office',
+      });
+      final span = suggestBreak(ledger().day(wed), 30)!;
+      expect(zone.toLocal(instantOfEpochMinute(span.start)).hour, 11);
+      expect(span.length, 30);
+    },
+  );
 }

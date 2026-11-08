@@ -4,14 +4,15 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../app/theme.dart';
 import 'trips_screen.dart';
 
-/// The nine day types as buttons (calculations.md §15), used in the day
-/// editor and on Today.
-class DayTypePicker extends ConsumerWidget {
-  /// Creates the picker for [date]. On Today ([startsNow]), a new business
+/// The day's type as one chip ("🏠 Homeoffice ▾"); tap to pick another
+/// from a sheet (calculations.md §15). Used in the day editor and on Today.
+class DayTypeChip extends ConsumerWidget {
+  /// Creates the chip for [date]. On Today ([startsNow]), a new business
   /// trip departs now and stays open.
-  const DayTypePicker({super.key, required this.date, this.startsNow = false});
+  const DayTypeChip({super.key, required this.date, this.startsNow = false});
 
   /// The day.
   final LocalDate date;
@@ -22,24 +23,99 @@ class DayTypePicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
     final current = ref.watch(ledgerProvider).day(date).type;
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final type in DayType.values)
-          ChoiceChip(
-            showCheckmark: false,
-            avatar: Icon(dayTypeIcon(type), size: 18),
-            label: Text(dayTypeLabel(l, type)),
-            selected: current == type,
-            onSelected: (_) =>
-                pickDayType(context, ref, date, type, startsNow: startsNow),
-          ),
-      ],
+    final color = current == null ? null : scheme.dayTypeColor(current);
+    return ActionChip(
+      avatar: Icon(
+        current == null ? Icons.event_note_outlined : dayTypeIcon(current),
+        size: 18,
+        color: color,
+      ),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(current == null ? l.chooseDayType : dayTypeLabel(l, current)),
+          const SizedBox(width: 4),
+          const Icon(Icons.expand_more, size: 18),
+        ],
+      ),
+      side: color == null ? null : BorderSide(color: color),
+      onPressed: () async {
+        final type = await showDayTypeSheet(context, current);
+        if (type != null && context.mounted) {
+          await pickDayType(context, ref, date, type, startsNow: startsNow);
+        }
+      },
     );
   }
 }
+
+/// The nine day types in a sheet; returns the one tapped.
+Future<DayType?> showDayTypeSheet(BuildContext context, DayType? current) =>
+    showModalBottomSheet<DayType>(
+      context: context,
+      builder: (c) {
+        final l = c.l10n;
+        final scheme = Theme.of(c).colorScheme;
+        Widget tile(DayType t) {
+          final selected = t == current;
+          final color = scheme.dayTypeColor(t);
+          return InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => Navigator.pop(c, t),
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: selected
+                    ? color.withValues(alpha: 0.18)
+                    : scheme.surfaceContainerHigh,
+                border: Border.all(
+                  color: selected ? color : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(dayTypeIcon(t), color: color),
+                  const SizedBox(height: 6),
+                  Text(
+                    dayTypeLabel(l, t),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: Theme.of(c).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.dayType, style: Theme.of(c).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 1.5,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [for (final t in DayType.values) tile(t)],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
 
 /// Sets [type] for [date]. A business trip is created (or kept) through the
 /// trip dialog; a day inside a trip can only become office or home office

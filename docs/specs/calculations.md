@@ -275,6 +275,9 @@ Computed, never stored:
 - `project_over_work`: more project time than worked time on a day (§3).
 - ArbZG warnings (§4, §5).
 - Home-office quota warnings (§11.4).
+- `unassigned` (only when asked for): worked time without a project on a day that is done (not
+  today while clocked in) and not a trip day (§3). `suggestBreak` places a missing break in the
+  middle of the day's longest working stretch, on a 5-minute grid.
 
 ## §13 Per-diem basis (Verpflegungsmehraufwand)
 

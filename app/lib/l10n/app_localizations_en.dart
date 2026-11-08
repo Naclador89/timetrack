@@ -776,4 +776,283 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goToToday => 'Go to today';
+
+  @override
+  String assignedTo(String minutes, String project) {
+    return '$minutes booked to $project';
+  }
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get chooseDayType => 'Day type';
+
+  @override
+  String get commandPalette => 'Search and actions';
+
+  @override
+  String get commandPaletteHint => 'Action, screen or project …';
+
+  @override
+  String get copiedPreviousDay => 'Previous day copied';
+
+  @override
+  String get copyPreviousDay => 'Copy previous day';
+
+  @override
+  String get deleted => 'Deleted';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get editDay => 'Edit day';
+
+  @override
+  String get explainAbsenceCredit => 'Absence credit';
+
+  @override
+  String get explainBreakDeducted => 'Break deducted';
+
+  @override
+  String get explainBreakDeductedHint =>
+      'The required break was missing (ArbZG §4).';
+
+  @override
+  String get explainDeltaMinus =>
+      'Less than the target: this lowers your balance.';
+
+  @override
+  String get explainDeltaPlus =>
+      'More than the target: this counts as overtime.';
+
+  @override
+  String get explainDeltaZero => 'Exactly the target: no overtime, no minus.';
+
+  @override
+  String get explainHow => 'How is this calculated?';
+
+  @override
+  String get explainRule => 'Rule for this day';
+
+  @override
+  String get explainSaturday => 'Saturday: worked time counts as overtime.';
+
+  @override
+  String explainSaturdayCapped(String cap, String rest) {
+    return 'Saturday: at most $cap count, $rest not counted.';
+  }
+
+  @override
+  String get explainSundayCounted =>
+      'Sunday/holiday rule: work on site counts as usual.';
+
+  @override
+  String get explainSundayHours =>
+      'Reported to HR for extra pay, not part of the balance.';
+
+  @override
+  String explainSundayNotCounted(String rest) {
+    return 'Sunday/holiday rule: $rest not counted towards the balance.';
+  }
+
+  @override
+  String get explainTargetDayOff => 'No scheduled work on this day.';
+
+  @override
+  String explainTargetHoliday(String name) {
+    return 'Public holiday $name: no target.';
+  }
+
+  @override
+  String get explainTargetReduced =>
+      'Lowered by short-time work or an extra day off.';
+
+  @override
+  String get explainTargetSchedule => 'From your work schedule.';
+
+  @override
+  String explainTitle(String date) {
+    return 'How $date is counted';
+  }
+
+  @override
+  String explainTripWorkday(String credit) {
+    return 'Trip on a workday: credited as a normal day ($credit), however long it was.';
+  }
+
+  @override
+  String get fixAddBreak => 'Add break';
+
+  @override
+  String get fixAssign => 'Assign';
+
+  @override
+  String get fixSetEnd => 'Set end';
+
+  @override
+  String homeOfficeLimit(String percent) {
+    return 'Limit: $percent % per month';
+  }
+
+  @override
+  String homeOfficeOfWorked(String home, String worked) {
+    return '$home of $worked days worked at home';
+  }
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get noLimit => 'No limit';
+
+  @override
+  String ofTarget(String target) {
+    return 'of $target';
+  }
+
+  @override
+  String get openDay => 'Open day';
+
+  @override
+  String percentPerMonth(String percent) {
+    return '$percent % per month';
+  }
+
+  @override
+  String perDaySummary(String minutes) {
+    return 'That is $minutes per workday.';
+  }
+
+  @override
+  String get quickEntry => 'Quick entry';
+
+  @override
+  String get quickEntryHelp =>
+      'Times, break (p30), place (@home), project, note after \": \"';
+
+  @override
+  String get quickEntryInvalid =>
+      'Add times like 8-16:30 or a duration like 1:30';
+
+  @override
+  String quickEntryNoProject(String query) {
+    return 'no project matches \"$query\"';
+  }
+
+  @override
+  String get quickEntrySaved => 'Entered';
+
+  @override
+  String get saveAsTemplate => 'Save day as template';
+
+  @override
+  String get searchSettings => 'Search settings';
+
+  @override
+  String get setupAgainHint =>
+      'State, working time, balance and home office in four steps';
+
+  @override
+  String get setupBalanceHint =>
+      'From which day should the balance count, and what did you bring along?';
+
+  @override
+  String get setupConnectSync => 'Connect Nextcloud';
+
+  @override
+  String get setupDone => 'All set';
+
+  @override
+  String get setupDoneHint =>
+      'You can change everything later in the settings. Connect Nextcloud to sync your devices.';
+
+  @override
+  String get setupHomeOfficeHint =>
+      'How much home office does your employer allow?';
+
+  @override
+  String get setupScheduleHint => 'Your contractual working time and vacation.';
+
+  @override
+  String get setupStart => 'Set up';
+
+  @override
+  String get setupStateHint => 'For public holidays.';
+
+  @override
+  String get setupTitle => 'Setup';
+
+  @override
+  String get startingBalanceHint =>
+      'Overtime carried over, e.g. 12:30 or -2:00';
+
+  @override
+  String startProjectNamed(String project) {
+    return 'Start $project';
+  }
+
+  @override
+  String get syncing => 'Syncing …';
+
+  @override
+  String templateApplied(String name) {
+    return 'Template \"$name\" applied';
+  }
+
+  @override
+  String get templateName => 'Name';
+
+  @override
+  String get timeline => 'Timeline';
+
+  @override
+  String get timelineHint =>
+      'Drag the edges to adjust, tap a hatched gap to assign it.';
+
+  @override
+  String get tripStillOpen => 'Trip still open';
+
+  @override
+  String tripStillOpenTo(String destination) {
+    return 'Trip to $destination still open';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get vacationCarryOver => 'Vacation days carried over';
+
+  @override
+  String get vacationDaysPerYear => 'Vacation days per year';
+
+  @override
+  String warnUnassigned(String minutes) {
+    return '$minutes without a project';
+  }
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get weeklyHours => 'Hours per week';
+
+  @override
+  String get workdaysPerWeek => 'Workdays per week';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String moreNotices(String count) {
+    return '$count more notices';
+  }
 }

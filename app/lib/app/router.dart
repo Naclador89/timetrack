@@ -11,6 +11,8 @@ import '../features/reports/reports_screen.dart';
 import '../features/settings/home_office_rules_screen.dart';
 import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/setup_wizard.dart';
+import '../widgets/command_palette.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
 import 'format.dart';
@@ -67,31 +69,27 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(path: '/reports', builder: (_, _) => const ReportsScreen()),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/settings',
-              builder: (_, _) => const SettingsScreen(),
-              routes: [
-                GoRoute(
-                  path: 'schedules',
-                  builder: (_, _) => const SchedulesScreen(),
-                ),
-                GoRoute(path: 'sync', builder: (_, _) => const SyncScreen()),
-                GoRoute(
-                  path: 'home-office',
-                  builder: (_, _) => const HomeOfficeRulesScreen(),
-                ),
-              ],
-            ),
-          ],
+      ],
+    ),
+    // Settings and the setup wizard open over the tabs (gear icon).
+    GoRoute(
+      path: '/settings',
+      builder: (_, _) => const SettingsScreen(),
+      routes: [
+        GoRoute(path: 'schedules', builder: (_, _) => const SchedulesScreen()),
+        GoRoute(path: 'sync', builder: (_, _) => const SyncScreen()),
+        GoRoute(
+          path: 'home-office',
+          builder: (_, _) => const HomeOfficeRulesScreen(),
         ),
       ],
     ),
+    GoRoute(path: '/setup', builder: (_, _) => const SetupWizard()),
   ],
 );
 
-/// Bottom navigation on phones, a navigation rail on wider windows.
+/// Bottom navigation on phones, a navigation rail on wider windows; Ctrl+K
+/// opens the command palette everywhere.
 class AdaptiveShell extends StatelessWidget {
   /// Creates the shell.
   const AdaptiveShell({super.key, required this.shell});
@@ -107,10 +105,17 @@ class AdaptiveShell extends StatelessWidget {
       (Icons.calendar_month_outlined, Icons.calendar_month, l.navCalendar),
       (Icons.work_outline, Icons.work, l.navProjects),
       (Icons.assessment_outlined, Icons.assessment, l.navReports),
-      (Icons.settings_outlined, Icons.settings, l.navSettings),
     ];
     void go(int i) =>
         shell.goBranch(i, initialLocation: i == shell.currentIndex);
+    return CommandPaletteShortcut(child: _layout(context, items, go));
+  }
+
+  Widget _layout(
+    BuildContext context,
+    List<(IconData, IconData, String)> items,
+    void Function(int) go,
+  ) {
     if (MediaQuery.sizeOf(context).width >= 720) {
       return Scaffold(
         body: Row(
@@ -119,6 +124,17 @@ class AdaptiveShell extends StatelessWidget {
               selectedIndex: shell.currentIndex,
               onDestinationSelected: go,
               labelType: NavigationRailLabelType.all,
+              groupAlignment: -0.9,
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: FloatingActionButton.small(
+                  heroTag: 'palette',
+                  elevation: 0,
+                  tooltip: '${context.l10n.commandPalette} (Ctrl+K)',
+                  onPressed: () => showCommandPalette(context),
+                  child: const Icon(Icons.search),
+                ),
+              ),
               destinations: [
                 for (final (icon, selected, label) in items)
                   NavigationRailDestination(

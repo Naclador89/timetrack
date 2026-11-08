@@ -6,7 +6,12 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../app/theme.dart';
+import '../../widgets/app_bar_actions.dart';
+import '../../widgets/charts.dart';
 import '../../widgets/export.dart';
+import '../../widgets/motion.dart';
+import '../../widgets/sparkline.dart';
 import '../calendar/week_screen.dart' show isoWeekNumber;
 import 'report_documents.dart';
 import 'report_preview.dart';
@@ -83,7 +88,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.navReports)),
+      appBar: AppBar(title: Text(l.navReports), actions: commonActions()),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
@@ -108,6 +113,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               ),
             ],
           ),
+          _Dashboard(sheet: sheet, ledger: ledger, projects: projects),
           _section(context, l.timesheet, [
             Wrap(
               spacing: 24,
@@ -252,11 +258,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 ),
               ),
           ]),
-          _section(
-            context,
-            l.statistics,
-            _statistics(context, sheet, projects),
-          ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.backup_outlined),
@@ -319,74 +320,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     ];
   }
 
-  List<Widget> _statistics(
-    BuildContext context,
-    Timesheet sheet,
-    Map<String, Project> projects,
-  ) {
-    final l = context.l10n;
-    final perProject = <String, int>{};
-    for (final r in sheet.rows) {
-      r.day.bookedByProject.forEach(
-        (id, m) => perProject[id] = (perProject[id] ?? 0) + m,
-      );
-    }
-    final ranked = perProject.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final maxProject = ranked.isEmpty ? 1 : ranked.first.value;
-    final weeks = <int, (int, int)>{};
-    for (final r in sheet.rows) {
-      final w = isoWeekNumber(r.day.date);
-      final (worked, target) = weeks[w] ?? (0, 0);
-      weeks[w] = (worked + r.day.credited, target + r.day.target);
-    }
-    final maxWeek = weeks.values.fold(
-      1,
-      (a, w) => [a, w.$1, w.$2].reduce((x, y) => x > y ? x : y),
-    );
-    Widget bar(String label, int value, int max, String text, {int? target}) =>
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: Text(label, overflow: TextOverflow.ellipsis)),
-                  Text(text),
-                ],
-              ),
-              const SizedBox(height: 2),
-              LinearProgressIndicator(
-                value: max == 0 ? 0 : value / max,
-                minHeight: 6,
-              ),
-            ],
-          ),
-        );
-    return [
-      if (ranked.isNotEmpty)
-        Text(l.hoursByProject, style: Theme.of(context).textTheme.labelLarge),
-      for (final e in ranked)
-        bar(
-          projects[e.key]?.name ?? '?',
-          e.value,
-          maxProject,
-          formatMinutes(e.value),
-        ),
-      const SizedBox(height: 12),
-      Text(l.weeks, style: Theme.of(context).textTheme.labelLarge),
-      for (final MapEntry(key: week, value: (credited, target))
-          in weeks.entries)
-        bar(
-          l.weekNumber('$week'),
-          credited,
-          maxWeek,
-          '${formatMinutes(credited)} / ${formatMinutes(target)}',
-        ),
-    ];
-  }
-
   static Widget _figure(BuildContext context, String label, String value) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,4 +346,181 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       ),
     ),
   );
+}
+
+/// The month at a glance: balance curve, hours per project and weeks
+/// against the target, home-office share.
+class _Dashboard extends ConsumerWidget {
+  const _Dashboard({
+    required this.sheet,
+    required this.ledger,
+    required this.projects,
+  });
+
+  final Timesheet sheet;
+  final Ledger ledger;
+  final Map<String, Project> projects;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final today = ref.watch(todayProvider);
+
+    final rows = sheet.rows.where((r) => !r.day.date.isAfter(today));
+    final balances = <int>[];
+    var b = sheet.balanceBefore;
+    for (final r in rows) {
+      b += r.day.delta;
+      balances.add(b);
+    }
+
+    final perProject = <String, int>{};
+    for (final r in sheet.rows) {
+      r.day.bookedByProject.forEach(
+        (id, m) => perProject[id] = (perProject[id] ?? 0) + m,
+      );
+    }
+    final slices = [
+      for (final e in perProject.entries)
+        (
+          label: projects[e.key]?.name ?? '?',
+          value: e.value,
+          color: scheme.projectColor(e.key),
+        ),
+    ]..sort((a, b) => b.value.compareTo(a.value));
+    final booked = slices.fold(0, (a, s) => a + s.value);
+
+    final weeks = <int, (int, int)>{};
+    for (final r in sheet.rows) {
+      final w = isoWeekNumber(r.day.date);
+      final (credited, target) = weeks[w] ?? (0, 0);
+      weeks[w] = (credited + r.day.credited, target + r.day.target);
+    }
+
+    final homeShare = sheet.workedDays == 0
+        ? 0.0
+        : sheet.homeOfficeDays / sheet.workedDays;
+    final monthRule = ref
+        .watch(homeOfficeRulesProvider)
+        .where((r) => r.period == QuotaPeriod.month)
+        .firstOrNull;
+
+    Widget tile(String title, Widget child) => Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 12),
+            child,
+          ],
+        ),
+      ),
+    );
+
+    final balanceTile = tile(
+      l.balance,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnimatedMinutes(
+            sheet.balanceAfter,
+            style: theme.textTheme.headlineSmall,
+            signed: scheme.deltaColor,
+          ),
+          Text(
+            '${l.difference} ${formatMinutes(sheet.delta)}',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          Sparkline(
+            values: balances,
+            color: scheme.deltaColor(sheet.balanceAfter),
+            height: 64,
+          ),
+        ],
+      ),
+    );
+    final projectTile = tile(
+      l.hoursByProject,
+      slices.isEmpty
+          ? Text(l.noBookings)
+          : DonutChart(
+              slices: slices,
+              format: formatMinutes,
+              center: Text(
+                formatMinutes(booked),
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+    );
+    final weekTile = tile(
+      l.weeks,
+      WeekBars(
+        weeks: [
+          for (final MapEntry(key: w, value: (c, t)) in weeks.entries)
+            ('$w', c, t),
+        ],
+      ),
+    );
+    final homeTile = tile(
+      l.homeOfficeDays,
+      Row(
+        children: [
+          ProgressRing(
+            value: (homeShare * 100).round(),
+            total: 100,
+            size: 88,
+            color: monthRule != null && homeShare * 100 > monthRule.maxPercent
+                ? scheme.error
+                : scheme.dayTypeColor(DayType.home),
+            child: Text(
+              '${(homeShare * 100).round()} %',
+              style: theme.textTheme.titleMedium,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              [
+                l.homeOfficeOfWorked(
+                  '${sheet.homeOfficeDays}',
+                  '${sheet.workedDays}',
+                ),
+                if (monthRule != null)
+                  l.homeOfficeLimit('${monthRule.maxPercent}'),
+              ].join('\n'),
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        if (c.maxWidth < 700) {
+          return Column(
+            children: [balanceTile, projectTile, weekTile, homeTile],
+          );
+        }
+        Widget pair(Widget a, Widget b) => IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: a),
+              const SizedBox(width: 12),
+              Expanded(child: b),
+            ],
+          ),
+        );
+        return Column(
+          children: [pair(balanceTile, projectTile), pair(weekTile, homeTile)],
+        );
+      },
+    );
+  }
 }

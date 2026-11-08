@@ -778,4 +778,287 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get goToToday => 'Zu heute springen';
+
+  @override
+  String assignedTo(String minutes, String project) {
+    return '$minutes auf $project gebucht';
+  }
+
+  @override
+  String get back => 'Zurück';
+
+  @override
+  String get chooseDayType => 'Tagesart';
+
+  @override
+  String get commandPalette => 'Suche und Aktionen';
+
+  @override
+  String get commandPaletteHint => 'Aktion, Ansicht oder Projekt …';
+
+  @override
+  String get copiedPreviousDay => 'Vortag kopiert';
+
+  @override
+  String get copyPreviousDay => 'Vortag kopieren';
+
+  @override
+  String get deleted => 'Gelöscht';
+
+  @override
+  String get done => 'Fertig';
+
+  @override
+  String get editDay => 'Tag bearbeiten';
+
+  @override
+  String get explainAbsenceCredit => 'Gutschrift Abwesenheit';
+
+  @override
+  String get explainBreakDeducted => 'Pause abgezogen';
+
+  @override
+  String get explainBreakDeductedHint =>
+      'Die vorgeschriebene Pause fehlte (ArbZG §4).';
+
+  @override
+  String get explainDeltaMinus =>
+      'Weniger als das Soll: das senkt dein Stundenkonto.';
+
+  @override
+  String get explainDeltaPlus =>
+      'Mehr als das Soll: das zählt als Überstunden.';
+
+  @override
+  String get explainDeltaZero =>
+      'Genau das Soll: keine Überstunden, kein Minus.';
+
+  @override
+  String get explainHow => 'Wie wird das berechnet?';
+
+  @override
+  String get explainRule => 'Regel für diesen Tag';
+
+  @override
+  String get explainSaturday =>
+      'Samstag: die Arbeitszeit zählt als Überstunden.';
+
+  @override
+  String explainSaturdayCapped(String cap, String rest) {
+    return 'Samstag: höchstens $cap zählen, $rest werden nicht angerechnet.';
+  }
+
+  @override
+  String get explainSundayCounted =>
+      'Sonn-/Feiertagsregel: Arbeit vor Ort zählt normal.';
+
+  @override
+  String get explainSundayHours =>
+      'Werden an die Personalabteilung gemeldet (Zuschlag), nicht Teil des Stundenkontos.';
+
+  @override
+  String explainSundayNotCounted(String rest) {
+    return 'Sonn-/Feiertagsregel: $rest zählen nicht ins Stundenkonto.';
+  }
+
+  @override
+  String get explainTargetDayOff =>
+      'An diesem Tag ist keine Arbeit vorgesehen.';
+
+  @override
+  String explainTargetHoliday(String name) {
+    return 'Feiertag $name: kein Soll.';
+  }
+
+  @override
+  String get explainTargetReduced =>
+      'Gesenkt durch Kurzarbeit oder einen zusätzlichen freien Tag.';
+
+  @override
+  String get explainTargetSchedule => 'Aus deiner Arbeitszeitregelung.';
+
+  @override
+  String explainTitle(String date) {
+    return 'So wird $date gezählt';
+  }
+
+  @override
+  String explainTripWorkday(String credit) {
+    return 'Dienstreise an einem Werktag: zählt als normaler Arbeitstag ($credit), egal wie lange.';
+  }
+
+  @override
+  String get fixAddBreak => 'Pause eintragen';
+
+  @override
+  String get fixAssign => 'Zuordnen';
+
+  @override
+  String get fixSetEnd => 'Ende setzen';
+
+  @override
+  String homeOfficeLimit(String percent) {
+    return 'Grenze: $percent % pro Monat';
+  }
+
+  @override
+  String homeOfficeOfWorked(String home, String worked) {
+    return '$home von $worked Arbeitstagen zu Hause';
+  }
+
+  @override
+  String get month => 'Monat';
+
+  @override
+  String get more => 'Mehr';
+
+  @override
+  String get next => 'Weiter';
+
+  @override
+  String get noLimit => 'Keine Grenze';
+
+  @override
+  String ofTarget(String target) {
+    return 'von $target';
+  }
+
+  @override
+  String get openDay => 'Tag öffnen';
+
+  @override
+  String percentPerMonth(String percent) {
+    return '$percent % pro Monat';
+  }
+
+  @override
+  String perDaySummary(String minutes) {
+    return 'Das sind $minutes pro Arbeitstag.';
+  }
+
+  @override
+  String get quickEntry => 'Schnell erfassen';
+
+  @override
+  String get quickEntryHelp =>
+      'Zeiten, Pause (p30), Ort (@home), Projekt, Notiz nach \": \"';
+
+  @override
+  String get quickEntryInvalid =>
+      'Zeiten wie 8-16:30 oder eine Dauer wie 1:30 angeben';
+
+  @override
+  String quickEntryNoProject(String query) {
+    return 'kein Projekt passt zu „$query“';
+  }
+
+  @override
+  String get quickEntrySaved => 'Eingetragen';
+
+  @override
+  String get saveAsTemplate => 'Tag als Vorlage speichern';
+
+  @override
+  String get searchSettings => 'Einstellungen durchsuchen';
+
+  @override
+  String get setupAgainHint =>
+      'Bundesland, Arbeitszeit, Konto und Homeoffice in vier Schritten';
+
+  @override
+  String get setupBalanceHint =>
+      'Ab welchem Tag zählt das Stundenkonto, und was bringst du mit?';
+
+  @override
+  String get setupConnectSync => 'Nextcloud verbinden';
+
+  @override
+  String get setupDone => 'Fertig eingerichtet';
+
+  @override
+  String get setupDoneHint =>
+      'Du kannst alles später in den Einstellungen ändern. Verbinde Nextcloud, um deine Geräte abzugleichen.';
+
+  @override
+  String get setupHomeOfficeHint =>
+      'Wie viel Homeoffice erlaubt dein Arbeitgeber?';
+
+  @override
+  String get setupScheduleHint =>
+      'Deine vertragliche Arbeitszeit und dein Urlaub.';
+
+  @override
+  String get setupStart => 'Einrichten';
+
+  @override
+  String get setupStateHint => 'Für die Feiertage.';
+
+  @override
+  String get setupTitle => 'Einrichtung';
+
+  @override
+  String get startingBalanceHint =>
+      'Übertrag aus dem bisherigen Stundenkonto, z. B. 12:30 oder -2:00';
+
+  @override
+  String startProjectNamed(String project) {
+    return '$project starten';
+  }
+
+  @override
+  String get syncing => 'Synchronisiere …';
+
+  @override
+  String templateApplied(String name) {
+    return 'Vorlage „$name“ eingetragen';
+  }
+
+  @override
+  String get templateName => 'Name';
+
+  @override
+  String get timeline => 'Zeitleiste';
+
+  @override
+  String get timelineHint =>
+      'Ränder ziehen zum Anpassen, schraffierte Lücke antippen zum Zuordnen.';
+
+  @override
+  String get tripStillOpen => 'Reise läuft noch';
+
+  @override
+  String tripStillOpenTo(String destination) {
+    return 'Reise nach $destination läuft noch';
+  }
+
+  @override
+  String get undo => 'Rückgängig';
+
+  @override
+  String get vacationCarryOver => 'Resturlaub aus dem Vorjahr (Tage)';
+
+  @override
+  String get vacationDaysPerYear => 'Urlaubstage pro Jahr';
+
+  @override
+  String warnUnassigned(String minutes) {
+    return '$minutes ohne Projekt';
+  }
+
+  @override
+  String get week => 'Woche';
+
+  @override
+  String get weeklyHours => 'Stunden pro Woche';
+
+  @override
+  String get workdaysPerWeek => 'Arbeitstage pro Woche';
+
+  @override
+  String get showLess => 'Weniger anzeigen';
+
+  @override
+  String moreNotices(String count) {
+    return '$count weitere Hinweise';
+  }
 }

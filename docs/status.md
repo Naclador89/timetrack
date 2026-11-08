@@ -166,7 +166,37 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Day view: an X on every session, break, project time and absence deletes it after a
       confirmation.
 
-**Next task**: the user checks the 2026-11-08 changes, then tag release v0.3.0 (Windows build).
+### Redesign 2026-11-08 ("modern, dynamic, easy to use, clear"; all nine pitched ideas), done
+- [x] **Theme** (`app/lib/app/theme.dart`): Material You wallpaper colours on Android 12+
+      (`dynamic_color` 1.x; 2.x pulls in the separate `material_ui` package and doesn't compile with
+      Flutter's Material), teal elsewhere; flat rounded cards, stadium buttons, tabular figures,
+      `FadeForwards` transitions; semantic colours: `deltaColor`, `dayTypeColor`, `projectColor`
+      (a stable colour per project id; projects have no colour field).
+- [x] **Motion** (`widgets/motion.dart`): counting numbers (`AnimatedMinutes`), progress ring,
+      haptics on clock-in/out/break, animated switches.
+- [x] **Undo instead of "Are you sure?"** (`widgets/undo.dart`): deletes happen at once, the
+      snackbar restores them (`deleted: false`); quick entry, templates and assignments can be undone.
+- [x] **Today**: status + day-type chip (sheet with the 9 types), ring worked/target, difference and
+      balance (tap explains), one adaptive button row, project cards in project colours (running one
+      filled with a live timer), editable timeline, home-office quota bars.
+- [x] **Timeline** (`widgets/day_timeline.dart`): sessions/breaks and projects as two lanes; drag
+      edges (5-min steps), tap a hatched gap to book it (`DayWork.unassignedSpans`).
+- [x] **Needs attention** (`widgets/attention.dart`): review items as cards with a fix: add break
+      (prefilled by `suggestBreak`), set end, assign unassigned time (`ReviewKind.unassigned`, finished
+      non-trip days only), end an open trip, open day; dismissable; collapsed after 2–3.
+- [x] **Calendar**: week/month switch, month grid (type icons, delta tint, holidays red), balance
+      sparkline, pull to sync, coloured project dots, tap numbers to explain.
+- [x] **Explain the numbers** (`explainDay`, calculations §16; `widgets/explain_sheet.dart`).
+- [x] **Navigation**: 4 tabs; settings (now grouped in cards with a search) open over them from the
+      gear icon; sync indicator in the app bars; Ctrl+K command palette (actions, screens, projects).
+- [x] **Setup wizard** (`/setup`): state, working time, balance + vacation carry-over, home-office
+      limit; reachable from Today (until set up) and the settings.
+- [x] **Reports dashboard**: balance curve, project donut, week bars vs target, home-office share.
+- [x] **Faster entry** (calculations §17): quick entry line (`parseQuickEntry`), copy previous day,
+      day templates (`day_templates` table, data-model §13).
+- Not yet seen on a real phone; screenshots only (Linux, wide and 412 px).
+
+**Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
@@ -255,3 +285,8 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   trip, report preview, weekend/holiday rules on all days, location and trip-day buttons in the
   session dialog, trip days booked to the trip project, Reisebericht, day types, project hours in the week,
   week swipe, quick delete. core 190 tests, app 14 widget tests.
+- 2026-11-08, Claude Code: redesign (theme, motion, undo, Today, timeline, attention cards,
+  calendar month view, explanations, navigation + command palette, settings search, setup wizard,
+  reports dashboard, quick entry, day templates). Core: `explainDay`, `parseQuickEntry`, day
+  templates, `unassignedSpans`, `ReviewKind.unassigned`, `suggestBreak`; 205 core tests, 19 widget
+  tests green.

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/services.dart';
+import 'app/theme.dart';
 import 'l10n/app_localizations.dart';
 import 'quick/quick_access.dart';
 import 'quick/quick_access_host.dart';
@@ -42,27 +44,32 @@ class TimeTrackApp extends StatelessWidget {
   final GoRouter router;
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
-    onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-    darkTheme: ThemeData(
-      colorSchemeSeed: Colors.teal,
-      brightness: Brightness.dark,
-      useMaterial3: true,
-    ),
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: const [Locale('de'), Locale('en')],
-    routerConfig: router,
-    builder: (context, child) => _SyncLifecycle(
-      child: QuickAccessHost(
-        navigatorKey: router.routerDelegate.navigatorKey,
-        child: child!,
+  Widget build(BuildContext context) => DynamicColorBuilder(
+    // Material You: the wallpaper colours on Android 12+, teal elsewhere.
+    builder: (light, dark) => MaterialApp.router(
+      onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
+      debugShowCheckedModeBanner: false,
+      theme: buildTheme(light ?? ColorScheme.fromSeed(seedColor: seedColor)),
+      darkTheme: buildTheme(
+        dark ??
+            ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Brightness.dark,
+            ),
+      ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('de'), Locale('en')],
+      routerConfig: router,
+      builder: (context, child) => _SyncLifecycle(
+        child: QuickAccessHost(
+          navigatorKey: router.routerDelegate.navigatorKey,
+          child: child!,
+        ),
       ),
     ),
   );

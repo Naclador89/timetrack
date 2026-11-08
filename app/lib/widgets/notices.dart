@@ -14,6 +14,7 @@ String noticeText(BuildContext context, ReviewItem item) {
     ReviewKind.projectOutsideSession => l.warnProjectOutside(m),
     ReviewKind.projectOverWork => l.warnProjectOverWork(m),
     ReviewKind.homeOfficeQuota => l.warnQuota,
+    ReviewKind.unassigned => l.warnUnassigned(m),
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing => l.warnBreakMissing(m),
       ArbzgWarningKind.workOver6hWithoutBreak => l.warnOver6h,

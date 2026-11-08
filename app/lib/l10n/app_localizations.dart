@@ -1513,6 +1513,468 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to today'**
   String get goToToday;
+
+  /// No description provided for @assignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} booked to {project}'**
+  String assignedTo(String minutes, String project);
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @chooseDayType.
+  ///
+  /// In en, this message translates to:
+  /// **'Day type'**
+  String get chooseDayType;
+
+  /// No description provided for @commandPalette.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and actions'**
+  String get commandPalette;
+
+  /// No description provided for @commandPaletteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Action, screen or project …'**
+  String get commandPaletteHint;
+
+  /// No description provided for @copiedPreviousDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous day copied'**
+  String get copiedPreviousDay;
+
+  /// No description provided for @copyPreviousDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy previous day'**
+  String get copyPreviousDay;
+
+  /// No description provided for @deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get deleted;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @editDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit day'**
+  String get editDay;
+
+  /// No description provided for @explainAbsenceCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence credit'**
+  String get explainAbsenceCredit;
+
+  /// No description provided for @explainBreakDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Break deducted'**
+  String get explainBreakDeducted;
+
+  /// No description provided for @explainBreakDeductedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The required break was missing (ArbZG §4).'**
+  String get explainBreakDeductedHint;
+
+  /// No description provided for @explainDeltaMinus.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than the target: this lowers your balance.'**
+  String get explainDeltaMinus;
+
+  /// No description provided for @explainDeltaPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'More than the target: this counts as overtime.'**
+  String get explainDeltaPlus;
+
+  /// No description provided for @explainDeltaZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Exactly the target: no overtime, no minus.'**
+  String get explainDeltaZero;
+
+  /// No description provided for @explainHow.
+  ///
+  /// In en, this message translates to:
+  /// **'How is this calculated?'**
+  String get explainHow;
+
+  /// No description provided for @explainRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Rule for this day'**
+  String get explainRule;
+
+  /// No description provided for @explainSaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday: worked time counts as overtime.'**
+  String get explainSaturday;
+
+  /// No description provided for @explainSaturdayCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday: at most {cap} count, {rest} not counted.'**
+  String explainSaturdayCapped(String cap, String rest);
+
+  /// No description provided for @explainSundayCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday/holiday rule: work on site counts as usual.'**
+  String get explainSundayCounted;
+
+  /// No description provided for @explainSundayHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported to HR for extra pay, not part of the balance.'**
+  String get explainSundayHours;
+
+  /// No description provided for @explainSundayNotCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday/holiday rule: {rest} not counted towards the balance.'**
+  String explainSundayNotCounted(String rest);
+
+  /// No description provided for @explainTargetDayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled work on this day.'**
+  String get explainTargetDayOff;
+
+  /// No description provided for @explainTargetHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Public holiday {name}: no target.'**
+  String explainTargetHoliday(String name);
+
+  /// No description provided for @explainTargetReduced.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowered by short-time work or an extra day off.'**
+  String get explainTargetReduced;
+
+  /// No description provided for @explainTargetSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'From your work schedule.'**
+  String get explainTargetSchedule;
+
+  /// No description provided for @explainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How {date} is counted'**
+  String explainTitle(String date);
+
+  /// No description provided for @explainTripWorkday.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip on a workday: credited as a normal day ({credit}), however long it was.'**
+  String explainTripWorkday(String credit);
+
+  /// No description provided for @fixAddBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Add break'**
+  String get fixAddBreak;
+
+  /// No description provided for @fixAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get fixAssign;
+
+  /// No description provided for @fixSetEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Set end'**
+  String get fixSetEnd;
+
+  /// No description provided for @homeOfficeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit: {percent} % per month'**
+  String homeOfficeLimit(String percent);
+
+  /// No description provided for @homeOfficeOfWorked.
+  ///
+  /// In en, this message translates to:
+  /// **'{home} of {worked} days worked at home'**
+  String homeOfficeOfWorked(String home, String worked);
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @noLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'No limit'**
+  String get noLimit;
+
+  /// No description provided for @ofTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'of {target}'**
+  String ofTarget(String target);
+
+  /// No description provided for @openDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Open day'**
+  String get openDay;
+
+  /// No description provided for @percentPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} % per month'**
+  String percentPerMonth(String percent);
+
+  /// No description provided for @perDaySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'That is {minutes} per workday.'**
+  String perDaySummary(String minutes);
+
+  /// No description provided for @quickEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick entry'**
+  String get quickEntry;
+
+  /// No description provided for @quickEntryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Times, break (p30), place (@home), project, note after \": \"'**
+  String get quickEntryHelp;
+
+  /// No description provided for @quickEntryInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Add times like 8-16:30 or a duration like 1:30'**
+  String get quickEntryInvalid;
+
+  /// No description provided for @quickEntryNoProject.
+  ///
+  /// In en, this message translates to:
+  /// **'no project matches \"{query}\"'**
+  String quickEntryNoProject(String query);
+
+  /// No description provided for @quickEntrySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered'**
+  String get quickEntrySaved;
+
+  /// No description provided for @saveAsTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save day as template'**
+  String get saveAsTemplate;
+
+  /// No description provided for @searchSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Search settings'**
+  String get searchSettings;
+
+  /// No description provided for @setupAgainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'State, working time, balance and home office in four steps'**
+  String get setupAgainHint;
+
+  /// No description provided for @setupBalanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'From which day should the balance count, and what did you bring along?'**
+  String get setupBalanceHint;
+
+  /// No description provided for @setupConnectSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Nextcloud'**
+  String get setupConnectSync;
+
+  /// No description provided for @setupDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All set'**
+  String get setupDone;
+
+  /// No description provided for @setupDoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change everything later in the settings. Connect Nextcloud to sync your devices.'**
+  String get setupDoneHint;
+
+  /// No description provided for @setupHomeOfficeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'How much home office does your employer allow?'**
+  String get setupHomeOfficeHint;
+
+  /// No description provided for @setupScheduleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your contractual working time and vacation.'**
+  String get setupScheduleHint;
+
+  /// No description provided for @setupStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up'**
+  String get setupStart;
+
+  /// No description provided for @setupStateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For public holidays.'**
+  String get setupStateHint;
+
+  /// No description provided for @setupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup'**
+  String get setupTitle;
+
+  /// No description provided for @startingBalanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime carried over, e.g. 12:30 or -2:00'**
+  String get startingBalanceHint;
+
+  /// No description provided for @startProjectNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Start {project}'**
+  String startProjectNamed(String project);
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing …'**
+  String get syncing;
+
+  /// No description provided for @templateApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Template \"{name}\" applied'**
+  String templateApplied(String name);
+
+  /// No description provided for @templateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get templateName;
+
+  /// No description provided for @timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get timeline;
+
+  /// No description provided for @timelineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the edges to adjust, tap a hatched gap to assign it.'**
+  String get timelineHint;
+
+  /// No description provided for @tripStillOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip still open'**
+  String get tripStillOpen;
+
+  /// No description provided for @tripStillOpenTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip to {destination} still open'**
+  String tripStillOpenTo(String destination);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @vacationCarryOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation days carried over'**
+  String get vacationCarryOver;
+
+  /// No description provided for @vacationDaysPerYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation days per year'**
+  String get vacationDaysPerYear;
+
+  /// No description provided for @warnUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} without a project'**
+  String warnUnassigned(String minutes);
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @weeklyHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours per week'**
+  String get weeklyHours;
+
+  /// No description provided for @workdaysPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Workdays per week'**
+  String get workdaysPerWeek;
+
+  /// No description provided for @showLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get showLess;
+
+  /// No description provided for @moreNotices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more notices'**
+  String moreNotices(String count);
 }
 
 class _AppLocalizationsDelegate

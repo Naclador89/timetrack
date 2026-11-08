@@ -26,6 +26,10 @@ enum ReviewKind {
 
   /// Another home-office day would exceed a quota (§11.4).
   homeOfficeQuota,
+
+  /// Worked time without a project on a finished day (§3, §12; only with
+  /// `includeUnassigned`).
+  unassigned,
 }
 
 /// One entry of the Review list. Computed, never stored.
@@ -69,8 +73,10 @@ List<ReviewItem> reviewItems(
   required LocalDate to,
   int openSessionLimitMinutes = 720,
   List<HomeOfficeQuota> quotas = const [],
+  bool includeUnassigned = false,
 }) {
   final items = <ReviewItem>[];
+  final running = ledger.data.sessions.any((s) => s.isOpen);
   for (final s in ledger.data.sessions) {
     if (!s.isOpen) continue;
     final open = ledger.nowMinute - epochMinute(s.start);
@@ -114,6 +120,20 @@ List<ReviewItem> reviewItems(
         ),
       );
     }
+    // Only once the day is done: while clocked in it grows by the minute.
+    // Trip days record no project time (§3, §15).
+    if (includeUnassigned &&
+        !day.isTripDay &&
+        day.unassigned > 0 &&
+        !(running && d == ledger.today)) {
+      items.add(
+        ReviewItem(
+          date: d,
+          kind: ReviewKind.unassigned,
+          minutes: day.unassigned,
+        ),
+      );
+    }
     for (final w in day.warnings) {
       items.add(
         ReviewItem(
@@ -143,4 +163,15 @@ List<ReviewItem> reviewItems(
       return byDate != 0 ? byDate : a.$1.compareTo(b.$1);
     });
   return [for (final (_, item) in indexed) item];
+}
+
+/// Where to put a missing break of [minutes] on [day] (§4, Review fix): in
+/// the middle of the longest working stretch, on a 5-minute grid. `null`
+/// without working time.
+Span? suggestBreak(DayResult day, int minutes) {
+  final spans = day.work.working.spans;
+  if (spans.isEmpty) return null;
+  final longest = spans.reduce((a, b) => b.length > a.length ? b : a);
+  final start = (longest.start + (longest.length - minutes) ~/ 2) ~/ 5 * 5;
+  return Span(start, start + minutes);
 }

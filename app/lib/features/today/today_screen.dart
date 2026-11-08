@@ -5,79 +5,142 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
-import '../../widgets/notices.dart';
+import '../../app/theme.dart';
+import '../../widgets/app_bar_actions.dart';
+import '../../widgets/attention.dart';
+import '../../widgets/day_timeline.dart';
+import '../../widgets/explain_sheet.dart';
+import '../../widgets/motion.dart';
+import '../../widgets/quick_entry_sheet.dart';
 import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 
-/// The home screen: clock in/out, breaks, projects and today's numbers.
+/// The home screen. It answers "where do I stand right now?": one button
+/// that follows the state, a ring of today's time against the target, the
+/// balance, projects to switch with one tap, today's timeline and what
+/// needs attention.
 class TodayScreen extends ConsumerWidget {
   /// Creates the screen.
   const TodayScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final today = ref.watch(todayProvider);
     final ledger = ref.watch(ledgerProvider);
-    final settings = ref.watch(settingsProvider);
-    final quotas = ref.watch(homeOfficeQuotasProvider);
-    final notices = reviewItems(
-      ledger,
-      from: today.addDays(-1),
-      to: today,
-      openSessionLimitMinutes: settings.openSessionLimitMinutes,
-      quotas: quotas,
-    );
+    final day = ledger.day(today);
+    final clockedIn = ref.watch(trackerStateProvider).clockedIn;
+    final type = day.type;
+    final showProjects =
+        type != DayType.businessTrip &&
+        ((type?.allowsProjectTime ?? true) || clockedIn);
     return Scaffold(
-      appBar: AppBar(title: Text(context.longDate(today))),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.navToday),
+            Text(
+              context.longDate(today),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            tooltip: l.quickEntry,
+            icon: const Icon(Icons.bolt),
+            onPressed: () => showQuickEntrySheet(context, today),
+          ),
+          ...commonActions(),
+        ],
+      ),
+      body: _Body(
         children: [
           if (!ref.watch(isSetUpProvider)) const _SetupCard(),
-          const _AttendanceCard(),
-          // What can be recorded depends on the day type (calculations §15).
-          if (ledger.day(today).type == DayType.businessTrip)
-            TripBookingCard(date: today)
-          else if (ledger.day(today).type?.allowsProjectTime ?? true)
-            const _ProjectCard()
-          else if (ref.watch(trackerStateProvider).clockedIn)
-            const _ProjectCard(), // working on an absence day
-          _SummaryCard(day: ledger.day(today), ledger: ledger, quotas: quotas),
-          NoticesCard(items: notices, showDates: true),
-          _TodayEntries(day: ledger.day(today)),
+          AttentionCards(
+            from: today.addDays(-1),
+            to: today,
+            includeQuota: true,
+            includeTrip: true,
+            collapseAfter: 3,
+          ),
+          const _HeroCard(),
+          if (type == DayType.businessTrip) TripBookingCard(date: today),
+          if (showProjects) const _ProjectStrip(),
+          _TimelineCard(date: today),
+          const _QuotaCard(),
         ],
       ),
     );
   }
 }
 
+/// A centred column, at most 720 px wide on desktops.
+class _Body extends StatelessWidget {
+  const _Body({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => ListView(
+    padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+    children: [
+      Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class _SetupCard extends StatelessWidget {
   const _SetupCard();
 
   @override
-  Widget build(BuildContext context) => Card(
-    color: Theme.of(context).colorScheme.secondaryContainer,
-    child: ListTile(
-      leading: const Icon(Icons.tune),
-      title: Text(context.l10n.setupHint),
-      trailing: TextButton(
-        onPressed: () => context.go('/settings'),
-        child: Text(context.l10n.openSettings),
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      color: scheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              Icons.rocket_launch_outlined,
+              color: scheme.onSecondaryContainer,
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Text(l.setupHint)),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: () => context.push('/setup'),
+              child: Text(l.setupStart),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-/// Clock in/out, location, break and trip.
-class _AttendanceCard extends ConsumerStatefulWidget {
-  const _AttendanceCard();
+/// Status, day type, the ring and the one button that matters now.
+class _HeroCard extends ConsumerStatefulWidget {
+  const _HeroCard();
 
   @override
-  ConsumerState<_AttendanceCard> createState() => _AttendanceCardState();
+  ConsumerState<_HeroCard> createState() => _HeroCardState();
 }
 
-class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
+class _HeroCardState extends ConsumerState<_HeroCard> {
   WorkLocation? _chosen;
 
   /// The locations today's day type allows (calculations §15); office or
@@ -104,19 +167,24 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
 
   /// Switches between travel and on-site on a business trip.
   Future<void> _selectLocation(WorkLocation location) async {
+    tapFeedback();
     setState(() => _chosen = location);
     if (ref.read(trackerStateProvider).clockedIn) {
       await ref.read(trackerProvider).changeLocation(location);
     }
   }
 
+  Future<void> _clockIn() async {
+    tapFeedback(strong: true);
+    await ref.read(trackerProvider).clockIn(location: _nextLocation());
+  }
+
   Future<void> _clockOut() async {
+    tapFeedback(strong: true);
     final state = ref.read(trackerStateProvider);
     await withSummaryPrompt(context, ref, ref.read(trackerProvider).clockOut);
     if (!mounted) return;
-    if (state.trip != null &&
-        state.location == WorkLocation.travel &&
-        mounted) {
+    if (state.trip != null && state.location == WorkLocation.travel) {
       final end = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
@@ -137,118 +205,215 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
     }
   }
 
+  Future<void> _toggleBreak() async {
+    tapFeedback();
+    final tracker = ref.read(trackerProvider);
+    if (ref.read(trackerStateProvider).onBreak) {
+      await tracker.endBreak();
+    } else {
+      await withSummaryPrompt(context, ref, tracker.startBreak);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final zone = ref.watch(zoneProvider);
     final state = ref.watch(trackerStateProvider);
-    final tracker = ref.watch(trackerProvider);
-    final location = state.location ?? _nextLocation();
     final today = ref.watch(todayProvider);
-    final type = ref.watch(ledgerProvider).day(today).type;
-    final absent = type != null && !type.isWork;
-    final since = state.onBreak
-        ? l.onBreakSince(
-            context.time(
-              DateTime.parse(state.breakRow!.fields['start_utc']! as String),
-              zone,
-            ),
-          )
+    final ledger = ref.watch(ledgerProvider);
+    final day = ledger.day(today);
+    final type = day.type;
+    final location = state.location ?? _nextLocation();
+    final balance = ledger.balanceAtEndOf(today);
+    String at(String field, StoredRow row) =>
+        context.time(DateTime.parse(row.fields[field]! as String), zone);
+    final status = state.onBreak
+        ? l.onBreakSince(at('start_utc', state.breakRow!))
         : state.clockedIn
-        ? l.clockedInSince(
-            context.time(
-              DateTime.parse(state.session!.fields['start_utc']! as String),
-              zone,
-            ),
-          )
+        ? l.clockedInSince(at('start_utc', state.session!))
         : l.notClockedIn;
+    final ringColor = state.onBreak
+        ? scheme.outline
+        : state.clockedIn
+        ? scheme.primary
+        : scheme.primary.withValues(alpha: 0.6);
+
+    Widget figure(String label, int minutes, {bool signed = false}) => InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => showDayExplanation(context, ref, today),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Column(
+          children: [
+            Text(label, style: theme.textTheme.labelMedium),
+            AnimatedMinutes(
+              minutes,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+              signed: signed ? scheme.deltaColor : null,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final big = theme.textTheme.titleMedium;
+    final Widget actions;
+    if (!state.clockedIn) {
+      actions = SizedBox(
+        width: double.infinity,
+        child: FilledButton.icon(
+          style: FilledButton.styleFrom(minimumSize: const Size(0, 60)),
+          onPressed: _clockIn,
+          icon: const Icon(Icons.play_arrow_rounded, size: 28),
+          label: Text(l.clockIn, style: big?.copyWith(color: scheme.onPrimary)),
+        ),
+      );
+    } else {
+      actions = Row(
+        children: [
+          Expanded(
+            child: (state.onBreak ? FilledButton.icon : FilledButton.tonalIcon)(
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 60)),
+              onPressed: _toggleBreak,
+              icon: Icon(
+                state.onBreak
+                    ? Icons.play_arrow_rounded
+                    : Icons.coffee_outlined,
+              ),
+              label: Text(state.onBreak ? l.endBreak : l.startBreak),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(minimumSize: const Size(0, 60)),
+              onPressed: _clockOut,
+              icon: const Icon(Icons.stop_rounded),
+              label: Text(l.clockOut),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(since, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            DayTypePicker(date: today, startsNow: true),
-            if (type == DayType.businessTrip) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final l in type!.locations)
-                    ChoiceChip(
-                      showCheckmark: false,
-                      avatar: Icon(locationIcon(l), size: 18),
-                      label: Text(context.locationName(l)),
-                      selected: location == l,
-                      onSelected: (_) => _selectLocation(l),
+            Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: state.onBreak
+                        ? scheme.tertiary
+                        : state.clockedIn
+                        ? scheme.deltaColor(1)
+                        : scheme.outlineVariant,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [...previous, ?current],
                     ),
-                ],
+                    child: Text(
+                      status,
+                      key: ValueKey(status),
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  ),
+                ),
+                DayTypeChip(date: today, startsNow: true),
+              ],
+            ),
+            if (type != null && !type.isWork) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l.absenceWorkHint,
+                  style: theme.textTheme.bodySmall,
+                ),
               ),
             ],
             const SizedBox(height: 16),
-            if (absent) ...[
-              Text(
-                l.absenceWorkHint,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 8),
-            ],
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                if (state.clockedIn)
-                  FilledButton.tonalIcon(
-                    onPressed: _clockOut,
-                    icon: const Icon(Icons.logout),
-                    label: Text(l.clockOut),
-                  )
-                else
-                  FilledButton.icon(
-                    onPressed: () => tracker.clockIn(location: _nextLocation()),
-                    icon: const Icon(Icons.login),
-                    label: Text(l.clockIn),
-                  ),
-                OutlinedButton.icon(
-                  onPressed: !state.clockedIn
-                      ? null
-                      : state.onBreak
-                      ? tracker.endBreak
-                      : () =>
-                            withSummaryPrompt(context, ref, tracker.startBreak),
-                  icon: Icon(
-                    state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
-                  ),
-                  label: Text(state.onBreak ? l.endBreak : l.startBreak),
+            GestureDetector(
+              onTap: () => showDayExplanation(context, ref, today),
+              child: ProgressRing(
+                value: day.breaks.effectiveWorked,
+                total: day.target,
+                color: ringColor,
+                overColor: scheme.deltaColor(1),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l.worked, style: theme.textTheme.labelMedium),
+                    AnimatedMinutes(
+                      day.work.worked,
+                      style: theme.textTheme.displayMedium,
+                    ),
+                    Text(
+                      l.ofTarget(formatMinutes(day.target)),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              children: [
+                // Actual vs. credited differ on trips, weekends and holidays
+                // (§9); tap explains why.
+                if (day.credited != day.work.worked)
+                  figure(l.credited, day.credited),
+                figure(l.difference, day.delta, signed: true),
+                figure(l.balance, balance, signed: true),
+                if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
               ],
             ),
-            if (state.trip != null) ...[
-              const Divider(height: 24),
-              Row(
-                children: [
-                  const Icon(Icons.luggage_outlined),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      (state.trip!.fields['destination'] as String? ?? '')
-                              .isEmpty
-                          ? l.onTrip
-                          : l.onTripTo(
-                              state.trip!.fields['destination']! as String,
-                            ),
+            if (type == DayType.businessTrip) ...[
+              const SizedBox(height: 12),
+              SegmentedButton<WorkLocation>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final loc in type!.locations)
+                    ButtonSegment(
+                      value: loc,
+                      icon: Icon(locationIcon(loc)),
+                      label: Text(context.locationName(loc)),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: tracker.endTrip,
-                    child: Text(l.endTrip),
-                  ),
                 ],
+                selected: {location},
+                onSelectionChanged: (v) => _selectLocation(v.single),
               ),
             ],
+            const SizedBox(height: 16),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: KeyedSubtree(
+                key: ValueKey((state.clockedIn, state.onBreak)),
+                child: actions,
+              ),
+            ),
           ],
         ),
       ),
@@ -256,94 +421,263 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
   }
 }
 
-/// Running project, favorites and the project picker.
-class _ProjectCard extends ConsumerWidget {
-  const _ProjectCard();
+/// The running project and favourites as a row of cards to switch with one
+/// tap, plus search and adding time afterwards.
+class _ProjectStrip extends ConsumerWidget {
+  const _ProjectStrip();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final zone = ref.watch(zoneProvider);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final state = ref.watch(trackerStateProvider);
     final tracker = ref.watch(trackerProvider);
     final projects = ref.watch(projectByIdProvider);
+    final ledger = ref.watch(ledgerProvider);
     final running = state.projectId == null ? null : projects[state.projectId];
     final favorites = ref
         .watch(projectsProvider)
-        .where((p) => p.favorite && !p.archived);
-    Future<void> start(String id) => withSummaryPrompt(
-      context,
-      ref,
-      () => tracker.startProject(id, location: state.location),
+        .where((p) => p.favorite && !p.archived && p.id != running?.id);
+    final byProject = ledger.day(ref.watch(todayProvider)).work.byProject;
+    Future<void> start(String id) {
+      tapFeedback();
+      return withSummaryPrompt(
+        context,
+        ref,
+        () => tracker.startProject(id, location: state.location),
+      );
+    }
+
+    final runningMinutes = running == null
+        ? 0
+        : ledger.nowMinute -
+              epochMinute(
+                DateTime.parse(state.entry!.fields['start_utc']! as String),
+              );
+
+    Widget tile({
+      required Widget child,
+      required VoidCallback onTap,
+      Color? color,
+      bool filled = false,
+    }) => Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: filled ? color : scheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Container(
+            width: 150,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: color == null || filled
+                  ? null
+                  : Border(left: BorderSide(color: color, width: 4)),
+            ),
+            child: child,
+          ),
+        ),
+      ),
     );
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                running == null ? Icons.work_off_outlined : Icons.work,
-              ),
-              title: Text(running?.name ?? l.noProjectRunning),
-              subtitle: running == null
-                  ? null
-                  : Text(
-                      [
-                        if (running.projectNumber.isNotEmpty)
-                          running.projectNumber,
-                        if (running.orderNumber.isNotEmpty) running.orderNumber,
-                        context.time(
-                          DateTime.parse(
-                            state.entry!.fields['start_utc']! as String,
+            Text(l.navProjects, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 92,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  if (running != null)
+                    Builder(
+                      builder: (context) {
+                        final color = scheme.projectColor(running.id);
+                        final ink =
+                            ThemeData.estimateBrightnessForColor(color) ==
+                                Brightness.dark
+                            ? Colors.white
+                            : Colors.black;
+                        return tile(
+                          filled: true,
+                          color: color,
+                          onTap: () => withSummaryPrompt(
+                            context,
+                            ref,
+                            tracker.stopProject,
                           ),
-                          zone,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      running.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: ink,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.stop_circle_outlined,
+                                    color: ink,
+                                    semanticLabel: l.stopProject,
+                                  ),
+                                ],
+                              ),
+                              AnimatedMinutes(
+                                runningMinutes,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: ink,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  for (final p in favorites)
+                    tile(
+                      color: scheme.projectColor(p.id),
+                      onTap: () => start(p.id),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              p.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            byProject[p.id] == null
+                                ? (p.projectNumber.isEmpty
+                                      ? '▶'
+                                      : p.projectNumber)
+                                : formatMinutes(byProject[p.id]!),
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  tile(
+                    onTap: () async {
+                      final id = await showProjectPicker(context);
+                      if (id != null) await start(id);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(Icons.search),
+                        Flexible(
+                          child: Text(
+                            l.chooseProject,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ].join(' · '),
+                      ],
                     ),
-              trailing: running == null
-                  ? null
-                  : IconButton(
-                      tooltip: l.stopProject,
-                      icon: const Icon(Icons.stop_circle_outlined),
-                      onPressed: () =>
-                          withSummaryPrompt(context, ref, tracker.stopProject),
+                  ),
+                  tile(
+                    onTap: () => showProjectTimeDialog(
+                      context,
+                      date: ref.read(todayProvider),
                     ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(Icons.more_time),
+                        Flexible(
+                          child: Text(
+                            l.addProjectTime,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final p in favorites)
-                  ActionChip(
-                    avatar: Icon(
-                      p.id == state.projectId
-                          ? Icons.play_arrow
-                          : Icons.star_outline,
-                      size: 18,
-                    ),
-                    label: Text(p.name),
-                    onPressed: () => start(p.id),
-                  ),
-                ActionChip(
-                  avatar: const Icon(Icons.search, size: 18),
-                  label: Text(l.chooseProject),
-                  onPressed: () async {
-                    final id = await showProjectPicker(context);
-                    if (id != null) await start(id);
-                  },
+            if (running == null) ...[
+              const SizedBox(height: 8),
+              Text(
+                l.noProjectRunning,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
                 ),
-                ActionChip(
-                  avatar: const Icon(Icons.more_time, size: 18),
-                  label: Text(l.addProjectTime),
-                  onPressed: () => showProjectTimeDialog(
-                    context,
-                    date: ref.read(todayProvider),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Today's timeline; drag edges to adjust, tap a gap to assign it.
+class _TimelineCard extends ConsumerWidget {
+  const _TimelineCard({required this.date});
+
+  final LocalDate date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final work = ref.watch(ledgerProvider).day(date).work;
+    if (work.worked == 0 && work.projectTime == 0) {
+      return const SizedBox.shrink();
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 8, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l.timeline,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
+                ),
+                TextButton.icon(
+                  onPressed: () => context.go('/calendar/day/$date'),
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: Text(l.editDay),
                 ),
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8, top: 4),
+              child: DayTimeline(
+                date: date,
+                editable: true,
+                onTap: (_) => context.go('/calendar/day/$date'),
+              ),
             ),
           ],
         ),
@@ -352,62 +686,30 @@ class _ProjectCard extends ConsumerWidget {
   }
 }
 
-/// Worked vs target, balance and home-office quotas.
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
-    required this.day,
-    required this.ledger,
-    required this.quotas,
-  });
-
-  final DayResult day;
-  final Ledger ledger;
-  final List<HomeOfficeQuota> quotas;
+/// Home-office quotas as bars: used of allowed, with what is left.
+class _QuotaCard extends ConsumerWidget {
+  const _QuotaCard();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final text = Theme.of(context).textTheme;
-    Widget figure(String label, String value) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: text.labelMedium),
-        Text(value, style: text.headlineSmall),
-      ],
-    );
-    final before = ledger.balanceAtEndOf(day.date.addDays(-1));
-    final after = ledger.balanceAtEndOf(day.date);
+    final theme = Theme.of(context);
+    final quotas = ref
+        .watch(homeOfficeQuotasProvider)
+        .where((q) => q.rule.unit == QuotaUnit.days)
+        .toList();
+    if (quotas.isEmpty) return const SizedBox.shrink();
+    final color = theme.colorScheme.dayTypeColor(DayType.home);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              spacing: 32,
-              runSpacing: 12,
-              children: [
-                // Actual vs. credited: they differ on trips, weekends and
-                // holidays (§9), so both are always shown.
-                figure(l.worked, formatMinutes(day.work.worked)),
-                figure(l.credited, formatMinutes(day.credited)),
-                figure(l.target, formatMinutes(day.target)),
-                if (day.sundayHours > 0)
-                  figure(l.sundayHours, formatMinutes(day.sundayHours)),
-                figure(l.unassigned, formatMinutes(day.unassigned)),
-                figure(
-                  l.balance,
-                  '${formatMinutes(before)}  (${l.balanceToday} ${formatMinutes(after)})',
-                ),
-              ],
-            ),
-            for (final q in quotas.where(
-              (q) => q.rule.unit == QuotaUnit.days,
-            )) ...[
-              const SizedBox(height: 12),
+            for (final q in quotas) ...[
               Row(
                 children: [
-                  Icon(locationIcon(WorkLocation.home), size: 18),
+                  Icon(dayTypeIcon(DayType.home), size: 18, color: color),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -418,76 +720,26 @@ class _SummaryCard extends StatelessWidget {
                         '${q.allowedTotal}',
                         context.days(q.left),
                       ),
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  minHeight: 8,
+                  value: q.allowedTotal <= 0
+                      ? 0
+                      : (q.used / q.allowedTotal).clamp(0, 1).toDouble(),
+                  color: q.left <= 0 ? theme.colorScheme.error : color,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                ),
+              ),
+              if (q != quotas.last) const SizedBox(height: 12),
             ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Today's sessions and project entries; tap to edit the day.
-class _TodayEntries extends ConsumerWidget {
-  const _TodayEntries({required this.day});
-
-  final DayResult day;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final zone = ref.watch(zoneProvider);
-    final window = zone.daySpan(day.date);
-    final data = ref.watch(ledgerDataProvider);
-    final projects = ref.watch(projectByIdProvider);
-    final now = ref.watch(ledgerProvider).nowMinute;
-    bool today(Span s) => s.start < window.end && s.end > window.start;
-    final sessions = data.sessions.where((s) => today(s.spanAt(now))).toList()
-      ..sort((a, b) => a.start.compareTo(b.start));
-    final entries = data.entries.where((e) => today(e.spanAt(now))).toList()
-      ..sort((a, b) => a.start.compareTo(b.start));
-    final durations = data.durations.where((d) => d.date == day.date).toList();
-    if (sessions.isEmpty && entries.isEmpty && durations.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    String range(DateTime s, DateTime? e) =>
-        '${context.time(s, zone)} – ${e == null ? context.l10n.running : context.time(e, zone)}';
-    return Card(
-      child: InkWell(
-        onTap: () => context.go('/calendar/day/${day.date}'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            children: [
-              for (final s in sessions)
-                ListTile(
-                  dense: true,
-                  leading: Icon(locationIcon(s.location)),
-                  title: Text(range(s.start, s.end)),
-                  subtitle: Text(context.locationName(s.location)),
-                ),
-              for (final e in entries)
-                ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.work_outline),
-                  title: Text(
-                    '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
-                  ),
-                  subtitle: e.note.isEmpty ? null : Text(e.note),
-                ),
-              for (final d in durations)
-                ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.timelapse),
-                  title: Text(
-                    '${formatMinutes(d.minutes)} · ${projects[d.projectId]?.name ?? '?'}',
-                  ),
-                  subtitle: d.note.isEmpty ? null : Text(d.note),
-                ),
-            ],
-          ),
         ),
       ),
     );

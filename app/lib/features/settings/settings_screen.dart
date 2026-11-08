@@ -28,13 +28,51 @@ const stateNames = {
   FederalState.th: 'Thüringen',
 };
 
-/// All settings (stored as synced `settings` rows, data-model.md §7).
-class SettingsScreen extends ConsumerWidget {
+/// The federal states as chips (settings and setup).
+class FederalStateChips extends StatelessWidget {
+  /// Creates the chips.
+  const FederalStateChips({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  /// The current state.
+  final FederalState? selected;
+
+  /// Called with the tapped state.
+  final ValueChanged<FederalState> onSelected;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: [
+      for (final e in stateNames.entries)
+        ChoiceChip(
+          label: Text(e.value),
+          selected: selected == e.key,
+          onSelected: (_) => onSelected(e.key),
+        ),
+    ],
+  );
+}
+
+/// All settings (stored as synced `settings` rows, data-model.md §7),
+/// grouped in cards, with a search over all of them.
+class SettingsScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final s = ref.watch(settingsProvider);
     final repo = ref.watch(repositoryProvider);
@@ -42,265 +80,324 @@ class SettingsScreen extends ConsumerWidget {
     final rules = ref.watch(homeOfficeRulesProvider);
     Future<void> save(String key, Object? value) =>
         saveSetting(repo, key, value);
-    Widget header(String text) => Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Text(text, style: Theme.of(context).textTheme.titleSmall),
-    );
-
+    Widget header(String text) => _Header(text);
+    final tiles = <Widget>[
+      header(l.sync),
+      ListTile(
+        leading: Icon(switch (ref.watch(syncControllerProvider).phase) {
+          SyncPhase.notConfigured => Icons.cloud_off_outlined,
+          SyncPhase.error => Icons.sync_problem,
+          _ => Icons.cloud_done_outlined,
+        }),
+        title: Text(l.sync),
+        subtitle: Text(switch (ref.watch(syncControllerProvider)) {
+          SyncStatus(phase: SyncPhase.notConfigured) => l.syncNotConnected,
+          SyncStatus(phase: SyncPhase.error) => l.syncError,
+          final st => st.root?.host ?? '',
+        }),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/settings/sync'),
+      ),
+      header(l.general),
+      ListTile(
+        leading: const Icon(Icons.map_outlined),
+        title: Text(l.federalState),
+        subtitle: Text(stateNames[s.federalState] ?? l.notSet),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () async {
+          final v = await showModalBottomSheet<FederalState>(
+            context: context,
+            isScrollControlled: true,
+            builder: (c) => SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: FederalStateChips(
+                  selected: s.federalState,
+                  onSelected: (v) => Navigator.pop(c, v),
+                ),
+              ),
+            ),
+          );
+          if (v != null) await save(SettingKeys.federalState, v.code);
+        },
+      ),
+      if (s.federalState == FederalState.by)
+        SwitchListTile(
+          secondary: const SizedBox(width: 24),
+          title: const Text('Mariä Himmelfahrt (15.08.)'),
+          value: s.bavariaAssumptionDay,
+          onChanged: (v) => save(SettingKeys.bavariaAssumptionDay, v),
+        ),
+      ListTile(
+        leading: const Icon(Icons.schedule),
+        title: Text(l.schedules),
+        subtitle: Text(
+          schedules.isEmpty ? l.notSet : _scheduleSummary(context, schedules),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/settings/schedules'),
+      ),
+      ListTile(
+        leading: Icon(locationIcon(WorkLocation.home)),
+        title: Text(l.homeOfficeRules),
+        subtitle: rules.isEmpty ? Text(l.notSet) : null,
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/settings/home-office'),
+      ),
+      header(l.balance),
+      ListTile(
+        leading: const Icon(Icons.functions),
+        title: Text(l.startingBalance),
+        trailing: Text(formatMinutes(s.startingBalance)),
+        onTap: () async {
+          final v = await _askHours(context, formatMinutes(s.startingBalance));
+          if (v != null) await save(SettingKeys.startingBalance, v);
+        },
+      ),
+      DateTile(
+        leading: const Icon(Icons.event_outlined),
+        label: l.balanceStart,
+        value: ref.watch(ledgerProvider).settings.balanceStart,
+        onChanged: (d) => save(SettingKeys.balanceStartDate, '$d'),
+      ),
+      ListTile(
+        leading: const Icon(Icons.coffee_outlined),
+        title: Text(l.breakRule),
+        subtitle: SegmentedButton<BreakRuleMode>(
+          segments: [
+            ButtonSegment(value: BreakRuleMode.warn, label: Text(l.breakWarn)),
+            ButtonSegment(
+              value: BreakRuleMode.deduct,
+              label: Text(l.breakDeduct),
+            ),
+          ],
+          selected: {s.breakMode},
+          onSelectionChanged: (v) => save(SettingKeys.breakRuleMode, v.single),
+        ),
+      ),
+      SwitchListTile(
+        secondary: const Icon(Icons.login),
+        title: Text(l.autoClockIn),
+        value: s.autoClockIn,
+        onChanged: (v) => save(SettingKeys.autoClockIn, v),
+      ),
+      SwitchListTile(
+        secondary: const Icon(Icons.play_arrow_outlined),
+        title: Text(l.resumeAfterBreak),
+        value: s.resumeAfterBreak,
+        onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
+      ),
+      header(l.travelRules),
+      // calculations.md §9; each rule is a setting, defaults as agreed.
+      // Weekdays on a trip:
+      ListTile(
+        leading: const Icon(Icons.work_history_outlined),
+        title: Text(l.travelWorkday),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.travelWorkdayHint),
+            const SizedBox(height: 8),
+            SegmentedButton<TripWorkdayCredit>(
+              segments: [
+                ButtonSegment(
+                  value: TripWorkdayCredit.target,
+                  label: Text(l.travelWorkdayTarget),
+                ),
+                ButtonSegment(
+                  value: TripWorkdayCredit.actual,
+                  label: Text(l.travelWorkdayActual),
+                ),
+              ],
+              selected: {s.travel.workday},
+              onSelectionChanged: (v) =>
+                  save(SettingKeys.travelWorkday, v.single),
+            ),
+          ],
+        ),
+      ),
+      header(l.weekendRules),
+      // On every Saturday, Sunday and holiday, trip or not (§9).
+      ListTile(
+        leading: const Icon(Icons.weekend_outlined),
+        title: Text(l.saturdayCap),
+        subtitle: Text(l.travelSaturdayHint),
+        trailing: Text(formatMinutes(s.travel.saturdayCapMinutes)),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.travel.saturdayCapMinutes),
+          );
+          if (v != null && v >= 0) {
+            await save(SettingKeys.travelSaturdayCap, v);
+          }
+        },
+      ),
+      ListTile(
+        leading: const SizedBox(width: 24),
+        title: Text(l.saturdayCapScope),
+        subtitle: SegmentedButton<SaturdayCapScope>(
+          segments: [
+            ButtonSegment(
+              value: SaturdayCapScope.total,
+              label: Text(l.capTotal),
+            ),
+            ButtonSegment(
+              value: SaturdayCapScope.travelOnly,
+              label: Text(l.capTravelOnly),
+            ),
+          ],
+          selected: {s.travel.saturdayCapScope},
+          onSelectionChanged: (v) =>
+              save(SettingKeys.travelSaturdayCapScope, v.single),
+        ),
+      ),
+      ListTile(
+        leading: const Icon(Icons.wb_sunny_outlined),
+        title: Text(l.travelSunday),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              s.travel.sunday == TripSundayCredit.sundayHours
+                  ? l.travelSundayHoursHint
+                  : l.travelSundayWorkOnlyHint,
+            ),
+            const SizedBox(height: 8),
+            SegmentedButton<TripSundayCredit>(
+              segments: [
+                ButtonSegment(
+                  value: TripSundayCredit.sundayHours,
+                  label: Text(l.sundayHours),
+                ),
+                ButtonSegment(
+                  value: TripSundayCredit.workOnly,
+                  label: Text(l.sundayWorkOnly),
+                ),
+              ],
+              selected: {s.travel.sunday},
+              onSelectionChanged: (v) =>
+                  save(SettingKeys.travelSunday, v.single),
+            ),
+          ],
+        ),
+      ),
+      if (s.travel.sunday == TripSundayCredit.sundayHours)
+        ListTile(
+          leading: const SizedBox(width: 24),
+          title: Text(l.sundayCap),
+          trailing: Text(formatMinutes(s.travel.sundayCapMinutes)),
+          onTap: () async {
+            final v = await _askHours(
+              context,
+              formatMinutes(s.travel.sundayCapMinutes),
+            );
+            if (v != null && v >= 0) {
+              await save(SettingKeys.travelSundayCap, v);
+            }
+          },
+        ),
+      ListTile(
+        leading: const Icon(Icons.celebration_outlined),
+        title: Text(l.travelHoliday),
+        subtitle: SegmentedButton<TripDayRule>(
+          segments: [
+            ButtonSegment(
+              value: TripDayRule.likeSunday,
+              label: Text(l.likeSunday),
+            ),
+            ButtonSegment(
+              value: TripDayRule.likeSaturday,
+              label: Text(l.likeSaturday),
+            ),
+          ],
+          selected: {s.travel.holiday},
+          onSelectionChanged: (v) => save(SettingKeys.travelHoliday, v.single),
+        ),
+      ),
+    ];
     return Scaffold(
       appBar: AppBar(title: Text(l.navSettings)),
       body: ListView(
+        padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
         children: [
-          header(l.sync),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SearchBar(
+              hintText: l.searchSettings,
+              leading: const Icon(Icons.search),
+              elevation: const WidgetStatePropertyAll(0),
+              onChanged: (v) => setState(() => _query = v.trim()),
+            ),
+          ),
           ListTile(
-            leading: Icon(switch (ref.watch(syncControllerProvider).phase) {
-              SyncPhase.notConfigured => Icons.cloud_off_outlined,
-              SyncPhase.error => Icons.sync_problem,
-              _ => Icons.cloud_done_outlined,
-            }),
-            title: Text(l.sync),
-            subtitle: Text(switch (ref.watch(syncControllerProvider)) {
-              SyncStatus(phase: SyncPhase.notConfigured) => l.syncNotConnected,
-              SyncStatus(phase: SyncPhase.error) => l.syncError,
-              final st => st.root?.host ?? '',
-            }),
+            leading: const Icon(Icons.rocket_launch_outlined),
+            title: Text(l.setupTitle),
+            subtitle: Text(l.setupAgainHint),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go('/settings/sync'),
+            onTap: () => context.push('/setup'),
           ),
-          header(l.general),
-          ListTile(
-            leading: const Icon(Icons.map_outlined),
-            title: Text(l.federalState),
-            trailing: DropdownButton<FederalState>(
-              value: s.federalState,
-              hint: Text(l.notSet),
-              items: [
-                for (final e in stateNames.entries)
-                  DropdownMenuItem(value: e.key, child: Text(e.value)),
-              ],
-              onChanged: (v) => save(SettingKeys.federalState, v?.code),
-            ),
-          ),
-          if (s.federalState == FederalState.by)
-            SwitchListTile(
-              secondary: const SizedBox(width: 24),
-              title: const Text('Mariä Himmelfahrt (15.08.)'),
-              value: s.bavariaAssumptionDay,
-              onChanged: (v) => save(SettingKeys.bavariaAssumptionDay, v),
-            ),
-          ListTile(
-            leading: const Icon(Icons.schedule),
-            title: Text(l.schedules),
-            subtitle: Text(
-              schedules.isEmpty
-                  ? l.notSet
-                  : _scheduleSummary(context, schedules),
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go('/settings/schedules'),
-          ),
-          ListTile(
-            leading: Icon(locationIcon(WorkLocation.home)),
-            title: Text(l.homeOfficeRules),
-            subtitle: rules.isEmpty ? Text(l.notSet) : null,
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go('/settings/home-office'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.beach_access_outlined),
-            title: Text(l.absences),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go('/calendar/absences'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.luggage_outlined),
-            title: Text(l.trips),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go('/calendar/trips'),
-          ),
-          header(l.balance),
-          ListTile(
-            leading: const Icon(Icons.functions),
-            title: Text(l.startingBalance),
-            trailing: Text(formatMinutes(s.startingBalance)),
-            onTap: () async {
-              final v = await _askHours(
-                context,
-                formatMinutes(s.startingBalance),
-              );
-              if (v != null) await save(SettingKeys.startingBalance, v);
-            },
-          ),
-          DateTile(
-            leading: const Icon(Icons.event_outlined),
-            label: l.balanceStart,
-            value: ref.watch(ledgerProvider).settings.balanceStart,
-            onChanged: (d) => save(SettingKeys.balanceStartDate, '$d'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.coffee_outlined),
-            title: Text(l.breakRule),
-            subtitle: SegmentedButton<BreakRuleMode>(
-              segments: [
-                ButtonSegment(
-                  value: BreakRuleMode.warn,
-                  label: Text(l.breakWarn),
-                ),
-                ButtonSegment(
-                  value: BreakRuleMode.deduct,
-                  label: Text(l.breakDeduct),
-                ),
-              ],
-              selected: {s.breakMode},
-              onSelectionChanged: (v) =>
-                  save(SettingKeys.breakRuleMode, v.single),
-            ),
-          ),
-          SwitchListTile(
-            secondary: const Icon(Icons.login),
-            title: Text(l.autoClockIn),
-            value: s.autoClockIn,
-            onChanged: (v) => save(SettingKeys.autoClockIn, v),
-          ),
-          SwitchListTile(
-            secondary: const Icon(Icons.play_arrow_outlined),
-            title: Text(l.resumeAfterBreak),
-            value: s.resumeAfterBreak,
-            onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
-          ),
-          header(l.travelRules),
-          // calculations.md §9; each rule is a setting, defaults as agreed.
-          // Weekdays on a trip:
-          ListTile(
-            leading: const Icon(Icons.work_history_outlined),
-            title: Text(l.travelWorkday),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l.travelWorkdayHint),
-                const SizedBox(height: 8),
-                SegmentedButton<TripWorkdayCredit>(
-                  segments: [
-                    ButtonSegment(
-                      value: TripWorkdayCredit.target,
-                      label: Text(l.travelWorkdayTarget),
-                    ),
-                    ButtonSegment(
-                      value: TripWorkdayCredit.actual,
-                      label: Text(l.travelWorkdayActual),
-                    ),
-                  ],
-                  selected: {s.travel.workday},
-                  onSelectionChanged: (v) =>
-                      save(SettingKeys.travelWorkday, v.single),
-                ),
-              ],
-            ),
-          ),
-          header(l.weekendRules),
-          // On every Saturday, Sunday and holiday, trip or not (§9).
-          ListTile(
-            leading: const Icon(Icons.weekend_outlined),
-            title: Text(l.saturdayCap),
-            subtitle: Text(l.travelSaturdayHint),
-            trailing: Text(formatMinutes(s.travel.saturdayCapMinutes)),
-            onTap: () async {
-              final v = await _askHours(
-                context,
-                formatMinutes(s.travel.saturdayCapMinutes),
-              );
-              if (v != null && v >= 0) {
-                await save(SettingKeys.travelSaturdayCap, v);
-              }
-            },
-          ),
-          ListTile(
-            leading: const SizedBox(width: 24),
-            title: Text(l.saturdayCapScope),
-            subtitle: SegmentedButton<SaturdayCapScope>(
-              segments: [
-                ButtonSegment(
-                  value: SaturdayCapScope.total,
-                  label: Text(l.capTotal),
-                ),
-                ButtonSegment(
-                  value: SaturdayCapScope.travelOnly,
-                  label: Text(l.capTravelOnly),
-                ),
-              ],
-              selected: {s.travel.saturdayCapScope},
-              onSelectionChanged: (v) =>
-                  save(SettingKeys.travelSaturdayCapScope, v.single),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.wb_sunny_outlined),
-            title: Text(l.travelSunday),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  s.travel.sunday == TripSundayCredit.sundayHours
-                      ? l.travelSundayHoursHint
-                      : l.travelSundayWorkOnlyHint,
-                ),
-                const SizedBox(height: 8),
-                SegmentedButton<TripSundayCredit>(
-                  segments: [
-                    ButtonSegment(
-                      value: TripSundayCredit.sundayHours,
-                      label: Text(l.sundayHours),
-                    ),
-                    ButtonSegment(
-                      value: TripSundayCredit.workOnly,
-                      label: Text(l.sundayWorkOnly),
-                    ),
-                  ],
-                  selected: {s.travel.sunday},
-                  onSelectionChanged: (v) =>
-                      save(SettingKeys.travelSunday, v.single),
-                ),
-              ],
-            ),
-          ),
-          if (s.travel.sunday == TripSundayCredit.sundayHours)
-            ListTile(
-              leading: const SizedBox(width: 24),
-              title: Text(l.sundayCap),
-              trailing: Text(formatMinutes(s.travel.sundayCapMinutes)),
-              onTap: () async {
-                final v = await _askHours(
-                  context,
-                  formatMinutes(s.travel.sundayCapMinutes),
-                );
-                if (v != null && v >= 0) {
-                  await save(SettingKeys.travelSundayCap, v);
-                }
-              },
-            ),
-          ListTile(
-            leading: const Icon(Icons.celebration_outlined),
-            title: Text(l.travelHoliday),
-            subtitle: SegmentedButton<TripDayRule>(
-              segments: [
-                ButtonSegment(
-                  value: TripDayRule.likeSunday,
-                  label: Text(l.likeSunday),
-                ),
-                ButtonSegment(
-                  value: TripDayRule.likeSaturday,
-                  label: Text(l.likeSaturday),
-                ),
-              ],
-              selected: {s.travel.holiday},
-              onSelectionChanged: (v) =>
-                  save(SettingKeys.travelHoliday, v.single),
-            ),
-          ),
-          const SizedBox(height: 24),
+          ..._grouped(context, tiles),
         ],
       ),
     );
+  }
+
+  /// Puts the tiles after each [_Header] into one card; while searching,
+  /// only the tiles whose texts match, under their group.
+  List<Widget> _grouped(BuildContext context, List<Widget> tiles) {
+    final q = _query.toLowerCase();
+    final out = <Widget>[];
+    String? title;
+    var group = <Widget>[];
+    var titleMatches = false;
+    void flush() {
+      if (group.isEmpty || title == null) return;
+      out
+        ..add(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+        )
+        ..add(Card(child: Column(children: group)));
+      group = [];
+    }
+
+    for (final t in tiles) {
+      if (t is _Header) {
+        flush();
+        title = t.text;
+        titleMatches = q.isNotEmpty && t.text.toLowerCase().contains(q);
+        continue;
+      }
+      if (q.isEmpty || titleMatches || _searchText(t).contains(q)) {
+        group.add(t);
+      }
+    }
+    flush();
+    return out;
+  }
+
+  /// The visible texts of a settings tile, lower-cased, for the search.
+  static String _searchText(Widget w) {
+    String text(Widget? t) => switch (t) {
+      Text(:final data?) => data,
+      Column(:final children) => children.map(text).join(' '),
+      _ => '',
+    };
+    return switch (w) {
+      ListTile(:final title, :final subtitle) =>
+        '${text(title)} ${text(subtitle)}',
+      SwitchListTile(:final title, :final subtitle) =>
+        '${text(title)} ${text(subtitle)}',
+      DateTile(:final label) => label,
+      _ => '',
+    }.toLowerCase();
   }
 
   static String _scheduleSummary(
@@ -358,4 +455,14 @@ class SettingsScreen extends ConsumerWidget {
       },
     );
   }
+}
+
+/// Starts a group of settings (see `_grouped`).
+class _Header extends StatelessWidget {
+  const _Header(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

@@ -436,5 +436,210 @@
     }
   },
   "absenceWorkHint": "Working time recorded on this day is credited as overtime.",
-  "goToToday": "Go to today"
+  "goToToday": "Go to today",
+  "assignedTo": "{minutes} booked to {project}",
+  "@assignedTo": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "back": "Back",
+  "chooseDayType": "Day type",
+  "commandPalette": "Search and actions",
+  "commandPaletteHint": "Action, screen or project …",
+  "copiedPreviousDay": "Previous day copied",
+  "copyPreviousDay": "Copy previous day",
+  "deleted": "Deleted",
+  "done": "Done",
+  "editDay": "Edit day",
+  "explainAbsenceCredit": "Absence credit",
+  "explainBreakDeducted": "Break deducted",
+  "explainBreakDeductedHint": "The required break was missing (ArbZG §4).",
+  "explainDeltaMinus": "Less than the target: this lowers your balance.",
+  "explainDeltaPlus": "More than the target: this counts as overtime.",
+  "explainDeltaZero": "Exactly the target: no overtime, no minus.",
+  "explainHow": "How is this calculated?",
+  "explainRule": "Rule for this day",
+  "explainSaturday": "Saturday: worked time counts as overtime.",
+  "explainSaturdayCapped": "Saturday: at most {cap} count, {rest} not counted.",
+  "@explainSaturdayCapped": {
+    "placeholders": {
+      "cap": {
+        "type": "String"
+      },
+      "rest": {
+        "type": "String"
+      }
+    }
+  },
+  "explainSundayCounted": "Sunday/holiday rule: work on site counts as usual.",
+  "explainSundayHours": "Reported to HR for extra pay, not part of the balance.",
+  "explainSundayNotCounted": "Sunday/holiday rule: {rest} not counted towards the balance.",
+  "@explainSundayNotCounted": {
+    "placeholders": {
+      "rest": {
+        "type": "String"
+      }
+    }
+  },
+  "explainTargetDayOff": "No scheduled work on this day.",
+  "explainTargetHoliday": "Public holiday {name}: no target.",
+  "@explainTargetHoliday": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "explainTargetReduced": "Lowered by short-time work or an extra day off.",
+  "explainTargetSchedule": "From your work schedule.",
+  "explainTitle": "How {date} is counted",
+  "@explainTitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "explainTripWorkday": "Trip on a workday: credited as a normal day ({credit}), however long it was.",
+  "@explainTripWorkday": {
+    "placeholders": {
+      "credit": {
+        "type": "String"
+      }
+    }
+  },
+  "fixAddBreak": "Add break",
+  "fixAssign": "Assign",
+  "fixSetEnd": "Set end",
+  "homeOfficeLimit": "Limit: {percent} % per month",
+  "@homeOfficeLimit": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "homeOfficeOfWorked": "{home} of {worked} days worked at home",
+  "@homeOfficeOfWorked": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      },
+      "worked": {
+        "type": "String"
+      }
+    }
+  },
+  "month": "Month",
+  "more": "More",
+  "next": "Next",
+  "noLimit": "No limit",
+  "ofTarget": "of {target}",
+  "@ofTarget": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "openDay": "Open day",
+  "percentPerMonth": "{percent} % per month",
+  "@percentPerMonth": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "perDaySummary": "That is {minutes} per workday.",
+  "@perDaySummary": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "quickEntry": "Quick entry",
+  "quickEntryHelp": "Times, break (p30), place (@home), project, note after \": \"",
+  "quickEntryInvalid": "Add times like 8-16:30 or a duration like 1:30",
+  "quickEntryNoProject": "no project matches \"{query}\"",
+  "@quickEntryNoProject": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "quickEntrySaved": "Entered",
+  "saveAsTemplate": "Save day as template",
+  "searchSettings": "Search settings",
+  "setupAgainHint": "State, working time, balance and home office in four steps",
+  "setupBalanceHint": "From which day should the balance count, and what did you bring along?",
+  "setupConnectSync": "Connect Nextcloud",
+  "setupDone": "All set",
+  "setupDoneHint": "You can change everything later in the settings. Connect Nextcloud to sync your devices.",
+  "setupHomeOfficeHint": "How much home office does your employer allow?",
+  "setupScheduleHint": "Your contractual working time and vacation.",
+  "setupStart": "Set up",
+  "setupStateHint": "For public holidays.",
+  "setupTitle": "Setup",
+  "startingBalanceHint": "Overtime carried over, e.g. 12:30 or -2:00",
+  "startProjectNamed": "Start {project}",
+  "@startProjectNamed": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "syncing": "Syncing …",
+  "templateApplied": "Template \"{name}\" applied",
+  "@templateApplied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "templateName": "Name",
+  "timeline": "Timeline",
+  "timelineHint": "Drag the edges to adjust, tap a hatched gap to assign it.",
+  "tripStillOpen": "Trip still open",
+  "tripStillOpenTo": "Trip to {destination} still open",
+  "@tripStillOpenTo": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
+  "vacationCarryOver": "Vacation days carried over",
+  "vacationDaysPerYear": "Vacation days per year",
+  "warnUnassigned": "{minutes} without a project",
+  "@warnUnassigned": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "week": "Week",
+  "weeklyHours": "Hours per week",
+  "workdaysPerWeek": "Workdays per week",
+  "showLess": "Show less",
+  "moreNotices": "{count} more notices",
+  "@moreNotices": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

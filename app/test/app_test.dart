@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -62,7 +63,10 @@ void main() {
       reason: 'setup hint',
     );
 
-    await tester.tap(find.text('Home office'));
+    // The day type is one chip; the types open in a sheet.
+    await tester.tap(find.text('Day type'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Home office').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Clock in'));
     await tester.pumpAndSettle();
@@ -70,7 +74,7 @@ void main() {
 
     await tester.tap(find.text('Werk Süd'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('P-2026/014'), findsWidgets);
+    expect(find.byIcon(Icons.stop_circle_outlined), findsOneWidget);
 
     await tester.tap(find.text('Break'));
     await tester.pumpAndSettle();
@@ -121,11 +125,20 @@ void main() {
 
   testWidgets('the other tabs open', (tester) async {
     await pumpApp(tester);
-    for (final tab in ['Calendar', 'Projects', 'Reports', 'Settings']) {
+    for (final tab in ['Calendar', 'Projects', 'Reports']) {
       await tester.tap(find.text(tab).last);
       await tester.pumpAndSettle();
     }
+    // Settings open over the tabs from the gear icon.
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
     expect(find.text('Federal state'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, 'saturday');
+    await tester.pumpAndSettle();
+    expect(find.text('Federal state'), findsNothing);
+    expect(find.textContaining('Saturday'), findsWidgets);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Calendar').last);
     await tester.pumpAndSettle();
     expect(find.text('Week 45'), findsOneWidget);
@@ -137,11 +150,13 @@ void main() {
     final (store, _) = await pumpApp(tester, router: router);
     router.go('/calendar/day/2026-11-04');
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Day type'));
+    await tester.pumpAndSettle();
     for (final type in ['Office', 'Home office', 'Business trip', 'Vacation']) {
-      expect(find.widgetWithText(ChoiceChip, type), findsOneWidget);
+      expect(find.text(type), findsOneWidget);
     }
 
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Business trip'));
+    await tester.tap(find.text('Business trip'));
     await tester.pumpAndSettle();
     expect(find.text('New trip'), findsOneWidget);
     await tester.enterText(
@@ -154,20 +169,15 @@ void main() {
       store.rowsOf('trips').values.single.fields['destination'],
       'Stuttgart',
     );
-    expect(
-      tester
-          .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Business trip'))
-          .selected,
-      isTrue,
-    );
+    expect(find.widgetWithText(ActionChip, 'Business trip'), findsOneWidget);
     expect(find.textContaining('Trip without a project'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Add').first);
     await tester.pumpAndSettle();
     expect(
       find.widgetWithText(ChoiceChip, 'Home office'),
-      findsOneWidget,
-      reason: 'only the day type picker behind the dialog',
+      findsNothing,
+      reason: 'a trip day offers travel and on site only',
     );
     await tester.tap(find.widgetWithText(ChoiceChip, 'Travel').last);
     await tester.pumpAndSettle();
@@ -180,7 +190,9 @@ void main() {
 
     router.go('/calendar/day/2026-11-03');
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Vacation'));
+    await tester.tap(find.text('Day type'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Vacation'));
     await tester.pumpAndSettle();
     expect(store.rowsOf('absences').values.single.fields['kind'], 'vacation');
     expect(
@@ -216,7 +228,7 @@ void main() {
     expect(find.text('Week 45'), findsOneWidget);
   });
 
-  testWidgets('day view: an X deletes an entry after a confirmation', (
+  testWidgets('day view: an X deletes an entry, undo brings it back', (
     tester,
   ) async {
     final router = buildRouter();
@@ -230,14 +242,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Delete').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
+    expect(store.rowsOf('work_sessions')['s1']!.isDeleted, isTrue);
+    await tester.tap(find.text('Undo'));
     await tester.pumpAndSettle();
     expect(store.rowsOf('work_sessions')['s1']!.isDeleted, isFalse);
-    await tester.tap(find.byTooltip('Delete').first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
-    await tester.pumpAndSettle();
-    expect(store.rowsOf('work_sessions')['s1']!.isDeleted, isTrue);
+    expect(find.text('Working times'), findsOneWidget);
   });
 
   testWidgets('the timesheet opens as a preview before the download', (
@@ -287,10 +296,137 @@ void main() {
     expect(row.fields, containsPair('date', '2026-11-04'));
     expect(row.fields, containsPair('note', 'Angebot geschrieben'));
     expect(row.fields['start_utc'], isNull);
-    expect(
-      find.textContaining('1:30 · Werk Süd'),
-      findsOneWidget,
-      reason: "shown in today's list",
+  });
+
+  testWidgets('quick entry: one line records times, break and project', (
+    tester,
+  ) async {
+    final (store, repo) = await pumpApp(tester);
+    await repo.write('projects', 'p1', {
+      'name': 'Werk Süd',
+      'project_number': 'P-2026/014',
+    });
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Quick entry'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField).last,
+      '7-12 p15 014: Prüfung',
     );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Werk Süd'), findsWidgets, reason: 'preview');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    final session = store.rowsOf('work_sessions').values.single;
+    expect(session.fields['start_utc'], '2026-11-04T06:00:00Z');
+    expect(store.rowsOf('breaks').values.single.fields['start_utc'], isNotNull);
+    final entry = store.rowsOf('project_entries').values.single;
+    expect(
+      (entry.fields['project_id'], entry.fields['note']),
+      ('p1', 'Prüfung'),
+    );
+    expect(find.text('Entered'), findsOneWidget);
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('work_sessions').values.single.isDeleted, isTrue);
+  });
+
+  testWidgets('needs attention: unassigned time is booked with one tap', (
+    tester,
+  ) async {
+    final (store, repo) = await pumpApp(tester);
+    await repo.write('projects', 'p1', {'name': 'Werk Süd'});
+    await repo.write('work_sessions', 's1', {
+      'start_utc': '2026-11-03T07:00:00Z',
+      'end_utc': '2026-11-03T12:00:00Z',
+      'location': 'office',
+    });
+    await tester.pumpAndSettle();
+    expect(find.textContaining('5:00 without a project'), findsOneWidget);
+    await tester.tap(find.text('Assign'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Werk Süd').last);
+    await tester.pumpAndSettle();
+    final entry = store.rowsOf('project_entries').values.single;
+    expect(entry.fields['start_utc'], '2026-11-03T07:00:00Z');
+    expect(entry.fields['end_utc'], '2026-11-03T12:00:00Z');
+    expect(find.textContaining('without a project'), findsNothing);
+  });
+
+  testWidgets('tap a day\'s numbers to see how they are counted', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (_, repo) = await pumpApp(tester, router: router);
+    await repo.write('work_sessions', 's1', {
+      'start_utc': '2026-11-07T06:00:00Z',
+      'end_utc': '2026-11-07T19:00:00Z',
+      'location': 'travel',
+    });
+    await repo.write('trips', 't1', {
+      'depart_utc': '2026-11-07T06:00:00Z',
+      'return_utc': '2026-11-07T19:00:00Z',
+    });
+    router.go('/calendar/day/2026-11-07');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.help_outline));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('How'), findsWidgets);
+    expect(find.textContaining('at most 11:00 count'), findsOneWidget);
+  });
+
+  testWidgets('calendar month view and the command palette', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Month'));
+    await tester.pumpAndSettle();
+    expect(find.text('November 2026'), findsOneWidget);
+    expect(find.text('25'), findsOneWidget);
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'repor');
+    await tester.pumpAndSettle();
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(find.text('Preview and download'), findsWidgets);
+  });
+
+  testWidgets('setup wizard: state, working time, balance, home office', (
+    tester,
+  ) async {
+    final (store, _) = await pumpApp(tester);
+    await tester.tap(find.text('Set up'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bayern'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('38:30'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, '12:30');
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('40 % per month'));
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('All set'), findsOneWidget);
+    expect(store.rowsOf('settings')['federal_state']!.fields['value'], 'BY');
+    expect(store.rowsOf('settings')['starting_balance']!.fields['value'], 750);
+    final schedule = store.rowsOf('work_schedules').values.single;
+    expect(schedule.fields['minutes_mon'], 462);
+    expect(schedule.fields['minutes_sat'], 0);
+    expect(
+      store.rowsOf('home_office_rules').values.single.fields['max_percent'],
+      40,
+    );
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Set up'), findsNothing);
   });
 }

@@ -189,3 +189,11 @@ final perDiemRatesProvider = Provider<List<PerDiemRate>>(
     ...defaultPerDiemRates(),
   ],
 );
+
+/// Saved day templates (data-model §13), by name.
+final dayTemplatesProvider = Provider<List<DayTemplate>>(
+  (ref) => [
+    for (final r in ref.watch(_rows))
+      if (r.table == 'day_templates') ?dayTemplateFromRow(r),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
+);

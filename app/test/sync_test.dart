@@ -99,7 +99,7 @@ void main() {
       isNot(contains('work_sessions')),
     );
 
-    await tester.tap(find.text('Settings').last);
+    await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('cloud.example.com'), findsOneWidget);
   });
