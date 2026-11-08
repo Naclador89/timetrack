@@ -1,6 +1,6 @@
 # Status / handoff log
 
-_Last updated: 2026-11-07 by Claude Code._
+_Last updated: 2026-11-08 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
 ## Current milestone: M4 (reports) mostly done; release v0.1.0 published
@@ -94,7 +94,7 @@ _Last updated: 2026-11-07 by Claude Code._
       `LoginFlow.waitForApproval` now uses per-request timeouts, retries, a wall-clock deadline
       (20 min) and an immediate poll on app resume. Android opens the login in a Custom Tab.
 - [x] User test 2026-11-07: the Android login and sync work with the fixed APK.
-- [ ] **User**: Windows works without VPN (2026-11-07); with VPN not tested yet.
+- Windows works without VPN (2026-11-07). Testing over the company VPN was dropped by the user (2026-11-08).
 - [x] Android background sync (WorkManager, every 15 min; also after each quick action). Network-change trigger (optional) still open.
 - [ ] Sync log screen (a list of the last cycles with errors). Today the status shows only the last error.
 
@@ -213,8 +213,10 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] Back behaviour (user, 2026-11-08; `docs/specs/navigation.md`): close → page up → reset view →
       previous tab → on Today ask once, then move to the background; days open inside the current tab.
 
-**Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
-The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
+**Next tasks**, one at a time (user, 2026-11-08): polish ("Mit Uhrzeit" label, FAB over the
+timeline), per-diem rate editing, JSON restore, sync log, network-change sync trigger, release
+keystore. The user checks the builds on the phone and re-enters the three reset settings.
+**The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -239,6 +241,8 @@ The user re-enters the three reset settings. Then: release keystore (if approved
    editor and Today, column "Tätigkeit" in the order report.
 
 ## Decisions taken with the user (2026-11-07)
+- **Dropped** (user, 2026-11-08): M6 Garmin glance, M7 auto clock-in (Wi-Fi/geofence) and testing
+  sync over the company VPN. Don't plan them again unless the user asks.
 - **Travel rules** confirmed: every weekday of a trip counts as a normal day (also days spent only
   working at the destination); a short trip day still gets the full target; the 11 h **Saturday cap
   covers travel and work together** (`SaturdayCapScope.total`); holidays like Sundays. Full-time
@@ -262,7 +266,7 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   `balance_start_date`), which the user re-enters. Keep that device folder: other devices need its
   tombstones. Prevention: `SyncConfig.deviceId` binds the connection to its database,
   `TIMETRACK_DISABLE_SYNC` for demo/screenshot builds, `saveSetting` writes `deleted: false`.
-- **Windows PC is company-managed and sometimes on a VPN** (user, 2026-11-07). For M3:
+- **Windows PC is company-managed and sometimes on a VPN** (user, 2026-11-07; VPN testing dropped 2026-11-08). For M3:
   - Dart's `HttpClient` doesn't use the Windows system proxy by itself. Support the system or PAC
     proxy (for example read it via WinHTTP) or a manual proxy setting, and test with and without the VPN.
   - Treat network changes (VPN up or down) as a sync trigger and retry failed syncs with backoff.

@@ -20,7 +20,6 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 |---|---|
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
-| `garmin/` | Connect IQ watch app and glance (Monkey C), milestone M6. |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
 | `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour). |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
@@ -88,4 +87,3 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - Host: Fedora 44 (GNOME, Wayland) with no build tools on the host. Everything runs in the toolbox **`flutter`**. Its toolchain is in `~/dev/sdk/` (Flutter, JDK 21, Android SDK) and is loaded by `~/dev/sdk/env.sh`.
 - `sudo` doesn't work non-interactively, either on the host or inside the toolbox. To install packages in the toolbox, use `podman exec -u root flutter dnf -y install <pkg>`.
 - The Android phone connects over wireless debugging (`adb pair`, then `adb connect`). See `docs/dev-setup.md`.
-- Garmin tools are in a separate toolbox, **`ciq`** (Ubuntu). See `~/connectiq/README.md` on the maintainer machine.

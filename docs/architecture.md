@@ -6,8 +6,8 @@ are in `docs/specs/`. Update this file when you add or move a module.
 ## Layers
 
 ```
-app/ (Flutter)                       UI, navigation, platform glue (notifications, tile, widget,
-  app/providers.dart                 watch bridge, geofence). No business rules.
+app/ (Flutter)                       UI, navigation, platform glue (notifications, tile,
+  app/providers.dart                 widget). No business rules.
   app/router.dart                    Riverpod providers wire store rows → core rules (Ledger,
   features/<screen>/                 TrackerState, quotas); widgets only read providers and call
   l10n/                              TimeTracker / SyncedRepository. go_router with an adaptive

@@ -16,7 +16,7 @@ You want one personal app on **Linux (Fedora/GNOME)**, **Windows** and **Android
 | Sync | **Local-first, no own server.** Each device writes files that are never changed afterwards to **your Nextcloud via WebDAV** |
 | Windows build | **GitHub Actions** (private repo); Flutter can't cross-compile to Windows |
 | Outputs | Monthly **timesheet PDF**, **travel report**, **order report** (hours per order number), **CSV export**, **in-app statistics** |
-| Extras, in order | 1. Android quick access, 2. Garmin fēnix 7 Pro glance, 3. Auto clock-in |
+| Extras | Android quick access (a Garmin glance and auto clock-in were dropped by the user on 2026-11-08) |
 
 Assumptions (easy to change): UI in German and English; federal state (Bundesland) chosen in settings; home time zone Europe/Berlin; repo at `~/dev/timetrack`.
 
@@ -34,12 +34,11 @@ Assumptions (easy to change): UI in German and English; federal state (Bundeslan
        └────── WebDAV over HTTPS (Nextcloud app password) ──┘
                               ▼
         Nextcloud  /TimeTrack/devices/<deviceId>/ops/*.jsonl.gz.enc
- fēnix 7 Pro ── Connect IQ SDK (BLE) ──► Android app
 ```
 
 - Each device keeps its **own SQLite database** and works fully offline. Sync merges in the background.
 - All logic (database, rules, sync) lives in a **pure-Dart `core` package**. It can be tested with `dart test`, without Flutter or devices.
-- The Flutter app contains only the UI and platform integrations (notifications, tile, widget, watch, geofence).
+- The Flutter app contains only the UI and platform integrations (notifications, tile, widget).
 
 ## 2. Domain model
 
@@ -66,7 +65,7 @@ Local only: `outbox`, `pending_batch`, `seen_files`, `sync_state`, HLC state, de
 - Clocking out stops the running project.
 - Starting a break stops the running project. Ending the break offers to resume the last project (or does it automatically, if set).
 - Only one session and one project entry can run at a time. Starting project B stops project A at the same instant.
-- **Location** is chosen when you clock in, with 🏢 office / 🏠 home / 📍 on-site / 🚆 travel next to the button. It defaults to the last location used, or an E3 rule sets it (home Wi-Fi → home). You can change it afterwards. A mixed day is simply several sessions, for example 🏠 → 🚆 → 📍.
+- **Location** is chosen when you clock in, with 🏢 office / 🏠 home / 📍 on-site / 🚆 travel next to the button. It defaults to the last location used. You can change it afterwards. A mixed day is simply several sessions, for example 🏠 → 🚆 → 📍.
 - **Trips**: starting a 🚆 session when no trip is open starts a trip. The app asks for the destination; the country defaults to Germany. When you clock out of a travel session, it asks whether the trip has ended. Departure and return can be edited, and trips can also be entered afterwards.
 - Forgotten clock-out: if a session has been open for more than 12 h, a notification appears. The next time you open the app it asks "Clocked in since yesterday 08:00. When did you finish?"
 
@@ -159,7 +158,7 @@ Applying a change is **idempotent and order-independent**: a field is updated on
    - **Travel report**, per trip and per day: departure and return, destination, travel time, credited time, hours away, per-diem category, meals provided and amount. Available as PDF and CSV as the basis for your expense claim.
    - **Order report**: hours per **order number** (and project number) per day or week, for copying into your company's booking system.
    - **CSV export**: entries (with location, project number and order number) and daily summaries, with an Excel-friendly option (`;` separator, UTF-8 BOM). Also a full JSON backup.
-6. **Settings**: schedules, Bundesland, break rules, starting balance, home-office rules, travel rules and per-diem rates, Nextcloud connection with sync status and log, auto clock-in rules, watch.
+6. **Settings**: schedules, Bundesland, break rules, starting balance, home-office rules, travel rules and per-diem rates, Nextcloud connection with sync status and log.
 
 ## 6. Extras
 
@@ -168,17 +167,6 @@ Applying a change is **idempotent and order-independent**: a field is updated on
 - A **Quick Settings tile** (Kotlin `TileService`) to clock in or out.
 - A **home-screen widget** showing status, today's total and buttons; a native `Chronometer` keeps it ticking without updates.
 - Tile, widget and notification all hand off to **one background Dart callback**, so all the logic stays in Dart. The database is opened in shared-isolate WAL mode so the UI, background handlers and WorkManager can all write safely.
-
-**E2: Garmin fēnix 7 Pro glance** (reuses your `ciq` toolbox and developer key)
-- A Connect IQ watch app with a glance for `fenix7pro`. The glance shows "● 3:42 · Project A". The app menu has Clock in/out, Break and Switch project (favorites).
-- The Android app includes the **Connect IQ Mobile SDK** in a Kotlin bridge. The watch sends commands, and the phone answers with the current state, which the watch caches for the glance.
-- **Spike first**: check that watch messages reach the app while it is in the background. Fallback: a small foreground service while clocked in.
-
-**E3: Auto clock-in (Android)**
-- Rules are based on **Wi-Fi name** (network callback through a PendingIntent; needs location permission) and/or a **geofence** (Play Services Geofencing).
-- Each rule sets the session location too: office Wi-Fi → 🏢, home Wi-Fi → 🏠. That way home-office days are recorded correctly without you having to think about it.
-- Each rule has a mode: *off*, *suggest* (default: notification with a "Clock in" action) or *automatic + Undo*.
-- Leaving the office only ever suggests clocking out, using the time you actually left.
 
 ## 7. Repo layout, tooling, CI
 
@@ -189,8 +177,7 @@ Applying a change is **idempotent and order-independent**: a field is updated on
   .github/copilot-instructions.md   # short pointer to AGENTS.md for GitHub Copilot
   packages/core/        # pure Dart: models, drift DB, rules, holidays, HLC, sync engine, WebDAV client, project search
   app/                  # Flutter: features/{today,calendar,projects,absences,reports,settings}, platform/
-    android/…/kotlin/   # TileService, widget, Connect IQ bridge, network and geofence receivers
-  garmin/               # Monkey C watch app + glance (built inside the `ciq` toolbox)
+    android/…/kotlin/   # TileService, widget, quick-access notification
   docs/
     concept.md          # this concept
     status.md           # living progress and handoff log
@@ -221,7 +208,7 @@ Applying a change is **idempotent and order-independent**: a field is updated on
     1. Make the repo public: standard runners are then free with no minute limit. The code contains no personal data, and the keystore stays in secrets.
     2. A Windows VM in GNOME Boxes.
 - **Installing**:
-  - Linux: copy the bundle to `~/.local/opt/timetrack` and add a `.desktop` launcher, the same way as your `ciq-*` launchers.
+  - Linux: copy the bundle to `~/.local/opt/timetrack` and add a `.desktop` launcher.
   - Android: sideload the APK.
   - Windows: unzip and run. Unsigned builds trigger a SmartScreen warning once.
 
@@ -251,11 +238,9 @@ Goal: any agent (GitHub Copilot, Claude Code, …) or person can take over at an
 | M0 | Toolbox, Flutter and Android SDK, repo + GitHub, CI builds an empty app for all 3 platforms, `AGENTS.md`, `docs/` skeleton with the concept, first decision records and `status.md` | The Windows ZIP from CI starts on your Windows PC and that PC can reach Nextcloud |
 | M1 | `core`: models, DB, interval math, ArbZG, holidays, overtime and vacation, home-office quota, travel crediting and per-diem, project search, HLC, change merging, sync engine against fakes | `dart test` is green, including the sync convergence tests |
 | M2 | Local MVP app: Today (with location and quota), day editor, week view, projects, absences, schedules, home-office rules, trips, project picker and settings | Usable every day on Linux and Android, still without sync |
-| M3 | Nextcloud sync: WebDAV client, Login Flow v2, end-to-end encryption, proxy/VPN handling, triggers, status and log, Review list | Two real devices stay in sync through your Nextcloud |
+| M3 | Nextcloud sync: WebDAV client, Login Flow v2, end-to-end encryption, per-device proxy, triggers, status and log, Review list | Two real devices stay in sync through your Nextcloud |
 | M4 | Reports: statistics, monthly PDF, order report, travel report, CSV and JSON backup | The PDF and travel report for one month match figures calculated by hand |
 | M5 | E1 Android quick access | Clock in/out from the tile, widget and notification without opening the app |
-| M6 | E2 Garmin glance (after a feasibility spike) | Clock in on the watch; the desktop shows it after the next sync |
-| M7 | E3 Auto clock-in | The office Wi-Fi rule triggers the suggestion and auto mode reliably |
 
 Every milestone also ends with: docs updated (`status.md`, specs, decision records) and CI green.
 
@@ -273,7 +258,7 @@ Every milestone also ends with: docs updated (`status.md`, specs, decision recor
   1. Clock in on the phone; the desktop shows it within about 1 min.
   2. Put the phone in airplane mode and edit on both devices; after reconnecting, both show the same data.
   3. Clock in on both devices while offline; after sync, the older session is closed at the newer one's start.
-  4. Stop from the tile, widget or watch; the change reaches the desktop.
+  4. Stop from the tile, widget or notification; the change reaches the desktop.
 - **CI**: all three builds green on every push; release artifacts install and start.
 
 ## Risks / open points
@@ -284,8 +269,7 @@ Every milestone also ends with: docs updated (`status.md`, specs, decision recor
   3. The 11 h Saturday cap covers travel **and** work together.
   4. Public holidays are treated like Sundays.
 
-- **Background delivery of watch messages on Android**: checked in the M6 spike.
 - **Your Nextcloud** is run by a provider, so end-to-end encryption is part of M3 (ADR 0006). The URL is entered at M3.
-- **Windows PC**: it's company-managed and sometimes on a VPN. M0 confirmed that the portable ZIP runs and Nextcloud WebDAV is reachable. In M3, handle the system proxy and VPN changes (see `docs/status.md`).
+- **Windows PC**: it's company-managed. M0 confirmed that the portable ZIP runs and Nextcloud WebDAV is reachable; a per-device proxy can be set. Testing sync over the company VPN was dropped by the user (2026-11-08).
 - **GitHub Free**: some users have recently reported "Usage blocked" in private repos without a payment method, even with minutes left. M0 checks this with the first Windows build; if it happens, use a fallback from section 7.
 - **GNOME/Wayland**: no tray icon needed for now (not chosen), which avoids the AppIndicator dependency.
