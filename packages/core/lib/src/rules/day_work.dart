@@ -18,6 +18,7 @@ final class DayWork {
     required this.overlappingSessions,
     required this.overlappingProjectEntries,
     required this.projectOutsideWork,
+    this.projectSpans = SpanSet.empty,
   });
 
   /// The evaluated day.
@@ -44,6 +45,13 @@ final class DayWork {
 
   /// Minutes of project time outside [working], e.g. during a break (§3).
   final int projectOutsideWork;
+
+  /// Timed project entries inside [working] (durations have no position).
+  final SpanSet projectSpans;
+
+  /// Working intervals without a timed project entry (§3): the gaps the UI
+  /// offers to assign. Durations aren't placed, so they don't fill gaps.
+  SpanSet get unassignedSpans => working.subtract(projectSpans);
 
   /// Worked minutes `W(D)`, before any break deduction (§4).
   int get worked => working.length;
@@ -133,5 +141,6 @@ DayWork evaluateDay({
     overlappingSessions: sessionMinutes > claimed.length,
     overlappingProjectEntries: entryMinutes > allProjects.length,
     projectOutsideWork: allProjects.subtract(working).length,
+    projectSpans: allProjects.intersect(working),
   );
 }

@@ -95,3 +95,9 @@ The day type picked for a date (calculations §15). **Row id = the date** (`YYYY
 two devices merge by last-writer-wins. Only office and home office are stored here; business trips
 are `trips`, absence types are `absences`.
 `date` date ✓, `type` enum `office` `home` ✓. Since 2026-11-08.
+
+## §13 day_templates
+A saved typical day (calculations §17). `name` string ✓, `items` list ✓ of objects
+`{kind: session|break|entry|duration, start, end (minutes since local midnight; end ≤ start = next
+day), minutes (duration only), location (session), project_id (entry, duration), note}`.
+Since 2026-11-08.

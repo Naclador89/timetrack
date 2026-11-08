@@ -16,6 +16,7 @@ const syncedTables = {
   'trip_meals',
   'per_diem_rates',
   'days',
+  'day_templates',
 };
 
 /// One write: the fields of row [id] in [table] set by this change

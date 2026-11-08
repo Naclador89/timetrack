@@ -335,3 +335,33 @@ starting on D to that location; an absence type writes one full-day absence of t
 removes the other absences on D (`extra_holiday` stays) and, unless office/home, the `days` row.
 Business trip: the app creates or opens the trip. A day inside a trip can't get another work type
 until the trip is changed; absence types are allowed (a full-day absence wins).
+
+## §16 Explaining a day's numbers
+
+`explainDay` breaks `Cr(D)` and `T(D)` into the steps above, so the app can show *why* a figure is
+what it is (tap on a number): `W(D)` → break deduction (§4) → `W_eff(D)` → the §9 rule that applied
+(`creditRule`: trip workday = target, Saturday cap, Sunday rule, holiday, day off; `null` = counts as
+is) → absence credit (§8) → `Cr(D)`; the target with its reason (schedule, holiday, lowered by
+`extra_holiday`/`short_time`, no scheduled work); Sunday hours. `notCounted = W_eff − rule credit` is
+the time a rule didn't count (negative: credited more than worked, e.g. a short trip workday).
+
+## §17 Quick entry and day templates
+
+**Quick entry** parses one line (`parseQuickEntry`):
+
+| Token | Meaning |
+|---|---|
+| `8-16:30`, `08.15–12`, `8 - 16` | working time from–to, local; an end at or before the start is the next day |
+| `1:30`, `1,5h`, `90m` | a project duration instead (only without a range) |
+| `p30`, `p0:45`, `pause 30` | break length; placed centred in the range, rounded down to 5 min |
+| `@home`, `@ho`, `@büro`, `@office` | location (default office) |
+| `: ` and everything after it | note of the project entry |
+| other words | project search (project-search.md); the best match is used |
+
+A range creates a session, the break and a project entry over the whole range (the break is cut out
+of project time by §3). A line without a range or duration records nothing.
+
+**Day templates** (data-model §13) hold a day's rows in local wall-clock minutes. "Copy yesterday"
+captures the previous day's finished sessions, breaks, entries and durations (`captureDay`) and
+applies them to the chosen day (`applyDayTemplate`); saved templates work the same. Applying only
+adds rows; the UI offers undo.

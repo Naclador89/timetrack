@@ -90,7 +90,12 @@ final class DayResult {
     this.sundayHours = 0,
     this.tripProjectId,
     this.type,
+    this.creditRule,
   });
+
+  /// The §9 rule the credited time follows (trip days, Saturdays, Sundays
+  /// and holidays), or `null` when the effective worked time counts as is.
+  final TripDayType? creditRule;
 
   /// The day type (§15), or `null` for a day without work, trip, absence
   /// or choice.
@@ -232,6 +237,7 @@ final class Ledger {
       target: target,
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
+      creditRule: ruleType,
       type: _dayType(date, work, absences, isTripDay: tripType != null),
       tripProjectId: tripType == null
           ? null
