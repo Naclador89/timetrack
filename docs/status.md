@@ -159,6 +159,10 @@ _Last updated: 2026-11-07 by Claude Code._
       credits the target, `short_time` lowers it). Office/home days allow project time, trips show
       travel/on-site time (`TripBookingCard`), absence days record nothing. The session dialog's
       "Reisetag" button was replaced by the day type picker.
+- [x] Week view: hours per project per day in small print (`bookedByProject`, incl. trip project);
+      swipe left/right for the next/previous week.
+- [x] Day view: an X on every session, break, project time and absence deletes it after a
+      confirmation.
 
 **Next task**: the user checks the 2026-11-08 changes, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
@@ -247,5 +251,5 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   travel settings UI and Sunday hours for HR (§9). core 182 tests, app 10 widget tests.
 - 2026-11-08, Claude Code: user confirmed M5 on the phone. Worked vs. credited everywhere, project per
   trip, report preview, weekend/holiday rules on all days, location and trip-day buttons in the
-  session dialog, trip days booked to the trip project, Reisebericht, day types. core 190 tests, app 12
-  widget tests.
+  session dialog, trip days booked to the trip project, Reisebericht, day types, project hours in the week,
+  week swipe, quick delete. core 190 tests, app 14 widget tests.

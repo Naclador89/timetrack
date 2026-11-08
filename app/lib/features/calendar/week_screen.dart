@@ -30,6 +30,7 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
     final today = ref.watch(todayProvider);
     final ledger = ref.watch(ledgerProvider);
     final holidays = ref.watch(holidaysProvider);
+    final projects = ref.watch(projectByIdProvider);
     final monday = today.startOfWeek.addDays(7 * _offset);
     final days = [for (var i = 0; i < 7; i++) ledger.day(monday.addDays(i))];
     final past = days.where((d) => !d.date.isAfter(today));
@@ -53,66 +54,77 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                tooltip: l.previousWeek,
-                icon: const Icon(Icons.chevron_left),
-                onPressed: () => setState(() => _offset--),
-              ),
-              TextButton(
-                onPressed: _offset == 0
-                    ? null
-                    : () => setState(() => _offset = 0),
-                child: Text(l.thisWeek),
-              ),
-              IconButton(
-                tooltip: l.nextWeek,
-                icon: const Icon(Icons.chevron_right),
-                onPressed: () => setState(() => _offset++),
-              ),
-            ],
-          ),
-          Card(
-            child: Column(
+      // Swipe left/right for the next/previous week (user request
+      // 2026-11-08); works with touch and trackpads alike.
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onHorizontalDragEnd: (details) {
+          final v = details.primaryVelocity ?? 0;
+          if (v.abs() < 300) return;
+          setState(() => v < 0 ? _offset++ : _offset--);
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(12),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                for (final d in days)
-                  _DayRow(
-                    day: d,
-                    holiday: holidays.holidayOn(d.date)?.name,
-                    isToday: d.date == today,
-                    isFuture: d.date.isAfter(today),
-                  ),
+                IconButton(
+                  tooltip: l.previousWeek,
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => setState(() => _offset--),
+                ),
+                TextButton(
+                  onPressed: _offset == 0
+                      ? null
+                      : () => setState(() => _offset = 0),
+                  child: Text(l.thisWeek),
+                ),
+                IconButton(
+                  tooltip: l.nextWeek,
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: () => setState(() => _offset++),
+                ),
               ],
             ),
-          ),
-          Card(
-            child: ListTile(
-              title: Text(l.weekTotal),
-              subtitle: Text(
-                '${l.worked} ${formatMinutes(sum((d) => d.work.worked))} · '
-                '${l.credited} ${formatMinutes(sum((d) => d.credited))} · '
-                '${l.target} ${formatMinutes(sum((d) => d.target))} · '
-                '${l.difference} ${formatMinutes(sum((d) => d.delta))}',
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+            Card(
+              child: Column(
                 children: [
-                  Text(
-                    l.balance,
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  Text(formatMinutes(ledger.balanceAtEndOf(lastCounted))),
+                  for (final d in days)
+                    _DayRow(
+                      day: d,
+                      holiday: holidays.holidayOn(d.date)?.name,
+                      isToday: d.date == today,
+                      isFuture: d.date.isAfter(today),
+                      projects: projects,
+                    ),
                 ],
               ),
             ),
-          ),
-        ],
+            Card(
+              child: ListTile(
+                title: Text(l.weekTotal),
+                subtitle: Text(
+                  '${l.worked} ${formatMinutes(sum((d) => d.work.worked))} · '
+                  '${l.credited} ${formatMinutes(sum((d) => d.credited))} · '
+                  '${l.target} ${formatMinutes(sum((d) => d.target))} · '
+                  '${l.difference} ${formatMinutes(sum((d) => d.delta))}',
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      l.balance,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    Text(formatMinutes(ledger.balanceAtEndOf(lastCounted))),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -123,6 +135,7 @@ class _DayRow extends StatelessWidget {
     required this.day,
     required this.holiday,
     required this.isToday,
+    required this.projects,
     required this.isFuture,
   });
 
@@ -130,6 +143,9 @@ class _DayRow extends StatelessWidget {
   final String? holiday;
   final bool isToday;
   final bool isFuture;
+
+  /// Project names for the bookings line.
+  final Map<String, Project> projects;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +165,12 @@ class _DayRow extends StatelessWidget {
         '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
     ];
     final delta = day.delta;
+    final bookings = [
+      for (final MapEntry(key: id, value: minutes)
+          in (day.bookedByProject.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value))))
+        '${projects[id]?.name ?? '?'} ${formatMinutes(minutes)}',
+    ];
     // The day type's symbol in front (calculations §15).
     final type = day.type;
     return ListTile(
@@ -166,7 +188,22 @@ class _DayRow extends StatelessWidget {
             Icon(Icons.info_outline, size: 16, color: scheme.tertiary),
         ],
       ),
-      subtitle: labels.isEmpty ? null : Text(labels.join(' · ')),
+      subtitle: labels.isEmpty && bookings.isEmpty
+          ? null
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (labels.isNotEmpty) Text(labels.join(' · ')),
+                // Hours per project, small (user request 2026-11-08); on
+                // trip days the trip project (calculations §3).
+                if (bookings.isNotEmpty)
+                  Text(
+                    bookings.join(' · '),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: scheme.onSurfaceVariant),
+                  ),
+              ],
+            ),
       trailing: day.target == 0 && day.work.worked == 0 && day.credited == 0
           ? null
           : Column(

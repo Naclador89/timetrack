@@ -55,6 +55,18 @@ class DayScreen extends ConsumerWidget {
     String range(DateTime s, DateTime? e) =>
         '${context.time(s, zone)} – ${e == null ? l.running : context.time(e, zone)}';
 
+    // Quick delete from the overview, after a confirmation (user request
+    // 2026-11-08).
+    Widget deleteButton(String table, String id) => IconButton(
+      tooltip: l.delete,
+      icon: const Icon(Icons.close),
+      onPressed: () async {
+        if (await confirmDelete(context)) {
+          await ref.read(repositoryProvider).delete(table, id);
+        }
+      },
+    );
+
     Widget section(String title, VoidCallback onAdd, List<Widget> tiles) =>
         Card(
           child: Column(
@@ -145,6 +157,7 @@ class DayScreen extends ConsumerWidget {
                 for (final s in sessions)
                   ListTile(
                     leading: Icon(locationIcon(s.location)),
+                    trailing: deleteButton('work_sessions', s.id),
                     title: Text(range(s.start, s.end)),
                     subtitle: Text(context.locationName(s.location)),
                     onTap: () => _editInterval(
@@ -167,6 +180,7 @@ class DayScreen extends ConsumerWidget {
                 for (final b in breaks)
                   ListTile(
                     leading: const Icon(Icons.coffee_outlined),
+                    trailing: deleteButton('breaks', b.id),
                     title: Text(range(b.start, b.end)),
                     onTap: () => _editInterval(
                       context,
@@ -194,6 +208,7 @@ class DayScreen extends ConsumerWidget {
                 for (final p in data.durations.where((x) => x.date == date))
                   ListTile(
                     leading: const Icon(Icons.timelapse),
+                    trailing: deleteButton('project_entries', p.id),
                     title: Text(
                       '${formatMinutes(p.minutes)} · ${projects[p.projectId]?.name ?? '?'}',
                     ),
@@ -204,6 +219,9 @@ class DayScreen extends ConsumerWidget {
                 for (final e in entries)
                   ListTile(
                     leading: const Icon(Icons.work_outline),
+                    trailing: e.end == null
+                        ? null // a running timer is stopped on Today
+                        : deleteButton('project_entries', e.id),
                     title: Text(
                       '${range(e.start, e.end)} · ${projects[e.projectId]?.name ?? '?'}',
                     ),
@@ -224,7 +242,7 @@ class DayScreen extends ConsumerWidget {
                       subtitle: a.fraction < 1 ? Text(l.halfDay) : null,
                       trailing: IconButton(
                         tooltip: l.delete,
-                        icon: const Icon(Icons.delete_outline),
+                        icon: const Icon(Icons.close),
                         onPressed: () async {
                           if (await confirmDelete(context)) {
                             await ref

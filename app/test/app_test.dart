@@ -190,6 +190,53 @@ void main() {
     expect(find.text('Working times'), findsNothing);
   });
 
+  testWidgets('week view: hours per project; swipe changes the week', (
+    tester,
+  ) async {
+    final (_, repo) = await pumpApp(tester);
+    await repo.write('projects', 'p1', {'name': 'Werk Süd'});
+    await repo.write('project_entries', 'e1', {
+      'project_id': 'p1',
+      'date': '2026-11-03',
+      'duration_min': 150,
+    });
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Werk Süd 2:30'), findsOneWidget);
+
+    await tester.fling(find.text('Werk Süd 2:30'), const Offset(-400, 0), 1000);
+    await tester.pumpAndSettle();
+    expect(find.text('Week 46'), findsOneWidget);
+    await tester.fling(find.byType(ListView).first, const Offset(400, 0), 1000);
+    await tester.fling(find.byType(ListView).first, const Offset(400, 0), 1000);
+    await tester.pumpAndSettle();
+    expect(find.text('Week 44'), findsOneWidget);
+  });
+
+  testWidgets('day view: an X deletes an entry after a confirmation', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, repo) = await pumpApp(tester, router: router);
+    await repo.write('work_sessions', 's1', {
+      'start_utc': '2026-11-03T07:00:00Z',
+      'end_utc': '2026-11-03T15:00:00Z',
+      'location': 'office',
+    });
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Delete').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('work_sessions')['s1']!.isDeleted, isFalse);
+    await tester.tap(find.byTooltip('Delete').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('work_sessions')['s1']!.isDeleted, isTrue);
+  });
+
   testWidgets('the timesheet opens as a preview before the download', (
     tester,
   ) async {
