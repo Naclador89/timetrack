@@ -102,4 +102,16 @@ void main() {
       [SyncTrigger.network, SyncTrigger.app],
     );
   });
+
+  test('an unknown trigger reads as app, the log stays', () async {
+    final store = InMemorySyncStore();
+    await store.transaction(
+      (tx) => tx.setLocalValue(
+        'sync_log',
+        '[{"start":"2026-11-08T09:00:00.000Z","ms":5,"trigger":"later"}]',
+      ),
+    );
+    final entries = await SyncLog(store).entries();
+    expect(entries.single.trigger, SyncTrigger.app);
+  });
 }

@@ -126,6 +126,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(await networkCycles(), 1);
 
+    // A trigger during a running cycle runs right after it.
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(TimeTrackApp)),
+    );
+    final controller = container.read(syncControllerProvider.notifier);
+    final running = controller.syncNow();
+    await controller.syncNow(trigger: SyncTrigger.network);
+    await running;
+    await tester.pumpAndSettle();
+    expect(await networkCycles(), 2);
+
+    // After disconnecting and connecting again, network changes still sync.
+    final saved = config.config!;
+    await controller.disconnect();
+    await controller.connect(saved);
+    await tester.pumpAndSettle();
+    network.add([ConnectivityResult.ethernet]);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(await networkCycles(), 3);
+
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('cloud.example.com'), findsOneWidget);

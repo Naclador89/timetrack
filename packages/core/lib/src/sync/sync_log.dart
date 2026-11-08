@@ -54,7 +54,8 @@ final class SyncLogEntry {
     start: DateTime.parse(j['start']! as String),
     last: DateTime.parse((j['last'] ?? j['start'])! as String),
     durationMs: j['ms']! as int,
-    trigger: SyncTrigger.values.byName(j['trigger']! as String),
+    // Unknown values (a newer build wrote them) read as `app`.
+    trigger: SyncTrigger.values.asNameMap()[j['trigger']] ?? SyncTrigger.app,
     uploadedChanges: (j['up'] as int?) ?? 0,
     downloadedFiles: (j['files'] as int?) ?? 0,
     appliedChanges: (j['down'] as int?) ?? 0,

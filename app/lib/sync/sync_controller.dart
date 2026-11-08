@@ -4,7 +4,6 @@ import 'dart:io' show HttpClient, Platform;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cryptography/cryptography.dart';
-import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -249,19 +248,26 @@ final class SyncStatus {
 }
 
 /// Runs the [SyncEngine] on triggers (sync-format.md §7.2): 5 s after local
-/// writes (debounced), every 60 s, on [onResume] and 3 s after the network
-/// comes up or changes (Wi-Fi ↔ mobile, VPN on/off).
+/// writes (debounced), every 60 s, on [onResume] and 3 s after the platform
+/// reports a new connection. A trigger that arrives during a cycle runs right
+/// after it instead of being dropped.
 class SyncController extends Notifier<SyncStatus> {
   SyncEngine? _engine;
   Timer? _debounce;
+  Timer? _networkTimer;
   Timer? _periodic;
+  SyncTrigger? _queued;
   StreamSubscription<void>? _writes;
   StreamSubscription<List<ConnectivityResult>>? _network;
-  Set<ConnectivityResult>? _lastNetwork;
+  bool _seenNetwork = false;
 
   @override
   SyncStatus build() {
-    ref.onDispose(_stop);
+    ref.onDispose(() {
+      _stopTimers();
+      unawaited(_writes?.cancel());
+      unawaited(_network?.cancel());
+    });
     _writes = ref
         .read(localWritesProvider)
         .listen((_) => _schedule(const Duration(seconds: 5)));
@@ -312,7 +318,12 @@ class SyncController extends Notifier<SyncStatus> {
   /// Runs one cycle now (no-op if not configured or already running).
   Future<void> syncNow({SyncTrigger trigger = SyncTrigger.app}) async {
     final engine = _engine;
-    if (engine == null || state.phase == SyncPhase.syncing) return;
+    if (engine == null) return;
+    if (state.phase == SyncPhase.syncing) {
+      // Keep the more telling reason when several arrive.
+      if (_queued != SyncTrigger.network) _queued = trigger;
+      return;
+    }
     final previous = state;
     state = SyncStatus(
       SyncPhase.syncing,
@@ -351,6 +362,9 @@ class SyncController extends Notifier<SyncStatus> {
         root: previous.root,
       );
     }
+    final queued = _queued;
+    _queued = null;
+    if (queued != null) unawaited(syncNow(trigger: queued));
   }
 
   /// Call when the app returns to the foreground.
@@ -369,23 +383,26 @@ class SyncController extends Notifier<SyncStatus> {
     ref.invalidate(syncLogProvider);
   }
 
-  void _schedule(Duration delay, {SyncTrigger trigger = SyncTrigger.app}) {
+  void _schedule(Duration delay) {
     if (_engine == null) return;
     _debounce?.cancel();
-    _debounce = Timer(delay, () => syncNow(trigger: trigger));
+    _debounce = Timer(delay, syncNow);
   }
 
   /// Syncs when a connection appears or changes, after a short pause for the
-  /// network (DNS, VPN routes) to settle. The first event is only the
-  /// current state; going offline needs no sync.
+  /// network (DNS, VPN routes) to settle. The plugin already drops repeats;
+  /// its first event is only the current state, and going offline needs no
+  /// sync.
   void _onNetwork(List<ConnectivityResult> results) {
-    final now = results.toSet();
-    final before = _lastNetwork;
-    _lastNetwork = now;
-    if (before == null || now.isEmpty) return;
-    if (now.length == 1 && now.single == ConnectivityResult.none) return;
-    if (setEquals(before, now)) return;
-    _schedule(const Duration(seconds: 3), trigger: SyncTrigger.network);
+    final first = !_seenNetwork;
+    _seenNetwork = true;
+    if (first || results.every((r) => r == ConnectivityResult.none)) return;
+    if (_engine == null) return;
+    _networkTimer?.cancel();
+    _networkTimer = Timer(
+      const Duration(seconds: 3),
+      () => syncNow(trigger: SyncTrigger.network),
+    );
   }
 
   /// Saves [config] and starts syncing.
@@ -398,16 +415,18 @@ class SyncController extends Notifier<SyncStatus> {
   /// Forgets the connection. Local data and the files on Nextcloud stay.
   Future<void> disconnect() async {
     await ref.read(syncConfigStoreProvider).clear();
-    _stop();
+    _stopTimers();
     _engine = null;
     state = const SyncStatus(SyncPhase.notConfigured);
   }
 
-  void _stop() {
+  /// Stops the timers only; the write and network listeners stay, so a
+  /// later [connect] in the same session gets every trigger again.
+  void _stopTimers() {
     _debounce?.cancel();
+    _networkTimer?.cancel();
     _periodic?.cancel();
-    unawaited(_writes?.cancel());
-    unawaited(_network?.cancel());
+    _queued = null;
   }
 }
 

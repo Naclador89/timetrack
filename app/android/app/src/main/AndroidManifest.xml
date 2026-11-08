@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Release builds need this explicitly; Flutter only adds it to debug/profile. Sync talks to Nextcloud. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- connectivity_plus: sync when the network changes. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- Ongoing notification while clocked in (quick access, M5); asked at runtime on Android 13+. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application

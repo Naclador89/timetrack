@@ -166,12 +166,14 @@ values**, so even if two devices both correct the same row, LWW ends in the same
 
 ### §7.2 Triggers
 
-5 s after a local write (debounced); on app start and resume; every 60 s while the app runs.
-Failed cycles are simply retried by the next trigger.
+5 s after a local write (debounced); on app start and resume; every 60 s while the app runs;
+3 s after the platform reports a new connection (not when going offline). A trigger that arrives
+while a cycle runs starts another cycle right after it. Failed cycles are simply retried by the next
+trigger. (Triggers only decide *when* to sync; they don't change the format.)
 
 Implementation status: done in `app/lib/sync/sync_controller.dart`, including a network-change
-trigger (3 s after a connection appears or changes, e.g. Wi-Fi ↔ mobile or VPN on/off;
-`connectivity_plus`) and Android background sync via WorkManager (every 15 min plus a one-off job
+trigger (`connectivity_plus`; Android and Windows report Wi-Fi ↔ mobile/ethernet and VPN changes,
+Linux only changes of NetworkManager's overall connectivity, e.g. offline → online) and Android background sync via WorkManager (every 15 min plus a one-off job
 after background writes).
 
 ## §8 Compaction (optional, later)

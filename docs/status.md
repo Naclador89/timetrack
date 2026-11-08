@@ -97,8 +97,9 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] User test 2026-11-07: the Android login and sync work with the fixed APK.
 - Windows works without VPN (2026-11-07). Testing over the company VPN was dropped by the user (2026-11-08).
 - [x] Android background sync (WorkManager, every 15 min; also after each quick action).
-- [x] Network-change trigger (`connectivity_plus`): 3 s after a connection appears or changes
-      (Wi-Fi ↔ mobile, VPN on/off); logged as "nach Netzwechsel".
+- [x] Network-change trigger (`connectivity_plus`): 3 s after a new connection (Android/Windows:
+      Wi-Fi ↔ mobile/ethernet, VPN; Linux: only offline → online, a VPN switch there waits for the
+      60 s timer); logged as "nach Netzwechsel". Triggers during a running cycle are queued.
 - [x] Sync log (`docs/specs/sync-log.md`, core `SyncLog`): last 100 cycles per device, idle runs
       folded into one line, errors without credentials; Einstellungen → Sync → Sync-Protokoll.
 
