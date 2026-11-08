@@ -197,3 +197,33 @@ final dayTemplatesProvider = Provider<List<DayTemplate>>(
       if (r.table == 'day_templates') ?dayTemplateFromRow(r),
   ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
 );
+
+/// Keys of notices the user dismissed for good (data-model §14).
+final dismissedNoticesProvider = Provider<Set<String>>(
+  (ref) => dismissedNoticeKeys(ref.watch(_rows)),
+);
+
+/// The Review items of a `(from, to)` range that show up somewhere (cards
+/// or the calendar marker): all of them, with unassigned time from the
+/// threshold on (calculations §12). Quotas are added by the caller.
+final noticesProvider =
+    Provider.family<List<ReviewItem>, (LocalDate, LocalDate)>((ref, range) {
+      final settings = ref.watch(settingsProvider);
+      return reviewItems(
+        ref.watch(ledgerProvider),
+        from: range.$1,
+        to: range.$2,
+        openSessionLimitMinutes: settings.openSessionLimitMinutes,
+        includeUnassigned: true,
+        unassignedMinMinutes: settings.noticeUnassignedMinMinutes,
+      );
+    });
+
+/// The days of a `(from, to)` range with notices, shown or hidden: the
+/// small marker in the calendar.
+final noticeDaysProvider =
+    Provider.family<Set<LocalDate>, (LocalDate, LocalDate)>(
+      (ref, range) => {
+        for (final i in ref.watch(noticesProvider(range))) i.date,
+      },
+    );

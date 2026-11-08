@@ -429,4 +429,53 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Set up'), findsNothing);
   });
+
+  testWidgets('notices: × hides for good, the calendar keeps a marker; '
+      'categories and the threshold are settings', (tester) async {
+    final router = buildRouter();
+    final (store, repo) = await pumpApp(tester, router: router);
+    await repo.write('work_sessions', 's1', {
+      'start_utc': '2026-11-03T07:00:00Z',
+      'end_utc': '2026-11-03T12:00:00Z',
+      'location': 'office',
+    });
+    await tester.pumpAndSettle();
+    expect(find.textContaining('5:00 without a project'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('without a project'), findsNothing);
+    expect(store.rowsOf('dismissed_notices').keys, ['2026-11-03/unassigned']);
+
+    // Still hidden after a restart of the screen; a marker in the week.
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('without a project'), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Icon && w.semanticLabel == 'Has notices',
+      ),
+      findsOneWidget,
+    );
+
+    // The day lists it small and can bring it back.
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('1 hidden notices'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show again'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('5:00 without a project'), findsOneWidget);
+
+    // Threshold above 5 h: no notice, no marker.
+    await saveSetting(repo, SettingKeys.noticeUnassignedMin, 360);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('without a project'), findsNothing);
+
+    // Switched off: no card, but listed as hidden on the day.
+    await saveSetting(repo, SettingKeys.noticeUnassignedMin, 30);
+    await saveSetting(repo, SettingKeys.noticeShow('unassigned'), false);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('5:00 without a project'), findsNothing);
+    expect(find.text('1 hidden notices'), findsOneWidget);
+  });
 }

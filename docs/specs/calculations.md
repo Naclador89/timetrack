@@ -279,6 +279,16 @@ Computed, never stored:
   today while clocked in) and not a trip day (§3). `suggestBreak` places a missing break in the
   middle of the day's longest working stretch, on a 5-minute grid.
 
+**Which items become cards** (user request 2026-11-08): items fall into categories
+(`NoticeCategory`: unassigned, breaks, long day, rest, Sunday work, open session, overlaps, project
+time, home-office quota, open trip), each switched on or off by the setting `notices.show.<category>`
+(default on). Unassigned time is an item only from `notices.unassigned_min` minutes on (default 30).
+A card closed with × is dismissed for good: its key (`noticeKey` = date/kind[/arbzg][/ref]) is written
+to `dismissed_notices` (data-model §14), so it stays hidden on every device. Switched-off and
+dismissed items still put a small marker on their day in the calendar, and the day view lists them
+("n hidden notices", dismissed ones can be shown again). "More than 6 h without a break" is not shown
+when the same day has the missing-break item (one fix covers both).
+
 ## §13 Per-diem basis (Verpflegungsmehraufwand)
 
 For each trip with `depart` and `return`. An open trip has no per-diem yet.

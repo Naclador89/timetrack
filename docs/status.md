@@ -195,6 +195,10 @@ _Last updated: 2026-11-07 by Claude Code._
 - [x] **Faster entry** (calculations §17): quick entry line (`parseQuickEntry`), copy previous day,
       day templates (`day_templates` table, data-model §13).
 - Not yet seen on a real phone; screenshots only (Linux, wide and 412 px).
+- [x] Notice settings (user, 2026-11-08): each notice category on/off, "ohne Projekt" from a
+      threshold (default 0:30); × dismisses a card for good (synced, `dismissed_notices`), the
+      calendar keeps a small dot on the day, the day view lists hidden notices ("show again");
+      settings can restore all dismissed ones.
 
 **Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
@@ -290,3 +294,5 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   reports dashboard, quick entry, day templates). Core: `explainDay`, `parseQuickEntry`, day
   templates, `unassignedSpans`, `ReviewKind.unassigned`, `suggestBreak`; 205 core tests, 19 widget
   tests green.
+- 2026-11-08, Claude Code: notice settings and permanent dismissal (calculations §12, data-model §14);
+  208 core tests, 20 widget tests green.

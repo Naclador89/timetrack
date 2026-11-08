@@ -193,6 +193,7 @@ class _WeekView extends ConsumerWidget {
         : monday.addDays(6);
     final last = monday.addDays(6).isAfter(today) ? today : monday.addDays(6);
     final balance = ledger.balanceAtEndOf(lastCounted);
+    final marked = ref.watch(noticeDaysProvider((monday, last)));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -208,6 +209,7 @@ class _WeekView extends ConsumerWidget {
                   isToday: d.date == today,
                   isFuture: d.date.isAfter(today),
                   projects: projects,
+                  hasNotices: marked.contains(d.date),
                 ),
             ],
           ),
@@ -249,7 +251,11 @@ class _DayRow extends ConsumerWidget {
     required this.isToday,
     required this.projects,
     required this.isFuture,
+    this.hasNotices = false,
   });
+
+  /// Shows the small notice marker (cards may be off or dismissed).
+  final bool hasNotices;
 
   final DayResult day;
   final String? holiday;
@@ -304,8 +310,13 @@ class _DayRow extends ConsumerWidget {
             style: TextStyle(fontWeight: isToday ? FontWeight.w700 : null),
           ),
           const SizedBox(width: 8),
-          if (day.warnings.isNotEmpty)
-            Icon(Icons.info_outline, size: 16, color: scheme.tertiary),
+          if (hasNotices)
+            Icon(
+              Icons.circle,
+              size: 8,
+              color: scheme.tertiary,
+              semanticLabel: l.hasNotices,
+            ),
         ],
       ),
       subtitle: labels.isEmpty && booked.isEmpty
@@ -405,6 +416,9 @@ class _MonthView extends ConsumerWidget {
         : balances.last - ledger.balanceAtEndOf(month.addDays(-1));
     final first = month.startOfWeek;
     final weeks = (first.daysUntil(last) ~/ 7) + 1;
+    final marked = month.isAfter(today)
+        ? const <LocalDate>{}
+        : ref.watch(noticeDaysProvider((first, counted)));
     final labels = MaterialLocalizations.of(context).narrowWeekdays;
 
     Widget cell(LocalDate d) {
@@ -431,26 +445,39 @@ class _MonthView extends ConsumerWidget {
                   ? Border.all(color: scheme.primary, width: 2)
                   : null,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
               children: [
-                Text(
-                  '${d.day}',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: holidays.isHoliday(d) ? scheme.error : null,
-                    fontWeight: isToday ? FontWeight.w700 : null,
+                if (marked.contains(d))
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: Icon(Icons.circle, size: 6, color: scheme.tertiary),
                   ),
-                ),
-                const SizedBox(height: 2),
-                SizedBox(
-                  height: 16,
-                  child: type == null
-                      ? null
-                      : Icon(
-                          dayTypeIcon(type),
-                          size: 14,
-                          color: scheme.dayTypeColor(type),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${d.day}',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: holidays.isHoliday(d) ? scheme.error : null,
+                          fontWeight: isToday ? FontWeight.w700 : null,
                         ),
+                      ),
+                      const SizedBox(height: 2),
+                      SizedBox(
+                        height: 16,
+                        child: type == null
+                            ? null
+                            : Icon(
+                                dayTypeIcon(type),
+                                size: 14,
+                                color: scheme.dayTypeColor(type),
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -1975,6 +1975,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} more notices'**
   String moreNotices(String count);
+
+  /// No description provided for @noticeUnassignedFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'\"Without a project\" from'**
+  String get noticeUnassignedFrom;
+
+  /// No description provided for @noticeUnassignedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Days with less unassigned time get no notice.'**
+  String get noticeUnassignedHint;
+
+  /// No description provided for @noticeCatUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Time without a project'**
+  String get noticeCatUnassigned;
+
+  /// No description provided for @noticeCatBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing break (ArbZG §4)'**
+  String get noticeCatBreaks;
+
+  /// No description provided for @noticeCatLongDay.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 10 hours (ArbZG §3)'**
+  String get noticeCatLongDay;
+
+  /// No description provided for @noticeCatRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest under 11 hours (ArbZG §5)'**
+  String get noticeCatRest;
+
+  /// No description provided for @noticeCatSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Work on Sundays and holidays'**
+  String get noticeCatSunday;
+
+  /// No description provided for @noticeCatOpenSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgotten clock-out'**
+  String get noticeCatOpenSession;
+
+  /// No description provided for @noticeCatOverlaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlapping entries'**
+  String get noticeCatOverlaps;
+
+  /// No description provided for @noticeCatProjectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Project time outside or above working time'**
+  String get noticeCatProjectTime;
+
+  /// No description provided for @noticeCatQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Home-office limit'**
+  String get noticeCatQuota;
+
+  /// No description provided for @noticeCatOpenTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip still open'**
+  String get noticeCatOpenTrip;
+
+  /// No description provided for @restoreNotices.
+  ///
+  /// In en, this message translates to:
+  /// **'Show dismissed notices again'**
+  String get restoreNotices;
+
+  /// No description provided for @dismissedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} dismissed'**
+  String dismissedCount(String count);
+
+  /// No description provided for @noticeDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice hidden; the calendar keeps a small marker'**
+  String get noticeDismissed;
+
+  /// No description provided for @hiddenNotices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hidden notices'**
+  String hiddenNotices(String count);
+
+  /// No description provided for @noticeCategoryOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched off in the settings'**
+  String get noticeCategoryOff;
+
+  /// No description provided for @showAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Show again'**
+  String get showAgain;
+
+  /// No description provided for @hasNotices.
+  ///
+  /// In en, this message translates to:
+  /// **'Has notices'**
+  String get hasNotices;
 }
 
 class _AppLocalizationsDelegate

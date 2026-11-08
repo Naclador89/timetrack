@@ -641,5 +641,38 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noticeUnassignedFrom": "\"Without a project\" from",
+  "noticeUnassignedHint": "Days with less unassigned time get no notice.",
+  "noticeCatUnassigned": "Time without a project",
+  "noticeCatBreaks": "Missing break (ArbZG §4)",
+  "noticeCatLongDay": "More than 10 hours (ArbZG §3)",
+  "noticeCatRest": "Rest under 11 hours (ArbZG §5)",
+  "noticeCatSunday": "Work on Sundays and holidays",
+  "noticeCatOpenSession": "Forgotten clock-out",
+  "noticeCatOverlaps": "Overlapping entries",
+  "noticeCatProjectTime": "Project time outside or above working time",
+  "noticeCatQuota": "Home-office limit",
+  "noticeCatOpenTrip": "Trip still open",
+  "restoreNotices": "Show dismissed notices again",
+  "dismissedCount": "{count} dismissed",
+  "@dismissedCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeDismissed": "Notice hidden; the calendar keeps a small marker",
+  "hiddenNotices": "{count} hidden notices",
+  "@hiddenNotices": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeCategoryOff": "Switched off in the settings",
+  "showAgain": "Show again",
+  "hasNotices": "Has notices"
 }

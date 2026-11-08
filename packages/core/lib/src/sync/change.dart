@@ -17,6 +17,7 @@ const syncedTables = {
   'per_diem_rates',
   'days',
   'day_templates',
+  'dismissed_notices',
 };
 
 /// One write: the fields of row [id] in [table] set by this change

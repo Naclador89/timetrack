@@ -187,6 +187,45 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         value: s.resumeAfterBreak,
         onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
       ),
+      // Which notices appear as cards (calculations §12); a dismissed card
+      // stays away and only leaves the marker in the calendar.
+      header(l.notices),
+      ListTile(
+        leading: const Icon(Icons.work_off_outlined),
+        title: Text(l.noticeUnassignedFrom),
+        subtitle: Text(l.noticeUnassignedHint),
+        trailing: Text(formatMinutes(s.noticeUnassignedMinMinutes)),
+        enabled: s.showsNotice(NoticeCategory.unassigned.wireName),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.noticeUnassignedMinMinutes),
+          );
+          if (v != null && v >= 0) {
+            await save(SettingKeys.noticeUnassignedMin, v);
+          }
+        },
+      ),
+      for (final c in NoticeCategory.values)
+        SwitchListTile(
+          secondary: Icon(noticeCategoryIcon(c)),
+          title: Text(noticeCategoryLabel(l, c)),
+          value: s.showsNotice(c.wireName),
+          onChanged: (v) => save(SettingKeys.noticeShow(c.wireName), v),
+        ),
+      ListTile(
+        leading: const Icon(Icons.notifications_active_outlined),
+        title: Text(l.restoreNotices),
+        subtitle: Text(
+          l.dismissedCount('${ref.watch(dismissedNoticesProvider).length}'),
+        ),
+        enabled: ref.watch(dismissedNoticesProvider).isNotEmpty,
+        onTap: () async {
+          for (final key in ref.read(dismissedNoticesProvider)) {
+            await repo.delete('dismissed_notices', key);
+          }
+        },
+      ),
       header(l.travelRules),
       // calculations.md §9; each rule is a setting, defaults as agreed.
       // Weekdays on a trip:

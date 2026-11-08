@@ -103,3 +103,31 @@ String absenceLabel(AppLocalizations l, AbsenceKind k) => switch (k) {
   AbsenceKind.compTime => l.absenceCompTime,
   AbsenceKind.extraHoliday => l.absenceExtraHoliday,
 };
+
+/// Icon of a notice category (settings).
+IconData noticeCategoryIcon(NoticeCategory c) => switch (c) {
+  NoticeCategory.unassigned => Icons.work_outline,
+  NoticeCategory.breaks => Icons.coffee_outlined,
+  NoticeCategory.longDay => Icons.timelapse,
+  NoticeCategory.rest => Icons.bedtime_outlined,
+  NoticeCategory.sundayWork => Icons.wb_sunny_outlined,
+  NoticeCategory.openSession => Icons.timer_off_outlined,
+  NoticeCategory.overlaps => Icons.layers_outlined,
+  NoticeCategory.projectTime => Icons.rule,
+  NoticeCategory.homeOfficeQuota => Icons.home_outlined,
+  NoticeCategory.openTrip => Icons.luggage_outlined,
+};
+
+/// Name of a notice category (settings).
+String noticeCategoryLabel(AppLocalizations l, NoticeCategory c) => switch (c) {
+  NoticeCategory.unassigned => l.noticeCatUnassigned,
+  NoticeCategory.breaks => l.noticeCatBreaks,
+  NoticeCategory.longDay => l.noticeCatLongDay,
+  NoticeCategory.rest => l.noticeCatRest,
+  NoticeCategory.sundayWork => l.noticeCatSunday,
+  NoticeCategory.openSession => l.noticeCatOpenSession,
+  NoticeCategory.overlaps => l.noticeCatOverlaps,
+  NoticeCategory.projectTime => l.noticeCatProjectTime,
+  NoticeCategory.homeOfficeQuota => l.noticeCatQuota,
+  NoticeCategory.openTrip => l.noticeCatOpenTrip,
+};

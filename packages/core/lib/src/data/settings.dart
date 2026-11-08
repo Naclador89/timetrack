@@ -59,6 +59,12 @@ abstract final class SettingKeys {
   /// Ending a break resumes the project that was running before it.
   static const resumeAfterBreak = 'resume_after_break';
 
+  /// Minimum unassigned time of a day before it is a notice (§12).
+  static const noticeUnassignedMin = 'notices.unassigned_min';
+
+  /// Whether notices of [category] are shown as cards (§12).
+  static String noticeShow(String category) => 'notices.show.$category';
+
   /// Vacation entitlement override for a year (§10).
   static String vacationEntitlement(int year) => 'vacation.entitlement.$year';
 
@@ -81,6 +87,7 @@ final class AppSettings {
     this.openSessionLimitMinutes = 720,
     this.autoClockIn = true,
     this.resumeAfterBreak = true,
+    this.noticeUnassignedMinMinutes = 30,
     this.raw = const {},
   });
 
@@ -168,6 +175,10 @@ final class AppSettings {
       ).toInt(),
       autoClockIn: pick(SettingKeys.autoClockIn, true),
       resumeAfterBreak: pick(SettingKeys.resumeAfterBreak, true),
+      noticeUnassignedMinMinutes: pick<num>(
+        SettingKeys.noticeUnassignedMin,
+        30,
+      ).toInt(),
       raw: v,
     );
   }
@@ -204,6 +215,14 @@ final class AppSettings {
 
   /// Ending a break resumes the project that ran before it.
   final bool resumeAfterBreak;
+
+  /// Unassigned time below this is no notice (§12).
+  final int noticeUnassignedMinMinutes;
+
+  /// Whether notices of the category with this wire name are shown as
+  /// cards (default yes).
+  bool showsNotice(String category) =>
+      raw[SettingKeys.noticeShow(category)] != false;
 
   /// All raw values by key (also year-specific keys such as vacation).
   final Map<String, Object?> raw;

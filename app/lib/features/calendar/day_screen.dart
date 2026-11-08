@@ -226,7 +226,12 @@ class DayScreen extends ConsumerWidget {
               ),
             ),
           ),
-          AttentionCards(from: date, to: date, showDates: false),
+          AttentionCards(
+            from: date,
+            to: date,
+            showDates: false,
+            showHidden: true,
+          ),
           if (sessions.isNotEmpty || entries.isNotEmpty)
             Card(
               child: Padding(

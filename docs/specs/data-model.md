@@ -101,3 +101,9 @@ A saved typical day (calculations §17). `name` string ✓, `items` list ✓ of 
 `{kind: session|break|entry|duration, start, end (minutes since local midnight; end ≤ start = next
 day), minutes (duration only), location (session), project_id (entry, duration), note}`.
 Since 2026-11-08.
+
+## §14 dismissed_notices
+A notice card the user closed for good (calculations §12). **Row id = `noticeKey`**
+(`YYYY-MM-DD/<review kind>[/<arbzg kind>][/<ref id>]`), so dismissals from two devices merge.
+`date` date ✓. Undo / "show again" deletes the row (tombstone). Since 2026-11-08.
+

@@ -74,6 +74,7 @@ List<ReviewItem> reviewItems(
   int openSessionLimitMinutes = 720,
   List<HomeOfficeQuota> quotas = const [],
   bool includeUnassigned = false,
+  int unassignedMinMinutes = 1,
 }) {
   final items = <ReviewItem>[];
   final running = ledger.data.sessions.any((s) => s.isOpen);
@@ -125,6 +126,7 @@ List<ReviewItem> reviewItems(
     if (includeUnassigned &&
         !day.isTripDay &&
         day.unassigned > 0 &&
+        day.unassigned >= unassignedMinMinutes &&
         !(running && d == ledger.today)) {
       items.add(
         ReviewItem(

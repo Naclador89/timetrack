@@ -1061,4 +1061,68 @@ class AppLocalizationsDe extends AppLocalizations {
   String moreNotices(String count) {
     return '$count weitere Hinweise';
   }
+
+  @override
+  String get noticeUnassignedFrom => '„Ohne Projekt“ ab';
+
+  @override
+  String get noticeUnassignedHint =>
+      'Tage mit weniger Zeit ohne Projekt bekommen keinen Hinweis.';
+
+  @override
+  String get noticeCatUnassigned => 'Zeit ohne Projekt';
+
+  @override
+  String get noticeCatBreaks => 'Fehlende Pause (ArbZG §4)';
+
+  @override
+  String get noticeCatLongDay => 'Mehr als 10 Stunden (ArbZG §3)';
+
+  @override
+  String get noticeCatRest => 'Ruhezeit unter 11 Stunden (ArbZG §5)';
+
+  @override
+  String get noticeCatSunday => 'Arbeit an Sonn- und Feiertagen';
+
+  @override
+  String get noticeCatOpenSession => 'Vergessenes Ausstempeln';
+
+  @override
+  String get noticeCatOverlaps => 'Überlappende Einträge';
+
+  @override
+  String get noticeCatProjectTime =>
+      'Projektzeit außerhalb oder über der Arbeitszeit';
+
+  @override
+  String get noticeCatQuota => 'Homeoffice-Grenze';
+
+  @override
+  String get noticeCatOpenTrip => 'Reise läuft noch';
+
+  @override
+  String get restoreNotices => 'Weggeklickte Hinweise wieder anzeigen';
+
+  @override
+  String dismissedCount(String count) {
+    return '$count weggeklickt';
+  }
+
+  @override
+  String get noticeDismissed =>
+      'Hinweis ausgeblendet, im Kalender bleibt ein kleiner Marker';
+
+  @override
+  String hiddenNotices(String count) {
+    return '$count ausgeblendete Hinweise';
+  }
+
+  @override
+  String get noticeCategoryOff => 'In den Einstellungen ausgeschaltet';
+
+  @override
+  String get showAgain => 'Wieder anzeigen';
+
+  @override
+  String get hasNotices => 'Hat Hinweise';
 }

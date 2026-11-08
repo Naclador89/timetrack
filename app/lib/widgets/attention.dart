@@ -10,21 +10,14 @@ import 'interval_dialog.dart';
 import 'notices.dart';
 import 'undo.dart';
 
-/// Notices the user hid in this app session (by key).
-final dismissedAttentionProvider = NotifierProvider<_Dismissed, Set<String>>(
-  _Dismissed.new,
-);
-
-class _Dismissed extends Notifier<Set<String>> {
-  @override
-  Set<String> build() => const {};
-
-  void add(String key) => state = {...state, key};
-}
-
 /// Review items (calculations.md §12) as cards with a one-tap fix: add the
 /// missing break, set the end of a forgotten session, assign unassigned
 /// time, end an open trip, or open the day.
+///
+/// Which categories appear is a setting; a card closed with × is dismissed
+/// for good (synced, data-model §14) and only leaves the marker in the
+/// calendar. With [showHidden] (day view) the hidden ones are listed small
+/// below, and dismissed ones can be brought back.
 class AttentionCards extends ConsumerWidget {
   /// Creates the cards for the days [from]–[to].
   const AttentionCards({
@@ -35,7 +28,11 @@ class AttentionCards extends ConsumerWidget {
     this.includeQuota = false,
     this.includeTrip = false,
     this.collapseAfter,
+    this.showHidden = false,
   });
+
+  /// List hidden notices of these days small, below the cards.
+  final bool showHidden;
 
   /// Shows at most this many cards and a "show all" toggle for the rest.
   final int? collapseAfter;
@@ -58,35 +55,29 @@ class AttentionCards extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final ledger = ref.watch(ledgerProvider);
     final settings = ref.watch(settingsProvider);
-    final dismissed = ref.watch(dismissedAttentionProvider);
+    final dismissed = ref.watch(dismissedNoticesProvider);
     final state = ref.watch(trackerStateProvider);
-    final items = reviewItems(
-      ledger,
-      from: from,
-      to: to,
-      openSessionLimitMinutes: settings.openSessionLimitMinutes,
-      quotas: includeQuota ? ref.watch(homeOfficeQuotasProvider) : const [],
-      includeUnassigned: true,
-    );
-    // One break card per day: "more than 6 h without a break" is the same
-    // fix as the missing minutes.
-    final missingBreak = {
-      for (final i in items)
-        if (i.arbzg == ArbzgWarningKind.breakMissing) i.date,
-    };
-    items.removeWhere(
-      (i) =>
-          i.arbzg == ArbzgWarningKind.workOver6hWithoutBreak &&
-          missingBreak.contains(i.date),
+    final quotas = includeQuota
+        ? ref.watch(homeOfficeQuotasProvider)
+        : const <HomeOfficeQuota>[];
+    final items = [
+      ...ref.watch(noticesProvider((from, to))),
+      ...reviewItems(
+        ref.watch(ledgerProvider),
+        from: from,
+        to: to,
+        quotas: quotas,
+      ).where((i) => i.kind == ReviewKind.homeOfficeQuota),
+    ];
+    final (:shown, :hidden) = splitNotices(
+      items,
+      shows: (c) => settings.showsNotice(c.wireName),
+      dismissed: dismissed,
     );
     final cards = <Widget>[];
-    String keyOf(ReviewItem i) =>
-        '${i.date}/${i.kind.name}/${i.arbzg?.name}/${i.refId}';
-    for (final item in items) {
-      final key = keyOf(item);
-      if (dismissed.contains(key)) continue;
+    for (final item in shown) {
+      final key = noticeKey(item);
       final (icon, label, fix) = _fix(context, ref, item);
       cards.add(
         _AttentionCard(
@@ -97,12 +88,14 @@ class AttentionCards extends ConsumerWidget {
               : noticeText(context, item),
           actionLabel: label,
           onAction: fix,
-          onDismiss: () =>
-              ref.read(dismissedAttentionProvider.notifier).add(key),
+          onDismiss: () => _dismiss(context, ref, item),
         ),
       );
     }
-    if (includeTrip && state.trip != null && !state.clockedIn) {
+    if (includeTrip &&
+        settings.showsNotice(NoticeCategory.openTrip.wireName) &&
+        state.trip != null &&
+        !state.clockedIn) {
       final dest = state.trip!.fields['destination'] as String? ?? '';
       cards.add(
         _AttentionCard(
@@ -115,14 +108,47 @@ class AttentionCards extends ConsumerWidget {
       );
     }
     final limit = collapseAfter;
-    if (limit != null && cards.length > limit + 1) {
-      return _Collapsible(cards: cards, visible: limit);
-    }
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
-      alignment: Alignment.topCenter,
-      child: Column(children: cards),
+    final Widget body = limit != null && cards.length > limit + 1
+        ? _Collapsible(cards: cards, visible: limit)
+        : AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            alignment: Alignment.topCenter,
+            child: Column(children: cards),
+          );
+    if (!showHidden || hidden.isEmpty) return body;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        body,
+        _HiddenNotices(items: hidden, dismissed: dismissed),
+      ],
     );
+  }
+
+  /// Hides [item] for good (synced) and offers to undo it.
+  Future<void> _dismiss(
+    BuildContext context,
+    WidgetRef ref,
+    ReviewItem item,
+  ) async {
+    final repo = ref.read(repositoryProvider);
+    final key = noticeKey(item);
+    await repo.write('dismissed_notices', key, {
+      'date': '${item.date}',
+      'deleted': false,
+    });
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.noticeDismissed),
+          action: SnackBarAction(
+            label: context.l10n.undo,
+            onPressed: () => repo.delete('dismissed_notices', key),
+          ),
+        ),
+      );
   }
 
   (IconData, String, VoidCallback) _fix(
@@ -241,6 +267,62 @@ Future<void> assignUnassigned(
     created,
     context.l10n.assignedTo(formatMinutes(day.unassigned), name),
   );
+}
+
+/// Hidden notices of a day, small and folded: dismissed ones can be shown
+/// again; switched-off categories say where to turn them on.
+class _HiddenNotices extends ConsumerStatefulWidget {
+  const _HiddenNotices({required this.items, required this.dismissed});
+
+  final List<ReviewItem> items;
+  final Set<String> dismissed;
+
+  @override
+  ConsumerState<_HiddenNotices> createState() => _HiddenNoticesState();
+}
+
+class _HiddenNoticesState extends ConsumerState<_HiddenNotices> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => setState(() => _open = !_open),
+            icon: Icon(
+              _open ? Icons.expand_less : Icons.notifications_off_outlined,
+              size: 18,
+            ),
+            label: Text(l.hiddenNotices('${widget.items.length}')),
+          ),
+        ),
+        if (_open)
+          for (final item in widget.items)
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.info_outline, size: 18),
+              title: Text(noticeText(context, item)),
+              subtitle: widget.dismissed.contains(noticeKey(item))
+                  ? null
+                  : Text(l.noticeCategoryOff, style: theme.textTheme.bodySmall),
+              trailing: widget.dismissed.contains(noticeKey(item))
+                  ? TextButton(
+                      onPressed: () => ref
+                          .read(repositoryProvider)
+                          .delete('dismissed_notices', noticeKey(item)),
+                      child: Text(l.showAgain),
+                    )
+                  : null,
+            ),
+      ],
+    );
+  }
 }
 
 class _AttentionCard extends StatelessWidget {

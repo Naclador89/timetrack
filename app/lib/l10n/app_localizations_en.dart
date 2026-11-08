@@ -1055,4 +1055,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String moreNotices(String count) {
     return '$count more notices';
   }
+
+  @override
+  String get noticeUnassignedFrom => '\"Without a project\" from';
+
+  @override
+  String get noticeUnassignedHint =>
+      'Days with less unassigned time get no notice.';
+
+  @override
+  String get noticeCatUnassigned => 'Time without a project';
+
+  @override
+  String get noticeCatBreaks => 'Missing break (ArbZG §4)';
+
+  @override
+  String get noticeCatLongDay => 'More than 10 hours (ArbZG §3)';
+
+  @override
+  String get noticeCatRest => 'Rest under 11 hours (ArbZG §5)';
+
+  @override
+  String get noticeCatSunday => 'Work on Sundays and holidays';
+
+  @override
+  String get noticeCatOpenSession => 'Forgotten clock-out';
+
+  @override
+  String get noticeCatOverlaps => 'Overlapping entries';
+
+  @override
+  String get noticeCatProjectTime =>
+      'Project time outside or above working time';
+
+  @override
+  String get noticeCatQuota => 'Home-office limit';
+
+  @override
+  String get noticeCatOpenTrip => 'Trip still open';
+
+  @override
+  String get restoreNotices => 'Show dismissed notices again';
+
+  @override
+  String dismissedCount(String count) {
+    return '$count dismissed';
+  }
+
+  @override
+  String get noticeDismissed =>
+      'Notice hidden; the calendar keeps a small marker';
+
+  @override
+  String hiddenNotices(String count) {
+    return '$count hidden notices';
+  }
+
+  @override
+  String get noticeCategoryOff => 'Switched off in the settings';
+
+  @override
+  String get showAgain => 'Show again';
+
+  @override
+  String get hasNotices => 'Has notices';
 }
