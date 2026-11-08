@@ -1448,4 +1448,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get releasePage => 'All versions on GitHub';
+
+  @override
+  String get workPc => 'Work PC';
+
+  @override
+  String get workPcHint =>
+      'Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.';
+
+  @override
+  String get workPcFailed => 'Couldn\'t change the Windows autostart.';
+
+  @override
+  String get startTrackingTitle => 'Start tracking for today?';
+
+  @override
+  String get startTrackingText => 'No working time recorded today yet.';
+
+  @override
+  String get startTrackingStart => 'Start';
+
+  @override
+  String get startTrackingNotToday => 'Not today';
 }

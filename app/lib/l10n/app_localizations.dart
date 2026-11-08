@@ -2647,6 +2647,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All versions on GitHub'**
   String get releasePage;
+
+  /// No description provided for @workPc.
+  ///
+  /// In en, this message translates to:
+  /// **'Work PC'**
+  String get workPc;
+
+  /// No description provided for @workPcHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.'**
+  String get workPcHint;
+
+  /// No description provided for @workPcFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change the Windows autostart.'**
+  String get workPcFailed;
+
+  /// No description provided for @startTrackingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tracking for today?'**
+  String get startTrackingTitle;
+
+  /// No description provided for @startTrackingText.
+  ///
+  /// In en, this message translates to:
+  /// **'No working time recorded today yet.'**
+  String get startTrackingText;
+
+  /// No description provided for @startTrackingStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startTrackingStart;
+
+  /// No description provided for @startTrackingNotToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Not today'**
+  String get startTrackingNotToday;
 }
 
 class _AppLocalizationsDelegate

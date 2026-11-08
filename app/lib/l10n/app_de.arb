@@ -424,5 +424,12 @@
   "autoUpdateCheckHint": "Höchstens einmal am Tag. Installiert wird nur nach Rückfrage.",
   "upToDate": "TimeTrack ist aktuell.",
   "updateCheckFailed": "Keine Verbindung zu GitHub.",
-  "releasePage": "Alle Versionen auf GitHub"
+  "releasePage": "Alle Versionen auf GitHub",
+  "workPc": "Arbeits-PC",
+  "workPcHint": "Startet TimeTrack beim Anmelden an Windows und fragt, ob das Tracking für heute starten soll.",
+  "workPcFailed": "Der Windows-Autostart ließ sich nicht ändern.",
+  "startTrackingTitle": "Tracking für heute starten?",
+  "startTrackingText": "Heute ist noch keine Arbeitszeit erfasst.",
+  "startTrackingStart": "Starten",
+  "startTrackingNotToday": "Nicht heute"
 }

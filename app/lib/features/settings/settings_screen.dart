@@ -11,6 +11,7 @@ import '../../sync/sync_controller.dart';
 import '../../update/update_banner.dart';
 import '../../update/update_controller.dart';
 import '../../widgets/dialogs.dart';
+import '../../work_pc/work_pc.dart';
 
 /// Official names of the federal states (proper names, not translated).
 const stateNames = {
@@ -404,6 +405,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         onChanged: (v) =>
             ref.read(updateControllerProvider.notifier).setAuto(v),
       ),
+      // spec: work-pc.md §1 (Windows only)
+      if (ref.watch(workPcPlatformProvider) case final workPc?)
+        SwitchListTile(
+          secondary: const Icon(Icons.work_outline),
+          title: Text(l.workPc),
+          subtitle: Text(l.workPcHint),
+          value: ref.watch(workPcEnabledProvider).value ?? false,
+          onChanged: (v) async {
+            final messenger = ScaffoldMessenger.of(context);
+            try {
+              await workPc.setEnabled(v);
+            } on Object {
+              messenger.showSnackBar(SnackBar(content: Text(l.workPcFailed)));
+            }
+            ref.invalidate(workPcEnabledProvider);
+          },
+        ),
       ListTile(
         leading: const Icon(Icons.open_in_new),
         title: Text(l.releasePage),

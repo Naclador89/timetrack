@@ -268,6 +268,15 @@ _Last updated: 2026-11-08 by Claude Code._
 **Next tasks**: the user reinstalls the phone app once (new key, v0.3.0 or later) and re-enters the
 three reset settings; then release v0.4.0 and test the updater with v0.4.1.
 
+### Work PC start prompt (requested by the user 2026-11-08; spec `docs/specs/work-pc.md`)
+- [x] core `StartPrompt` (`offer`, `decline`), `trackedToday`, `defaultClockInLocation` (shared
+      with the quick actions).
+- [x] app `lib/work_pc/`: Run key via `reg.exe`, setting Einstellungen → App → Arbeits-PC (Windows
+      only), `StartPromptHost` (sync up to 20 s, then the dialog). Windows runner: `--autostart`
+      starts minimized, channel `timetrack/window` `show`.
+- [ ] Windows runner changes only built in CI so far. **User**: on the work PC switch it on, sign
+      out and in (dialog comes), clock in, sign out and in again (stays minimized, no dialog).
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -372,3 +381,5 @@ three reset settings; then release v0.4.0 and test the updater with v0.4.1.
   retries that with `tool/retry-download.sh`). Repo made public with rewritten history (noreply
   address), old one kept as `timetrack-private`. In-app updates (spec `updates.md`, ADR 0008): core
   checker, app banner/settings/installers, Android notification, CI checksums and tag check.
+- 2026-11-08, Claude Code: work PC start prompt on Windows (spec `work-pc.md`); 242 core tests,
+  40 widget tests green.

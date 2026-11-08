@@ -15,8 +15,10 @@ import 'quick/quick_access.dart';
 import 'quick/quick_access_host.dart';
 import 'sync/sync_controller.dart';
 import 'update/update_controller.dart';
+import 'work_pc/start_prompt_host.dart';
+import 'work_pc/work_pc.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   final localWrites = StreamController<void>.broadcast();
   final services = await AppServices.open(
@@ -30,6 +32,7 @@ Future<void> main() async {
         storeProvider.overrideWithValue(services.store),
         repositoryProvider.overrideWithValue(services.repository),
         localWritesProvider.overrideWithValue(localWrites.stream),
+        autostartedProvider.overrideWithValue(args.contains('--autostart')),
       ],
       child: TimeTrackApp(router: buildRouter()),
     ),
@@ -69,7 +72,10 @@ class TimeTrackApp extends StatelessWidget {
       builder: (context, child) => _SyncLifecycle(
         child: QuickAccessHost(
           navigatorKey: router.routerDelegate.navigatorKey,
-          child: child!,
+          child: StartPromptHost(
+            navigatorKey: router.routerDelegate.navigatorKey,
+            child: child!,
+          ),
         ),
       ),
     ),

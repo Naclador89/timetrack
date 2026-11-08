@@ -901,5 +901,12 @@
   "autoUpdateCheckHint": "At most once a day. Nothing is installed without asking.",
   "upToDate": "TimeTrack is up to date.",
   "updateCheckFailed": "Couldn't reach GitHub.",
-  "releasePage": "All versions on GitHub"
+  "releasePage": "All versions on GitHub",
+  "workPc": "Work PC",
+  "workPcHint": "Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.",
+  "workPcFailed": "Couldn't change the Windows autostart.",
+  "startTrackingTitle": "Start tracking for today?",
+  "startTrackingText": "No working time recorded today yet.",
+  "startTrackingStart": "Start",
+  "startTrackingNotToday": "Not today"
 }

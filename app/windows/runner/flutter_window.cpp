@@ -2,10 +2,13 @@
 
 #include <optional>
 
+#include <flutter/standard_method_codec.h>
+
 #include "flutter/generated_plugin_registrant.h"
 
-FlutterWindow::FlutterWindow(const flutter::DartProject& project)
-    : project_(project) {}
+FlutterWindow::FlutterWindow(const flutter::DartProject& project,
+                             bool start_minimized)
+    : project_(project), start_minimized_(start_minimized) {}
 
 FlutterWindow::~FlutterWindow() {}
 
@@ -27,8 +30,36 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
+  window_channel_ =
+      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+          flutter_controller_->engine()->messenger(), "timetrack/window",
+          &flutter::StandardMethodCodec::GetInstance());
+  window_channel_->SetMethodCallHandler(
+      [this](const flutter::MethodCall<flutter::EncodableValue>& call,
+             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>>
+                 result) {
+        if (call.method_name() != "show") {
+          result->NotImplemented();
+          return;
+        }
+        HWND hwnd = GetHandle();
+        ::ShowWindow(hwnd, ::IsIconic(hwnd) ? SW_RESTORE : SW_SHOWNORMAL);
+        // Windows may refuse the focus to a background process; then the
+        // taskbar button flashes instead.
+        if (!::SetForegroundWindow(hwnd)) {
+          FLASHWINFO flash = {sizeof(FLASHWINFO), hwnd,
+                              FLASHW_ALL | FLASHW_TIMERNOFG, 0, 0};
+          ::FlashWindowEx(&flash);
+        }
+        result->Success();
+      });
+
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
-    this->Show();
+    if (start_minimized_) {
+      ::ShowWindow(GetHandle(), SW_SHOWMINNOACTIVE);
+    } else {
+      this->Show();
+    }
   });
 
   // Flutter can complete the first frame before the "show window" callback is
@@ -40,6 +71,7 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  window_channel_ = nullptr;
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
