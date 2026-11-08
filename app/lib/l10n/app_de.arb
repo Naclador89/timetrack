@@ -497,5 +497,14 @@
   "showAllDays": "Alle {count} Tage zeigen",
   "archive": "Archivieren",
   "unarchive": "Aus dem Archiv holen",
-  "budget": "Budget"
+  "budget": "Budget",
+  "vacationPlanner": "Urlaubsplaner",
+  "bridgeDays": "Brückentage",
+  "bridgeTitle": "{count, plural, =1{1 Urlaubstag} other{{count} Urlaubstage}} → {free} Tage frei",
+  "bridgeBook": "Eintragen",
+  "bridgeBooked": "Urlaub eingetragen",
+  "noBridges": "Keine Brückentage mehr in {year}",
+  "absencesOfYear": "Abwesenheiten {year}",
+  "bridgeDay": "Brückentag",
+  "otherAbsence": "Andere Abwesenheit"
 }

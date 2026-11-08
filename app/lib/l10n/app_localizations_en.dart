@@ -1716,4 +1716,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get budget => 'Budget';
+
+  @override
+  String get vacationPlanner => 'Vacation planner';
+
+  @override
+  String get bridgeDays => 'Bridge days';
+
+  @override
+  String bridgeTitle(int count, int free) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days off',
+      one: '1 day off',
+    );
+    return '$_temp0 → $free days free';
+  }
+
+  @override
+  String get bridgeBook => 'Book';
+
+  @override
+  String get bridgeBooked => 'Vacation booked';
+
+  @override
+  String noBridges(int year) {
+    return 'No more bridge days in $year';
+  }
+
+  @override
+  String absencesOfYear(int year) {
+    return 'Absences $year';
+  }
+
+  @override
+  String get bridgeDay => 'Bridge day';
+
+  @override
+  String get otherAbsence => 'Other absence';
 }

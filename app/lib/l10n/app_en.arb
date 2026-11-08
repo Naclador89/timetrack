@@ -1108,5 +1108,38 @@
   },
   "archive": "Archive",
   "unarchive": "Restore from archive",
-  "budget": "Budget"
+  "budget": "Budget",
+  "vacationPlanner": "Vacation planner",
+  "bridgeDays": "Bridge days",
+  "bridgeTitle": "{count, plural, =1{1 day off} other{{count} days off}} → {free} days free",
+  "@bridgeTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "bridgeBook": "Book",
+  "bridgeBooked": "Vacation booked",
+  "noBridges": "No more bridge days in {year}",
+  "@noBridges": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "absencesOfYear": "Absences {year}",
+  "@absencesOfYear": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "bridgeDay": "Bridge day",
+  "otherAbsence": "Other absence"
 }

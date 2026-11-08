@@ -1723,4 +1723,43 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get budget => 'Budget';
+
+  @override
+  String get vacationPlanner => 'Urlaubsplaner';
+
+  @override
+  String get bridgeDays => 'Brückentage';
+
+  @override
+  String bridgeTitle(int count, int free) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Urlaubstage',
+      one: '1 Urlaubstag',
+    );
+    return '$_temp0 → $free Tage frei';
+  }
+
+  @override
+  String get bridgeBook => 'Eintragen';
+
+  @override
+  String get bridgeBooked => 'Urlaub eingetragen';
+
+  @override
+  String noBridges(int year) {
+    return 'Keine Brückentage mehr in $year';
+  }
+
+  @override
+  String absencesOfYear(int year) {
+    return 'Abwesenheiten $year';
+  }
+
+  @override
+  String get bridgeDay => 'Brückentag';
+
+  @override
+  String get otherAbsence => 'Andere Abwesenheit';
 }

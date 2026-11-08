@@ -305,7 +305,12 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       history per day with the notes, start timer, book time (preset), CSV, favourite/archive; budget
       bars in the list; notices `project_budget_near`/`_over` (category "Projektbudget") open the
       page. Core `projectHistory`, `budgetItems`. The demo seed gives "Werk Süd Umbau" 20 h.
-- [ ] Vacation planner with bridge days (calculations §10.1)
+- [x] Vacation planner (calculations §10.1, core `bridgeDays`): Kalender → ⋮ → Abwesenheiten is now
+      the "Urlaubsplaner": year switcher, vacation account, bridge days (1–3 workdays next to a
+      holiday block, best ratio first, "Eintragen" with undo, a jump to next year when none are
+      left), 12 mini months (holidays red, absences in their colours, bridge days ringed, tap adds
+      an absence), the year's absences with undo-delete. Fixed: the absence dialog's type dropdown
+      overflowed with long names.
 - [ ] Windows tray icon (work-pc.md §3)
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)

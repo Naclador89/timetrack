@@ -251,6 +251,19 @@ For calendar year Y:
 - **Planned** = the same for days after today.
 - **Remaining** = entitlement + carry-over − taken − planned.
 
+### §10.1 Bridge days (vacation planner)
+
+Requested by the user 2026-11-08. A day is **free** if its target is 0 (§7: weekend, public holiday,
+`extra_holiday`, no scheduled work) or it has a full-day absence. Free days in a row form a block; a
+block **has a holiday** if one of its days is a public holiday (§6) or an `extra_holiday`.
+
+A **bridge** is a run of 1–3 working days between two free blocks where at least one of the two
+blocks has a holiday (so the plain week between two weekends is never one). Taking those days off
+joins both blocks: **free days** = from the first day of the left block to the last day of the
+right block. Only bridges whose working days all lie in the year and not before today are
+suggested, sorted by free days per vacation day (descending), then by date. `bridgeDays` implements
+this; the vacation planner marks the days and offers to book them as vacation.
+
 ## §11 Home office
 
 ### §11.1 Home-office value of a day

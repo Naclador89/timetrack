@@ -3085,6 +3085,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Budget'**
   String get budget;
+
+  /// No description provided for @vacationPlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation planner'**
+  String get vacationPlanner;
+
+  /// No description provided for @bridgeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridge days'**
+  String get bridgeDays;
+
+  /// No description provided for @bridgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day off} other{{count} days off}} → {free} days free'**
+  String bridgeTitle(int count, int free);
+
+  /// No description provided for @bridgeBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get bridgeBook;
+
+  /// No description provided for @bridgeBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation booked'**
+  String get bridgeBooked;
+
+  /// No description provided for @noBridges.
+  ///
+  /// In en, this message translates to:
+  /// **'No more bridge days in {year}'**
+  String noBridges(int year);
+
+  /// No description provided for @absencesOfYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Absences {year}'**
+  String absencesOfYear(int year);
+
+  /// No description provided for @bridgeDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridge day'**
+  String get bridgeDay;
+
+  /// No description provided for @otherAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Other absence'**
+  String get otherAbsence;
 }
 
 class _AppLocalizationsDelegate
