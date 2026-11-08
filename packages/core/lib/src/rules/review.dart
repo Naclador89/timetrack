@@ -180,12 +180,17 @@ List<ReviewItem> reviewItems(
   return [for (final (_, item) in indexed) item];
 }
 
-/// Where to put a missing break of [minutes] on [day] (§4, Review fix): in
-/// the middle of the longest working stretch, on a 5-minute grid. `null`
-/// without working time.
-Span? suggestBreak(DayResult day, int minutes) {
+/// Where to put a missing break of [minutes] on [day] (§4.1, Review fix):
+/// at [preferred] (the usual break) if it lies inside one working interval,
+/// otherwise in the middle of the longest working stretch, on a 5-minute
+/// grid. `null` without working time.
+Span? suggestBreak(DayResult day, int minutes, {Span? preferred}) {
   final spans = day.work.working.spans;
   if (spans.isEmpty) return null;
+  if (preferred != null &&
+      spans.any((s) => s.start <= preferred.start && preferred.end <= s.end)) {
+    return preferred;
+  }
   final longest = spans.reduce((a, b) => b.length > a.length ? b : a);
   final start = (longest.start + (longest.length - minutes) ~/ 2) ~/ 5 * 5;
   return Span(start, start + minutes);

@@ -1768,4 +1768,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get closeToTrayHint =>
       'Closing hides the window; the tray icon\'s menu has Quit.';
+
+  @override
+  String get defaultBreakStart => 'Usual break: start';
+
+  @override
+  String get defaultBreakLength => 'Usual break: length';
+
+  @override
+  String get defaultBreakHint => 'Suggested when you add a break';
+
+  @override
+  String beforeBalanceStart(String date) {
+    return 'Before the balance starts ($date): no target, no overtime';
+  }
 }

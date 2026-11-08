@@ -35,7 +35,10 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
     super.dispose();
   }
 
-  QuickEntry? get _entry => parseQuickEntry(_text.text);
+  QuickEntry? get _entry => parseQuickEntry(
+    _text.text,
+    defaultBreakMinutes: ref.read(settingsProvider).defaultBreakMinutes,
+  );
 
   Project? _project(QuickEntry? e) {
     if (e == null || e.projectQuery.isEmpty) return null;
@@ -67,7 +70,10 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
     final e = _entry;
     if (e == null) return;
     final project = _project(e);
-    final template = e.toTemplate(projectId: project?.id);
+    final template = e.toTemplate(
+      projectId: project?.id,
+      breakStart: ref.read(settingsProvider).defaultBreakStart,
+    );
     if (template.isEmpty) return;
     await _apply(template, context.l10n.quickEntrySaved);
   }

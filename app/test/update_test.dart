@@ -200,6 +200,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Check for updates'));
+    await tester.pumpAndSettle();
     expect(find.textContaining('Installed: 0.4.0'), findsOneWidget);
     await tapAndWait(tester, find.text('Check for updates'));
     expect(find.text('TimeTrack is up to date.'), findsOneWidget);

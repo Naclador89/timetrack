@@ -62,6 +62,12 @@ abstract final class SettingKeys {
   /// Minimum unassigned time of a day before it is a notice (§12).
   static const noticeUnassignedMin = 'notices.unassigned_min';
 
+  /// Usual start of the break, minutes since local midnight (§4.1).
+  static const defaultBreakStart = 'breaks.default_start_min';
+
+  /// Usual length of the break in minutes (§4.1).
+  static const defaultBreakMinutes = 'breaks.default_min';
+
   /// Remind when a break is due (reminders.md §2).
   static const remindBreak = 'reminders.break';
 
@@ -94,6 +100,8 @@ final class AppSettings {
     this.autoClockIn = true,
     this.resumeAfterBreak = true,
     this.noticeUnassignedMinMinutes = 30,
+    this.defaultBreakStart = 720,
+    this.defaultBreakMinutes = 30,
     this.remindBreak = true,
     this.remindLongDay = true,
     this.raw = const {},
@@ -187,6 +195,14 @@ final class AppSettings {
         SettingKeys.noticeUnassignedMin,
         30,
       ).toInt(),
+      defaultBreakStart: pick<num>(
+        SettingKeys.defaultBreakStart,
+        720,
+      ).toInt().clamp(0, 1439),
+      defaultBreakMinutes: pick<num>(
+        SettingKeys.defaultBreakMinutes,
+        30,
+      ).toInt().clamp(5, 240),
       remindBreak: pick(SettingKeys.remindBreak, true),
       remindLongDay: pick(SettingKeys.remindLongDay, true),
       raw: v,
@@ -228,6 +244,12 @@ final class AppSettings {
 
   /// Unassigned time below this is no notice (§12).
   final int noticeUnassignedMinMinutes;
+
+  /// Usual start of the break, minutes since local midnight (§4.1).
+  final int defaultBreakStart;
+
+  /// Usual length of the break in minutes (§4.1).
+  final int defaultBreakMinutes;
 
   /// Remind when a break is due (reminders.md §2).
   final bool remindBreak;

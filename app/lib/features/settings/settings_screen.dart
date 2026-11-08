@@ -148,6 +148,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         value: s.resumeAfterBreak,
         onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
       ),
+      // spec: calculations.md §4.1 (only prefills, never deducts)
+      ListTile(
+        leading: const Icon(Icons.coffee_outlined),
+        title: Text(l.defaultBreakStart),
+        subtitle: Text(l.defaultBreakHint),
+        trailing: Text(
+          TimeOfDay(
+            hour: s.defaultBreakStart ~/ 60,
+            minute: s.defaultBreakStart % 60,
+          ).format(context),
+        ),
+        onTap: () async {
+          final v = await pickTime(context, s.defaultBreakStart);
+          if (v != null) await save(SettingKeys.defaultBreakStart, v);
+        },
+      ),
+      ListTile(
+        leading: const SizedBox(width: 24),
+        title: Text(l.defaultBreakLength),
+        trailing: Text(formatMinutes(s.defaultBreakMinutes)),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.defaultBreakMinutes),
+          );
+          if (v != null && v >= 5 && v <= 240) {
+            await save(SettingKeys.defaultBreakMinutes, v);
+          }
+        },
+      ),
       // spec: reminders.md §2 (Android notifications, Windows tray)
       if (ref.watch(remindersAvailableProvider)) ...[
         SwitchListTile(

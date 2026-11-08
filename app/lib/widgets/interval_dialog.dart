@@ -81,12 +81,16 @@ class _IntervalDialogState extends ConsumerState<_IntervalDialog> {
       return l.hour * 60 + l.minute;
     }
 
+    // A new break starts as the usual one (calculations §4.1).
+    final settings = ref.read(settingsProvider);
     final isBreak = widget.table == 'breaks';
+    final breakStart = settings.defaultBreakStart;
     _start = widget.start == null
-        ? (widget.initialStart ?? (isBreak ? 12 * 60 : 8 * 60))
+        ? (widget.initialStart ?? (isBreak ? breakStart : 8 * 60))
         : local(widget.start!);
     _end = widget.id == null
-        ? (widget.initialEnd ?? (isBreak ? 12 * 60 + 30 : 16 * 60))
+        ? (widget.initialEnd ??
+              (isBreak ? breakStart + settings.defaultBreakMinutes : 16 * 60))
         : widget.end == null
         ? null
         : local(widget.end!);

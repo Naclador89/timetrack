@@ -48,4 +48,19 @@ void main() {
     final night = parseQuickEntry('22-6')!;
     expect(night.rangeMinutes, 480);
   });
+
+  test(
+    '§4.1 the usual break: bare p, placed at the usual start if it fits',
+    () {
+      // spec: calculations.md §4.1, §17
+      final e = parseQuickEntry('8-16 p x', defaultBreakMinutes: 45)!;
+      expect(e.breakMinutes, 45);
+      expect(e.projectQuery, 'x');
+      final at = e.toTemplate(breakStart: 720).items[1];
+      expect((at.start, at.end), (720, 765));
+      // 15:45–16:30 doesn't fit in 8–16: centred instead.
+      final late = e.toTemplate(breakStart: 945).items[1];
+      expect((late.start, late.end), (695, 740));
+    },
+  );
 }

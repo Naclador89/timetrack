@@ -206,6 +206,8 @@ Future<void> dismissNotice(
     ..showSnackBar(
       SnackBar(
         content: Text(context.l10n.noticeDismissed),
+        // With an action Flutter would keep it until tapped.
+        persist: false,
         action: SnackBarAction(
           label: context.l10n.undo,
           onPressed: () => repo.delete('dismissed_notices', key),
@@ -240,8 +242,22 @@ Future<void> dismissNotice(
         l.fixAddBreak,
         () {
           final day = ref.read(ledgerProvider).day(item.date);
-          final minutes = item.minutes > 0 ? item.minutes : 30;
-          final span = suggestBreak(day, minutes);
+          final settings = ref.read(settingsProvider);
+          final minutes = item.minutes > 0
+              ? item.minutes
+              : settings.defaultBreakMinutes;
+          final usual = epochMinute(
+            zone.instantAt(
+              item.date,
+              settings.defaultBreakStart ~/ 60,
+              settings.defaultBreakStart % 60,
+            ),
+          );
+          final span = suggestBreak(
+            day,
+            minutes,
+            preferred: Span(usual, usual + minutes),
+          );
           return showIntervalDialog(
             context,
             date: item.date,

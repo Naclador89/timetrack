@@ -1775,4 +1775,18 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get closeToTrayHint =>
       'Schließen blendet das Fenster aus; Beenden steht im Menü des Symbols.';
+
+  @override
+  String get defaultBreakStart => 'Übliche Pause: Beginn';
+
+  @override
+  String get defaultBreakLength => 'Übliche Pause: Dauer';
+
+  @override
+  String get defaultBreakHint => 'Vorschlag beim Eintragen einer Pause';
+
+  @override
+  String beforeBalanceStart(String date) {
+    return 'Vor Beginn des Überstundensaldos ($date): kein Soll, keine Überstunden';
+  }
 }

@@ -259,6 +259,10 @@ final class Ledger {
     );
   });
 
+  /// Whether [date] counts in the overtime balance (on or after the balance
+  /// start, §8). Earlier days show no target or difference.
+  bool inBalance(LocalDate date) => !date.isBefore(settings.balanceStart);
+
   /// Overtime balance at the end of [date]: starting balance plus `Δ` of every
   /// day from the balance start through [date] (§8). For today this includes
   /// today's credited time so far against the full target.

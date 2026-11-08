@@ -7,7 +7,8 @@ import 'day_templates.dart';
 /// - `8-16:30`, `08:15–12`: a working time from–to (local, same day; an end
 ///   at or before the start is the next day);
 /// - `1:30`, `1,5h`, `90m`: a project duration instead;
-/// - `p30`, `p0:45`, `pause 30`: a break in the middle of the working time;
+/// - `p30`, `p0:45`, `pause 30`, `p`: a break (`p` alone: the usual length),
+///   at the usual start if it fits, otherwise in the middle (§4.1);
 /// - `@home`, `@ho`, `@büro`, `@office`: the location;
 /// - the other words: the project search (project-search.md);
 /// - after `: `: the note.
@@ -57,12 +58,19 @@ final class QuickEntry {
   /// The rows it creates as a template: a session with the break centred in
   /// it, and the project over the whole range (the break is cut out of
   /// project time, §3), or a project duration. [projectId] is the project
-  /// the UI resolved from [projectQuery].
-  DayTemplate toTemplate({String? projectId}) {
+  /// the UI resolved from [projectQuery]. [breakStart] is the usual break
+  /// start (§4.1), used when the break fits there.
+  DayTemplate toTemplate({String? projectId, int? breakStart}) {
     final e = hasRange && end! <= start! ? end! + 1440 : end;
-    final breakStart = hasRange
-        ? ((start! + e! - breakMinutes) ~/ 2) ~/ 5 * 5
-        : 0;
+    final usual =
+        hasRange &&
+            breakStart != null &&
+            breakStart >= start! &&
+            breakStart + breakMinutes <= e!
+        ? breakStart
+        : null;
+    final breakAt =
+        usual ?? (hasRange ? ((start! + e! - breakMinutes) ~/ 2) ~/ 5 * 5 : 0);
     return DayTemplate(
       id: '',
       name: '',
@@ -77,8 +85,8 @@ final class QuickEntry {
           if (breakMinutes > 0)
             TemplateItem(
               TemplateItemKind.breakTime,
-              start: breakStart,
-              end: breakStart + breakMinutes,
+              start: breakAt,
+              end: breakAt + breakMinutes,
             ),
           if (projectId != null)
             TemplateItem(
@@ -117,8 +125,9 @@ const _locations = {
   'buro': WorkLocation.office,
 };
 
-/// Parses [text] (see [QuickEntry]); `null` if it records nothing.
-QuickEntry? parseQuickEntry(String text) {
+/// Parses [text] (see [QuickEntry]); `null` if it records nothing. A bare
+/// `p` is a break of [defaultBreakMinutes] (§4.1).
+QuickEntry? parseQuickEntry(String text, {int defaultBreakMinutes = 30}) {
   var body = text.trim();
   var note = '';
   final colon = body.indexOf(': ');
@@ -155,6 +164,8 @@ QuickEntry? parseQuickEntry(String text) {
         i++;
         continue;
       }
+      breakMinutes = defaultBreakMinutes;
+      continue;
     }
     final br = _break.firstMatch(t);
     final brMinutes = br == null ? null : _length(br[1]!, plainMinutes: true);

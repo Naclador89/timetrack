@@ -25,6 +25,8 @@ Future<void> deleteWithUndo(
       SnackBar(
         content: Text(message ?? l.deleted),
         duration: const Duration(seconds: 5),
+        // With an action Flutter would keep it until tapped.
+        persist: false,
         action: SnackBarAction(
           label: l.undo,
           onPressed: () async {
@@ -52,6 +54,8 @@ void offerUndoCreate(
       SnackBar(
         content: Text(message),
         duration: const Duration(seconds: 6),
+        // With an action Flutter would keep it until tapped.
+        persist: false,
         action: SnackBarAction(
           label: l.undo,
           onPressed: () async {

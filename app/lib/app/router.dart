@@ -22,12 +22,15 @@ import '../features/today/today_screen.dart';
 import '../update/update_banner.dart';
 import 'back_navigation.dart';
 import 'format.dart';
+import 'snack_bars.dart';
 
 /// Routes. Each tab keeps its own navigation stack.
 ///
 /// `--dart-define=INITIAL_ROUTE=/calendar` opens another screen first (for
 /// screenshots and manual checks).
 GoRouter buildRouter() => GoRouter(
+  // Also reaches the tabs' navigators (notifyRootObserver).
+  observers: [SnackBarDismisser()],
   initialLocation: const String.fromEnvironment(
     'INITIAL_ROUTE',
     defaultValue: '/today',
@@ -58,7 +61,9 @@ GoRouter buildRouter() => GoRouter(
           routes: [
             GoRoute(
               path: '/calendar',
-              builder: (_, _) => const WeekScreen(),
+              builder: (_, state) => WeekScreen(
+                month: state.uri.queryParameters['view'] == 'month',
+              ),
               routes: [
                 GoRoute(
                   path: 'day/:date',

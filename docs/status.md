@@ -323,6 +323,21 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       a quiet autostart goes to the tray; the updater quits through the channel. **Only compiled in
       CI; user test on the work PC pending.**
 
+### Feedback from the work PC (2026-11-08, after v0.5.0), done
+- [x] Usual break (calculations §4.1): settings "Übliche Pause: Beginn / Dauer" (synced, default
+      12:00 / 30 min) prefill a new break, the missing-break fix (`suggestBreak(preferred:)`) and
+      quick entry (`p` alone = usual length, placed at the usual start if it fits).
+- [x] Snack bars: an "Undo" no longer stays until tapped (Flutter keeps snack bars with an action
+      by default; now `persist: false`), and `SnackBarDismisser` (router observer) hides it when a
+      dialog or sheet opens. It covered the booking sheet's "Buchen" on Windows.
+- [x] Month view rebuilt: row height follows the window so six weeks fit; cells show hours and ±,
+      day type, holiday, notice dot; calendar-week column with the week's ± (tap opens the week);
+      tap a day opens the day; compact summary (worked, target, ±, balance, curve).
+      `/calendar?view=month` opens it directly.
+- [x] Days before the balance start (§8) show no target or ± and stay out of the totals and the
+      curve (the schedule starts on 1 January for the vacation account, so October showed
+      −176:00); a month before the start says so. `Ledger.inBalance`.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -434,3 +449,6 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
   reminders, week check, project page with budget, vacation planner with bridge days, Windows tray.
   New spec `reminders.md`; calculations §3.1, §10.1, §12 (checks), §18. 272 core tests, 58 widget
   tests green.
+- 2026-11-08, Claude Code: work-PC feedback after v0.5.0: usual break settings, snack bars that
+  go away and don't cover sheets, new month view, no target/± before the balance start. 274 core
+  tests, 63 widget tests green.

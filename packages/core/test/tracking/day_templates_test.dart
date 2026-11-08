@@ -126,4 +126,20 @@ void main() {
       expect(span.length, 30);
     },
   );
+
+  test('§4.1 a missing break goes to the usual slot if it is worked', () async {
+    // spec: calculations.md §4.1
+    await repo.write('work_sessions', 's', {
+      'start_utc': '2026-11-04T07:00:00Z',
+      'end_utc': '2026-11-04T14:00:00Z',
+      'location': 'office',
+    });
+    final noon = epochMinute(zone.instantAt(wed, 12, 0));
+    final usual = Span(noon, noon + 30);
+    expect(suggestBreak(ledger().day(wed), 30, preferred: usual), usual);
+    // 15:00 is after the session (08:00–15:00 local): the middle again.
+    final late = Span(noon + 180, noon + 210);
+    final span = suggestBreak(ledger().day(wed), 30, preferred: late)!;
+    expect(zone.toLocal(instantOfEpochMinute(span.start)).hour, 11);
+  });
 }

@@ -510,5 +510,9 @@
   "trayOpen": "TimeTrack öffnen",
   "trayQuit": "Beenden",
   "closeToTray": "Im Infobereich weiterlaufen",
-  "closeToTrayHint": "Schließen blendet das Fenster aus; Beenden steht im Menü des Symbols."
+  "closeToTrayHint": "Schließen blendet das Fenster aus; Beenden steht im Menü des Symbols.",
+  "defaultBreakStart": "Übliche Pause: Beginn",
+  "defaultBreakLength": "Übliche Pause: Dauer",
+  "defaultBreakHint": "Vorschlag beim Eintragen einer Pause",
+  "beforeBalanceStart": "Vor Beginn des Überstundensaldos ({date}): kein Soll, keine Überstunden"
 }

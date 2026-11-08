@@ -105,6 +105,19 @@ Let `W = W(D)` before any deduction.
 
 In `warn` mode `W_eff = W`. Everything below uses `W_eff`.
 
+### §4.1 Usual break (defaults)
+
+Two settings describe the user's usual break: `breaks.default_start_min` (minutes since local
+midnight, default `720` = 12:00) and `breaks.default_min` (length, default `30`). They only prefill
+times; they never create or deduct a break on their own.
+
+- **New break** in the editor: from the usual start for the usual length.
+- **Missing-break fix** (`suggestBreak`): the usual slot (usual start, the missing length) if it lies
+  completely inside one working interval of the day; otherwise centred in the longest working
+  stretch, rounded down to 5 min.
+- **Quick entry** (§17): a bare `p` / `pause` means the usual length; a break is put at the usual
+  start if it fits completely inside the range, otherwise centred.
+
 ## §5 Other ArbZG checks (warnings only)
 
 - §3 ArbZG: `W(D) > 600` → `over_10h`.
@@ -174,6 +187,9 @@ aren't supported.
   + Σ Δ(d) for all d from `balance_start_date` (setting) through D.
 - The UI shows "balance up to yesterday" and "today so far". Today counts `Cr(today)` so far
   against the full `T(today)`.
+- Days **before `balance_start_date`** are outside the balance: the calendar shows at most their
+  worked time, no target, no `Δ`, and they are left out of week and month totals and the balance
+  curve. (The schedule may start earlier, e.g. on 1 January for the vacation account, §10.)
 
 ## §9 Trip days, weekends and holidays: credited time and Sunday hours
 
@@ -425,7 +441,7 @@ the time a rule didn't count (negative: credited more than worked, e.g. a short 
 |---|---|
 | `8-16:30`, `08.15–12`, `8 - 16` | working time from–to, local; an end at or before the start is the next day |
 | `1:30`, `1,5h`, `90m` | a project duration instead (only without a range) |
-| `p30`, `p0:45`, `pause 30` | break length; placed centred in the range, rounded down to 5 min |
+| `p30`, `p0:45`, `pause 30`, `p` | break length (`p` alone: the usual length, §4.1); placed at the usual start if it fits in the range, otherwise centred, rounded down to 5 min |
 | `@home`, `@ho`, `@büro`, `@office` | location (default office) |
 | `: ` and everything after it | note of the project entry |
 | other words | project search (project-search.md); the best match is used |

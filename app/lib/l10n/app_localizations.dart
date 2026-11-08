@@ -3163,6 +3163,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closing hides the window; the tray icon\'s menu has Quit.'**
   String get closeToTrayHint;
+
+  /// No description provided for @defaultBreakStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual break: start'**
+  String get defaultBreakStart;
+
+  /// No description provided for @defaultBreakLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual break: length'**
+  String get defaultBreakLength;
+
+  /// No description provided for @defaultBreakHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested when you add a break'**
+  String get defaultBreakHint;
+
+  /// No description provided for @beforeBalanceStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Before the balance starts ({date}): no target, no overtime'**
+  String beforeBalanceStart(String date);
 }
 
 class _AppLocalizationsDelegate

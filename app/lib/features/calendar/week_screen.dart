@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/back_navigation.dart';
@@ -25,8 +26,11 @@ int isoWeekNumber(LocalDate d) {
 /// per day) or a month grid with the balance curve. Swipe to change the
 /// week or month, pull down to sync.
 class WeekScreen extends ConsumerStatefulWidget {
-  /// Creates the screen.
-  const WeekScreen({super.key});
+  /// Creates the screen; [month] opens the month view (`?view=month`).
+  const WeekScreen({super.key, this.month = false});
+
+  /// Start in the month view.
+  final bool month;
 
   @override
   ConsumerState<WeekScreen> createState() => _WeekScreenState();
@@ -34,7 +38,7 @@ class WeekScreen extends ConsumerStatefulWidget {
 
 class _WeekScreenState extends ConsumerState<WeekScreen> {
   int _offset = 0; // weeks or months from the current one
-  bool _month = false;
+  late bool _month = widget.month;
 
   @override
   void initState() {
@@ -219,7 +223,10 @@ class _WeekView extends ConsumerWidget {
     final projects = ref.watch(projectByIdProvider);
     final scheme = Theme.of(context).colorScheme;
     final days = [for (var i = 0; i < 7; i++) ledger.day(monday.addDays(i))];
-    final past = days.where((d) => !d.date.isAfter(today));
+    // Days before the balance start count nothing (calculations §8).
+    final past = days.where(
+      (d) => !d.date.isAfter(today) && ledger.inBalance(d.date),
+    );
     int sum(int Function(DayResult) f) => past.fold(0, (a, d) => a + f(d));
     final lastCounted = monday.addDays(6).isAfter(today)
         ? today
@@ -241,6 +248,7 @@ class _WeekView extends ConsumerWidget {
                   holiday: holidays.holidayOn(d.date)?.name,
                   isToday: d.date == today,
                   isFuture: d.date.isAfter(today),
+                  inBalance: ledger.inBalance(d.date),
                   projects: projects,
                   hasNotices: marked.contains(d.date),
                 ),
@@ -284,8 +292,12 @@ class _DayRow extends ConsumerWidget {
     required this.isToday,
     required this.projects,
     required this.isFuture,
+    this.inBalance = true,
     this.hasNotices = false,
   });
+
+  /// On or after the balance start; before it, no target or difference.
+  final bool inBalance;
 
   /// Shows the small notice marker (cards may be off or dismissed).
   final bool hasNotices;
@@ -388,6 +400,8 @@ class _DayRow extends ConsumerWidget {
             ),
       trailing: day.target == 0 && day.work.worked == 0 && day.credited == 0
           ? null
+          : !inBalance
+          ? (day.work.worked == 0 ? null : Text(formatMinutes(day.work.worked)))
           : InkWell(
               borderRadius: BorderRadius.circular(8),
               onTap: () => showDayExplanation(context, ref, day.date),
@@ -437,164 +451,378 @@ class _MonthView extends ConsumerWidget {
 
     // Balance at the end of each day so far (one pass, not one per day).
     final balances = <int>[];
-    if (!month.isAfter(today)) {
-      var b = ledger.balanceAtEndOf(month.addDays(-1));
-      for (var d = month; !d.isAfter(counted); d = d.addDays(1)) {
-        b += ledger.day(d).delta;
+    var worked = 0, target = 0;
+    // Only days in the balance count (calculations §8): a month before the
+    // balance start has no figures, the start month only from that day.
+    final from = ledger.inBalance(month) ? month : ledger.settings.balanceStart;
+    if (!from.isAfter(counted)) {
+      var b = ledger.balanceAtEndOf(from.addDays(-1));
+      for (var d = from; !d.isAfter(counted); d = d.addDays(1)) {
+        final day = ledger.day(d);
+        b += day.delta;
+        worked += day.credited;
+        target += day.target;
         balances.add(b);
       }
     }
     final monthDelta = balances.isEmpty
         ? 0
-        : balances.last - ledger.balanceAtEndOf(month.addDays(-1));
+        : balances.last - ledger.balanceAtEndOf(from.addDays(-1));
     final first = month.startOfWeek;
     final weeks = (first.daysUntil(last) ~/ 7) + 1;
     final marked = month.isAfter(today)
         ? const <LocalDate>{}
         : ref.watch(noticeDaysProvider((first, counted)));
-    final labels = MaterialLocalizations.of(context).narrowWeekdays;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String signed(int m) => '${m > 0 ? '+' : ''}${formatMinutes(m)}';
 
-    Widget cell(LocalDate d) {
+    // Whether a day has figures worth showing (past or today, with a target
+    // or work).
+    bool counts(DayResult day) =>
+        !day.date.isAfter(today) &&
+        ledger.inBalance(day.date) &&
+        (day.target > 0 || day.credited > 0);
+
+    Widget cell(LocalDate d, {required bool wide, required double height}) {
       final inMonth = d.month == month.month;
       final day = ledger.day(d);
-      final future = d.isAfter(today);
       final type = day.type;
-      final tint = future || day.target == 0 && day.work.worked == 0
-          ? null
-          : scheme.deltaColor(day.delta).withValues(alpha: 0.12);
       final isToday = d == today;
-      return Opacity(
-        opacity: inMonth ? 1 : 0.35,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () => onOpenWeek(d),
-          onLongPress: () => context.go('/calendar/day/$d'),
-          child: Container(
-            margin: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: tint,
-              borderRadius: BorderRadius.circular(12),
-              border: isToday
-                  ? Border.all(color: scheme.primary, width: 2)
-                  : null,
-            ),
-            child: Stack(
-              children: [
-                if (marked.contains(d))
-                  Positioned(
-                    top: 5,
-                    right: 5,
-                    child: Icon(Icons.circle, size: 6, color: scheme.tertiary),
-                  ),
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+      final holiday = holidays.holidayOn(d)?.name;
+      final shown = counts(day);
+      final deltaColor = scheme.deltaColor(day.delta);
+      final weekend = d.weekday >= DateTime.saturday;
+      final number = Text(
+        '${d.day}',
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: holiday != null ? scheme.error : null,
+          fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
+        ),
+      );
+      final typeIcon = type == null
+          ? null
+          : Icon(dayTypeIcon(type), size: 14, color: scheme.dayTypeColor(type));
+      final dot = marked.contains(d)
+          ? Icon(Icons.circle, size: 7, color: scheme.tertiary)
+          : null;
+      final small = theme.textTheme.labelSmall;
+      final Widget content;
+      if (wide) {
+        content = Padding(
+          padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  number,
+                  const SizedBox(width: 6),
+                  ?typeIcon,
+                  const Spacer(),
+                  ?dot,
+                ],
+              ),
+              if (holiday != null && height >= 72)
+                Text(
+                  holiday,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: small?.copyWith(color: scheme.error),
+                ),
+              const Spacer(),
+              if (!shown && day.work.worked > 0)
+                Text(
+                  formatMinutes(day.work.worked),
+                  style: theme.textTheme.bodySmall,
+                ),
+              if (shown)
+                Row(
+                  children: [
+                    Text(
+                      formatMinutes(day.credited),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    const Spacer(),
+                    if (day.delta != 0)
                       Text(
-                        '${d.day}',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: holidays.isHoliday(d) ? scheme.error : null,
-                          fontWeight: isToday ? FontWeight.w700 : null,
+                        signed(day.delta),
+                        style: small?.copyWith(
+                          color: deltaColor,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      SizedBox(
-                        height: 16,
-                        child: type == null
-                            ? null
-                            : Icon(
-                                dayTypeIcon(type),
-                                size: 14,
-                                color: scheme.dayTypeColor(type),
-                              ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
+            ],
+          ),
+        );
+      } else {
+        content = Stack(
+          children: [
+            if (dot != null) Positioned(top: 3, right: 3, child: dot),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  number,
+                  SizedBox(
+                    height: 14,
+                    child: shown && day.delta != 0
+                        ? FittedBox(
+                            child: Text(
+                              signed(day.delta),
+                              style: small?.copyWith(color: deltaColor),
+                            ),
+                          )
+                        : typeIcon,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }
+      return Opacity(
+        opacity: inMonth ? 1 : 0.4,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Material(
+            color: shown
+                ? Color.alphaBlend(
+                    deltaColor.withValues(alpha: day.delta == 0 ? 0 : 0.08),
+                    scheme.surfaceContainerHigh,
+                  )
+                : weekend || holiday != null
+                ? Colors.transparent
+                : scheme.surfaceContainerLow,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: isToday
+                  ? BorderSide(color: scheme.primary, width: 2)
+                  : BorderSide.none,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Tooltip(
+              message: [
+                context.longDate(d),
+                ?holiday,
+                if (type != null) dayTypeLabel(l, type),
+                if (shown)
+                  '${formatMinutes(day.credited)} / '
+                      '${formatMinutes(day.target)} (${signed(day.delta)})',
+              ].join('\n'),
+              waitDuration: const Duration(milliseconds: 600),
+              child: InkWell(
+                onTap: () => context.go('/calendar/day/$d'),
+                onLongPress: () => onOpenWeek(d),
+                child: content,
+              ),
             ),
           ),
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    Widget figure(String label, String value, {Color? color}) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (balances.length > 1)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l.balance,
-                          style: theme.textTheme.titleSmall,
-                        ),
-                      ),
-                      Text(
-                        '${monthDelta >= 0 ? '+' : ''}${formatMinutes(monthDelta)} · ',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      Text(
-                        formatMinutes(balances.last),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: scheme.deltaColor(balances.last),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Sparkline(
-                    values: balances,
-                    color: scheme.deltaColor(balances.last),
-                  ),
-                ],
-              ),
-            ),
+        Text(label, style: theme.textTheme.labelSmall),
+        Text(value, style: theme.textTheme.titleMedium?.copyWith(color: color)),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, box) {
+        final wide = box.maxWidth >= 600;
+        // Six weeks must fit the window next to the summary, so the row
+        // height follows the window instead of the cell width.
+        final screen = MediaQuery.sizeOf(context).height;
+        final weekColumn = wide ? 44.0 : 28.0;
+        final cellWidth = (box.maxWidth - 16 - weekColumn) / 7;
+        final height = wide
+            ? ((screen - 330) / weeks).clamp(56.0, 110.0)
+            : (cellWidth * 1.05).clamp(44.0, 64.0);
+        final summary = [
+          figure(l.worked, formatMinutes(worked)),
+          figure(l.target, formatMinutes(target)),
+          figure(
+            l.difference,
+            signed(monthDelta),
+            color: scheme.deltaColor(monthDelta),
           ),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Row(
+          if (balances.isNotEmpty)
+            figure(
+              l.balance,
+              formatMinutes(balances.last),
+              color: scheme.deltaColor(balances.last),
+            ),
+        ];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!ledger.inBalance(last))
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(
+                    l.beforeBalanceStart(
+                      context.date(ledger.settings.balanceStart),
+                    ),
+                  ),
+                ),
+              ),
+            if (balances.isNotEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  child: wide
+                      ? Row(
+                          children: [
+                            for (final f in summary) ...[
+                              f,
+                              const SizedBox(width: 28),
+                            ],
+                            if (balances.length > 1)
+                              Expanded(
+                                child: Sparkline(
+                                  values: balances,
+                                  color: scheme.deltaColor(balances.last),
+                                  height: 36,
+                                ),
+                              ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(spacing: 20, runSpacing: 8, children: summary),
+                            if (balances.length > 1) ...[
+                              const SizedBox(height: 8),
+                              Sparkline(
+                                values: balances,
+                                color: scheme.deltaColor(balances.last),
+                                height: 32,
+                              ),
+                            ],
+                          ],
+                        ),
+                ),
+              ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
                   children: [
-                    for (var i = 0; i < 7; i++)
-                      Expanded(
-                        child: Center(
-                          // narrowWeekdays starts on Sunday.
-                          child: Text(
-                            labels[(i + 1) % 7],
-                            style: theme.textTheme.labelSmall,
+                    Row(
+                      children: [
+                        SizedBox(width: weekColumn),
+                        for (var i = 0; i < 7; i++)
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                // 2026-11-02 is a Monday.
+                                DateFormat.E(locale)
+                                    .format(DateTime(2026, 11, 2 + i)),
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
                           ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    for (var w = 0; w < weeks; w++)
+                      SizedBox(
+                        height: height,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _WeekLabel(
+                              width: weekColumn,
+                              monday: first.addDays(w * 7),
+                              delta: wide
+                                  ? [
+                                          for (var i = 0; i < 7; i++)
+                                            ledger.day(
+                                              first.addDays(w * 7 + i),
+                                            ),
+                                        ]
+                                        .where(counts)
+                                        .fold(0, (a, d) => a + d.delta)
+                                  : 0,
+                              onTap: () => onOpenWeek(first.addDays(w * 7)),
+                            ),
+                            for (var i = 0; i < 7; i++)
+                              Expanded(
+                                child: cell(
+                                  first.addDays(w * 7 + i),
+                                  wide: wide,
+                                  height: height,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                for (var w = 0; w < weeks; w++)
-                  Row(
-                    children: [
-                      for (var i = 0; i < 7; i++)
-                        Expanded(
-                          child: AspectRatio(
-                            aspectRatio: 0.95,
-                            child: cell(first.addDays(w * 7 + i)),
-                          ),
-                        ),
-                    ],
-                  ),
-              ],
+              ),
             ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// The calendar week beside a month row, with its ±; opens the week.
+class _WeekLabel extends StatelessWidget {
+  const _WeekLabel({
+    required this.width,
+    required this.monday,
+    required this.delta,
+    required this.onTap,
+  });
+
+  final double width;
+  final LocalDate monday;
+  final int delta;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return SizedBox(
+      width: width,
+      child: Tooltip(
+        message: context.l10n.weekNumber('${isoWeekNumber(monday)}'),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${isoWeekNumber(monday)}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              if (delta != 0)
+                FittedBox(
+                  child: Text(
+                    '${delta > 0 ? '+' : ''}${formatMinutes(delta)}',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: scheme.deltaColor(delta),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

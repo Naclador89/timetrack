@@ -1145,5 +1145,10 @@
   "trayOpen": "Open TimeTrack",
   "trayQuit": "Quit",
   "closeToTray": "Keep running in the tray",
-  "closeToTrayHint": "Closing hides the window; the tray icon's menu has Quit."
+  "closeToTrayHint": "Closing hides the window; the tray icon's menu has Quit.",
+  "defaultBreakStart": "Usual break: start",
+  "defaultBreakLength": "Usual break: length",
+  "defaultBreakHint": "Suggested when you add a break",
+  "beforeBalanceStart": "Before the balance starts ({date}): no target, no overtime",
+  "@beforeBalanceStart": {"placeholders": {"date": {"type": "String"}}}
 }
