@@ -125,6 +125,10 @@ _Last updated: 2026-11-08 by Claude Code._
   the user's OK).
 
 - `v0.2.0` (2026-11-07): project time as duration with summary.
+- `v0.3.0` (2026-11-08): JSON restore, sync log, sync on network change, per-diem rates screen;
+  first release with the release signing key (phones uninstall the old debug-signed app once).
+  CI steps that run build hooks go through `tool/retry-download.sh`: GitHub release downloads (the
+  sqlite3 hook fetches its binary from there) returned error pages for a while on that day.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
