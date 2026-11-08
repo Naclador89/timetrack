@@ -1,6 +1,6 @@
 # 0005: CI on GitHub Actions, sized for the free plan
 
-- Status: accepted (2026-11-07)
+- Status: accepted (2026-11-07); the private repo was replaced by a public one in [0008](0008-public-repo-self-update.md)
 
 ## Context
 Windows builds need Windows. The user has a free GitHub account: 2,000 Actions minutes per month for

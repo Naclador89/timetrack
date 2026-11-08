@@ -13,7 +13,8 @@ with no server of its own.
 
 ## Download
 
-Always the latest release (the repo is private, so you need to be signed in to GitHub):
+Always the latest release. From v0.4.0 on, the app tells you about new versions and updates itself
+(Einstellungen → App):
 
 | Platform | Download | Install |
 |---|---|---|
@@ -22,7 +23,7 @@ Always the latest release (the repo is private, so you need to be signed in to G
 | Linux | [timetrack-linux-x64.tar.gz](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-linux-x64.tar.gz) | Unpack, start `bundle/timetrack` |
 
 All versions: [Releases](https://github.com/Naclador89/timetrack/releases). A new release is built by pushing a
-tag `vX.Y.Z` (see `.github/workflows/ci.yml`).
+tag `vX.Y.Z` that matches the version in `app/pubspec.yaml` (see `docs/dev-setup.md`).
 
 **Status**: early development, see [`docs/status.md`](docs/status.md).
 **Contributing, including AI agents**: start with [`AGENTS.md`](AGENTS.md).

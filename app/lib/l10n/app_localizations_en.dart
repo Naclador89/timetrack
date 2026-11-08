@@ -1365,4 +1365,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncLogNetwork => 'after a network change';
+
+  @override
+  String updateAvailable(String version) {
+    return 'TimeTrack $version is available';
+  }
+
+  @override
+  String get updateNotificationText => 'Tap to see what\'s new and update.';
+
+  @override
+  String get updatesChannel => 'Updates';
+
+  @override
+  String get updateNow => 'Update';
+
+  @override
+  String get updateWhatsNew => 'What\'s new';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updateSkip => 'Skip this version';
+
+  @override
+  String updateDownloading(String version, String percent) {
+    return 'Downloading TimeTrack $version … $percent';
+  }
+
+  @override
+  String updateReady(String version) {
+    return 'TimeTrack $version is installed. Restart to use it.';
+  }
+
+  @override
+  String get updateRestart => 'Restart';
+
+  @override
+  String updateFailed(String error) {
+    return 'Update failed: $error';
+  }
+
+  @override
+  String get updateRetry => 'Try again';
+
+  @override
+  String get updateNeedsPermission =>
+      'Allow TimeTrack to install unknown apps, then tap Update again.';
+
+  @override
+  String get updateNoNotes => 'No release notes.';
+
+  @override
+  String get appSection => 'App';
+
+  @override
+  String get checkForUpdates => 'Check for updates';
+
+  @override
+  String installedVersion(String version) {
+    return 'Installed: $version';
+  }
+
+  @override
+  String lastChecked(String when) {
+    return 'last checked $when';
+  }
+
+  @override
+  String get autoUpdateCheck => 'Check for updates automatically';
+
+  @override
+  String get autoUpdateCheckHint =>
+      'At most once a day. Nothing is installed without asking.';
+
+  @override
+  String get upToDate => 'TimeTrack is up to date.';
+
+  @override
+  String get updateCheckFailed => 'Couldn\'t reach GitHub.';
+
+  @override
+  String get releasePage => 'All versions on GitHub';
 }

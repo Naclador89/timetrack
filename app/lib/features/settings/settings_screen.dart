@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:timetrack_core/timetrack_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../sync/sync_controller.dart';
+import '../../update/update_banner.dart';
+import '../../update/update_controller.dart';
 import '../../widgets/dialogs.dart';
 
 /// Official names of the federal states (proper names, not translated).
@@ -384,6 +388,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           }
         },
       ),
+      // spec: updates.md §3
+      header(l.appSection),
+      ListTile(
+        leading: const Icon(Icons.system_update_outlined),
+        title: Text(l.checkForUpdates),
+        subtitle: Text(_versionLine(context)),
+        onTap: () => checkForUpdatesByHand(context, ref),
+      ),
+      SwitchListTile(
+        secondary: const Icon(Icons.update),
+        title: Text(l.autoUpdateCheck),
+        subtitle: Text(l.autoUpdateCheckHint),
+        value: ref.watch(updateStateProvider).value?.auto ?? true,
+        onChanged: (v) =>
+            ref.read(updateControllerProvider.notifier).setAuto(v),
+      ),
+      ListTile(
+        leading: const Icon(Icons.open_in_new),
+        title: Text(l.releasePage),
+        onTap: () =>
+            launchUrl(releasesPage, mode: LaunchMode.externalApplication),
+      ),
     ];
     return Scaffold(
       appBar: AppBar(title: Text(l.navSettings)),
@@ -410,6 +436,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  /// "Installiert: 0.4.0 · zuletzt geprüft 08.11.2026 10:00".
+  String _versionLine(BuildContext context) {
+    final l = context.l10n;
+    final version = ref.watch(installedVersionProvider).value;
+    final checked = ref.watch(updateStateProvider).value?.checked;
+    final locale = Localizations.localeOf(context).toString();
+    return [
+      l.installedVersion(version == null ? '–' : '$version'),
+      if (checked != null)
+        l.lastChecked(
+          DateFormat.yMd(locale).add_Hm().format(checked.toLocal()),
+        ),
+    ].join(' · ');
   }
 
   /// Puts the tiles after each [_Header] into one card; while searching,

@@ -26,6 +26,8 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // lib/update/installer.dart: installs a downloaded, verified release.
+        UpdateInstaller.register(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // lib/app/back_navigation.dart: back on Today sends the app to the
         // background like Home instead of closing it.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "timetrack/system")

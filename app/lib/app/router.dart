@@ -17,6 +17,7 @@ import '../widgets/command_palette.dart';
 import '../features/settings/sync_log_screen.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
+import '../update/update_banner.dart';
 import 'back_navigation.dart';
 import 'format.dart';
 
@@ -174,13 +175,13 @@ class AdaptiveShell extends StatelessWidget {
               ],
             ),
             const VerticalDivider(width: 1),
-            Expanded(child: shell),
+            Expanded(child: UpdateBannerHost(child: shell)),
           ],
         ),
       );
     }
     return Scaffold(
-      body: shell,
+      body: UpdateBannerHost(child: shell),
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: go,

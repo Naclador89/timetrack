@@ -2509,6 +2509,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'after a network change'**
   String get syncLogNetwork;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'TimeTrack {version} is available'**
+  String updateAvailable(String version);
+
+  /// No description provided for @updateNotificationText.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see what\'s new and update.'**
+  String get updateNotificationText;
+
+  /// No description provided for @updatesChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
+  String get updatesChannel;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateNow;
+
+  /// No description provided for @updateWhatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new'**
+  String get updateWhatsNew;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
+
+  /// No description provided for @updateSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this version'**
+  String get updateSkip;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading TimeTrack {version} … {percent}'**
+  String updateDownloading(String version, String percent);
+
+  /// No description provided for @updateReady.
+  ///
+  /// In en, this message translates to:
+  /// **'TimeTrack {version} is installed. Restart to use it.'**
+  String updateReady(String version);
+
+  /// No description provided for @updateRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get updateRestart;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed: {error}'**
+  String updateFailed(String error);
+
+  /// No description provided for @updateRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get updateRetry;
+
+  /// No description provided for @updateNeedsPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow TimeTrack to install unknown apps, then tap Update again.'**
+  String get updateNeedsPermission;
+
+  /// No description provided for @updateNoNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'No release notes.'**
+  String get updateNoNotes;
+
+  /// No description provided for @appSection.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get appSection;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @installedVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed: {version}'**
+  String installedVersion(String version);
+
+  /// No description provided for @lastChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'last checked {when}'**
+  String lastChecked(String when);
+
+  /// No description provided for @autoUpdateCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates automatically'**
+  String get autoUpdateCheck;
+
+  /// No description provided for @autoUpdateCheckHint.
+  ///
+  /// In en, this message translates to:
+  /// **'At most once a day. Nothing is installed without asking.'**
+  String get autoUpdateCheckHint;
+
+  /// No description provided for @upToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'TimeTrack is up to date.'**
+  String get upToDate;
+
+  /// No description provided for @updateCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach GitHub.'**
+  String get updateCheckFailed;
+
+  /// No description provided for @releasePage.
+  ///
+  /// In en, this message translates to:
+  /// **'All versions on GitHub'**
+  String get releasePage;
 }
 
 class _AppLocalizationsDelegate

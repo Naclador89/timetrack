@@ -47,3 +47,4 @@ export 'src/tracking/quick_actions.dart';
 export 'src/tracking/quick_entry.dart';
 export 'src/tracking/time_tracker.dart';
 export 'src/tracking/trip_log.dart';
+export 'src/update/update.dart';

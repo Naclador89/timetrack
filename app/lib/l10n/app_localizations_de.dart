@@ -1371,4 +1371,88 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get syncLogNetwork => 'nach Netzwechsel';
+
+  @override
+  String updateAvailable(String version) {
+    return 'TimeTrack $version ist verfügbar';
+  }
+
+  @override
+  String get updateNotificationText =>
+      'Tippen, um die Neuerungen zu sehen und zu aktualisieren.';
+
+  @override
+  String get updatesChannel => 'Updates';
+
+  @override
+  String get updateNow => 'Aktualisieren';
+
+  @override
+  String get updateWhatsNew => 'Was ist neu';
+
+  @override
+  String get updateLater => 'Später';
+
+  @override
+  String get updateSkip => 'Diese Version überspringen';
+
+  @override
+  String updateDownloading(String version, String percent) {
+    return 'Lade TimeTrack $version … $percent';
+  }
+
+  @override
+  String updateReady(String version) {
+    return 'TimeTrack $version ist installiert. Starte neu, um es zu verwenden.';
+  }
+
+  @override
+  String get updateRestart => 'Neu starten';
+
+  @override
+  String updateFailed(String error) {
+    return 'Update fehlgeschlagen: $error';
+  }
+
+  @override
+  String get updateRetry => 'Erneut versuchen';
+
+  @override
+  String get updateNeedsPermission =>
+      'Erlaube TimeTrack „Unbekannte Apps installieren“ und tippe dann erneut auf „Aktualisieren“.';
+
+  @override
+  String get updateNoNotes => 'Keine Versionshinweise.';
+
+  @override
+  String get appSection => 'App';
+
+  @override
+  String get checkForUpdates => 'Nach Updates suchen';
+
+  @override
+  String installedVersion(String version) {
+    return 'Installiert: $version';
+  }
+
+  @override
+  String lastChecked(String when) {
+    return 'zuletzt geprüft $when';
+  }
+
+  @override
+  String get autoUpdateCheck => 'Automatisch nach Updates suchen';
+
+  @override
+  String get autoUpdateCheckHint =>
+      'Höchstens einmal am Tag. Installiert wird nur nach Rückfrage.';
+
+  @override
+  String get upToDate => 'TimeTrack ist aktuell.';
+
+  @override
+  String get updateCheckFailed => 'Keine Verbindung zu GitHub.';
+
+  @override
+  String get releasePage => 'Alle Versionen auf GitHub';
 }

@@ -12,6 +12,7 @@ import '../app/format.dart';
 import '../app/services.dart';
 import '../l10n/app_localizations.dart';
 import '../sync/sync_controller.dart';
+import '../update/background_check.dart';
 
 // Android quick access (concept §6 E1, milestone M5).
 //
@@ -150,7 +151,8 @@ Future<void> onQuickAction(Uri? uri) {
       .catchError((Object _) {});
 }
 
-/// Background entry point for WorkManager jobs (periodic sync).
+/// Background entry point for WorkManager jobs (periodic sync, daily update
+/// check).
 @pragma('vm:entry-point')
 void backgroundTaskDispatcher() {
   Workmanager().executeTask((task, _) async {
@@ -159,6 +161,7 @@ void backgroundTaskDispatcher() {
     try {
       await syncInBackground(services.repository);
       await publishFromStore(services.store);
+      await checkUpdateInBackground(services.store);
     } finally {
       await services.close();
     }

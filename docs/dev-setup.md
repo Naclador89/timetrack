@@ -79,6 +79,15 @@ mkdir -p ~/.local/opt && rm -rf ~/.local/opt/timetrack && cp -r app/build/linux/
 # plus a launcher in ~/.local/share/applications/timetrack.desktop (Exec=$HOME/.local/opt/timetrack/timetrack)
 ```
 
+**Releasing** (the apps update themselves from it, `docs/specs/updates.md`):
+1. Bump `version:` in `app/pubspec.yaml` (e.g. `0.4.1+5`; the build number must grow for Android).
+2. Commit, push, wait for CI to be green.
+3. Tag and push: `git tag -a v0.4.1 -m "…" && tool/dev.sh git push origin v0.4.1`. CI refuses a tag
+   that doesn't match the pubspec version, builds all three platforms and publishes the release with
+   `SHA256SUMS` and generated notes.
+4. Within a day every installed app shows the update banner (or at once: Einstellungen → App →
+   Nach Updates suchen).
+
 ## 5. Android release signing
 
 Without a keystore, release APKs are signed with the debug key. That is fine for testing, but every
@@ -102,6 +111,8 @@ certificate `CN=TimeTrack, O=Naclador89`, SHA-256
 `23:D0:B2:19:7F:93:57:8B:DF:92:4F:54:EA:93:34:93:B8:2E:F5:0D:48:4A:21:08:F6:2D:DA:CB:3B:75:A4:E8`).
 Both files exist on the maintainer machine; the user keeps a backup. The two CI secrets are set.
 Builds before that date were signed with debug keys, so switching needed one reinstall on the phone.
+Since the move to the public repo (ADR 0008) the secrets are set on `Naclador89/timetrack`; the old
+private repo `Naclador89/timetrack-private` still has its own copies.
 For CI, add the repo secrets `ANDROID_KEYSTORE_BASE64` (`base64 -w0 app/android/app/release.jks`)
 and `ANDROID_KEY_PROPERTIES` (the content of `key.properties`).
 

@@ -1,7 +1,7 @@
 name: timetrack
 description: "TimeTrack: working hours, projects, home office and travel. Android, Linux, Windows."
 publish_to: 'none'
-version: 0.3.0+3
+version: 0.4.0+4
 
 environment:
   sdk: ^3.13.0
@@ -25,6 +25,7 @@ dependencies:
   home_widget: ^0.10.0
   http: ^1.6.0
   intl: ^0.20.3
+  package_info_plus: ^10.2.2
   path_provider: ^2.1.6
   pdf: ^3.13.1
   share_plus: ^13.3.1

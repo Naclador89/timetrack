@@ -14,7 +14,7 @@ You want one personal app on **Linux (Fedora/GNOME)**, **Windows** and **Android
 | Home office | Every session has a **location** (office / home / on-site / travel). Allowed home-office share as a **weekly or monthly percentage**, with "remaining" display, forecast and warning |
 | Travel | **Trips** with travel calendar, **travel time** recorded separately, your employer's crediting rules (weekday = normal day, Saturday = overtime up to 11 h, Sunday = not counted), **per-diem basis** for expense claims |
 | Sync | **Local-first, no own server.** Each device writes files that are never changed afterwards to **your Nextcloud via WebDAV** |
-| Windows build | **GitHub Actions** (private repo); Flutter can't cross-compile to Windows |
+| Windows build | **GitHub Actions** (public repo since 2026-11-08, ADR 0008); Flutter can't cross-compile to Windows |
 | Outputs | Monthly **timesheet PDF**, **travel report**, **order report** (hours per order number), **CSV export**, **in-app statistics** |
 | Extras | Android quick access (a Garmin glance and auto clock-in were dropped by the user on 2026-11-08) |
 
@@ -196,7 +196,7 @@ Applying a change is **idempotent and order-independent**: a field is updated on
   - fl_chart, pdf + printing, share_plus/file_selector
   - timezone/flutter_timezone, connectivity_plus, url_launcher, flutter_localizations
 - **Dev environment**: a new Fedora **toolbox `flutter`**. The host has no clang/cmake/ninja, and `sudo` on the host is awkward from here, while it works without a password inside a toolbox. Inside it: Flutter stable, clang, cmake, ninja, gtk3-devel, libsecret-devel, a JDK, Android cmdline-tools. The phone connects over **wireless debugging** (`adb pair`), which avoids USB permissions in the container.
-- **CI (GitHub Actions, private repo, sized for the free plan)**: GitHub Free includes 2,000 Actions minutes per month for private repos. Windows minutes have counted double, so we assume that. Storage for Actions artifacts is limited (500 MB on Free).
+- **CI (GitHub Actions; planned for a private repo on the free plan, public since 2026-11-08, ADR 0008)**: GitHub Free includes 2,000 Actions minutes per month for private repos. Windows minutes have counted double, so we assume that. Storage for Actions artifacts is limited (500 MB on Free).
   - **On every push**: tests only, on Linux (core, app, Nextcloud service container), about 5 min.
   - **Linux and Android**: built locally in the toolbox day to day. CI builds them only for releases.
   - **Windows**: built only on a `v*` tag or by manual trigger (`workflow_dispatch`), about 10–15 min, so about 20–30 billed minutes.

@@ -12,3 +12,4 @@ To change a decision, add a new ADR that supersedes the old one, and mark the ol
 | [0005](0005-ci-github-actions-free.md) | CI on GitHub Actions, sized for the free plan |
 | [0006](0006-e2e-encryption.md) | End-to-end encryption of the sync files |
 | [0007](0007-generic-row-storage.md) | Synced rows stored generically (JSON fields) in SQLite |
+| [0008](0008-public-repo-self-update.md) | Public repo; the app updates itself from GitHub Releases |

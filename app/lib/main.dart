@@ -14,6 +14,7 @@ import 'l10n/app_localizations.dart';
 import 'quick/quick_access.dart';
 import 'quick/quick_access_host.dart';
 import 'sync/sync_controller.dart';
+import 'update/update_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,7 +76,8 @@ class TimeTrackApp extends StatelessWidget {
   );
 }
 
-/// Starts the sync controller and syncs when the app returns to the foreground.
+/// Starts the sync and update controllers; both act when the app returns to
+/// the foreground.
 class _SyncLifecycle extends ConsumerStatefulWidget {
   const _SyncLifecycle({required this.child});
 
@@ -92,7 +94,10 @@ class _SyncLifecycleState extends ConsumerState<_SyncLifecycle> {
   void initState() {
     super.initState();
     _lifecycle = AppLifecycleListener(
-      onResume: () => ref.read(syncControllerProvider.notifier).onResume(),
+      onResume: () {
+        ref.read(syncControllerProvider.notifier).onResume();
+        ref.read(updateControllerProvider.notifier).onResume();
+      },
     );
   }
 
@@ -104,7 +109,10 @@ class _SyncLifecycleState extends ConsumerState<_SyncLifecycle> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(syncControllerProvider); // keeps the controller alive
+    // Keep the controllers alive.
+    ref
+      ..watch(syncControllerProvider)
+      ..watch(updateControllerProvider);
     return widget.child;
   }
 }

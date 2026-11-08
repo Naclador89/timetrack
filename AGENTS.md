@@ -21,7 +21,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log). |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update). |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
@@ -75,7 +75,8 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - **Commits**: Conventional Commits (`feat(core): …`, `fix(app): …`, `docs: …`), small and focused.
 - **Android permissions go into `app/android/app/src/main/AndroidManifest.xml`.** Flutter adds `INTERNET` only to the debug/profile manifests, so a missing permission shows up only in release builds (that's how sync broke on the phone once). Intents opened via `url_launcher` need a `<queries>` entry.
 - **Demo data never meets real accounts.** The sync connection lives in the OS keyring per *app id*, not per database. A demo or screenshot build of the same app would find it, so it must be built with `--dart-define=TIMETRACK_DISABLE_SYNC=true` (`tool/screenshot.sh` does this). The connection is also bound to the device id of its database (`SyncConfig.deviceId`). On 2026-11-07 a screenshot run once uploaded sample data to the user's Nextcloud; it was cleaned up with tombstones.
-- **Never commit secrets**: no keystores, Nextcloud credentials or personal time data.
+- **Never commit secrets**: no keystores, Nextcloud credentials or personal time data. **The repo is public** (ADR 0008): nothing personal either, and commits use the GitHub noreply address, never a personal email.
+- **Releases**: bump `version:` in `app/pubspec.yaml`, then tag `v<that version>`; CI refuses a tag that doesn't match, because the in-app updater compares the two (`docs/specs/updates.md`).
 
 ## Definition of done
 

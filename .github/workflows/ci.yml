@@ -1,4 +1,4 @@
-# CI sized for the GitHub Free plan (2,000 min/month for private repos; Windows minutes count double).
+# The repo is public (ADR 0008), so standard runners cost nothing; builds still run only when needed.
 # - Every push / PR: tests only, on Linux (cheap).
 # - Platform builds: only for `v*` tags or a manual run (workflow_dispatch).
 # - Tags additionally publish a GitHub Release with all builds attached.
@@ -30,6 +30,15 @@ jobs:
         with:
           flutter-version-file: ${{ env.FLUTTER_VERSION_FILE }}
           cache: true
+      - name: Tag matches the app version
+        # The app offers a release when its tag is newer than the pubspec version (docs/specs/updates.md §2, §7).
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version=$(sed -n 's/^version: *\([0-9.]*\).*/\1/p' app/pubspec.yaml)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match app/pubspec.yaml version $version"
+            exit 1
+          fi
       - name: Install native libraries for tests
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
       - name: core – format, analyze, test
@@ -140,9 +149,14 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           merge-multiple: true
+      - name: Checksums
+        # The app checks every download against this file (docs/specs/updates.md §5).
+        run: sha256sum timetrack-linux-x64.tar.gz timetrack-android.apk timetrack-windows-x64.zip > SHA256SUMS
       - uses: softprops/action-gh-release@v3
         with:
+          generate_release_notes: true
           files: |
             timetrack-linux-x64.tar.gz
             timetrack-android.apk
             timetrack-windows-x64.zip
+            SHA256SUMS

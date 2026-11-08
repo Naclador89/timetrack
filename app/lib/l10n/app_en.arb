@@ -833,5 +833,73 @@
       }
     }
   },
-  "syncLogNetwork": "after a network change"
+  "syncLogNetwork": "after a network change",
+  "updateAvailable": "TimeTrack {version} is available",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNotificationText": "Tap to see what's new and update.",
+  "updatesChannel": "Updates",
+  "updateNow": "Update",
+  "updateWhatsNew": "What's new",
+  "updateLater": "Later",
+  "updateSkip": "Skip this version",
+  "updateDownloading": "Downloading TimeTrack {version} … {percent}",
+  "@updateDownloading": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "updateReady": "TimeTrack {version} is installed. Restart to use it.",
+  "@updateReady": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateRestart": "Restart",
+  "updateFailed": "Update failed: {error}",
+  "@updateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "updateRetry": "Try again",
+  "updateNeedsPermission": "Allow TimeTrack to install unknown apps, then tap Update again.",
+  "updateNoNotes": "No release notes.",
+  "appSection": "App",
+  "checkForUpdates": "Check for updates",
+  "installedVersion": "Installed: {version}",
+  "@installedVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "lastChecked": "last checked {when}",
+  "@lastChecked": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "autoUpdateCheck": "Check for updates automatically",
+  "autoUpdateCheckHint": "At most once a day. Nothing is installed without asking.",
+  "upToDate": "TimeTrack is up to date.",
+  "updateCheckFailed": "Couldn't reach GitHub.",
+  "releasePage": "All versions on GitHub"
 }

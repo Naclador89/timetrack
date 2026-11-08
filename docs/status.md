@@ -3,7 +3,7 @@
 _Last updated: 2026-11-08 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: M4 (reports) mostly done; release v0.1.0 published
+## Current milestone: in-app updates (v0.4.0); v0.3.0 published
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -11,13 +11,13 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] CI workflow and Copilot setup steps. First manual run green: test 1:42, Linux 1:22,
       Android 4:54, Windows 7:56, so about 25 billed minutes for a full build
 - [x] Local builds checked: Linux release bundle, Android release APK (signed with the debug key)
-- [x] Private GitHub repo `Naclador89/timetrack`, pushed; `gh` is logged in inside the toolbox
+- [x] GitHub repo `Naclador89/timetrack` (public since 2026-11-08, ADR 0008; the old private repo
+      with the original history is `Naclador89/timetrack-private`), pushed; `gh` is logged in inside the toolbox
       (push with `tool/dev.sh git push`)
 - [x] Windows ZIP from CI starts on the user's Windows PC, and that PC reaches the Nextcloud WebDAV
       endpoint (2026-11-07). The M0 "done when" criterion is met.
-- [ ] Actions bumped to their current majors (checkout v7, upload-artifact v7, download-artifact v8,
-      setup-java v6, action-gh-release v3) to drop the Node 20 deprecation warnings. Only `test` has run
-      on them so far; the build and release jobs get checked at the next tag or manual run.
+- [x] Actions bumped to their current majors (checkout v7, upload-artifact v7, download-artifact v8,
+      setup-java v6, action-gh-release v3); all jobs ran green in the v0.3.0 release.
 - [x] Android release keystore (`docs/dev-setup.md` §5, 2026-11-08): local `key.properties` + `release.jks`
       (git-ignored), CI secrets set; local and CI APKs now share one key. The phone needs one reinstall.
 - [x] Android application ID settled: `io.github.naclador89.timetrack` (also the Linux app ID)
@@ -125,6 +125,7 @@ _Last updated: 2026-11-08 by Claude Code._
   the user's OK).
 
 - `v0.2.0` (2026-11-07): project time as duration with summary.
+  (v0.1.0 and v0.2.0 exist only in the old private repo `timetrack-private`.)
 - `v0.3.0` (2026-11-08): JSON restore, sync log, sync on network change, per-diem rates screen;
   first release with the release signing key (phones uninstall the old debug-signed app once).
   CI steps that run build hooks go through `tool/retry-download.sh`: GitHub release downloads (the
@@ -229,9 +230,28 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] Polish: the day view's quick-entry button folds to its icon while scrolling down
       (`CollapsingFab`); the booking sheet's time switch reads "Startzeit angeben" with a hint.
 
-**Next tasks**: the user backs up the keystore, reinstalls the app on the phone once (new key),
-checks the builds and re-enters the three reset settings.
-**The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
+### In-app updates (requested by the user 2026-11-08; spec `docs/specs/updates.md`, ADR 0008)
+- [x] Repo made public: history checked (no secrets, keystores, databases, real URLs or personal
+      data), rewritten with the noreply address, pushed to a new public repo; old one renamed to
+      `timetrack-private`. Android secrets set on the new repo, fork workflows need approval.
+      v0.3.0 rebuilt and released there.
+- [x] core `src/update/update.dart`: `AppVersion`, `Release.fromGitHub`, `fetchLatestRelease`,
+      `parseSha256Sums`, `sha256Hex`, `UpdateState` (local_values `update_state`), `UpdateChecker`
+      (24-h pause, auto switch, skip, notification once per version).
+- [x] app `lib/update/`: `UpdateController` (start/resume check, manual check, install, restart),
+      `downloadVerified`, installers (Android `PackageInstaller` via `UpdateInstaller.kt`, Linux
+      bundle swap with rollback, Windows PowerShell script), banner above all tabs with notes dialog,
+      Einstellungen → App (version, manual check, auto switch, release page), Android background
+      check + system notification (`UpdateNotice.kt`, opens `timetrack://update`).
+- [x] CI: `SHA256SUMS` and generated notes on releases; tag must match the pubspec version.
+- [x] Version 0.4.0+4.
+- [ ] Tag v0.4.0 (with the user's OK); the user installs it once by hand on all three systems.
+- [ ] Then a small v0.4.1 to test the updater for real: Android (unknown-apps permission, confirm,
+      data kept), Linux (`~/.local/opt/timetrack` swap + restart), Windows (script replaces the
+      folder, app restarts). The Windows script has not run on a real PC yet.
+
+**Next tasks**: the user reinstalls the phone app once (new key, v0.3.0 or later) and re-enters the
+three reset settings; then release v0.4.0 and test the updater with v0.4.1.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -333,3 +353,7 @@ checks the builds and re-enters the three reset settings.
 - 2026-11-08, Claude Code: travel record vs. overtime account (`tripLegs`, `tripSteps`); 213 core
   tests, 22 widget tests green.
 - 2026-11-08, Claude Code: back navigation concept and implementation; 23 widget tests green.
+- 2026-11-08, Claude Code: release v0.3.0 (GitHub release downloads served error pages; CI now
+  retries that with `tool/retry-download.sh`). Repo made public with rewritten history (noreply
+  address), old one kept as `timetrack-private`. In-app updates (spec `updates.md`, ADR 0008): core
+  checker, app banner/settings/installers, Android notification, CI checksums and tag check.

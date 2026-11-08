@@ -8,6 +8,8 @@ import 'package:timetrack_core/timetrack_core.dart';
 import '../app/providers.dart';
 import '../features/projects/project_picker.dart';
 import '../features/projects/project_time_dialog.dart';
+import '../update/update_banner.dart';
+import '../update/update_controller.dart';
 import 'quick_access.dart';
 
 /// What notification, tile and widget should show, from the UI's providers.
@@ -23,6 +25,9 @@ final quickStatusProvider = Provider<QuickStatus>((ref) {
 
 /// URI of the notification's "Switch project" action (opens the app).
 final switchProjectUri = Uri.parse('timetrack://quick/switch');
+
+/// URI of the update notification (`UpdateNotice.kt`).
+final updateUri = Uri.parse('timetrack://update');
 
 /// Keeps the Android quick access in step with the app (concept §6 E1):
 /// mirrors every state change, reloads after background writes, opens the
@@ -80,7 +85,24 @@ class _QuickAccessHostState extends ConsumerState<QuickAccessHost> {
 
   BuildContext? get _dialogContext => widget.navigatorKey.currentContext;
 
+  /// The update notification was tapped (spec: updates.md §4).
+  Future<void> _showUpdate() async {
+    final updater = ref.read(updateControllerProvider.notifier);
+    if (ref.read(updateControllerProvider).release == null) {
+      try {
+        await updater.checkNow();
+      } on Object {
+        return; // Offline now: the banner comes with the next check.
+      }
+    }
+    final context = _dialogContext;
+    if (context != null && context.mounted) {
+      await showUpdateDialog(context, ref);
+    }
+  }
+
   Future<void> _onLaunch(Uri? uri) async {
+    if (uri == updateUri) return _showUpdate();
     if (uri != switchProjectUri) return;
     final context = _dialogContext;
     if (context == null) return;

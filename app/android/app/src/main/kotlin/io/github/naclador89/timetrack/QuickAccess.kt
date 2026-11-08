@@ -63,6 +63,7 @@ object QuickAccess {
     fun render(context: Context) {
         val s = snapshot(context)
         renderNotification(context, s)
+        UpdateNotice.render(context)
         renderWidgets(context, s)
         TileService.requestListeningState(
             context,
