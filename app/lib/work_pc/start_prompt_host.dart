@@ -42,12 +42,14 @@ class _StartPromptHostState extends ConsumerState<StartPromptHost> {
   }
 
   Future<void> _ask() async {
-    await _waitForSync();
+    // Autostart without "Arbeits-PC": nothing to ask (work-pc.md §2).
+    final asks = await ref.read(startPromptProvider.future);
+    if (asks) await _waitForSync();
     final prompt = StartPrompt(
       ref.read(storeProvider),
       now: ref.read(clockProvider),
     );
-    final offered = await prompt.offer();
+    final offered = asks ? await prompt.offer() : null;
     if (offered == null) {
       // Nothing to ask: from the taskbar into the tray (work-pc.md §3).
       if (await ref.read(closeToTrayProvider.future)) {

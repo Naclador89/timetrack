@@ -478,11 +478,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ref.read(updateControllerProvider.notifier).setAuto(v),
       ),
       // spec: work-pc.md §1 (Windows only)
-      if (ref.watch(workPcPlatformProvider) case final workPc?)
+      if (ref.watch(workPcPlatformProvider) case final workPc?) ...[
         SwitchListTile(
-          secondary: const Icon(Icons.work_outline),
-          title: Text(l.workPc),
-          subtitle: Text(l.workPcHint),
+          secondary: const Icon(Icons.power_settings_new),
+          title: Text(l.autostart),
+          subtitle: Text(l.autostartHint),
           value: ref.watch(workPcEnabledProvider).value ?? false,
           onChanged: (v) async {
             final messenger = ScaffoldMessenger.of(context);
@@ -494,6 +494,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ref.invalidate(workPcEnabledProvider);
           },
         ),
+        SwitchListTile(
+          secondary: const Icon(Icons.work_outline),
+          title: Text(l.workPc),
+          subtitle: Text(l.workPcHint),
+          value:
+              (ref.watch(workPcEnabledProvider).value ?? false) &&
+              (ref.watch(startPromptProvider).value ?? true),
+          onChanged: (v) async {
+            final messenger = ScaffoldMessenger.of(context);
+            await ref
+                .read(storeProvider)
+                .transaction((tx) => tx.setLocalValue(startPromptKey, '$v'));
+            ref.invalidate(startPromptProvider);
+            // Asking at sign-in needs the start at sign-in.
+            if (v && !(ref.read(workPcEnabledProvider).value ?? false)) {
+              try {
+                await workPc.setEnabled(true);
+              } on Object {
+                messenger.showSnackBar(SnackBar(content: Text(l.workPcFailed)));
+              }
+              ref.invalidate(workPcEnabledProvider);
+            }
+          },
+        ),
+      ],
       // spec: work-pc.md §3 (Windows only)
       if (ref.watch(workPcPlatformProvider) != null)
         SwitchListTile(

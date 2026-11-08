@@ -903,7 +903,7 @@
   "updateCheckFailed": "Couldn't reach GitHub.",
   "releasePage": "All versions on GitHub",
   "workPc": "Work PC",
-  "workPcHint": "Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.",
+  "workPcHint": "Asks after you sign in to Windows whether to start tracking for today (turns on “Start with Windows” too).",
   "workPcFailed": "Couldn't change the Windows autostart.",
   "startTrackingTitle": "Start tracking for today?",
   "startTrackingText": "No working time recorded today yet.",
@@ -1150,5 +1150,7 @@
   "defaultBreakLength": "Usual break: length",
   "defaultBreakHint": "Suggested when you add a break",
   "beforeBalanceStart": "Before the balance starts ({date}): no target, no overtime",
-  "@beforeBalanceStart": {"placeholders": {"date": {"type": "String"}}}
+  "@beforeBalanceStart": {"placeholders": {"date": {"type": "String"}}},
+  "autostart": "Start with Windows",
+  "autostartHint": "Starts TimeTrack when you sign in to Windows (this user only)."
 }

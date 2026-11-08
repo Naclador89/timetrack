@@ -173,24 +173,53 @@ void main() {
     expect(find.text('Start tracking for today?'), findsNothing);
   });
 
-  testWidgets('§1 the setting switches the autostart', (tester) async {
-    await pump(tester, store, repo, workPc, autostarted: false);
+  Future<void> openSetting(WidgetTester tester, String title) async {
     final context = tester.element(find.byType(Scaffold).first);
     GoRouterHelper(context).push('/settings');
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
-      find.text('Work PC'),
+      find.text(title),
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.text('Work PC'));
+    await tester.ensureVisible(find.text(title));
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('§1 "Start with Windows" switches the Run key', (tester) async {
+    await pump(tester, store, repo, workPc, autostarted: false);
+    await openSetting(tester, 'Start with Windows');
+    await tester.tap(find.text('Start with Windows'));
+    await tester.pumpAndSettle();
+    expect(workPc.enabled, isTrue);
+    await tester.tap(find.text('Start with Windows'));
+    await tester.pumpAndSettle();
+    expect(workPc.enabled, isFalse);
+  });
+
+  testWidgets('§1 "Work PC" turns the autostart on with it', (tester) async {
+    await pump(tester, store, repo, workPc, autostarted: false);
+    await openSetting(tester, 'Work PC');
     await tester.tap(find.text('Work PC'));
     await tester.pumpAndSettle();
     expect(workPc.enabled, isTrue);
-    await tester.tap(find.text('Work PC'));
-    await tester.pumpAndSettle();
-    expect(workPc.enabled, isFalse);
+    final asks = await tester.runAsync(
+      () => store.transaction((tx) => tx.localValue(startPromptKey)),
+    );
+    expect(asks, 'true');
+  });
+
+  testWidgets('§2 autostart without "Work PC": no question, into the tray', (
+    tester,
+  ) async {
+    await tester.runAsync(
+      () =>
+          store.transaction((tx) => tx.setLocalValue(startPromptKey, 'false')),
+    );
+    t = tester;
+    await pump(tester, store, repo, workPc);
+    expect(find.text('Start tracking for today?'), findsNothing);
+    expect(workPc.hidden, 1);
   });
 
   group('§3 tray icon', () {

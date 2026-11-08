@@ -1454,7 +1454,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workPcHint =>
-      'Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.';
+      'Asks after you sign in to Windows whether to start tracking for today (turns on “Start with Windows” too).';
 
   @override
   String get workPcFailed => 'Couldn\'t change the Windows autostart.';
@@ -1782,4 +1782,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String beforeBalanceStart(String date) {
     return 'Before the balance starts ($date): no target, no overtime';
   }
+
+  @override
+  String get autostart => 'Start with Windows';
+
+  @override
+  String get autostartHint =>
+      'Starts TimeTrack when you sign in to Windows (this user only).';
 }

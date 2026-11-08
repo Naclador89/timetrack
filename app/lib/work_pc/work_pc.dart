@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app/providers.dart';
 
 /// Whether Windows started the app at sign-in (`--autostart`, set by the
-/// Run key the work PC setting writes; spec: work-pc.md §1).
+/// Run key the autostart setting writes; spec: work-pc.md §1).
 final autostartedProvider = Provider<bool>((ref) => false);
 
 /// The work PC glue of this platform, or `null` where there is none (only
@@ -16,7 +16,7 @@ final workPcPlatformProvider = Provider<WorkPcPlatform?>(
   (ref) => Platform.isWindows ? WindowsWorkPc() : null,
 );
 
-/// Whether the work PC setting is on.
+/// Whether the app starts at sign-in (the Run key, work-pc.md §1).
 final workPcEnabledProvider = FutureProvider<bool>(
   (ref) async => await ref.watch(workPcPlatformProvider)?.isEnabled() ?? false,
 );
@@ -147,6 +147,19 @@ final class WindowsWorkPc implements WorkPcPlatform {
 
 /// Device-local `local_values` key: whether closing hides to the tray.
 const closeToTrayKey = 'close_to_tray';
+
+/// `local_values` key: ask after sign-in whether to start tracking
+/// (work-pc.md §1).
+const startPromptKey = 'start_prompt';
+
+/// Whether an autostart asks to start tracking (default on, so setups from
+/// before the autostart switch keep asking).
+final startPromptProvider = FutureProvider<bool>((ref) async {
+  final raw = await ref
+      .watch(storeProvider)
+      .transaction((tx) => tx.localValue(startPromptKey));
+  return raw != 'false';
+});
 
 /// Whether the close button hides the window to the tray (default on).
 final closeToTrayProvider = FutureProvider<bool>((ref) async {

@@ -426,7 +426,7 @@
   "updateCheckFailed": "Keine Verbindung zu GitHub.",
   "releasePage": "Alle Versionen auf GitHub",
   "workPc": "Arbeits-PC",
-  "workPcHint": "Startet TimeTrack beim Anmelden an Windows und fragt, ob das Tracking für heute starten soll.",
+  "workPcHint": "Fragt nach dem Anmelden an Windows, ob das Tracking für heute starten soll (schaltet „Mit Windows starten“ mit ein).",
   "workPcFailed": "Der Windows-Autostart ließ sich nicht ändern.",
   "startTrackingTitle": "Tracking für heute starten?",
   "startTrackingText": "Heute ist noch keine Arbeitszeit erfasst.",
@@ -514,5 +514,7 @@
   "defaultBreakStart": "Übliche Pause: Beginn",
   "defaultBreakLength": "Übliche Pause: Dauer",
   "defaultBreakHint": "Vorschlag beim Eintragen einer Pause",
-  "beforeBalanceStart": "Vor Beginn des Überstundensaldos ({date}): kein Soll, keine Überstunden"
+  "beforeBalanceStart": "Vor Beginn des Überstundensaldos ({date}): kein Soll, keine Überstunden",
+  "autostart": "Mit Windows starten",
+  "autostartHint": "Startet TimeTrack beim Anmelden an Windows (nur für diesen Benutzer)."
 }

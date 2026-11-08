@@ -337,6 +337,9 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - [x] Days before the balance start (§8) show no target or ± and stay out of the totals and the
       curve (the schedule starts on 1 January for the vacation account, so October showed
       −176:00); a month before the start says so. `Ledger.inBalance`.
+- [x] Windows: separate switch "Mit Windows starten" (the HKCU Run key, work-pc.md §1); "Arbeits-PC"
+      is now only the question after sign-in (`local_values` `start_prompt`, default on so
+      existing setups keep asking) and turns the autostart on with it.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -452,3 +455,5 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-08, Claude Code: work-PC feedback after v0.5.0: usual break settings, snack bars that
   go away and don't cover sheets, new month view, no target/± before the balance start. 274 core
   tests, 63 widget tests green.
+- 2026-11-08, Claude Code: Windows autostart as its own setting, split from "Arbeits-PC".
+  65 widget tests green.

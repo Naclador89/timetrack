@@ -1461,7 +1461,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get workPcHint =>
-      'Startet TimeTrack beim Anmelden an Windows und fragt, ob das Tracking für heute starten soll.';
+      'Fragt nach dem Anmelden an Windows, ob das Tracking für heute starten soll (schaltet „Mit Windows starten“ mit ein).';
 
   @override
   String get workPcFailed => 'Der Windows-Autostart ließ sich nicht ändern.';
@@ -1789,4 +1789,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String beforeBalanceStart(String date) {
     return 'Vor Beginn des Überstundensaldos ($date): kein Soll, keine Überstunden';
   }
+
+  @override
+  String get autostart => 'Mit Windows starten';
+
+  @override
+  String get autostartHint =>
+      'Startet TimeTrack beim Anmelden an Windows (nur für diesen Benutzer).';
 }

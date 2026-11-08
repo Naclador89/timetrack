@@ -2657,7 +2657,7 @@ abstract class AppLocalizations {
   /// No description provided for @workPcHint.
   ///
   /// In en, this message translates to:
-  /// **'Starts TimeTrack when you sign in to Windows and asks whether to start tracking for today.'**
+  /// **'Asks after you sign in to Windows whether to start tracking for today (turns on “Start with Windows” too).'**
   String get workPcHint;
 
   /// No description provided for @workPcFailed.
@@ -3187,6 +3187,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Before the balance starts ({date}): no target, no overtime'**
   String beforeBalanceStart(String date);
+
+  /// No description provided for @autostart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with Windows'**
+  String get autostart;
+
+  /// No description provided for @autostartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts TimeTrack when you sign in to Windows (this user only).'**
+  String get autostartHint;
 }
 
 class _AppLocalizationsDelegate

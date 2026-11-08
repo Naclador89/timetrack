@@ -4,19 +4,26 @@ Status: **normative**. Code: `packages/core/lib/src/tracking/start_prompt.dart` 
 which location, "not today"), `app/lib/work_pc/` (autostart, prompt, tray), Windows runner
 (`app/windows/runner/main.cpp`, `flutter_window.cpp`). Requested by the user 2026-11-08.
 
-## 1. The setting (Windows only)
+## 1. The settings (Windows only)
 
-- Einstellungen → App → **Arbeits-PC**, shown only on Windows. It is per device and never synced.
-- On: writes the Run key value `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` → `TimeTrack` =
+Two switches under Einstellungen → App, shown only on Windows, per device and never synced:
+
+- **Mit Windows starten** (autostart; requested by the user 2026-11-08): on writes the Run key value
+  `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` → `TimeTrack` =
   `"<path of the running timetrack.exe>" --autostart` (per user, no admin rights; also listed under
-  Task Manager → Startup apps). Off: deletes that value.
-- The switch shows on only while the value exists and names the running exe, so the registry is
-  the only source. After the folder moved it shows off; switching it on again repairs it. The
-  in-app update replaces the folder in place, so the path stays valid.
+  Task Manager → Startup apps). Off deletes that value.
+  - The switch shows on only while the value exists and names the running exe, so the registry is
+    the only source. After the folder moved it shows off; switching it on again repairs it. The
+    in-app update replaces the folder in place, so the path stays valid.
+- **Arbeits-PC**: ask after sign-in whether to start tracking (§2). `local_values` key
+  `start_prompt` (`true`/`false`, default **on**, so installations from before the split keep
+  asking). It needs the autostart: switching it on also turns the autostart on, and it is greyed
+  out while the autostart is off.
 
 ## 2. After sign-in
 
-Started with `--autostart`, the window first appears **minimized and without focus**. Then:
+Started with `--autostart`, the window first appears **minimized and without focus**. With
+**Arbeits-PC** off nothing is asked: the window goes straight to step 4. Otherwise:
 
 1. If a sync connection is set up (and sync isn't disabled for the build), sync until one cycle
    succeeds, for at most **20 s**, so a start on the phone counts. Offline, the check is local.
