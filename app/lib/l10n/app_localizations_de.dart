@@ -1368,4 +1368,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String syncLogTimes(String count) {
     return '$count×';
   }
+
+  @override
+  String get syncLogNetwork => 'nach Netzwechsel';
 }

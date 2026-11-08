@@ -2503,6 +2503,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}×'**
   String syncLogTimes(String count);
+
+  /// No description provided for @syncLogNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'after a network change'**
+  String get syncLogNetwork;
 }
 
 class _AppLocalizationsDelegate

@@ -95,7 +95,9 @@ _Last updated: 2026-11-08 by Claude Code._
       (20 min) and an immediate poll on app resume. Android opens the login in a Custom Tab.
 - [x] User test 2026-11-07: the Android login and sync work with the fixed APK.
 - Windows works without VPN (2026-11-07). Testing over the company VPN was dropped by the user (2026-11-08).
-- [x] Android background sync (WorkManager, every 15 min; also after each quick action). Network-change trigger (optional) still open.
+- [x] Android background sync (WorkManager, every 15 min; also after each quick action).
+- [x] Network-change trigger (`connectivity_plus`): 3 s after a connection appears or changes
+      (Wi-Fi ↔ mobile, VPN on/off); logged as "nach Netzwechsel".
 - [x] Sync log (`docs/specs/sync-log.md`, core `SyncLog`): last 100 cycles per device, idle runs
       folded into one line, errors without credentials; Einstellungen → Sync → Sync-Protokoll.
 
@@ -221,8 +223,7 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] Polish: the day view's quick-entry button folds to its icon while scrolling down
       (`CollapsingFab`); the booking sheet's time switch reads "Startzeit angeben" with a hint.
 
-**Next tasks**, one at a time (user, 2026-11-08): network-change sync trigger, release
-keystore. The user checks the builds on the phone and re-enters the three reset settings.
+**Next tasks**, one at a time (user, 2026-11-08): release keystore. The user checks the builds on the phone and re-enters the three reset settings.
 **The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)

@@ -400,5 +400,6 @@
   "syncLogResolved": "{count} Einträge korrigiert",
   "syncLogBackground": "im Hintergrund",
   "syncLogClear": "Protokoll leeren",
-  "syncLogTimes": "{count}×"
+  "syncLogTimes": "{count}×",
+  "syncLogNetwork": "nach Netzwechsel"
 }

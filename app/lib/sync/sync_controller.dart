@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show HttpClient, Platform;
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cryptography/cryptography.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -247,12 +249,15 @@ final class SyncStatus {
 }
 
 /// Runs the [SyncEngine] on triggers (sync-format.md §7.2): 5 s after local
-/// writes (debounced), every 60 s, and on [onResume].
+/// writes (debounced), every 60 s, on [onResume] and 3 s after the network
+/// comes up or changes (Wi-Fi ↔ mobile, VPN on/off).
 class SyncController extends Notifier<SyncStatus> {
   SyncEngine? _engine;
   Timer? _debounce;
   Timer? _periodic;
   StreamSubscription<void>? _writes;
+  StreamSubscription<List<ConnectivityResult>>? _network;
+  Set<ConnectivityResult>? _lastNetwork;
 
   @override
   SyncStatus build() {
@@ -260,6 +265,13 @@ class SyncController extends Notifier<SyncStatus> {
     _writes = ref
         .read(localWritesProvider)
         .listen((_) => _schedule(const Duration(seconds: 5)));
+    _network = ref
+        .read(networkChangesProvider)
+        .listen(
+          _onNetwork,
+          // No network information on this platform: the timer covers it.
+          onError: (Object _) {},
+        );
     Future.microtask(_init);
     return const SyncStatus(SyncPhase.notConfigured);
   }
@@ -298,7 +310,7 @@ class SyncController extends Notifier<SyncStatus> {
   }
 
   /// Runs one cycle now (no-op if not configured or already running).
-  Future<void> syncNow() async {
+  Future<void> syncNow({SyncTrigger trigger = SyncTrigger.app}) async {
     final engine = _engine;
     if (engine == null || state.phase == SyncPhase.syncing) return;
     final previous = state;
@@ -314,7 +326,7 @@ class SyncController extends Notifier<SyncStatus> {
         SyncLogEntry.of(
           start: start,
           end: DateTime.now(),
-          trigger: SyncTrigger.app,
+          trigger: trigger,
           report: report,
         ),
       );
@@ -328,7 +340,7 @@ class SyncController extends Notifier<SyncStatus> {
         SyncLogEntry.of(
           start: start,
           end: DateTime.now(),
-          trigger: SyncTrigger.app,
+          trigger: trigger,
           error: e,
         ),
       );
@@ -357,10 +369,23 @@ class SyncController extends Notifier<SyncStatus> {
     ref.invalidate(syncLogProvider);
   }
 
-  void _schedule(Duration delay) {
+  void _schedule(Duration delay, {SyncTrigger trigger = SyncTrigger.app}) {
     if (_engine == null) return;
     _debounce?.cancel();
-    _debounce = Timer(delay, syncNow);
+    _debounce = Timer(delay, () => syncNow(trigger: trigger));
+  }
+
+  /// Syncs when a connection appears or changes, after a short pause for the
+  /// network (DNS, VPN routes) to settle. The first event is only the
+  /// current state; going offline needs no sync.
+  void _onNetwork(List<ConnectivityResult> results) {
+    final now = results.toSet();
+    final before = _lastNetwork;
+    _lastNetwork = now;
+    if (before == null || now.isEmpty) return;
+    if (now.length == 1 && now.single == ConnectivityResult.none) return;
+    if (setEquals(before, now)) return;
+    _schedule(const Duration(seconds: 3), trigger: SyncTrigger.network);
   }
 
   /// Saves [config] and starts syncing.
@@ -382,6 +407,7 @@ class SyncController extends Notifier<SyncStatus> {
     _debounce?.cancel();
     _periodic?.cancel();
     unawaited(_writes?.cancel());
+    unawaited(_network?.cancel());
   }
 }
 
@@ -393,4 +419,9 @@ final syncControllerProvider = NotifierProvider<SyncController, SyncStatus>(
 /// This device's sync log, newest first (spec: sync-log.md).
 final syncLogProvider = FutureProvider<List<SyncLogEntry>>(
   (ref) => SyncLog(ref.watch(storeProvider)).entries(),
+);
+
+/// Network changes (`connectivity_plus`); replaced in tests.
+final networkChangesProvider = Provider<Stream<List<ConnectivityResult>>>(
+  (ref) => Connectivity().onConnectivityChanged,
 );

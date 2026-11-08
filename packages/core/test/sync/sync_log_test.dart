@@ -85,4 +85,21 @@ void main() {
     );
     expect(sanitizeSyncError('x' * 400), hasLength(300));
   });
+
+  test('idle cycles with different triggers stay apart', () async {
+    final log = SyncLog(InMemorySyncStore());
+    await log.record(cycle(0, report: nothing));
+    await log.record(
+      SyncLogEntry.of(
+        start: t(1),
+        end: t(1),
+        trigger: SyncTrigger.network,
+        report: nothing,
+      ),
+    );
+    expect(
+      [for (final e in await log.entries()) e.trigger],
+      [SyncTrigger.network, SyncTrigger.app],
+    );
+  });
 }

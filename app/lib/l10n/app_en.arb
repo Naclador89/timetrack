@@ -832,5 +832,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "syncLogNetwork": "after a network change"
 }

@@ -1362,4 +1362,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String syncLogTimes(String count) {
     return '$count×';
   }
+
+  @override
+  String get syncLogNetwork => 'after a network change';
 }

@@ -10,6 +10,9 @@ enum SyncTrigger {
 
   /// In an Android background handler or WorkManager job.
   background,
+
+  /// In the app, because the network changed (sync-format.md §7.2).
+  network,
 }
 
 /// One sync cycle, or a run of consecutive idle ones (spec: sync-log.md).
@@ -141,12 +144,15 @@ final class SyncLog {
   /// Entries kept; older ones are dropped.
   static const capacity = 100;
 
-  /// Adds [entry]; an idle cycle right after another idle one only bumps
-  /// that entry's count, so the 60-second timer doesn't flood the log.
+  /// Adds [entry]; an idle cycle right after another idle one with the same
+  /// trigger only bumps that entry's count, so the 60-second timer doesn't flood the log.
   Future<void> record(SyncLogEntry entry) => store.transaction((tx) async {
     final entries = _decode(await tx.localValue(_key));
     final newest = entries.isEmpty ? null : entries.first;
-    if (entry.idle && newest != null && newest.idle) {
+    if (entry.idle &&
+        newest != null &&
+        newest.idle &&
+        newest.trigger == entry.trigger) {
       entries[0] = SyncLogEntry(
         start: newest.start,
         last: entry.start,

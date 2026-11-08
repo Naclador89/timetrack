@@ -4,12 +4,12 @@ Status: **normative**. Code: `packages/core/lib/src/sync/sync_log.dart`; UI: Ein
 Sync-Protokoll (`app/lib/features/settings/sync_log_screen.dart`).
 
 - Every sync cycle, in the app (`SyncController.syncNow`) and in Android background handlers
-  (`syncInBackground`), records one entry: start (UTC), duration, where it ran (`app` /
-  `background`), the `SyncReport` counts (changes uploaded, files downloaded, changes in them, rows
+  (`syncInBackground`), records one entry: start (UTC), duration, where it ran (`app`, `background`, or `network` = in the app after a network change), the `SyncReport` counts (changes uploaded, files downloaded, changes in them, rows
   resolved) or the error.
 - **Device-local**: stored as JSON under `local_values` key `sync_log`, never synced. Newest first,
   at most **100** entries; older ones are dropped. A damaged value reads as an empty log.
-- An **idle** cycle (success, nothing moved) directly after another idle one doesn't add an entry:
+- An **idle** cycle (success, nothing moved) directly after another idle one **with the same
+  trigger** doesn't add an entry:
   the newest entry's `n` (count) and `last` (start of the latest cycle) are updated instead, so the
   60-second timer doesn't flood the log.
 - **Errors** are stored as one line of at most 300 characters, with `user:password@` removed from

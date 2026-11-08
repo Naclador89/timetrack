@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +52,8 @@ void main() {
 
     final writes = StreamController<void>.broadcast();
     addTearDown(writes.close);
+    final network = StreamController<List<ConnectivityResult>>.broadcast();
+    addTearDown(network.close);
     final store = InMemorySyncStore();
     final repo = await SyncedRepository.open(
       store,
@@ -71,6 +74,7 @@ void main() {
           syncConfigStoreProvider.overrideWithValue(config),
           httpClientFactoryProvider.overrideWithValue((_) => client),
           localWritesProvider.overrideWithValue(writes.stream),
+          networkChangesProvider.overrideWithValue(network.stream),
         ],
         child: TimeTrackApp(router: buildRouter()),
       ),
@@ -103,6 +107,24 @@ void main() {
     final log = await SyncLog(store).entries();
     expect(log.first.uploadedChanges, greaterThan(0));
     expect(log.any((e) => '${e.toJson()}'.contains('secret')), isFalse);
+
+    // Network: the first event is the current state; going offline does
+    // nothing; a new connection syncs 3 s later.
+    Future<int> networkCycles() async => (await SyncLog(
+      store,
+    ).entries()).where((e) => e.trigger == SyncTrigger.network).length;
+    network.add([ConnectivityResult.wifi]);
+    await tester.pump(const Duration(seconds: 4));
+    network.add([ConnectivityResult.none]);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(await networkCycles(), 0);
+    network.add([ConnectivityResult.mobile]);
+    await tester.pump(const Duration(seconds: 2));
+    expect(await networkCycles(), 0);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(await networkCycles(), 1);
 
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();

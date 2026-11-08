@@ -108,6 +108,7 @@ class SyncLogTile extends StatelessWidget {
           : '${day.format(start)} ${time.format(start)}',
       '$seconds s',
       if (e.trigger == SyncTrigger.background) l.syncLogBackground,
+      if (e.trigger == SyncTrigger.network) l.syncLogNetwork,
     ].join(' · ');
   }
 }
