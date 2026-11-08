@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'app/appearance.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/services.dart';
@@ -26,6 +27,7 @@ Future<void> main(List<String> args) async {
     onLocalWrite: () => localWrites.add(null),
   );
   await initQuickAccess();
+  final appearance = await Appearance.load(services.store);
   runApp(
     ProviderScope(
       overrides: [
@@ -33,6 +35,7 @@ Future<void> main(List<String> args) async {
         repositoryProvider.overrideWithValue(services.repository),
         localWritesProvider.overrideWithValue(localWrites.stream),
         autostartedProvider.overrideWithValue(args.contains('--autostart')),
+        initialAppearanceProvider.overrideWithValue(appearance),
       ],
       child: TimeTrackApp(router: buildRouter()),
     ),
@@ -40,7 +43,7 @@ Future<void> main(List<String> args) async {
 }
 
 /// Root widget: theme, localization (German first) and routing.
-class TimeTrackApp extends StatelessWidget {
+class TimeTrackApp extends ConsumerWidget {
   /// Creates the app with its [router].
   const TimeTrackApp({super.key, required this.router});
 
@@ -48,38 +51,48 @@ class TimeTrackApp extends StatelessWidget {
   final GoRouter router;
 
   @override
-  Widget build(BuildContext context) => DynamicColorBuilder(
-    // Material You: the wallpaper colours on Android 12+, teal elsewhere.
-    builder: (light, dark) => MaterialApp.router(
-      onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
-      debugShowCheckedModeBanner: false,
-      theme: buildTheme(light ?? ColorScheme.fromSeed(seedColor: seedColor)),
-      darkTheme: buildTheme(
-        dark ??
-            ColorScheme.fromSeed(
-              seedColor: seedColor,
-              brightness: Brightness.dark,
-            ),
-      ),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('de'), Locale('en')],
-      routerConfig: router,
-      builder: (context, child) => _SyncLifecycle(
-        child: QuickAccessHost(
-          navigatorKey: router.routerDelegate.navigatorKey,
-          child: StartPromptHost(
-            navigatorKey: router.routerDelegate.navigatorKey,
-            child: child!,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appearance = ref.watch(appearanceProvider);
+    return DynamicColorBuilder(
+      // Material You: the wallpaper colours on Android 12+ (unless switched
+      // off), the icon's cyan elsewhere.
+      builder: (light, dark) {
+        if (!appearance.wallpaperColors) light = dark = null;
+        return MaterialApp.router(
+          onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
+          debugShowCheckedModeBanner: false,
+          themeMode: appearance.mode,
+          theme: buildTheme(
+            light ?? ColorScheme.fromSeed(seedColor: seedColor),
           ),
-        ),
-      ),
-    ),
-  );
+          darkTheme: buildTheme(
+            dark ??
+                ColorScheme.fromSeed(
+                  seedColor: seedColor,
+                  brightness: Brightness.dark,
+                ),
+          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('de'), Locale('en')],
+          routerConfig: router,
+          builder: (context, child) => _SyncLifecycle(
+            child: QuickAccessHost(
+              navigatorKey: router.routerDelegate.navigatorKey,
+              child: StartPromptHost(
+                navigatorKey: router.routerDelegate.navigatorKey,
+                child: child!,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 /// Starts the sync and update controllers; both act when the app returns to

@@ -431,5 +431,11 @@
   "startTrackingTitle": "Tracking für heute starten?",
   "startTrackingText": "Heute ist noch keine Arbeitszeit erfasst.",
   "startTrackingStart": "Starten",
-  "startTrackingNotToday": "Nicht heute"
+  "startTrackingNotToday": "Nicht heute",
+  "appearance": "Design",
+  "themeSystem": "System",
+  "themeLight": "Hell",
+  "themeDark": "Dunkel",
+  "wallpaperColors": "Farben vom Hintergrundbild",
+  "wallpaperColorsHint": "Aus: die Farben von TimeTrack."
 }

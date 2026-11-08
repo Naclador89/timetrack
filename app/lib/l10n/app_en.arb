@@ -908,5 +908,11 @@
   "startTrackingTitle": "Start tracking for today?",
   "startTrackingText": "No working time recorded today yet.",
   "startTrackingStart": "Start",
-  "startTrackingNotToday": "Not today"
+  "startTrackingNotToday": "Not today",
+  "appearance": "Appearance",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "wallpaperColors": "Wallpaper colours",
+  "wallpaperColorsHint": "Off: TimeTrack's own colours."
 }

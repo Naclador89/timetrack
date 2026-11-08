@@ -1477,4 +1477,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get startTrackingNotToday => 'Nicht heute';
+
+  @override
+  String get appearance => 'Design';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Hell';
+
+  @override
+  String get themeDark => 'Dunkel';
+
+  @override
+  String get wallpaperColors => 'Farben vom Hintergrundbild';
+
+  @override
+  String get wallpaperColorsHint => 'Aus: die Farben von TimeTrack.';
 }

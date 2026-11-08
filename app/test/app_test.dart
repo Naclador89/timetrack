@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:timetrack/features/calendar/day_screen.dart';
 import 'package:timetrack/features/settings/per_diem_rates_screen.dart';
 import 'package:timetrack/features/reports/reports_screen.dart';
@@ -13,45 +12,12 @@ import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/back_navigation.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
-import 'package:timetrack/sync/sync_controller.dart';
 
 import 'helpers.dart';
 
 import 'package:timetrack_core/timetrack_core.dart';
 
-/// Wednesday 4 Nov 2026, 08:30 in Berlin.
-final fixedNow = DateTime.utc(2026, 11, 4, 7, 30);
-
-Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
-  WidgetTester tester, {
-  GoRouter? router,
-  DateTime Function()? clock,
-}) async {
-  final now = clock ?? () => fixedNow;
-  final store = InMemorySyncStore();
-  final repo = await SyncedRepository.open(
-    store,
-    'aaaaaaaaaaaaaaaa',
-    now: () => now().millisecondsSinceEpoch,
-  );
-  tester.view.physicalSize = const Size(1200, 1600);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        storeProvider.overrideWithValue(store),
-        repositoryProvider.overrideWithValue(repo),
-        clockProvider.overrideWithValue(now),
-        nowProvider.overrideWith((ref) => Stream.value(now())),
-        syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
-      ],
-      child: TimeTrackApp(router: router ?? buildRouter()),
-    ),
-  );
-  await tester.pumpAndSettle();
-  return (store, repo);
-}
+final fixedNow = appTestNow;
 
 void main() {
   testWidgets('clock in, start a project, take a break, clock out', (

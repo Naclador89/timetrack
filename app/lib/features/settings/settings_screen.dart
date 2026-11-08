@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/appearance.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../sync/sync_controller.dart';
@@ -391,6 +392,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       // spec: updates.md §3
       header(l.appSection),
+      ListTile(
+        leading: const Icon(Icons.palette_outlined),
+        title: Text(l.appearance),
+        subtitle: SegmentedButton<ThemeMode>(
+          segments: [
+            ButtonSegment(value: ThemeMode.system, label: Text(l.themeSystem)),
+            ButtonSegment(value: ThemeMode.light, label: Text(l.themeLight)),
+            ButtonSegment(value: ThemeMode.dark, label: Text(l.themeDark)),
+          ],
+          selected: {ref.watch(appearanceProvider).mode},
+          onSelectionChanged: (v) =>
+              ref.read(appearanceProvider.notifier).setMode(v.single),
+        ),
+      ),
+      if (ref.watch(wallpaperColorsAvailableProvider).value ?? false)
+        SwitchListTile(
+          secondary: const Icon(Icons.wallpaper_outlined),
+          title: Text(l.wallpaperColors),
+          subtitle: Text(l.wallpaperColorsHint),
+          value: ref.watch(appearanceProvider).wallpaperColors,
+          onChanged: (v) =>
+              ref.read(appearanceProvider.notifier).setWallpaperColors(v),
+        ),
       ListTile(
         leading: const Icon(Icons.system_update_outlined),
         title: Text(l.checkForUpdates),

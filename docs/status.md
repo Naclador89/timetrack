@@ -277,6 +277,20 @@ three reset settings; then release v0.4.0 and test the updater with v0.4.1.
 - [ ] Windows runner changes only built in CI so far. **User**: on the work PC switch it on, sign
       out and in (dialog comes), clock in, sign out and in again (stays minimized, no dialog).
 
+### Improvements picked by the user (2026-11-08; 8 of 10 suggested ideas, one commit each)
+Not wanted: lock/sleep detection on Windows, copying hours for the company booking system.
+- [x] Theme: Einstellungen → App → Design (System/Hell/Dunkel), on Android 12+ "Farben vom
+      Hintergrundbild" on/off; device-local (`local_values` `theme_mode`, `wallpaper_colors`), read
+      before the first frame (`app/lib/app/appearance.dart`). Seed colour is now the icon's cyan
+      `#22D3EE` instead of teal.
+- [ ] Keyboard shortcuts (navigation.md)
+- [ ] Finish-time forecast (calculations §18)
+- [ ] Forgotten clock-out dialog and reminders (reminders.md)
+- [ ] Week check (grouped notices, review flow, complete week/month)
+- [ ] Project page with hour budget
+- [ ] Vacation planner with bridge days (calculations §10.1)
+- [ ] Windows tray icon (work-pc.md §3)
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a

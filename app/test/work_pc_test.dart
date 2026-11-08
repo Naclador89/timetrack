@@ -160,6 +160,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Work PC'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Work PC'));
     await tester.pumpAndSettle();
     expect(workPc.enabled, isTrue);

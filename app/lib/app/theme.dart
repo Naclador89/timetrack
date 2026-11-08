@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
-/// The fallback seed when the platform has no wallpaper colours (Linux,
-/// Windows, Android < 12).
-const seedColor = Colors.teal;
+/// The app colour, the cyan in the middle of the icon's gradient; used
+/// where there are no wallpaper colours (Linux, Windows, Android < 12, or
+/// switched off).
+const seedColor = Color(0xFF22D3EE);
 
 /// The app theme for [scheme]: Material 3 with softer, flatter surfaces,
 /// tabular figures and the same page transition on every platform.
