@@ -45,6 +45,7 @@ Future<void> main(List<String> args) async {
     'order_number': 'A-778812',
     'client': 'Bosch',
     'favorite': true,
+    'budget_min': 20 * 60,
   });
   await repo.write('projects', 'logistik', {
     'name': 'Müller Logistik',

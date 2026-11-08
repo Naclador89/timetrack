@@ -66,6 +66,7 @@ Project? projectFromRow(StoredRow r) => _use(
     client: f.string('client') ?? '',
     favorite: f.boolean('favorite') ?? false,
     archived: f.boolean('archived') ?? false,
+    budgetMinutes: f.number('budget_min')?.toInt(),
   ),
 );
 

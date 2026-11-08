@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../app/format.dart';
+import '../app/providers.dart';
 
 /// The user-facing text of a Review list item (spec: calculations.md §12).
 String noticeText(BuildContext context, ReviewItem item) {
@@ -15,6 +17,14 @@ String noticeText(BuildContext context, ReviewItem item) {
     ReviewKind.projectOverWork => l.warnProjectOverWork(m),
     ReviewKind.homeOfficeQuota => l.warnQuota,
     ReviewKind.unassigned => l.warnUnassigned(m),
+    ReviewKind.projectBudgetNear => l.warnBudgetNear(
+      _project(context, item),
+      m,
+    ),
+    ReviewKind.projectBudgetOver => l.warnBudgetOver(
+      _project(context, item),
+      m,
+    ),
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing => l.warnBreakMissing(m),
       ArbzgWarningKind.workOver6hWithoutBreak => l.warnOver6h,
@@ -24,6 +34,14 @@ String noticeText(BuildContext context, ReviewItem item) {
     },
   };
 }
+
+/// The name of the project a budget notice is about.
+String _project(BuildContext context, ReviewItem item) =>
+    ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(projectByIdProvider)[item.refId]?.name ??
+    '';
 
 /// A card listing notices; renders nothing if [items] is empty.
 class NoticesCard extends StatelessWidget {

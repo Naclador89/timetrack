@@ -1648,4 +1648,79 @@ class AppLocalizationsDe extends AppLocalizations {
   String skippedCount(int count) {
     return '$count übersprungen';
   }
+
+  @override
+  String get projectBudget => 'Budget (Stunden)';
+
+  @override
+  String get projectBudgetHint => 'Leer: kein Budget';
+
+  @override
+  String get invalidHours => 'Stunden wie 40, 37,5 oder 37:30';
+
+  @override
+  String get noticeCatBudget => 'Projektbudget';
+
+  @override
+  String warnBudgetNear(String project, String budget) {
+    return '$project: 80 % des Budgets ($budget) erreicht';
+  }
+
+  @override
+  String warnBudgetOver(String project, String budget) {
+    return '$project: Budget ($budget) überschritten';
+  }
+
+  @override
+  String get openProject => 'Projekt öffnen';
+
+  @override
+  String get thisMonth => 'Dieser Monat';
+
+  @override
+  String get thisYear => 'Dieses Jahr';
+
+  @override
+  String budgetUsed(String used, String budget, int percent) {
+    return '$used von $budget ($percent %)';
+  }
+
+  @override
+  String budgetLeft(String left) {
+    return 'noch $left';
+  }
+
+  @override
+  String budgetOverBy(String over) {
+    return '$over drüber';
+  }
+
+  @override
+  String get projectHistory => 'Verlauf';
+
+  @override
+  String get lastTwelveWeeks => 'Letzte Wochen';
+
+  @override
+  String get startTimer => 'Timer starten';
+
+  @override
+  String get projectRunning => 'Läuft';
+
+  @override
+  String get noTimeBooked => 'Noch keine Zeit gebucht';
+
+  @override
+  String showAllDays(int count) {
+    return 'Alle $count Tage zeigen';
+  }
+
+  @override
+  String get archive => 'Archivieren';
+
+  @override
+  String get unarchive => 'Aus dem Archiv holen';
+
+  @override
+  String get budget => 'Budget';
 }

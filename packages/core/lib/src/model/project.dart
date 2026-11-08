@@ -9,6 +9,7 @@ final class Project {
     this.client = '',
     this.favorite = false,
     this.archived = false,
+    this.budgetMinutes,
   });
 
   /// Row id (UUIDv7).
@@ -31,4 +32,7 @@ final class Project {
 
   /// Hidden from the picker unless archived projects are switched on.
   final bool archived;
+
+  /// Hour budget in minutes, if any (calculations.md §3.1).
+  final int? budgetMinutes;
 }

@@ -34,7 +34,10 @@ enum NoticeCategory {
   homeOfficeQuota,
 
   /// A trip still open while clocked out.
-  openTrip;
+  openTrip,
+
+  /// A project's budget almost or fully used (§3.1).
+  projectBudget;
 
   /// The name in the settings key (`notices.show.<wireName>`).
   String get wireName => switch (this) {
@@ -44,6 +47,7 @@ enum NoticeCategory {
     projectTime => 'project_time',
     homeOfficeQuota => 'home_office_quota',
     openTrip => 'open_trip',
+    projectBudget => 'project_budget',
     _ => name,
   };
 
@@ -56,6 +60,8 @@ enum NoticeCategory {
     ReviewKind.projectOutsideSession ||
     ReviewKind.projectOverWork => projectTime,
     ReviewKind.homeOfficeQuota => homeOfficeQuota,
+    ReviewKind.projectBudgetNear ||
+    ReviewKind.projectBudgetOver => projectBudget,
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing ||
       ArbzgWarningKind.workOver6hWithoutBreak => breaks,

@@ -225,13 +225,19 @@ class _EditorState extends ConsumerState<_ProjectEditor> {
   );
   late final _order = TextEditingController(text: widget.project?.orderNumber);
   late final _client = TextEditingController(text: widget.project?.client);
+  late final _budget = TextEditingController(
+    text: switch (widget.project?.budgetMinutes) {
+      final m? => m % 60 == 0 ? '${m ~/ 60}' : formatMinutes(m),
+      null => '',
+    },
+  );
   late bool _favorite = widget.project?.favorite ?? false;
   late bool _archived = widget.project?.archived ?? false;
   final _form = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    for (final c in [_name, _number, _order, _client]) {
+    for (final c in [_name, _number, _order, _client, _budget]) {
       c.dispose();
     }
     super.dispose();
@@ -248,6 +254,7 @@ class _EditorState extends ConsumerState<_ProjectEditor> {
       'client': _client.text.trim(),
       'favorite': _favorite,
       'archived': _archived,
+      'budget_min': parseHours(_budget.text),
     });
     if (mounted) Navigator.pop(context, id);
   }
@@ -283,6 +290,22 @@ class _EditorState extends ConsumerState<_ProjectEditor> {
                 TextFormField(
                   controller: _client,
                   decoration: InputDecoration(labelText: l.client),
+                  onFieldSubmitted: (_) => _save(),
+                ),
+                // calculations §3.1
+                TextFormField(
+                  controller: _budget,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l.projectBudget,
+                    helperText: l.projectBudgetHint,
+                  ),
+                  validator: (v) =>
+                      (v ?? '').trim().isNotEmpty && (parseHours(v!) ?? -1) <= 0
+                      ? l.invalidHours
+                      : null,
                   onFieldSubmitted: (_) => _save(),
                 ),
                 SwitchListTile(

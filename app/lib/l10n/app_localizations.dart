@@ -2959,6 +2959,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} skipped'**
   String skippedCount(int count);
+
+  /// No description provided for @projectBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget (hours)'**
+  String get projectBudget;
+
+  /// No description provided for @projectBudgetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty: no budget'**
+  String get projectBudgetHint;
+
+  /// No description provided for @invalidHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours like 40, 37.5 or 37:30'**
+  String get invalidHours;
+
+  /// No description provided for @noticeCatBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Project budget'**
+  String get noticeCatBudget;
+
+  /// No description provided for @warnBudgetNear.
+  ///
+  /// In en, this message translates to:
+  /// **'{project}: 80 % of the budget ({budget}) used'**
+  String warnBudgetNear(String project, String budget);
+
+  /// No description provided for @warnBudgetOver.
+  ///
+  /// In en, this message translates to:
+  /// **'{project}: budget ({budget}) exceeded'**
+  String warnBudgetOver(String project, String budget);
+
+  /// No description provided for @openProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Open project'**
+  String get openProject;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @thisYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get thisYear;
+
+  /// No description provided for @budgetUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {budget} ({percent} %)'**
+  String budgetUsed(String used, String budget, int percent);
+
+  /// No description provided for @budgetLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{left} left'**
+  String budgetLeft(String left);
+
+  /// No description provided for @budgetOverBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{over} over'**
+  String budgetOverBy(String over);
+
+  /// No description provided for @projectHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get projectHistory;
+
+  /// No description provided for @lastTwelveWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent weeks'**
+  String get lastTwelveWeeks;
+
+  /// No description provided for @startTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Start timer'**
+  String get startTimer;
+
+  /// No description provided for @projectRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get projectRunning;
+
+  /// No description provided for @noTimeBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'No time booked yet'**
+  String get noTimeBooked;
+
+  /// No description provided for @showAllDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all {count} days'**
+  String showAllDays(int count);
+
+  /// No description provided for @archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archive;
+
+  /// No description provided for @unarchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from archive'**
+  String get unarchive;
+
+  /// No description provided for @budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budget;
 }
 
 class _AppLocalizationsDelegate

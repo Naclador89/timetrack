@@ -283,6 +283,16 @@ Future<void> dismissNotice(
       );
     case ReviewItem(kind: ReviewKind.homeOfficeQuota):
       return (Icons.home_outlined, l.openDay, openDay, true);
+    case ReviewItem(
+      kind: ReviewKind.projectBudgetNear || ReviewKind.projectBudgetOver,
+      :final refId?,
+    ):
+      return (
+        Icons.savings_outlined,
+        l.openProject,
+        () async => context.go('/projects/$refId'),
+        true,
+      );
     default:
       return (Icons.info_outline, l.openDay, openDay, true);
   }

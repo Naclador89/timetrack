@@ -182,11 +182,18 @@ class WeekBars extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(label, style: theme.textTheme.labelSmall),
-                    Text(
-                      formatMinutes(credited),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                    // Narrow columns shrink the labels instead of wrapping.
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(label, style: theme.textTheme.labelSmall),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        formatMinutes(credited),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],

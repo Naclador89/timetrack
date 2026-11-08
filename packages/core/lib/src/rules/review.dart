@@ -1,8 +1,10 @@
+import '../model/project.dart';
 import '../time/local_date.dart';
 import '../time/span.dart';
 import 'arbzg.dart';
 import 'home_office.dart';
 import 'ledger.dart';
+import 'project_history.dart';
 
 /// Kinds of entries in the Review list (spec: calculations.md §12).
 enum ReviewKind {
@@ -30,6 +32,12 @@ enum ReviewKind {
   /// Worked time without a project on a finished day (§3, §12; only with
   /// `includeUnassigned`).
   unassigned,
+
+  /// A project's booked time reached 80 % of its budget (§3.1).
+  projectBudgetNear,
+
+  /// A project's booked time exceeded its budget (§3.1).
+  projectBudgetOver,
 }
 
 /// One entry of the Review list. Computed, never stored.
@@ -55,7 +63,8 @@ final class ReviewItem {
   /// The Working Hours Act warning for [ReviewKind.arbzg].
   final ArbzgWarningKind? arbzg;
 
-  /// Id of the row concerned (open session id, quota rule id), if any.
+  /// Id of the row concerned (open session id, quota rule id, project id),
+  /// if any.
   final String? refId;
 
   @override
@@ -66,7 +75,8 @@ final class ReviewItem {
 /// The Review list for the days [from]–[to] (spec: calculations.md §12).
 ///
 /// [openSessionLimitMinutes] is the setting for "open session over 12 h";
-/// [quotas] are the evaluated home-office quotas to check (§11.4).
+/// [quotas] are the evaluated home-office quotas to check (§11.4);
+/// [projects] with a budget add the budget notices (§3.1).
 List<ReviewItem> reviewItems(
   Ledger ledger, {
   required LocalDate from,
@@ -75,8 +85,11 @@ List<ReviewItem> reviewItems(
   List<HomeOfficeQuota> quotas = const [],
   bool includeUnassigned = false,
   int unassignedMinMinutes = 1,
+  Iterable<Project> projects = const [],
 }) {
-  final items = <ReviewItem>[];
+  final items = <ReviewItem>[
+    ...budgetItems(ledger, projects, from: from, to: to),
+  ];
   final running = ledger.data.sessions.any((s) => s.isOpen);
   for (final s in ledger.data.sessions) {
     if (!s.isOpen) continue;

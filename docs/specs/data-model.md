@@ -38,6 +38,10 @@ Every row also has the field `deleted` (`bool`, default `false`); deleted rows a
 | color | int (ARGB) | | app default |
 | favorite | bool | | `false` |
 | archived | bool | | `false` |
+| budget_min | int | | none (no budget) |
+
+`budget_min` is the project's hour budget in minutes (calculations §3.1), added 2026-11-08; older
+app versions keep the field untouched (ADR 0007), so the format version stays.
 
 ## §4 project_entries
 A project time is **either a duration on a date** (the usual way) **or a time span**:

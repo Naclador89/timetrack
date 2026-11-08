@@ -23,6 +23,7 @@ export 'src/rules/home_office.dart';
 export 'src/rules/ledger.dart';
 export 'src/rules/notices.dart';
 export 'src/rules/per_diem.dart';
+export 'src/rules/project_history.dart';
 export 'src/rules/review.dart';
 export 'src/rules/target.dart';
 export 'src/rules/vacation.dart';

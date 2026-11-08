@@ -1033,5 +1033,80 @@
         "type": "int"
       }
     }
-  }
+  },
+  "projectBudget": "Budget (hours)",
+  "projectBudgetHint": "Empty: no budget",
+  "invalidHours": "Hours like 40, 37.5 or 37:30",
+  "noticeCatBudget": "Project budget",
+  "warnBudgetNear": "{project}: 80 % of the budget ({budget}) used",
+  "@warnBudgetNear": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "warnBudgetOver": "{project}: budget ({budget}) exceeded",
+  "@warnBudgetOver": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "openProject": "Open project",
+  "thisMonth": "This month",
+  "thisYear": "This year",
+  "budgetUsed": "{used} of {budget} ({percent} %)",
+  "@budgetUsed": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetLeft": "{left} left",
+  "@budgetLeft": {
+    "placeholders": {
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetOverBy": "{over} over",
+  "@budgetOverBy": {
+    "placeholders": {
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "projectHistory": "History",
+  "lastTwelveWeeks": "Recent weeks",
+  "startTimer": "Start timer",
+  "projectRunning": "Running",
+  "noTimeBooked": "No time booked yet",
+  "showAllDays": "Show all {count} days",
+  "@showAllDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archive": "Archive",
+  "unarchive": "Restore from archive",
+  "budget": "Budget"
 }

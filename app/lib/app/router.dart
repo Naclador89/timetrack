@@ -6,6 +6,7 @@ import '../features/calendar/absences_screen.dart';
 import '../features/calendar/day_screen.dart';
 import '../features/calendar/trips_screen.dart';
 import '../features/calendar/week_screen.dart';
+import '../features/projects/project_screen.dart';
 import '../features/projects/projects_screen.dart';
 import '../features/reports/reports_screen.dart';
 import '../features/settings/home_office_rules_screen.dart';
@@ -79,6 +80,13 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(
               path: '/projects',
               builder: (_, _) => const ProjectsScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (_, state) =>
+                      ProjectScreen(id: state.pathParameters['id']!),
+                ),
+              ],
             ),
           ],
         ),

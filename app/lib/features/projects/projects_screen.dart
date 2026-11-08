@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import 'project_picker.dart';
+import 'project_screen.dart';
 
-/// All projects, searchable; tap to edit.
+/// All projects, searchable; tap opens the project's page.
 class ProjectsScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const ProjectsScreen({super.key});
@@ -75,11 +77,17 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                       for (final m in results)
                         ProjectTile(
                           match: m,
-                          onTap: () => showProjectEditor(
-                            context,
-                            ref,
-                            project: m.project,
-                          ),
+                          trailing: switch (m.project.budgetMinutes) {
+                            final budget? when budget > 0 => BudgetBar(
+                              used: ref
+                                  .watch(projectHistoryProvider(m.project.id))
+                                  .fold(0, (a, d) => a + d.minutes),
+                              budget: budget,
+                              compact: true,
+                            ),
+                            _ => null,
+                          },
+                          onTap: () => context.go('/projects/${m.project.id}'),
                         ),
                     ],
                   ),

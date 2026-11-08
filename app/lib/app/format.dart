@@ -116,6 +116,7 @@ IconData noticeCategoryIcon(NoticeCategory c) => switch (c) {
   NoticeCategory.projectTime => Icons.rule,
   NoticeCategory.homeOfficeQuota => Icons.home_outlined,
   NoticeCategory.openTrip => Icons.luggage_outlined,
+  NoticeCategory.projectBudget => Icons.savings_outlined,
 };
 
 /// Name of a notice category (settings).
@@ -130,4 +131,5 @@ String noticeCategoryLabel(AppLocalizations l, NoticeCategory c) => switch (c) {
   NoticeCategory.projectTime => l.noticeCatProjectTime,
   NoticeCategory.homeOfficeQuota => l.noticeCatQuota,
   NoticeCategory.openTrip => l.noticeCatOpenTrip,
+  NoticeCategory.projectBudget => l.noticeCatBudget,
 };

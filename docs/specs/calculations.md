@@ -64,6 +64,18 @@ until changed. A start time is optional (then the entry is a span `start + durat
 quarter hour). The sheet suggests the day's unassigned time ("rest of the day", snapped) and the last
 three comments of the chosen project (`recentNotes`).
 
+### §3.1 Project totals and budget
+
+Requested by the user 2026-11-08 (project page). The **booked minutes** of a project on a day are its
+share of `bookedByProject` (§3: interval entries inside working time, durations, and on trip days the
+trip project's unassigned time). The project page shows them per day with the notes of that day's
+entries and durations, and sums them for this week, month, year and in total.
+
+A project may have a **budget** (`budget_min`, data-model §3). The running total in date order makes
+two notices (§12, category `project_budget`): `project_budget_near` on the day the total first
+reaches **80 %** of the budget and `project_budget_over` on the day it first exceeds **100 %**; when
+both fall on the same day, only the second. Their fix opens the project page.
+
 ## §4 Breaks: ArbZG §4
 
 Let `W = W(D)` before any deduction.
@@ -300,13 +312,14 @@ Computed, never stored:
 - `project_over_work`: more project time than worked time on a day (§3).
 - ArbZG warnings (§4, §5).
 - Home-office quota warnings (§11.4).
+- `project_budget_near`, `project_budget_over`: a project's budget reached 80 % / 100 % (§3.1).
 - `unassigned` (only when asked for): worked time without a project on a day that is done (not
   today while clocked in) and not a trip day (§3). `suggestBreak` places a missing break in the
   middle of the day's longest working stretch, on a 5-minute grid.
 
 **Which items become cards** (user request 2026-11-08): items fall into categories
 (`NoticeCategory`: unassigned, breaks, long day, rest, Sunday work, open session, overlaps, project
-time, home-office quota, open trip), each switched on or off by the setting `notices.show.<category>`
+time, home-office quota, open trip, project budget), each switched on or off by the setting `notices.show.<category>`
 (default on). Unassigned time is an item only from `notices.unassigned_min` minutes on (default 30).
 A card closed with × is dismissed for good: its key (`noticeKey` = date/kind[/arbzg][/ref]) is written
 to `dismissed_notices` (data-model §14), so it stays hidden on every device. Switched-off and

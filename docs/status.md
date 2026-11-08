@@ -300,7 +300,11 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       one card ("6 Hinweise an 4 Tagen", a line per day) with "Woche prüfen"; the check steps
       through them (fix, Ausblenden, Überspringen, "Alles erledigt"); "Woche vollständig" /
       "Monat vollständig" (reports) when nothing is open (`openNoticesProvider`, `runReviewFlow`).
-- [ ] Project page with hour budget
+- [x] Project page with hour budget (calculations §3.1, data-model §3 `budget_min`): `/projects/<id>`
+      with this week/month/year/total, budget bar (amber from 80 %, red above 100 %), recent weeks,
+      history per day with the notes, start timer, book time (preset), CSV, favourite/archive; budget
+      bars in the list; notices `project_budget_near`/`_over` (category "Projektbudget") open the
+      page. Core `projectHistory`, `budgetItems`. The demo seed gives "Werk Süd Umbau" 20 h.
 - [ ] Vacation planner with bridge days (calculations §10.1)
 - [ ] Windows tray icon (work-pc.md §3)
 

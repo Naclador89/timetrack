@@ -15,8 +15,9 @@ import 'project_picker.dart';
 /// order number, client), the duration in hours on a 15-minute grid, an
 /// optional start time, and a comment on what was done.
 ///
-/// Pass [entry] or [duration] to edit one. [startMinutes] (local minutes)
-/// and [durationMinutes] prefill a new booking, e.g. a gap in the timeline.
+/// Pass [entry] or [duration] to edit one. [startMinutes] (local minutes),
+/// [durationMinutes] and [projectId] prefill a new booking, e.g. a gap in
+/// the timeline or the project page.
 Future<void> showProjectTimeDialog(
   BuildContext context, {
   required LocalDate date,
@@ -24,6 +25,7 @@ Future<void> showProjectTimeDialog(
   ProjectDuration? duration,
   int? startMinutes,
   int? durationMinutes,
+  String? projectId,
 }) => showModalBottomSheet<void>(
   context: context,
   isScrollControlled: true,
@@ -35,6 +37,7 @@ Future<void> showProjectTimeDialog(
     duration: duration,
     startMinutes: startMinutes,
     durationMinutes: durationMinutes,
+    projectId: projectId,
   ),
 );
 
@@ -45,9 +48,11 @@ class _BookingSheet extends ConsumerStatefulWidget {
     this.duration,
     this.startMinutes,
     this.durationMinutes,
+    this.projectId,
   });
 
   final LocalDate date;
+  final String? projectId;
   final ProjectEntry? entry;
   final ProjectDuration? duration;
   final int? startMinutes;
@@ -59,7 +64,7 @@ class _BookingSheet extends ConsumerStatefulWidget {
 
 class _BookingSheetState extends ConsumerState<_BookingSheet> {
   late String? _projectId =
-      widget.entry?.projectId ?? widget.duration?.projectId;
+      widget.entry?.projectId ?? widget.duration?.projectId ?? widget.projectId;
   late LocalDate _date = widget.duration?.date ?? widget.date;
   final _search = TextEditingController();
   final _searchFocus = FocusNode();

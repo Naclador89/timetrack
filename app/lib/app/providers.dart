@@ -216,8 +216,14 @@ final noticesProvider =
         openSessionLimitMinutes: settings.openSessionLimitMinutes,
         includeUnassigned: true,
         unassignedMinMinutes: settings.noticeUnassignedMinMinutes,
+        projects: ref.watch(projectsProvider),
       );
     });
+
+/// A project's booked days, oldest first (calculations §3.1).
+final projectHistoryProvider = Provider.family<List<ProjectDay>, String>(
+  (ref, id) => projectHistory(ref.watch(ledgerProvider), id),
+);
 
 /// The notices of a `(from, to)` range that are shown as cards: their
 /// category is on and they weren't dismissed (calculations §12). None
