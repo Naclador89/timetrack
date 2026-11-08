@@ -129,10 +129,25 @@ List<List<String>> orderTable(List<OrderBooking> bookings, ReportFormat f) {
 /// One trip with its per-diem days, for the travel report.
 final class TripReport {
   /// Creates the entry.
-  const TripReport(this.trip, this.days, {this.project, this.times = const {}});
+  const TripReport(
+    this.trip,
+    this.days, {
+    this.project,
+    this.times = const {},
+    this.legs = const {},
+    this.credited = const {},
+  });
 
   /// Travel and on-site minutes per trip day (`W_loc`, calculations.md §2).
   final Map<LocalDate, ({int travel, int onSite})> times;
+
+  /// Outbound, on-site and inbound legs with exact times per trip day
+  /// (calculations.md §9.1).
+  final Map<LocalDate, List<TripLeg>> legs;
+
+  /// What the overtime account credits per trip day (`Cr`, §9): shown next
+  /// to the actual times so the difference is visible.
+  final Map<LocalDate, int> credited;
 
   /// The trip.
   final Trip trip;
@@ -153,16 +168,29 @@ String _category(ReportFormat f, PerDiemDay d) => switch (d.category) {
   PerDiemCategory.full => f.l.perDiemFull,
 };
 
-/// The travel report as a table, one row per trip day (concept §5).
+/// Columns of [travelTable] that hold numbers (right-aligned).
+const travelNumericColumns = {5, 6, 7, 8, 10, 11};
+
+/// The travel report as a table, one row per trip day (concept §5): the
+/// exact times of the legs (calculations.md §9.1), their sums, what the
+/// overtime account credits, and the per-diem.
 List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
   final l = f.l;
+  String times(List<TripLeg>? legs, TripLegKind kind) => [
+    for (final leg in legs ?? const <TripLeg>[])
+      if (leg.kind == kind)
+        '${f.clock(leg.span.start)}–${f.clock(leg.span.end)}',
+  ].join(', ');
   return [
     [
       l.colDate,
       l.destination,
-      l.colProject,
+      l.legOutbound,
+      l.legOnSite,
+      l.legInbound,
       l.locationTravel,
       l.locationOnSite,
+      l.creditedAccount,
       l.hoursAway,
       l.perDiem,
       l.mealsProvided,
@@ -172,10 +200,16 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
       for (final d in t.days)
         [
           f.date(d.date),
-          '${t.trip.destination} (${t.trip.country})',
-          projectLabel(t.project),
+          [
+            '${t.trip.destination} (${t.trip.country})',
+            if (t.project != null) projectLabel(t.project),
+          ].join(' · '),
+          times(t.legs[d.date], TripLegKind.outbound),
+          times(t.legs[d.date], TripLegKind.onSite),
+          times(t.legs[d.date], TripLegKind.inbound),
           _minutesOrEmpty(t.times[d.date]?.travel),
           _minutesOrEmpty(t.times[d.date]?.onSite),
+          _minutesOrEmpty(t.credited[d.date]),
           formatMinutes(d.absenceMinutes),
           d.rateMissing ? l.rateMissing(t.trip.country) : _category(f, d),
           d.reductionCents == 0 ? '' : '−${f.money(d.reductionCents)}',
@@ -341,6 +375,12 @@ List<(String, String)> travelFigures(List<TripReport> trips, ReportFormat f) {
   return [
     (l.locationTravel, formatMinutes(sum((x) => x.travel))),
     (l.locationOnSite, formatMinutes(sum((x) => x.onSite))),
+    (
+      l.creditedAccount,
+      formatMinutes(
+        trips.fold(0, (a, t) => a + t.credited.values.fold(0, (b, c) => b + c)),
+      ),
+    ),
     (l.total, f.money(trips.fold(0, (a, t) => a + t.totalCents))),
   ];
 }
@@ -370,11 +410,7 @@ Future<List<int>> travelPdf(
         _table(
           travelTable(trips, f),
           align: {
-            3: pw.Alignment.centerRight,
-            4: pw.Alignment.centerRight,
-            5: pw.Alignment.centerRight,
-            7: pw.Alignment.centerRight,
-            8: pw.Alignment.centerRight,
+            for (final c in travelNumericColumns) c: pw.Alignment.centerRight,
           },
         ),
         pw.SizedBox(height: 8),

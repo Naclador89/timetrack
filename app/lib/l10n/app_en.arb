@@ -218,7 +218,7 @@
       }
     }
   },
-  "travelRules": "Travel rules",
+  "travelRules": "Crediting on trips",
   "saturdayCap": "Saturday: max. hours",
   "autoClockIn": "Clock in automatically when a project starts",
   "resumeAfterBreak": "Resume the project after a break",
@@ -371,8 +371,8 @@
   "quickWorking": "Working",
   "quickOnBreak": "On a break",
   "quickToday": "Today",
-  "travelWorkday": "Weekdays on a trip",
-  "travelWorkdayHint": "Applies to travel and on-site work alike.",
+  "travelWorkday": "Workdays on a trip",
+  "travelWorkdayHint": "Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.",
   "travelWorkdayTarget": "Target hours",
   "travelWorkdayActual": "Actual time",
   "travelSaturdayHint": "Work and travel count as overtime, up to this cap.",
@@ -690,5 +690,35 @@
     }
   },
   "whatWasDone": "What was done?",
-  "book": "Book"
+  "book": "Book",
+  "legOutbound": "Outbound",
+  "legOnSite": "At the customer",
+  "legInbound": "Return",
+  "creditedAccount": "Credited (account)",
+  "travelRecord": "Travel record",
+  "travelRecordEmpty": "No outbound, on-site or return times yet.",
+  "accountCredits": "Overtime account: {minutes} credited",
+  "@accountCredits": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSection": "Overtime account",
+  "stepStartOutbound": "Start travelling there",
+  "stepArriveOnSite": "Arrived at the customer",
+  "stepEndOutbound": "End travel there",
+  "stepStartOnSite": "Start at the customer",
+  "stepEndOnSite": "Done at the customer",
+  "stepStartInbound": "Start travelling back",
+  "stepEndInbound": "Back – end travel",
+  "accountSectionHint": "What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.",
+  "travelRulesHint": "Only for the overtime account. The travel record always shows the exact outbound, customer and return times.",
+  "weekendRulesHint": "For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.",
+  "recordsSection": "Records",
+  "recordsSectionHint": "Recorded to the minute as it happened, independent of what the account credits.",
+  "travelRecordHint": "Outbound, at the customer and return with times, hours away and per-diem",
+  "projectTimesRecord": "Project times",
+  "projectTimesRecordHint": "In 15-minute steps per order; timesheet and order report"
 }

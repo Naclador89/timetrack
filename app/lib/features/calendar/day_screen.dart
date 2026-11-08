@@ -187,11 +187,31 @@ class DayScreen extends ConsumerWidget {
                       Text(l.absenceWorkHint, style: theme.textTheme.bodySmall),
                     ],
                     const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 16,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          l.accountSection,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Wrap(
                       spacing: 24,
                       runSpacing: 8,
                       children: [
-                        figure(l.worked, day.work.worked),
+                        // On trip days the real time is in the travel
+                        // record below; the account shows what counts.
+                        if (day.type != DayType.businessTrip)
+                          figure(l.worked, day.work.worked),
                         figure(l.credited, day.credited),
                         figure(l.target, day.target),
                         figure(
@@ -226,6 +246,7 @@ class DayScreen extends ConsumerWidget {
               ),
             ),
           ),
+          if (day.type == DayType.businessTrip) TripBookingCard(date: date),
           AttentionCards(
             from: date,
             to: date,
@@ -300,7 +321,7 @@ class DayScreen extends ConsumerWidget {
           // absence days nothing (user decisions 2026-11-08). Old entries stay
           // visible so they can still be edited or deleted.
           if (day.type == DayType.businessTrip && !hasProjectTime)
-            TripBookingCard(date: date)
+            const SizedBox.shrink() // the travel record is at the top
           else if (day.type == null ||
               day.type!.allowsProjectTime ||
               hasProjectTime ||

@@ -18,12 +18,14 @@ final fixedNow = DateTime.utc(2026, 11, 4, 7, 30);
 Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
   WidgetTester tester, {
   GoRouter? router,
+  DateTime Function()? clock,
 }) async {
+  final now = clock ?? () => fixedNow;
   final store = InMemorySyncStore();
   final repo = await SyncedRepository.open(
     store,
     'aaaaaaaaaaaaaaaa',
-    now: () => fixedNow.millisecondsSinceEpoch,
+    now: () => now().millisecondsSinceEpoch,
   );
   tester.view.physicalSize = const Size(1200, 1600);
   tester.view.devicePixelRatio = 1;
@@ -33,8 +35,8 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
       overrides: [
         storeProvider.overrideWithValue(store),
         repositoryProvider.overrideWithValue(repo),
-        clockProvider.overrideWithValue(() => fixedNow),
-        nowProvider.overrideWith((ref) => Stream.value(fixedNow)),
+        clockProvider.overrideWithValue(now),
+        nowProvider.overrideWith((ref) => Stream.value(now())),
         syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
       ],
       child: TimeTrackApp(router: router ?? buildRouter()),
@@ -403,7 +405,7 @@ void main() {
     });
     router.go('/calendar/day/2026-11-07');
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.help_outline));
+    await tester.tap(find.byIcon(Icons.help_outline).first);
     await tester.pumpAndSettle();
     expect(find.textContaining('How'), findsWidgets);
     expect(find.textContaining('at most 11:00 count'), findsOneWidget);
@@ -532,5 +534,58 @@ void main() {
     await tester.tap(find.text('With start time'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('trip day: steps record outbound, customer and return '
+      'times; the account gets the target', (tester) async {
+    var time = fixedNow;
+    final (store, repo) = await pumpApp(tester, clock: () => time);
+    // Moves the clock and lets "now" follow.
+    Future<void> at(int hour, int minute) async {
+      time = DateTime.utc(2026, 11, 4, hour, minute);
+      ProviderScope.containerOf(tester.element(find.byType(TimeTrackApp)))
+          .invalidate(nowProvider);
+      await tester.pumpAndSettle();
+    }
+
+    await repo.write('work_schedules', 'w', {
+      'valid_from': '2026-01-01',
+      for (final d in ['mon', 'tue', 'wed', 'thu', 'fri']) 'minutes_$d': 480,
+    });
+    await repo.write('trips', 't1', {
+      'depart_utc': '2026-11-04T05:00:00Z',
+      'destination': 'Stuttgart',
+    });
+    await tester.pumpAndSettle();
+    expect(find.text('Travel record'), findsOneWidget);
+    expect(find.text('Overtime account: 8:00 credited'), findsOneWidget);
+
+    await tester.tap(find.text('Start travelling there'));
+    await tester.pumpAndSettle();
+    expect(
+      store.rowsOf('work_sessions').values.single.fields['location'],
+      'travel',
+    );
+    await at(9, 0);
+    await tester.tap(find.text('Arrived at the customer'));
+    await tester.pumpAndSettle();
+    expect(find.text('Outbound'), findsOneWidget);
+    expect(find.text('At the customer'), findsOneWidget);
+    await at(15, 0);
+    await tester.tap(find.text('Start travelling back'));
+    await tester.pumpAndSettle();
+    await at(17, 30);
+    expect(find.text('Return'), findsOneWidget);
+    expect(find.text('10:00 – 16:00'), findsOneWidget, reason: 'exact times');
+    await tester.tap(find.text('Back – end travel'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('End trip').last); // the dialog
+    await tester.pumpAndSettle();
+    final locations = [
+      for (final r in store.rowsOf('work_sessions').values)
+        r.fields['location'],
+    ]..sort();
+    expect(locations, ['on_site', 'travel', 'travel']);
+    expect(store.rowsOf('trips')['t1']!.fields['return_utc'], isNotNull);
   });
 }

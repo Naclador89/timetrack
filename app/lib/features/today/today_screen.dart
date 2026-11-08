@@ -141,8 +141,6 @@ class _HeroCard extends ConsumerStatefulWidget {
 }
 
 class _HeroCardState extends ConsumerState<_HeroCard> {
-  WorkLocation? _chosen;
-
   /// The locations today's day type allows (calculations §15); office or
   /// home office while no type is picked.
   List<WorkLocation> _allowed() {
@@ -153,25 +151,15 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
         : allowed;
   }
 
-  /// The location for the next clock-in: the chosen one, else the last used,
-  /// as far as today's day type allows it.
+  /// The location for the next clock-in: the last used one, as far as
+  /// today's day type allows it (trip days use the trip steps instead).
   WorkLocation _nextLocation() {
     final allowed = _allowed();
-    if (_chosen != null && allowed.contains(_chosen)) return _chosen!;
     final sessions = ref.read(ledgerDataProvider).sessions;
     final last = sessions.isEmpty
         ? null
         : sessions.reduce((a, b) => a.start.isAfter(b.start) ? a : b).location;
     return allowed.contains(last) ? last! : allowed.first;
-  }
-
-  /// Switches between travel and on-site on a business trip.
-  Future<void> _selectLocation(WorkLocation location) async {
-    tapFeedback();
-    setState(() => _chosen = location);
-    if (ref.read(trackerStateProvider).clockedIn) {
-      await ref.read(trackerProvider).changeLocation(location);
-    }
   }
 
   Future<void> _clockIn() async {
@@ -215,6 +203,50 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
     }
   }
 
+  /// Runs a trip step (calculations §9.1): each records the exact minute
+  /// for the travel report.
+  Future<void> _tripStep(TripStep step) async {
+    tapFeedback(strong: true);
+    final tracker = ref.read(trackerProvider);
+    final clockedIn = ref.read(trackerStateProvider).clockedIn;
+    switch (step) {
+      case TripStep.startOutbound:
+        await tracker.clockIn(location: WorkLocation.travel);
+      case TripStep.arriveOnSite:
+        await tracker.changeLocation(WorkLocation.onSite);
+      case TripStep.startOnSite:
+        await tracker.clockIn(location: WorkLocation.onSite);
+      case TripStep.startInbound:
+        clockedIn
+            ? await tracker.changeLocation(WorkLocation.travel)
+            : await tracker.clockIn(location: WorkLocation.travel);
+      case TripStep.endOutbound || TripStep.endOnSite:
+        await withSummaryPrompt(context, ref, tracker.clockOut);
+      case TripStep.endInbound:
+        await _clockOut(); // also offers to end the trip
+    }
+  }
+
+  String _stepLabel(TripStep step) {
+    final l = context.l10n;
+    return switch (step) {
+      TripStep.startOutbound => l.stepStartOutbound,
+      TripStep.arriveOnSite => l.stepArriveOnSite,
+      TripStep.endOutbound => l.stepEndOutbound,
+      TripStep.startOnSite => l.stepStartOnSite,
+      TripStep.endOnSite => l.stepEndOnSite,
+      TripStep.startInbound => l.stepStartInbound,
+      TripStep.endInbound => l.stepEndInbound,
+    };
+  }
+
+  static IconData _stepIcon(TripStep step) => switch (step) {
+    TripStep.startOutbound || TripStep.startInbound => Icons.directions_car,
+    TripStep.arriveOnSite || TripStep.startOnSite => Icons.place,
+    TripStep.endOutbound || TripStep.endOnSite => Icons.stop_rounded,
+    TripStep.endInbound => Icons.home_outlined,
+  };
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -226,7 +258,6 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
     final ledger = ref.watch(ledgerProvider);
     final day = ledger.day(today);
     final type = day.type;
-    final location = state.location ?? _nextLocation();
     final balance = ledger.balanceAtEndOf(today);
     String at(String field, StoredRow row) =>
         context.time(DateTime.parse(row.fields[field]! as String), zone);
@@ -264,7 +295,59 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
 
     final big = theme.textTheme.titleMedium;
     final Widget actions;
-    if (!state.clockedIn) {
+    if (type == DayType.businessTrip) {
+      // Trip days: the next step instead of clock in/out and location.
+      final steps = tripSteps(
+        running: state.clockedIn ? state.location : null,
+        onSiteToday: tripLegs(
+          ledger,
+          today,
+        ).any((leg) => leg.kind == TripLegKind.onSite),
+      );
+      actions = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          FilledButton.icon(
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 60)),
+            onPressed: () => _tripStep(steps.first),
+            icon: Icon(_stepIcon(steps.first), size: 26),
+            label: Text(
+              _stepLabel(steps.first),
+              style: big?.copyWith(color: scheme.onPrimary),
+            ),
+          ),
+          if (steps.length > 1 || state.clockedIn) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                for (final step in steps.skip(1))
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _tripStep(step),
+                      icon: Icon(_stepIcon(step)),
+                      label: Text(_stepLabel(step)),
+                    ),
+                  ),
+                if (steps.length > 1 && state.clockedIn)
+                  const SizedBox(width: 8),
+                if (state.clockedIn)
+                  Expanded(
+                    child: FilledButton.tonalIcon(
+                      onPressed: _toggleBreak,
+                      icon: Icon(
+                        state.onBreak
+                            ? Icons.play_arrow_rounded
+                            : Icons.coffee_outlined,
+                      ),
+                      label: Text(state.onBreak ? l.endBreak : l.startBreak),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      );
+    } else if (!state.clockedIn) {
       actions = SizedBox(
         width: double.infinity,
         child: FilledButton.icon(
@@ -390,27 +473,11 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
                 if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
               ],
             ),
-            if (type == DayType.businessTrip) ...[
-              const SizedBox(height: 12),
-              SegmentedButton<WorkLocation>(
-                showSelectedIcon: false,
-                segments: [
-                  for (final loc in type!.locations)
-                    ButtonSegment(
-                      value: loc,
-                      icon: Icon(locationIcon(loc)),
-                      label: Text(context.locationName(loc)),
-                    ),
-                ],
-                selected: {location},
-                onSelectionChanged: (v) => _selectLocation(v.single),
-              ),
-            ],
             const SizedBox(height: 16),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               child: KeyedSubtree(
-                key: ValueKey((state.clockedIn, state.onBreak)),
+                key: ValueKey((state.clockedIn, state.onBreak, state.location)),
                 child: actions,
               ),
             ),

@@ -375,7 +375,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get travelRules => 'Reiseregeln';
+  String get travelRules => 'Anrechnung auf Reisen';
 
   @override
   String get saturdayCap => 'Samstag: max. Stunden';
@@ -665,7 +665,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get travelWorkdayHint =>
-      'Gilt für Reisezeit und Arbeit beim Kunden gleichermaßen.';
+      'Sollzeit: Das Konto bekommt dein Soll (z. B. 8:00) gutgeschrieben, egal wie lange Fahrt und Kundentermin dauern. Tatsächliche Zeit: Es zählt, was du gearbeitet hast.';
 
   @override
   String get travelWorkdayTarget => 'Sollzeit';
@@ -1154,4 +1154,82 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get book => 'Buchen';
+
+  @override
+  String get legOutbound => 'Anfahrt';
+
+  @override
+  String get legOnSite => 'Beim Kunden';
+
+  @override
+  String get legInbound => 'Rückfahrt';
+
+  @override
+  String get creditedAccount => 'Angerechnet (Konto)';
+
+  @override
+  String get travelRecord => 'Reisenachweis';
+
+  @override
+  String get travelRecordEmpty =>
+      'Noch keine Zeiten für Anfahrt, beim Kunden oder Rückfahrt.';
+
+  @override
+  String accountCredits(String minutes) {
+    return 'Arbeitszeitkonto: $minutes angerechnet';
+  }
+
+  @override
+  String get accountSection => 'Arbeitszeitkonto';
+
+  @override
+  String get stepStartOutbound => 'Anfahrt starten';
+
+  @override
+  String get stepArriveOnSite => 'Beim Kunden angekommen';
+
+  @override
+  String get stepEndOutbound => 'Anfahrt beenden';
+
+  @override
+  String get stepStartOnSite => 'Beim Kunden beginnen';
+
+  @override
+  String get stepEndOnSite => 'Beim Kunden fertig';
+
+  @override
+  String get stepStartInbound => 'Rückfahrt starten';
+
+  @override
+  String get stepEndInbound => 'Rückfahrt beenden';
+
+  @override
+  String get accountSectionHint =>
+      'Was deinem Arbeitszeitkonto gutgeschrieben wird. Die echten Zeiten (Projektzeiten, Anfahrt, beim Kunden, Rückfahrt) werden davon unabhängig erfasst und stehen in den Nachweisen.';
+
+  @override
+  String get travelRulesHint =>
+      'Nur fürs Arbeitszeitkonto. Im Reisenachweis stehen immer die genauen Zeiten von Anfahrt, beim Kunden und Rückfahrt.';
+
+  @override
+  String get weekendRulesHint =>
+      'Für jeden Samstag, Sonntag und Feiertag, ob auf Reise oder nicht. Nur fürs Arbeitszeitkonto.';
+
+  @override
+  String get recordsSection => 'Nachweise';
+
+  @override
+  String get recordsSectionHint =>
+      'Minutengenau so erfasst, wie es war, unabhängig davon, was das Konto anrechnet.';
+
+  @override
+  String get travelRecordHint =>
+      'Anfahrt, beim Kunden und Rückfahrt mit Uhrzeit, Abwesenheit und Verpflegungspauschale';
+
+  @override
+  String get projectTimesRecord => 'Projektzeiten';
+
+  @override
+  String get projectTimesRecordHint =>
+      'In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht';
 }

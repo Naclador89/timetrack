@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @travelRules.
   ///
   /// In en, this message translates to:
-  /// **'Travel rules'**
+  /// **'Crediting on trips'**
   String get travelRules;
 
   /// No description provided for @saturdayCap.
@@ -1307,13 +1307,13 @@ abstract class AppLocalizations {
   /// No description provided for @travelWorkday.
   ///
   /// In en, this message translates to:
-  /// **'Weekdays on a trip'**
+  /// **'Workdays on a trip'**
   String get travelWorkday;
 
   /// No description provided for @travelWorkdayHint.
   ///
   /// In en, this message translates to:
-  /// **'Applies to travel and on-site work alike.'**
+  /// **'Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.'**
   String get travelWorkdayHint;
 
   /// No description provided for @travelWorkdayTarget.
@@ -2143,6 +2143,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Book'**
   String get book;
+
+  /// No description provided for @legOutbound.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound'**
+  String get legOutbound;
+
+  /// No description provided for @legOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'At the customer'**
+  String get legOnSite;
+
+  /// No description provided for @legInbound.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get legInbound;
+
+  /// No description provided for @creditedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Credited (account)'**
+  String get creditedAccount;
+
+  /// No description provided for @travelRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel record'**
+  String get travelRecord;
+
+  /// No description provided for @travelRecordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No outbound, on-site or return times yet.'**
+  String get travelRecordEmpty;
+
+  /// No description provided for @accountCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime account: {minutes} credited'**
+  String accountCredits(String minutes);
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime account'**
+  String get accountSection;
+
+  /// No description provided for @stepStartOutbound.
+  ///
+  /// In en, this message translates to:
+  /// **'Start travelling there'**
+  String get stepStartOutbound;
+
+  /// No description provided for @stepArriveOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at the customer'**
+  String get stepArriveOnSite;
+
+  /// No description provided for @stepEndOutbound.
+  ///
+  /// In en, this message translates to:
+  /// **'End travel there'**
+  String get stepEndOutbound;
+
+  /// No description provided for @stepStartOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Start at the customer'**
+  String get stepStartOnSite;
+
+  /// No description provided for @stepEndOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Done at the customer'**
+  String get stepEndOnSite;
+
+  /// No description provided for @stepStartInbound.
+  ///
+  /// In en, this message translates to:
+  /// **'Start travelling back'**
+  String get stepStartInbound;
+
+  /// No description provided for @stepEndInbound.
+  ///
+  /// In en, this message translates to:
+  /// **'Back – end travel'**
+  String get stepEndInbound;
+
+  /// No description provided for @accountSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.'**
+  String get accountSectionHint;
+
+  /// No description provided for @travelRulesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only for the overtime account. The travel record always shows the exact outbound, customer and return times.'**
+  String get travelRulesHint;
+
+  /// No description provided for @weekendRulesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.'**
+  String get weekendRulesHint;
+
+  /// No description provided for @recordsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get recordsSection;
+
+  /// No description provided for @recordsSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded to the minute as it happened, independent of what the account credits.'**
+  String get recordsSectionHint;
+
+  /// No description provided for @travelRecordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound, at the customer and return with times, hours away and per-diem'**
+  String get travelRecordHint;
+
+  /// No description provided for @projectTimesRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Project times'**
+  String get projectTimesRecord;
+
+  /// No description provided for @projectTimesRecordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'In 15-minute steps per order; timesheet and order report'**
+  String get projectTimesRecordHint;
 }
 
 class _AppLocalizationsDelegate

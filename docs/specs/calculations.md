@@ -209,6 +209,25 @@ Saturday, Sunday and holiday rules apply on all such days, not only on trips (se
 - Sun, 6 h train → `Cr = 0`, `S = 360`.
 - Sun, 4 h train + 9 h on-site → `Cr = 0`, `S = 660` (the cap covers the whole day).
 
+### §9.1 Travel record (Reisenachweis)
+
+The overtime account and the travel record are separate (user request 2026-11-08). §9 decides only
+what the **account** credits (on a workday trip: the target, however long it took). The **travel
+record** shows the real times of every trip day, to the minute, from the travel and on-site sessions
+(`tripLegs`):
+
+- **Anfahrt** (outbound): travel time that starts before the day's last on-site time; on a day
+  without on-site time, unless it is the trip's last day (and not also its first).
+- **Beim Kunden** (on site): on-site time.
+- **Rückfahrt** (inbound): travel time after the day's last on-site time; on the trip's last day
+  without on-site time.
+
+The travel report lists, per trip day, the from–to times of each leg, the travel and on-site sums,
+what the account credited, hours away and the per-diem. On Today a trip day offers the next step
+(`tripSteps`): start outbound → arrived at the customer (travel ends and on-site starts in the same
+minute) → start the way back → back home (clock out, offer to end the trip); clocking out in between
+(end outbound, done at the customer) is the second choice.
+
 ## §10 Vacation account
 
 For calendar year Y:

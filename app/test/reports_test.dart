@@ -162,15 +162,51 @@ void main() {
           orderNumber: 'A-4711',
         ),
         times: {d('2026-11-02'): (travel: 150, onSite: 0)},
+        credited: {d('2026-11-02'): 480},
+        legs: {
+          d('2026-11-02'): [
+            TripLeg(
+              TripLegKind.outbound,
+              Span.fromInstants(
+                at('2026-11-02', '07:00'),
+                at('2026-11-02', '09:30'),
+              ),
+              sessionId: 'a',
+            ),
+            TripLeg(
+              TripLegKind.onSite,
+              Span.fromInstants(
+                at('2026-11-02', '09:45'),
+                at('2026-11-02', '17:00'),
+              ),
+              sessionId: 'b',
+            ),
+          ],
+        },
       ),
     ];
     expect(reports.single.totalCents, 1400 + 1400 - 560);
     final table = travelTable(reports, f);
     expect(table[2].last, '8,40\u00a0€');
-    expect(table.first.sublist(3, 5), ['Unterwegs', 'Vor Ort']);
-    expect(table[1].sublist(3, 5), ['2:30', '']);
-    expect(table[2][7], '−5,60\u00a0€');
-    expect(table[1][2], 'Werk Süd · A-4711');
+    expect(table.first.sublist(2, 8), [
+      'Anfahrt',
+      'Beim Kunden',
+      'Rückfahrt',
+      'Unterwegs',
+      'Vor Ort',
+      'Angerechnet (Konto)',
+    ]);
+    // Exact times of the legs, then the sums and the account credit.
+    expect(table[1].sublist(2, 8), [
+      '07:00–09:30',
+      '09:45–17:00',
+      '',
+      '2:30',
+      '',
+      '8:00',
+    ]);
+    expect(table[2][10], '−5,60\u00a0€');
+    expect(table[1][1], 'München (DE) · Werk Süd · A-4711');
     final travel = await travelPdf(reports, 2026, 11, f, now: now);
     expect(utf8.decode(travel.sublist(0, 5)), '%PDF-');
   });

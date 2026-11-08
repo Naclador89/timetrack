@@ -375,7 +375,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get travelRules => 'Travel rules';
+  String get travelRules => 'Crediting on trips';
 
   @override
   String get saturdayCap => 'Saturday: max. hours';
@@ -660,10 +660,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickToday => 'Today';
 
   @override
-  String get travelWorkday => 'Weekdays on a trip';
+  String get travelWorkday => 'Workdays on a trip';
 
   @override
-  String get travelWorkdayHint => 'Applies to travel and on-site work alike.';
+  String get travelWorkdayHint =>
+      'Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.';
 
   @override
   String get travelWorkdayTarget => 'Target hours';
@@ -1148,4 +1149,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get book => 'Book';
+
+  @override
+  String get legOutbound => 'Outbound';
+
+  @override
+  String get legOnSite => 'At the customer';
+
+  @override
+  String get legInbound => 'Return';
+
+  @override
+  String get creditedAccount => 'Credited (account)';
+
+  @override
+  String get travelRecord => 'Travel record';
+
+  @override
+  String get travelRecordEmpty => 'No outbound, on-site or return times yet.';
+
+  @override
+  String accountCredits(String minutes) {
+    return 'Overtime account: $minutes credited';
+  }
+
+  @override
+  String get accountSection => 'Overtime account';
+
+  @override
+  String get stepStartOutbound => 'Start travelling there';
+
+  @override
+  String get stepArriveOnSite => 'Arrived at the customer';
+
+  @override
+  String get stepEndOutbound => 'End travel there';
+
+  @override
+  String get stepStartOnSite => 'Start at the customer';
+
+  @override
+  String get stepEndOnSite => 'Done at the customer';
+
+  @override
+  String get stepStartInbound => 'Start travelling back';
+
+  @override
+  String get stepEndInbound => 'Back – end travel';
+
+  @override
+  String get accountSectionHint =>
+      'What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.';
+
+  @override
+  String get travelRulesHint =>
+      'Only for the overtime account. The travel record always shows the exact outbound, customer and return times.';
+
+  @override
+  String get weekendRulesHint =>
+      'For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.';
+
+  @override
+  String get recordsSection => 'Records';
+
+  @override
+  String get recordsSectionHint =>
+      'Recorded to the minute as it happened, independent of what the account credits.';
+
+  @override
+  String get travelRecordHint =>
+      'Outbound, at the customer and return with times, hours away and per-diem';
+
+  @override
+  String get projectTimesRecord => 'Project times';
+
+  @override
+  String get projectTimesRecordHint =>
+      'In 15-minute steps per order; timesheet and order report';
 }

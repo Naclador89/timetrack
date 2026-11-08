@@ -226,7 +226,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       '${l.travelReport} ${format.month(month.year, month.month)}',
                   table: travelTable(trips, format),
                   figures: travelFigures(trips, format),
-                  numericColumns: const {3, 4, 5, 7, 8},
+                  numericColumns: travelNumericColumns,
                   exports: [
                     (
                       'PDF',
@@ -316,6 +316,10 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             days,
             project: projects[trip.projectId],
             times: {for (final d in days) d.date: times(d.date)},
+            legs: {for (final d in days) d.date: tripLegs(ledger, d.date)},
+            credited: {
+              for (final d in days) d.date: ledger.day(d.date).credited,
+            },
           ),
     ];
   }

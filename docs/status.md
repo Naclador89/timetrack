@@ -204,6 +204,12 @@ _Last updated: 2026-11-07 by Claude Code._
       Enter; create from the text), duration in hours with −/+ 0:15 and chips (0:15 … 8:00, rest of
       the day), optional start time (quarter hours, end shown), comment with the project's last
       comments as chips. Also opened by "Zuordnen" and by tapping a timeline gap (prefilled).
+- [x] Account vs. records (user, 2026-11-08; calculations §9.1): trip-day steps on Today (Anfahrt
+      starten → Beim Kunden angekommen → Rückfahrt starten → Rückfahrt beenden), "Reisenachweis"
+      card with exact leg times (tap to correct) and the account credit beside it; the travel report
+      has Anfahrt / Beim Kunden / Rückfahrt with from–to times plus "Angerechnet (Konto)"; settings
+      grouped into Arbeitszeitkonto (with travel and weekend crediting, each explained) and
+      Nachweise.
 
 **Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
@@ -303,3 +309,5 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   208 core tests, 20 widget tests green.
 - 2026-11-08, Claude Code: project booking sheet (`snapToQuarter`, `recentNotes`); 210 core tests,
   21 widget tests green.
+- 2026-11-08, Claude Code: travel record vs. overtime account (`tripLegs`, `tripSteps`); 213 core
+  tests, 22 widget tests green.

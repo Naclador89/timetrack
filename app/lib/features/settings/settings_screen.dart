@@ -80,7 +80,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final rules = ref.watch(homeOfficeRulesProvider);
     Future<void> save(String key, Object? value) =>
         saveSetting(repo, key, value);
-    Widget header(String text) => _Header(text);
+    Widget header(String text, {String? description}) =>
+        _Header(text, description: description);
     final tiles = <Widget>[
       header(l.sync),
       ListTile(
@@ -128,6 +129,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           value: s.bavariaAssumptionDay,
           onChanged: (v) => save(SettingKeys.bavariaAssumptionDay, v),
         ),
+      SwitchListTile(
+        secondary: const Icon(Icons.login),
+        title: Text(l.autoClockIn),
+        value: s.autoClockIn,
+        onChanged: (v) => save(SettingKeys.autoClockIn, v),
+      ),
+      SwitchListTile(
+        secondary: const Icon(Icons.play_arrow_outlined),
+        title: Text(l.resumeAfterBreak),
+        value: s.resumeAfterBreak,
+        onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
+      ),
+      ListTile(
+        leading: Icon(locationIcon(WorkLocation.home)),
+        title: Text(l.homeOfficeRules),
+        subtitle: rules.isEmpty ? Text(l.notSet) : null,
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/settings/home-office'),
+      ),
+      // The overtime account (calculations §7–§9): what is credited.
+      header(l.accountSection, description: l.accountSectionHint),
       ListTile(
         leading: const Icon(Icons.schedule),
         title: Text(l.schedules),
@@ -137,14 +159,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         trailing: const Icon(Icons.chevron_right),
         onTap: () => context.push('/settings/schedules'),
       ),
-      ListTile(
-        leading: Icon(locationIcon(WorkLocation.home)),
-        title: Text(l.homeOfficeRules),
-        subtitle: rules.isEmpty ? Text(l.notSet) : null,
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => context.push('/settings/home-office'),
-      ),
-      header(l.balance),
       ListTile(
         leading: const Icon(Icons.functions),
         title: Text(l.startingBalance),
@@ -175,58 +189,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onSelectionChanged: (v) => save(SettingKeys.breakRuleMode, v.single),
         ),
       ),
-      SwitchListTile(
-        secondary: const Icon(Icons.login),
-        title: Text(l.autoClockIn),
-        value: s.autoClockIn,
-        onChanged: (v) => save(SettingKeys.autoClockIn, v),
-      ),
-      SwitchListTile(
-        secondary: const Icon(Icons.play_arrow_outlined),
-        title: Text(l.resumeAfterBreak),
-        value: s.resumeAfterBreak,
-        onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
-      ),
-      // Which notices appear as cards (calculations §12); a dismissed card
-      // stays away and only leaves the marker in the calendar.
-      header(l.notices),
-      ListTile(
-        leading: const Icon(Icons.work_off_outlined),
-        title: Text(l.noticeUnassignedFrom),
-        subtitle: Text(l.noticeUnassignedHint),
-        trailing: Text(formatMinutes(s.noticeUnassignedMinMinutes)),
-        enabled: s.showsNotice(NoticeCategory.unassigned.wireName),
-        onTap: () async {
-          final v = await _askHours(
-            context,
-            formatMinutes(s.noticeUnassignedMinMinutes),
-          );
-          if (v != null && v >= 0) {
-            await save(SettingKeys.noticeUnassignedMin, v);
-          }
-        },
-      ),
-      for (final c in NoticeCategory.values)
-        SwitchListTile(
-          secondary: Icon(noticeCategoryIcon(c)),
-          title: Text(noticeCategoryLabel(l, c)),
-          value: s.showsNotice(c.wireName),
-          onChanged: (v) => save(SettingKeys.noticeShow(c.wireName), v),
-        ),
-      ListTile(
-        leading: const Icon(Icons.notifications_active_outlined),
-        title: Text(l.restoreNotices),
-        subtitle: Text(
-          l.dismissedCount('${ref.watch(dismissedNoticesProvider).length}'),
-        ),
-        enabled: ref.watch(dismissedNoticesProvider).isNotEmpty,
-        onTap: () async {
-          for (final key in ref.read(dismissedNoticesProvider)) {
-            await repo.delete('dismissed_notices', key);
-          }
-        },
-      ),
-      header(l.travelRules),
+      // Only the account: the travel record always has the real times.
+      header(l.travelRules, description: l.travelRulesHint),
       // calculations.md §9; each rule is a setting, defaults as agreed.
       // Weekdays on a trip:
       ListTile(
@@ -255,7 +219,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       ),
-      header(l.weekendRules),
+      header(l.weekendRules, description: l.weekendRulesHint),
       // On every Saturday, Sunday and holiday, trip or not (§9).
       ListTile(
         leading: const Icon(Icons.weekend_outlined),
@@ -354,6 +318,61 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onSelectionChanged: (v) => save(SettingKeys.travelHoliday, v.single),
         ),
       ),
+      // What is recorded as it happened, independent of the account.
+      header(l.recordsSection, description: l.recordsSectionHint),
+      ListTile(
+        leading: const Icon(Icons.flight),
+        title: Text(l.travelRecord),
+        subtitle: Text(l.travelRecordHint),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.go('/reports'),
+      ),
+      ListTile(
+        leading: const Icon(Icons.work_outline),
+        title: Text(l.projectTimesRecord),
+        subtitle: Text(l.projectTimesRecordHint),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.go('/reports'),
+      ),
+      // Which notices appear as cards (calculations §12); a dismissed card
+      // stays away and only leaves the marker in the calendar.
+      header(l.notices),
+      ListTile(
+        leading: const Icon(Icons.work_off_outlined),
+        title: Text(l.noticeUnassignedFrom),
+        subtitle: Text(l.noticeUnassignedHint),
+        trailing: Text(formatMinutes(s.noticeUnassignedMinMinutes)),
+        enabled: s.showsNotice(NoticeCategory.unassigned.wireName),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.noticeUnassignedMinMinutes),
+          );
+          if (v != null && v >= 0) {
+            await save(SettingKeys.noticeUnassignedMin, v);
+          }
+        },
+      ),
+      for (final c in NoticeCategory.values)
+        SwitchListTile(
+          secondary: Icon(noticeCategoryIcon(c)),
+          title: Text(noticeCategoryLabel(l, c)),
+          value: s.showsNotice(c.wireName),
+          onChanged: (v) => save(SettingKeys.noticeShow(c.wireName), v),
+        ),
+      ListTile(
+        leading: const Icon(Icons.notifications_active_outlined),
+        title: Text(l.restoreNotices),
+        subtitle: Text(
+          l.dismissedCount('${ref.watch(dismissedNoticesProvider).length}'),
+        ),
+        enabled: ref.watch(dismissedNoticesProvider).isNotEmpty,
+        onTap: () async {
+          for (final key in ref.read(dismissedNoticesProvider)) {
+            await repo.delete('dismissed_notices', key);
+          }
+        },
+      ),
     ];
     return Scaffold(
       appBar: AppBar(title: Text(l.navSettings)),
@@ -388,6 +407,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final q = _query.toLowerCase();
     final out = <Widget>[];
     String? title;
+    String? description;
     var group = <Widget>[];
     var titleMatches = false;
     void flush() {
@@ -396,10 +416,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ..add(
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleSmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall
+                      ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                ),
+                if (description != null && q.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      description,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+              ],
             ),
           ),
         )
@@ -411,6 +444,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (t is _Header) {
         flush();
         title = t.text;
+        description = t.description;
         titleMatches = q.isNotEmpty && t.text.toLowerCase().contains(q);
         continue;
       }
@@ -498,9 +532,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
 /// Starts a group of settings (see `_grouped`).
 class _Header extends StatelessWidget {
-  const _Header(this.text);
+  const _Header(this.text, {this.description});
 
   final String text;
+
+  /// What the group is about, shown under the title.
+  final String? description;
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
