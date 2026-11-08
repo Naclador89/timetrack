@@ -255,7 +255,9 @@ _Last updated: 2026-11-08 by Claude Code._
       the maintainer machine points there.
 - [ ] Check on the phone (launcher, themed icons on/off, notification, tile) and on Windows (exe,
       taskbar) with the next release.
-- [ ] Tag v0.4.0 (with the user's OK); the user installs it once by hand on all three systems.
+- [x] Released v0.4.0 (2026-11-08; with the hourglass icon). Checked against the real release: the
+      Linux path (fetch, download, checksum, folder swap) works; APK signed with the release key.
+- [ ] The user installs v0.4.0 once by hand on all three systems.
 - [ ] Then a small v0.4.1 to test the updater for real: Android (unknown-apps permission, confirm,
       data kept), Linux (`~/.local/opt/timetrack` swap + restart), Windows (script replaces the
       folder, app restarts). The Windows script has not run on a real PC yet.
