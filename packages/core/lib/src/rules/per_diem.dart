@@ -99,7 +99,7 @@ List<PerDiemDay> perDiemForTrip(
         date,
         minutes,
         categories[date]!,
-        _rateOn(rates, trip.country, date),
+        perDiemRateOn(rates, trip.country, date),
         meals.where((m) => m.tripId == trip.id && m.date == date),
         reductions,
       ),
@@ -135,7 +135,14 @@ Map<LocalDate, PerDiemCategory> _categories(
   };
 }
 
-PerDiemRate? _rateOn(List<PerDiemRate> rates, String country, LocalDate date) {
+/// The rate a trip day in [country] on [date] uses: the row with the greatest
+/// `valid_from ≤ date`; on a tie the earlier row in [rates] wins
+/// (spec: calculations.md §13).
+PerDiemRate? perDiemRateOn(
+  List<PerDiemRate> rates,
+  String country,
+  LocalDate date,
+) {
   PerDiemRate? best;
   for (final r in rates) {
     if (r.country != country || r.validFrom.isAfter(date)) continue;

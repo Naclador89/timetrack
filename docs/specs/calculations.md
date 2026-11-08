@@ -333,7 +333,8 @@ For each trip with `depart` and `return`. An open trip has no per-diem yet.
 - Rate defaults to pre-fill: `DE`, valid from 2020-01-01: partial 14.00 €, full 28.00 €.
   Checked on 2026-11-07 against several secondary sources: still valid in 2026 (the discussed raise
   to 16/32 € wasn't enacted), and the meal reductions are 5.60 € / 11.20 € / 11.20 €. Foreign rates
-  change yearly (BMF letter; the 2026 rates are from 5 Dec 2025) and are entered by the user.
+  change yearly (BMF letter; the 2026 rates are from 5 Dec 2025) and are entered by the user in
+  Settings → Tagespauschalen; the built-in row can't be edited, a newer row for `DE` supersedes it.
 - Not covered: the three-month rule, several countries in one trip (the trip has one `country`),
   accommodation and travel costs.
 

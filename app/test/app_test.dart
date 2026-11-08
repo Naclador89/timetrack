@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack/features/calendar/day_screen.dart';
+import 'package:timetrack/features/settings/per_diem_rates_screen.dart';
 import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/back_navigation.dart';
 import 'package:timetrack/app/router.dart';
@@ -659,5 +660,64 @@ void main() {
     await tester.drag(list.first, const Offset(0, 200));
     await tester.pumpAndSettle();
     expect(extended(), isTrue);
+  });
+
+  test('per-diem amounts: comma or dot, thousands separators', () {
+    expect(parseCents('14'), 1400);
+    expect(parseCents('14,5'), 1450);
+    expect(parseCents('14.50 €'), 1450);
+    expect(parseCents('1.234,56'), 123456);
+    expect(parseCents(''), isNull);
+    expect(parseCents('abc'), isNull);
+  });
+
+  testWidgets('per-diem rates: supersede the built-in rate, add a country', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router);
+    router.go('/settings/per-diem');
+    await tester.pumpAndSettle();
+    expect(find.text('Built-in'), findsNothing);
+    expect(find.textContaining('Built-in'), findsOneWidget);
+    expect(find.text('in use today'), findsOneWidget);
+
+    // Tapping the built-in rate starts a new row from its values.
+    await tester.tap(find.textContaining('Built-in'));
+    await tester.pumpAndSettle();
+    expect(find.text('New rate'), findsWidgets);
+    await tester.enterText(find.widgetWithText(TextField, '14,00'), '16');
+    await tester.enterText(find.widgetWithText(TextField, '28,00'), '32');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    final mine = store.rowsOf('per_diem_rates').values.single.fields;
+    expect(mine['country'], 'DE');
+    expect(mine['partial_cents'], 1600);
+    expect(mine['full_cents'], 3200);
+    expect(mine['valid_from'], '2026-11-04');
+
+    // A foreign country; a bad code is refused.
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'DE'), 'A');
+    await tester.enterText(
+      find.widgetWithText(
+        TextField,
+        'Partial day (more than 8 h, arrival or departure)',
+      ),
+      '20',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Full day (24 h)'),
+      '40',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Invalid value'), findsOneWidget);
+    await tester.enterText(find.widgetWithText(TextField, 'A'), 'at');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('AT'), findsOneWidget);
+    expect(store.rowsOf('per_diem_rates'), hasLength(2));
   });
 }

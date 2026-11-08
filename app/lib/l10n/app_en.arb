@@ -722,5 +722,32 @@
   "travelRecordHint": "Outbound, at the customer and return with times, hours away and per-diem",
   "projectTimesRecord": "Project times",
   "projectTimesRecordHint": "In 15-minute steps per order; timesheet and order report",
-  "backAgainToLeave": "Press back again to leave"
+  "backAgainToLeave": "Press back again to leave",
+  "perDiemRates": "Per-diem rates",
+  "perDiemRatesHint": "For the travel report. Each trip day uses the newest rate of the trip's country that is valid on that day. Meals provided reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.",
+  "perDiemRatesSummary": "{count} countries",
+  "@perDiemRatesSummary": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "partialDayRate": "Partial day (more than 8 h, arrival or departure)",
+  "fullDayRate": "Full day (24 h)",
+  "newRate": "New rate",
+  "countryIso": "Country (ISO code, e.g. AT)",
+  "builtInRate": "Built-in",
+  "rateInUse": "in use today",
+  "rateAmounts": "{partial} partial · {full} full",
+  "@rateAmounts": {
+    "placeholders": {
+      "partial": {
+        "type": "String"
+      },
+      "full": {
+        "type": "String"
+      }
+    }
+  }
 }

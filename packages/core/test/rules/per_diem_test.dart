@@ -155,4 +155,22 @@ void main() {
       isEmpty,
     );
   });
+
+  test('§13 a user rate supersedes from its valid_from; on a tie the earlier row wins', () {
+    PerDiemRate rate(String id, String from, int partial) => PerDiemRate(
+      id: id,
+      country: 'DE',
+      validFrom: d(from),
+      partialCents: partial,
+      fullCents: partial * 2,
+    );
+    final own = [
+      rate('mine', '2026-01-01', 1600),
+      rate('same', '2026-01-01', 1700),
+    ];
+    final all = [...own, ...defaultPerDiemRates()];
+    expect(perDiemRateOn(all, 'DE', d('2025-12-31'))!.id, 'default-de-2020');
+    expect(perDiemRateOn(all, 'DE', d('2026-01-01'))!.id, 'mine');
+    expect(perDiemRateOn(all, 'AT', d('2026-01-01')), isNull);
+  });
 }

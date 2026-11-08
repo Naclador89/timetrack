@@ -9,6 +9,7 @@ import '../features/calendar/week_screen.dart';
 import '../features/projects/projects_screen.dart';
 import '../features/reports/reports_screen.dart';
 import '../features/settings/home_office_rules_screen.dart';
+import '../features/settings/per_diem_rates_screen.dart';
 import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/setup_wizard.dart';
@@ -95,6 +96,10 @@ GoRouter buildRouter() => GoRouter(
         GoRoute(
           path: 'home-office',
           builder: (_, _) => const HomeOfficeRulesScreen(),
+        ),
+        GoRoute(
+          path: 'per-diem',
+          builder: (_, _) => const PerDiemRatesScreen(),
         ),
       ],
     ),

@@ -328,6 +328,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         onTap: () => context.go('/reports'),
       ),
       ListTile(
+        leading: const Icon(Icons.restaurant_outlined),
+        title: Text(l.perDiemRates),
+        subtitle: Text(
+          l.perDiemRatesSummary(
+            '${ref.watch(perDiemRatesProvider).map((r) => r.country).toSet().length}',
+          ),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/settings/per-diem'),
+      ),
+      ListTile(
         leading: const Icon(Icons.work_outline),
         title: Text(l.projectTimesRecord),
         subtitle: Text(l.projectTimesRecordHint),

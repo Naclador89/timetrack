@@ -1233,4 +1233,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backAgainToLeave => 'Press back again to leave';
+
+  @override
+  String get perDiemRates => 'Per-diem rates';
+
+  @override
+  String get perDiemRatesHint =>
+      'For the travel report. Each trip day uses the newest rate of the trip\'s country that is valid on that day. Meals provided reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.';
+
+  @override
+  String perDiemRatesSummary(String count) {
+    return '$count countries';
+  }
+
+  @override
+  String get partialDayRate =>
+      'Partial day (more than 8 h, arrival or departure)';
+
+  @override
+  String get fullDayRate => 'Full day (24 h)';
+
+  @override
+  String get newRate => 'New rate';
+
+  @override
+  String get countryIso => 'Country (ISO code, e.g. AT)';
+
+  @override
+  String get builtInRate => 'Built-in';
+
+  @override
+  String get rateInUse => 'in use today';
+
+  @override
+  String rateAmounts(String partial, String full) {
+    return '$partial partial · $full full';
+  }
 }

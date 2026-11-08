@@ -1239,4 +1239,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get backAgainToLeave => 'Zum Verlassen nochmal zurück';
+
+  @override
+  String get perDiemRates => 'Tagespauschalen';
+
+  @override
+  String get perDiemRatesHint =>
+      'Für den Reisebericht. Jeder Reisetag nutzt den neuesten Satz des Reiselands, der an dem Tag gilt. Gestellte Mahlzeiten mindern ihn: Frühstück um 20 %, Mittag- und Abendessen um je 40 % des Satzes für den ganzen Tag.';
+
+  @override
+  String perDiemRatesSummary(String count) {
+    return '$count Länder';
+  }
+
+  @override
+  String get partialDayRate => 'Teiltag (mehr als 8 h, An- oder Abreise)';
+
+  @override
+  String get fullDayRate => 'Ganzer Tag (24 h)';
+
+  @override
+  String get newRate => 'Neuer Satz';
+
+  @override
+  String get countryIso => 'Land (ISO-Code, z. B. AT)';
+
+  @override
+  String get builtInRate => 'Voreinstellung';
+
+  @override
+  String get rateInUse => 'gilt heute';
+
+  @override
+  String rateAmounts(String partial, String full) {
+    return '$partial Teiltag · $full ganzer Tag';
+  }
 }

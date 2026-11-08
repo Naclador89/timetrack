@@ -365,5 +365,15 @@
   "travelRecordHint": "Anfahrt, beim Kunden und Rückfahrt mit Uhrzeit, Abwesenheit und Verpflegungspauschale",
   "projectTimesRecord": "Projektzeiten",
   "projectTimesRecordHint": "In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht",
-  "backAgainToLeave": "Zum Verlassen nochmal zurück"
+  "backAgainToLeave": "Zum Verlassen nochmal zurück",
+  "perDiemRates": "Tagespauschalen",
+  "perDiemRatesHint": "Für den Reisebericht. Jeder Reisetag nutzt den neuesten Satz des Reiselands, der an dem Tag gilt. Gestellte Mahlzeiten mindern ihn: Frühstück um 20 %, Mittag- und Abendessen um je 40 % des Satzes für den ganzen Tag.",
+  "perDiemRatesSummary": "{count} Länder",
+  "partialDayRate": "Teiltag (mehr als 8 h, An- oder Abreise)",
+  "fullDayRate": "Ganzer Tag (24 h)",
+  "newRate": "Neuer Satz",
+  "countryIso": "Land (ISO-Code, z. B. AT)",
+  "builtInRate": "Voreinstellung",
+  "rateInUse": "gilt heute",
+  "rateAmounts": "{partial} Teiltag · {full} ganzer Tag"
 }

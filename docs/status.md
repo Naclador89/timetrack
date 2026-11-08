@@ -105,7 +105,9 @@ _Last updated: 2026-11-08 by Claude Code._
       project, weeks), JSON backup of all rows. Exports: save dialog on desktop, share sheet on Android.
 - [x] Trip dialog: meals per trip day (`trip_meals`, id `<tripId>_<date>`).
 - [x] Tests: report tables/CSV/PDF/backup (German), PDF visually checked.
-- [ ] Editing per-diem rates in the UI (rows exist; defaults DE 14/28 €).
+- [x] Editing per-diem rates (Settings → Nachweise → Tagespauschalen, `per_diem_rates_screen.dart`):
+      rows per country with "gilt heute" (core `perDiemRateOn`); the built-in DE rate is locked and
+      superseded by a newer row; delete with undo.
 - [ ] Restore from the JSON backup (export only so far).
 - [ ] Nicer charts (fl_chart) if wanted.
 
@@ -216,7 +218,7 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] Polish: the day view's quick-entry button folds to its icon while scrolling down
       (`CollapsingFab`); the booking sheet's time switch reads "Startzeit angeben" with a hint.
 
-**Next tasks**, one at a time (user, 2026-11-08): per-diem rate editing, JSON restore, sync log, network-change sync trigger, release
+**Next tasks**, one at a time (user, 2026-11-08): JSON restore, sync log, network-change sync trigger, release
 keystore. The user checks the builds on the phone and re-enters the three reset settings.
 **The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
 

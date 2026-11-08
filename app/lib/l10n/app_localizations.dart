@@ -2293,6 +2293,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Press back again to leave'**
   String get backAgainToLeave;
+
+  /// No description provided for @perDiemRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-diem rates'**
+  String get perDiemRates;
+
+  /// No description provided for @perDiemRatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For the travel report. Each trip day uses the newest rate of the trip\'s country that is valid on that day. Meals provided reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.'**
+  String get perDiemRatesHint;
+
+  /// No description provided for @perDiemRatesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} countries'**
+  String perDiemRatesSummary(String count);
+
+  /// No description provided for @partialDayRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial day (more than 8 h, arrival or departure)'**
+  String get partialDayRate;
+
+  /// No description provided for @fullDayRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Full day (24 h)'**
+  String get fullDayRate;
+
+  /// No description provided for @newRate.
+  ///
+  /// In en, this message translates to:
+  /// **'New rate'**
+  String get newRate;
+
+  /// No description provided for @countryIso.
+  ///
+  /// In en, this message translates to:
+  /// **'Country (ISO code, e.g. AT)'**
+  String get countryIso;
+
+  /// No description provided for @builtInRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get builtInRate;
+
+  /// No description provided for @rateInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'in use today'**
+  String get rateInUse;
+
+  /// No description provided for @rateAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{partial} partial · {full} full'**
+  String rateAmounts(String partial, String full);
 }
 
 class _AppLocalizationsDelegate
