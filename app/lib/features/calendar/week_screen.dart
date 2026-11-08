@@ -12,6 +12,7 @@ import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/motion.dart';
+import '../../widgets/shortcuts.dart';
 import '../../widgets/sparkline.dart';
 
 /// ISO 8601 week number of [d].
@@ -79,107 +80,119 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
               .formatMonthYear(DateTime(month.year, month.month))
         : l.weekNumber('${isoWeekNumber(monday)}');
     final syncing = ref.watch(syncControllerProvider).phase;
-    return Scaffold(
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: Text(title, key: ValueKey(title)),
-        ),
-        actions: [
-          IconButton(
-            tooltip: l.goToToday,
-            icon: const Icon(Icons.today),
-            onPressed: _offset == 0 ? null : () => setState(() => _offset = 0),
+    return PageKeys(
+      onPrevious: () => _shift(-1),
+      onNext: () => _shift(1),
+      onToday: () => setState(() => _offset = 0),
+      onToggleView: () => setState(() {
+        _month = !_month;
+        _offset = 0;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Text(title, key: ValueKey(title)),
           ),
-          PopupMenuButton<String>(
-            tooltip: l.more,
-            onSelected: (route) => context.go(route),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: '/calendar/absences',
-                child: ListTile(
-                  leading: const Icon(Icons.beach_access_outlined),
-                  title: Text(l.absences),
-                ),
-              ),
-              PopupMenuItem(
-                value: '/calendar/trips',
-                child: ListTile(
-                  leading: const Icon(Icons.luggage_outlined),
-                  title: Text(l.trips),
-                ),
-              ),
-            ],
-          ),
-          ...commonActions(),
-        ],
-      ),
-      // Swipe left/right for the next/previous week (user request
-      // 2026-11-08); works with touch and trackpads alike.
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (details) {
-          final v = details.primaryVelocity ?? 0;
-          if (v.abs() < 300) return;
-          _shift(v < 0 ? 1 : -1);
-        },
-        child: RefreshIndicator(
-          onRefresh: () => ref.read(syncControllerProvider.notifier).syncNow(),
-          notificationPredicate: (n) =>
-              syncing != SyncPhase.notConfigured && n.depth == 0,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: _month ? l.previousMonth : l.previousWeek,
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => _shift(-1),
+          actions: [
+            IconButton(
+              tooltip: l.goToToday,
+              icon: const Icon(Icons.today),
+              onPressed: _offset == 0
+                  ? null
+                  : () => setState(() => _offset = 0),
+            ),
+            PopupMenuButton<String>(
+              tooltip: l.more,
+              onSelected: (route) => context.go(route),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: '/calendar/absences',
+                  child: ListTile(
+                    leading: const Icon(Icons.beach_access_outlined),
+                    title: Text(l.absences),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: SegmentedButton<bool>(
-                        showSelectedIcon: false,
-                        segments: [
-                          ButtonSegment(
-                            value: false,
-                            icon: const Icon(Icons.view_week_outlined),
-                            label: Text(l.week),
-                          ),
-                          ButtonSegment(
-                            value: true,
-                            icon: const Icon(Icons.calendar_view_month),
-                            label: Text(l.month),
-                          ),
-                        ],
-                        selected: {_month},
-                        onSelectionChanged: (v) => setState(() {
-                          _month = v.single;
-                          _offset = 0;
-                        }),
+                ),
+                PopupMenuItem(
+                  value: '/calendar/trips',
+                  child: ListTile(
+                    leading: const Icon(Icons.luggage_outlined),
+                    title: Text(l.trips),
+                  ),
+                ),
+              ],
+            ),
+            ...commonActions(),
+          ],
+        ),
+        // Swipe left/right for the next/previous week (user request
+        // 2026-11-08); works with touch and trackpads alike.
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragEnd: (details) {
+            final v = details.primaryVelocity ?? 0;
+            if (v.abs() < 300) return;
+            _shift(v < 0 ? 1 : -1);
+          },
+          child: RefreshIndicator(
+            onRefresh: () =>
+                ref.read(syncControllerProvider.notifier).syncNow(),
+            notificationPredicate: (n) =>
+                syncing != SyncPhase.notConfigured && n.depth == 0,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: _month ? l.previousMonth : l.previousWeek,
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => _shift(-1),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: SegmentedButton<bool>(
+                          showSelectedIcon: false,
+                          segments: [
+                            ButtonSegment(
+                              value: false,
+                              icon: const Icon(Icons.view_week_outlined),
+                              label: Text(l.week),
+                            ),
+                            ButtonSegment(
+                              value: true,
+                              icon: const Icon(Icons.calendar_view_month),
+                              label: Text(l.month),
+                            ),
+                          ],
+                          selected: {_month},
+                          onSelectionChanged: (v) => setState(() {
+                            _month = v.single;
+                            _offset = 0;
+                          }),
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: _month ? l.nextMonth : l.nextWeek,
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => _shift(1),
-                  ),
-                ],
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: _month
-                    ? _MonthView(
-                        key: ValueKey('m$_offset'),
-                        month: month,
-                        onOpenWeek: _openWeek,
-                      )
-                    : _WeekView(key: ValueKey('w$_offset'), monday: monday),
-              ),
-            ],
+                    IconButton(
+                      tooltip: _month ? l.nextMonth : l.nextWeek,
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => _shift(1),
+                    ),
+                  ],
+                ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _month
+                      ? _MonthView(
+                          key: ValueKey('m$_offset'),
+                          month: month,
+                          onOpenWeek: _openWeek,
+                        )
+                      : _WeekView(key: ValueKey('w$_offset'), monday: monday),
+                ),
+              ],
+            ),
           ),
         ),
       ),

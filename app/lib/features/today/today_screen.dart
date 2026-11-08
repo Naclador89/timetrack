@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../../app/actions.dart';
 import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
@@ -142,67 +143,11 @@ class _HeroCard extends ConsumerStatefulWidget {
 }
 
 class _HeroCardState extends ConsumerState<_HeroCard> {
-  /// The locations today's day type allows (calculations §15); office or
-  /// home office while no type is picked.
-  List<WorkLocation> _allowed() {
-    final type = ref.read(ledgerProvider).day(ref.read(todayProvider)).type;
-    final allowed = type?.locations ?? const <WorkLocation>[];
-    return allowed.isEmpty
-        ? const [WorkLocation.office, WorkLocation.home]
-        : allowed;
-  }
+  Future<void> _clockIn() => clockIn(ref);
 
-  /// The location for the next clock-in: the last used one, as far as
-  /// today's day type allows it (trip days use the trip steps instead).
-  WorkLocation _nextLocation() {
-    final allowed = _allowed();
-    final sessions = ref.read(ledgerDataProvider).sessions;
-    final last = sessions.isEmpty
-        ? null
-        : sessions.reduce((a, b) => a.start.isAfter(b.start) ? a : b).location;
-    return allowed.contains(last) ? last! : allowed.first;
-  }
+  Future<void> _clockOut() => clockOut(context, ref);
 
-  Future<void> _clockIn() async {
-    tapFeedback(strong: true);
-    await ref.read(trackerProvider).clockIn(location: _nextLocation());
-  }
-
-  Future<void> _clockOut() async {
-    tapFeedback(strong: true);
-    final state = ref.read(trackerStateProvider);
-    await withSummaryPrompt(context, ref, ref.read(trackerProvider).clockOut);
-    if (!mounted) return;
-    if (state.trip != null && state.location == WorkLocation.travel) {
-      final end = await showDialog<bool>(
-        context: context,
-        builder: (c) => AlertDialog(
-          title: Text(c.l10n.endTripQuestion),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: Text(c.l10n.notNow),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(c, true),
-              child: Text(c.l10n.endTrip),
-            ),
-          ],
-        ),
-      );
-      if (end == true) await ref.read(trackerProvider).endTrip();
-    }
-  }
-
-  Future<void> _toggleBreak() async {
-    tapFeedback();
-    final tracker = ref.read(trackerProvider);
-    if (ref.read(trackerStateProvider).onBreak) {
-      await tracker.endBreak();
-    } else {
-      await withSummaryPrompt(context, ref, tracker.startBreak);
-    }
-  }
+  Future<void> _toggleBreak() => toggleBreak(context, ref);
 
   /// Runs a trip step (calculations §9.1): each records the exact minute
   /// for the travel report.

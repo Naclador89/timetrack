@@ -283,7 +283,9 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       Hintergrundbild" on/off; device-local (`local_values` `theme_mode`, `wallpaper_colors`), read
       before the first frame (`app/lib/app/appearance.dart`). Seed colour is now the icon's cyan
       `#22D3EE` instead of teal.
-- [ ] Keyboard shortcuts (navigation.md)
+- [x] Keyboard shortcuts (navigation.md, "Keyboard shortcuts"): Ctrl+E/P/B/J, Ctrl+1–4, Ctrl+,, F5,
+      F1/? help; ←/→, T, M on the calendar and day pages (`PageKeys`); plain keys stay out of text
+      fields. Today, palette and keys share `app/lib/app/actions.dart`; the palette shows the keys.
 - [ ] Finish-time forecast (calculations §18)
 - [ ] Forgotten clock-out dialog and reminders (reminders.md)
 - [ ] Week check (grouped notices, review flow, complete week/month)

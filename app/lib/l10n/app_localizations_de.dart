@@ -1495,4 +1495,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wallpaperColorsHint => 'Aus: die Farben von TimeTrack.';
+
+  @override
+  String get keyboardShortcuts => 'Tastenkürzel';
+
+  @override
+  String get keysClock => 'Ein- oder ausstempeln';
+
+  @override
+  String get keysBreak => 'Pause starten oder beenden';
+
+  @override
+  String get keysTabs => 'Heute, Kalender, Projekte, Berichte';
+
+  @override
+  String get keysPrevNext => 'Vorherige oder nächste Woche, Monat oder Tag';
+
+  @override
+  String get keysWeekMonth => 'Zwischen Woche und Monat wechseln';
+
+  @override
+  String get keysHelp => 'Diese Übersicht';
 }

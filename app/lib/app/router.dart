@@ -14,6 +14,7 @@ import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/setup_wizard.dart';
 import '../widgets/command_palette.dart';
+import '../widgets/shortcuts.dart';
 import '../features/settings/sync_log_screen.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
@@ -115,8 +116,8 @@ GoRouter buildRouter() => GoRouter(
   ],
 );
 
-/// Bottom navigation on phones, a navigation rail on wider windows; Ctrl+K
-/// opens the command palette everywhere.
+/// Bottom navigation on phones, a navigation rail on wider windows; the
+/// keyboard shortcuts (Ctrl+K: command palette) work everywhere.
 class AdaptiveShell extends StatelessWidget {
   /// Creates the shell.
   const AdaptiveShell({super.key, required this.shell});
@@ -137,7 +138,7 @@ class AdaptiveShell extends StatelessWidget {
         shell.goBranch(i, initialLocation: i == shell.currentIndex);
     return TabBackHandler(
       shell: shell,
-      child: CommandPaletteShortcut(child: _layout(context, items, go)),
+      child: AppShortcuts(shell: shell, child: _layout(context, items, go)),
     );
   }
 

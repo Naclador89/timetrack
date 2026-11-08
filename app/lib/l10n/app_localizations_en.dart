@@ -1488,4 +1488,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wallpaperColorsHint => 'Off: TimeTrack\'s own colours.';
+
+  @override
+  String get keyboardShortcuts => 'Keyboard shortcuts';
+
+  @override
+  String get keysClock => 'Clock in or out';
+
+  @override
+  String get keysBreak => 'Start or end a break';
+
+  @override
+  String get keysTabs => 'Today, Calendar, Projects, Reports';
+
+  @override
+  String get keysPrevNext => 'Previous or next week, month or day';
+
+  @override
+  String get keysWeekMonth => 'Switch between week and month';
+
+  @override
+  String get keysHelp => 'This overview';
 }

@@ -59,17 +59,6 @@ Future<void> pump(
   await settle(tester);
 }
 
-/// Pumps until the prompt's store reads and writes are through.
-Future<void> settle(WidgetTester tester) async {
-  for (var i = 0; i < 10; i++) {
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 10)),
-    );
-    await tester.pump();
-  }
-  await tester.pumpAndSettle();
-}
-
 void main() {
   late InMemorySyncStore store;
   late SyncedRepository repo;

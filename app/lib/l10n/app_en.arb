@@ -914,5 +914,12 @@
   "themeLight": "Light",
   "themeDark": "Dark",
   "wallpaperColors": "Wallpaper colours",
-  "wallpaperColorsHint": "Off: TimeTrack's own colours."
+  "wallpaperColorsHint": "Off: TimeTrack's own colours.",
+  "keyboardShortcuts": "Keyboard shortcuts",
+  "keysClock": "Clock in or out",
+  "keysBreak": "Start or end a break",
+  "keysTabs": "Today, Calendar, Projects, Reports",
+  "keysPrevNext": "Previous or next week, month or day",
+  "keysWeekMonth": "Switch between week and month",
+  "keysHelp": "This overview"
 }

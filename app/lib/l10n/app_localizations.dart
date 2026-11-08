@@ -2725,6 +2725,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Off: TimeTrack\'s own colours.'**
   String get wallpaperColorsHint;
+
+  /// No description provided for @keyboardShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get keyboardShortcuts;
+
+  /// No description provided for @keysClock.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in or out'**
+  String get keysClock;
+
+  /// No description provided for @keysBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Start or end a break'**
+  String get keysBreak;
+
+  /// No description provided for @keysTabs.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, Calendar, Projects, Reports'**
+  String get keysTabs;
+
+  /// No description provided for @keysPrevNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous or next week, month or day'**
+  String get keysPrevNext;
+
+  /// No description provided for @keysWeekMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between week and month'**
+  String get keysWeekMonth;
+
+  /// No description provided for @keysHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This overview'**
+  String get keysHelp;
 }
 
 class _AppLocalizationsDelegate

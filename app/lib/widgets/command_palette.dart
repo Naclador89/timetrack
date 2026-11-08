@@ -4,32 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../app/actions.dart';
 import '../app/format.dart';
 import '../app/providers.dart';
 import '../app/theme.dart';
 import '../features/projects/project_time_dialog.dart';
 import '../sync/sync_controller.dart';
 import 'quick_entry_sheet.dart';
-
-/// Opens the command palette with Ctrl+K (or ⌘K) anywhere below it.
-class CommandPaletteShortcut extends StatelessWidget {
-  /// Wraps [child].
-  const CommandPaletteShortcut({super.key, required this.child});
-
-  /// The app content.
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => CallbackShortcuts(
-    bindings: {
-      const SingleActivator(LogicalKeyboardKey.keyK, control: true): () =>
-          showCommandPalette(context),
-      const SingleActivator(LogicalKeyboardKey.keyK, meta: true): () =>
-          showCommandPalette(context),
-    },
-    child: Focus(autofocus: true, child: child),
-  );
-}
+import 'shortcuts.dart';
 
 /// One search field for actions, screens and projects (desktop: Ctrl+K,
 /// ↑↓, Enter). Choosing a project starts it.
@@ -47,6 +29,7 @@ typedef _Command = ({
   Future<void> Function() run,
   Color? color,
   bool stay,
+  String? keys,
 });
 
 class _Palette extends ConsumerStatefulWidget {
@@ -82,36 +65,44 @@ class _PaletteState extends ConsumerState<_Palette> {
         (
           icon: Icons.play_arrow_rounded,
           label: l.clockIn,
-          run: () => tracker.clockIn(
-            location: lastLocation(ref.read(rowsProvider).value ?? const []),
-          ),
+          run: () => toggleClock(host, ref),
           color: null,
-          stay: false,
+          stay: true,
+          keys: 'Ctrl+E',
         )
       else ...[
         (
           icon: Icons.stop_rounded,
           label: l.clockOut,
-          run: () => withSummaryPrompt(host, ref, tracker.clockOut),
+          run: () => toggleClock(host, ref),
           color: null,
           stay: true,
+          keys: 'Ctrl+E',
         ),
         (
           icon: state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
           label: state.onBreak ? l.endBreak : l.startBreak,
-          run: state.onBreak
-              ? tracker.endBreak
-              : () => withSummaryPrompt(host, ref, tracker.startBreak),
+          run: () => toggleBreak(host, ref),
           color: null,
           stay: true,
+          keys: 'Ctrl+P',
         ),
       ],
+      (
+        icon: Icons.more_time,
+        label: l.bookProjectTime,
+        run: () => bookTime(host, ref),
+        color: null,
+        stay: false,
+        keys: 'Ctrl+B',
+      ),
       (
         icon: Icons.bolt,
         label: l.quickEntry,
         run: () async => showQuickEntrySheet(host, today),
         color: null,
         stay: false,
+        keys: 'Ctrl+J',
       ),
       (
         icon: Icons.today,
@@ -119,6 +110,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/today'),
         color: null,
         stay: false,
+        keys: 'Ctrl+1',
       ),
       (
         icon: Icons.edit_calendar_outlined,
@@ -126,6 +118,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/today/day/$today'),
         color: null,
         stay: false,
+        keys: null,
       ),
       (
         icon: Icons.calendar_month,
@@ -133,6 +126,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/calendar'),
         color: null,
         stay: false,
+        keys: 'Ctrl+2',
       ),
       (
         icon: Icons.beach_access_outlined,
@@ -140,6 +134,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/calendar/absences'),
         color: null,
         stay: false,
+        keys: null,
       ),
       (
         icon: Icons.luggage_outlined,
@@ -147,6 +142,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/calendar/trips'),
         color: null,
         stay: false,
+        keys: null,
       ),
       (
         icon: Icons.work,
@@ -154,6 +150,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/projects'),
         color: null,
         stay: false,
+        keys: 'Ctrl+3',
       ),
       (
         icon: Icons.assessment,
@@ -161,6 +158,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/reports'),
         color: null,
         stay: false,
+        keys: 'Ctrl+4',
       ),
       (
         icon: Icons.settings_outlined,
@@ -168,6 +166,15 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => widget.router.push('/settings'),
         color: null,
         stay: false,
+        keys: 'Ctrl+,',
+      ),
+      (
+        icon: Icons.keyboard_outlined,
+        label: l.keyboardShortcuts,
+        run: () async => showShortcutHelp(host),
+        color: null,
+        stay: false,
+        keys: 'F1',
       ),
       if (ref.read(syncControllerProvider).phase != SyncPhase.notConfigured)
         (
@@ -176,6 +183,7 @@ class _PaletteState extends ConsumerState<_Palette> {
           run: ref.read(syncControllerProvider.notifier).syncNow,
           color: null,
           stay: false,
+          keys: 'F5',
         ),
     ];
     final q = _query.text.trim().toLowerCase();
@@ -207,6 +215,7 @@ class _PaletteState extends ConsumerState<_Palette> {
           ),
           color: scheme.projectColor(m.project.id),
           stay: true,
+          keys: null,
         ),
     ];
   }
@@ -273,6 +282,12 @@ class _PaletteState extends ConsumerState<_Palette> {
                       selected: i == selected,
                       leading: Icon(commands[i].icon, color: commands[i].color),
                       title: Text(commands[i].label),
+                      trailing: commands[i].keys == null
+                          ? null
+                          : Text(
+                              commands[i].keys!,
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
                       onTap: () => _run(commands[i]),
                     ),
                 ],

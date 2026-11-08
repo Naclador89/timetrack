@@ -437,5 +437,12 @@
   "themeLight": "Hell",
   "themeDark": "Dunkel",
   "wallpaperColors": "Farben vom Hintergrundbild",
-  "wallpaperColorsHint": "Aus: die Farben von TimeTrack."
+  "wallpaperColorsHint": "Aus: die Farben von TimeTrack.",
+  "keyboardShortcuts": "Tastenkürzel",
+  "keysClock": "Ein- oder ausstempeln",
+  "keysBreak": "Pause starten oder beenden",
+  "keysTabs": "Heute, Kalender, Projekte, Berichte",
+  "keysPrevNext": "Vorherige oder nächste Woche, Monat oder Tag",
+  "keysWeekMonth": "Zwischen Woche und Monat wechseln",
+  "keysHelp": "Diese Übersicht"
 }

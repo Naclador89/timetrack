@@ -50,6 +50,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
         clockProvider.overrideWithValue(now),
         nowProvider.overrideWith((ref) => Stream.value(now())),
         syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
+        networkChangesProvider.overrideWithValue(const Stream.empty()),
         ...overrides,
       ],
       child: TimeTrackApp(router: router ?? buildRouter()),
@@ -57,4 +58,16 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
   );
   await tester.pumpAndSettle();
   return (store, repo);
+}
+
+/// Pumps until store reads and writes started by a frame are through (they
+/// run outside the fake clock).
+Future<void> settle(WidgetTester tester) async {
+  for (var i = 0; i < 10; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 10)),
+    );
+    await tester.pump();
+  }
+  await tester.pumpAndSettle();
 }
