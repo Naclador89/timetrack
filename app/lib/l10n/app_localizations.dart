@@ -2353,6 +2353,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{partial} partial · {full} full'**
   String rateAmounts(String partial, String full);
+
+  /// No description provided for @restoreBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Load backup'**
+  String get restoreBackup;
+
+  /// No description provided for @restoreBackupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from a JSON backup; you choose how'**
+  String get restoreBackupHint;
+
+  /// No description provided for @notABackup.
+  ///
+  /// In en, this message translates to:
+  /// **'This file isn\'t a TimeTrack backup that this version can read.'**
+  String get notABackup;
+
+  /// No description provided for @restoreFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup from {date} · {count} entries'**
+  String restoreFrom(String date, String count);
+
+  /// No description provided for @restoreChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'How should the backup be loaded?'**
+  String get restoreChoose;
+
+  /// No description provided for @restoreMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get restoreMerge;
+
+  /// No description provided for @restoreMergeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Like a sync: whatever is missing comes back from the backup, everything changed later stays.'**
+  String get restoreMergeHint;
+
+  /// No description provided for @restoreReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get restoreReplace;
+
+  /// No description provided for @restoreReplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data becomes exactly the backup, on all devices. Everything entered or changed after the backup is lost.'**
+  String get restoreReplaceHint;
+
+  /// No description provided for @restoreCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{added} back · {changed} changed · {deleted} deleted'**
+  String restoreCounts(String added, String changed, String deleted);
+
+  /// No description provided for @restoreNoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'no changes'**
+  String get restoreNoChange;
+
+  /// No description provided for @restoreSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: entries from other devices that haven\'t arrived yet are not taken into account.'**
+  String get restoreSyncFailed;
+
+  /// No description provided for @restoreTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: save a current backup first.'**
+  String get restoreTip;
+
+  /// No description provided for @restoreDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup loaded: {counts}'**
+  String restoreDone(String counts);
 }
 
 class _AppLocalizationsDelegate

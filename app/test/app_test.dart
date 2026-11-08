@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack/features/calendar/day_screen.dart';
 import 'package:timetrack/features/settings/per_diem_rates_screen.dart';
+import 'package:timetrack/features/reports/reports_screen.dart';
+import 'package:timetrack/features/reports/restore_backup.dart';
 import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/back_navigation.dart';
 import 'package:timetrack/app/router.dart';
@@ -719,5 +723,59 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('AT'), findsOneWidget);
     expect(store.rowsOf('per_diem_rates'), hasLength(2));
+  });
+
+  testWidgets('backup: the user picks merge or replace, with a preview', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, repo) = await pumpApp(tester, router: router);
+    await repo.write('projects', 'p1', {'name': 'Alt'});
+    final backup = decodeBackup(
+      encodeBackup(
+        await store.watchRows(syncedTables).first,
+        DateTime.utc(2026, 11, 1),
+      ),
+    );
+    await repo.write('projects', 'p1', {'name': 'Neu'});
+    await repo.write('projects', 'p2', {'name': 'Danach'});
+    router.go('/reports');
+    await tester.pumpAndSettle();
+
+    Future<void> open() async {
+      final element = tester.element(find.byType(ReportsScreen));
+      unawaited(showRestoreDialog(element, element as WidgetRef, backup));
+      await tester.pumpAndSettle();
+    }
+
+    // Merge: nothing to do, newer edits stay; the button stays off.
+    await open();
+    expect(find.text('Merge'), findsOneWidget);
+    expect(find.text('no changes'), findsOneWidget);
+    expect(find.text('0 back · 1 changed · 1 deleted'), findsOneWidget);
+    await tester.tap(find.text('Merge'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Merge'))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('projects')['p1']!.fields['name'], 'Neu');
+
+    // Replace: back to the backup.
+    await open();
+    await tester.tap(find.text('Replace'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Replace'));
+    await tester.pumpAndSettle();
+    expect(store.rowsOf('projects')['p1']!.fields['name'], 'Alt');
+    expect(store.rowsOf('projects')['p2']!.isDeleted, isTrue);
+    expect(
+      find.text('Backup loaded: 0 back · 1 changed · 1 deleted'),
+      findsOneWidget,
+    );
   });
 }

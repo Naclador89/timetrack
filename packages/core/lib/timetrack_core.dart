@@ -26,6 +26,7 @@ export 'src/rules/review.dart';
 export 'src/rules/target.dart';
 export 'src/rules/vacation.dart';
 export 'src/search/project_search.dart';
+export 'src/sync/backup.dart';
 export 'src/sync/batch.dart';
 export 'src/sync/change.dart';
 export 'src/sync/crypto.dart';

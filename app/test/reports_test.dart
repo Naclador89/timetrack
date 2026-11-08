@@ -213,7 +213,7 @@ void main() {
 
   test('backup contains every row with its field clocks', () {
     final json = jsonDecode(
-      backupJson([
+      encodeBackup([
         StoredRow(
           table: 'projects',
           id: 'p',

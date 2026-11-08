@@ -375,5 +375,19 @@
   "countryIso": "Land (ISO-Code, z. B. AT)",
   "builtInRate": "Voreinstellung",
   "rateInUse": "gilt heute",
-  "rateAmounts": "{partial} Teiltag · {full} ganzer Tag"
+  "rateAmounts": "{partial} Teiltag · {full} ganzer Tag",
+  "restoreBackup": "Sicherung laden",
+  "restoreBackupHint": "Aus einer JSON-Sicherung wiederherstellen; du wählst, wie",
+  "notABackup": "Diese Datei ist keine TimeTrack-Sicherung, die diese Version lesen kann.",
+  "restoreFrom": "Sicherung vom {date} · {count} Einträge",
+  "restoreChoose": "Wie soll die Sicherung geladen werden?",
+  "restoreMerge": "Zusammenführen",
+  "restoreMergeHint": "Wie ein Sync: Was fehlt, kommt aus der Sicherung zurück; alles später Geänderte bleibt erhalten.",
+  "restoreReplace": "Ersetzen",
+  "restoreReplaceHint": "Deine Daten werden genau zur Sicherung – auf allen Geräten. Alles, was nach der Sicherung eingetragen oder geändert wurde, geht verloren.",
+  "restoreCounts": "{added} zurück · {changed} geändert · {deleted} gelöscht",
+  "restoreNoChange": "keine Änderungen",
+  "restoreSyncFailed": "Sync fehlgeschlagen: Einträge anderer Geräte, die noch nicht angekommen sind, werden nicht berücksichtigt.",
+  "restoreTip": "Tipp: Speichere vorher eine aktuelle Sicherung.",
+  "restoreDone": "Sicherung geladen: {counts}"
 }

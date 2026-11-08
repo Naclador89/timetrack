@@ -1269,4 +1269,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String rateAmounts(String partial, String full) {
     return '$partial partial · $full full';
   }
+
+  @override
+  String get restoreBackup => 'Load backup';
+
+  @override
+  String get restoreBackupHint => 'Restore from a JSON backup; you choose how';
+
+  @override
+  String get notABackup =>
+      'This file isn\'t a TimeTrack backup that this version can read.';
+
+  @override
+  String restoreFrom(String date, String count) {
+    return 'Backup from $date · $count entries';
+  }
+
+  @override
+  String get restoreChoose => 'How should the backup be loaded?';
+
+  @override
+  String get restoreMerge => 'Merge';
+
+  @override
+  String get restoreMergeHint =>
+      'Like a sync: whatever is missing comes back from the backup, everything changed later stays.';
+
+  @override
+  String get restoreReplace => 'Replace';
+
+  @override
+  String get restoreReplaceHint =>
+      'Your data becomes exactly the backup, on all devices. Everything entered or changed after the backup is lost.';
+
+  @override
+  String restoreCounts(String added, String changed, String deleted) {
+    return '$added back · $changed changed · $deleted deleted';
+  }
+
+  @override
+  String get restoreNoChange => 'no changes';
+
+  @override
+  String get restoreSyncFailed =>
+      'Sync failed: entries from other devices that haven\'t arrived yet are not taken into account.';
+
+  @override
+  String get restoreTip => 'Tip: save a current backup first.';
+
+  @override
+  String restoreDone(String counts) {
+    return 'Backup loaded: $counts';
+  }
 }

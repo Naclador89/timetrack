@@ -1274,4 +1274,57 @@ class AppLocalizationsDe extends AppLocalizations {
   String rateAmounts(String partial, String full) {
     return '$partial Teiltag · $full ganzer Tag';
   }
+
+  @override
+  String get restoreBackup => 'Sicherung laden';
+
+  @override
+  String get restoreBackupHint =>
+      'Aus einer JSON-Sicherung wiederherstellen; du wählst, wie';
+
+  @override
+  String get notABackup =>
+      'Diese Datei ist keine TimeTrack-Sicherung, die diese Version lesen kann.';
+
+  @override
+  String restoreFrom(String date, String count) {
+    return 'Sicherung vom $date · $count Einträge';
+  }
+
+  @override
+  String get restoreChoose => 'Wie soll die Sicherung geladen werden?';
+
+  @override
+  String get restoreMerge => 'Zusammenführen';
+
+  @override
+  String get restoreMergeHint =>
+      'Wie ein Sync: Was fehlt, kommt aus der Sicherung zurück; alles später Geänderte bleibt erhalten.';
+
+  @override
+  String get restoreReplace => 'Ersetzen';
+
+  @override
+  String get restoreReplaceHint =>
+      'Deine Daten werden genau zur Sicherung – auf allen Geräten. Alles, was nach der Sicherung eingetragen oder geändert wurde, geht verloren.';
+
+  @override
+  String restoreCounts(String added, String changed, String deleted) {
+    return '$added zurück · $changed geändert · $deleted gelöscht';
+  }
+
+  @override
+  String get restoreNoChange => 'keine Änderungen';
+
+  @override
+  String get restoreSyncFailed =>
+      'Sync fehlgeschlagen: Einträge anderer Geräte, die noch nicht angekommen sind, werden nicht berücksichtigt.';
+
+  @override
+  String get restoreTip => 'Tipp: Speichere vorher eine aktuelle Sicherung.';
+
+  @override
+  String restoreDone(String counts) {
+    return 'Sicherung geladen: $counts';
+  }
 }

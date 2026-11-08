@@ -15,6 +15,7 @@ import '../../widgets/motion.dart';
 import '../../widgets/sparkline.dart';
 import '../calendar/week_screen.dart' show isoWeekNumber;
 import 'report_documents.dart';
+import 'restore_backup.dart';
 import 'report_preview.dart';
 
 /// Monthly reports: timesheet, order report, travel expenses, statistics and
@@ -291,11 +292,20 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 if (!context.mounted) return;
                 await exportBytes(
                   context,
-                  utf8.encode(backupJson(rows, now)),
+                  utf8.encode(encodeBackup(rows, now)),
                   'TimeTrack_Sicherung_${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}.json',
                   'application/json',
                 );
               },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.settings_backup_restore),
+              title: Text(l.restoreBackup),
+              subtitle: Text(l.restoreBackupHint),
+              trailing: const Icon(Icons.upload_file),
+              onTap: () => restoreBackupFlow(context, ref),
             ),
           ),
         ],

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -228,24 +226,6 @@ String projectLabel(Project? p) {
   final number = p.orderNumber.isNotEmpty ? p.orderNumber : p.projectNumber;
   return number.isEmpty ? p.name : '${p.name} · $number';
 }
-
-/// All synced rows (including tombstones and field clocks) as JSON, so
-/// nothing is lost even without Nextcloud.
-String backupJson(List<StoredRow> rows, DateTime now) =>
-    const JsonEncoder.withIndent(' ').convert({
-      'app': 'TimeTrack',
-      'format': syncFormatVersion,
-      'exported': now.toUtc().toIso8601String(),
-      'rows': [
-        for (final r in rows)
-          {
-            'tbl': r.table,
-            'id': r.id,
-            'fields': r.fields,
-            'fieldClock': r.fieldClock,
-          },
-      ],
-    });
 
 /// The PDF standard fonts only cover Windows-1252; map the few characters
 /// outside it that our texts use.

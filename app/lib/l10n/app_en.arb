@@ -749,5 +749,49 @@
         "type": "String"
       }
     }
+  },
+  "restoreBackup": "Load backup",
+  "restoreBackupHint": "Restore from a JSON backup; you choose how",
+  "notABackup": "This file isn't a TimeTrack backup that this version can read.",
+  "restoreFrom": "Backup from {date} · {count} entries",
+  "@restoreFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreChoose": "How should the backup be loaded?",
+  "restoreMerge": "Merge",
+  "restoreMergeHint": "Like a sync: whatever is missing comes back from the backup, everything changed later stays.",
+  "restoreReplace": "Replace",
+  "restoreReplaceHint": "Your data becomes exactly the backup, on all devices. Everything entered or changed after the backup is lost.",
+  "restoreCounts": "{added} back · {changed} changed · {deleted} deleted",
+  "@restoreCounts": {
+    "placeholders": {
+      "added": {
+        "type": "String"
+      },
+      "changed": {
+        "type": "String"
+      },
+      "deleted": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreNoChange": "no changes",
+  "restoreSyncFailed": "Sync failed: entries from other devices that haven't arrived yet are not taken into account.",
+  "restoreTip": "Tip: save a current backup first.",
+  "restoreDone": "Backup loaded: {counts}",
+  "@restoreDone": {
+    "placeholders": {
+      "counts": {
+        "type": "String"
+      }
+    }
   }
 }
