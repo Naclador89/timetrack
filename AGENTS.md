@@ -25,6 +25,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
+| `branding/`, `tool/make_icons.py` | App icon sources and the script that generates every platform's icons from them (`branding/README.md`). |
 | `tool/retry-download.sh` | CI wrapper: retries a command only when a build hook's download fails its hash check. |
 
 ## Commands

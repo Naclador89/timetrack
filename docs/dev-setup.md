@@ -76,8 +76,14 @@ unzip it and run `timetrack.exe`. SmartScreen warns once, because the build is u
 **Install on Linux** (no root):
 ```bash
 mkdir -p ~/.local/opt && rm -rf ~/.local/opt/timetrack && cp -r app/build/linux/x64/release/bundle ~/.local/opt/timetrack
-# plus a launcher in ~/.local/share/applications/timetrack.desktop (Exec=$HOME/.local/opt/timetrack/timetrack)
+# plus a launcher ~/.local/share/applications/timetrack.desktop with
+#   Exec=$HOME/.local/opt/timetrack/timetrack
+#   Icon=$HOME/.local/opt/timetrack/data/app_icon.png      (in-app updates bring new icons along)
+#   StartupWMClass=io.github.naclador89.timetrack
 ```
+
+**Icons**: all generated from `branding/` by `tool/make_icons.py` (ImageMagick 7 on the host, not in
+the toolbox); see `branding/README.md`. The results are committed.
 
 **Releasing** (the apps update themselves from it, `docs/specs/updates.md`):
 1. Bump `version:` in `app/pubspec.yaml` (e.g. `0.4.1+5`; the build number must grow for Android).

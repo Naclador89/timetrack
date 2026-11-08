@@ -20,7 +20,7 @@ Always the latest release. From v0.4.0 on, the app tells you about new versions 
 |---|---|---|
 | Windows | [timetrack-windows-x64.zip](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-windows-x64.zip) | Unzip, start `timetrack.exe` (SmartScreen: *More info → Run anyway*) |
 | Android | [timetrack-android.apk](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-android.apk) | Open the APK, allow installing from this source |
-| Linux | [timetrack-linux-x64.tar.gz](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-linux-x64.tar.gz) | Unpack, start `bundle/timetrack` |
+| Linux | [timetrack-linux-x64.tar.gz](https://github.com/Naclador89/timetrack/releases/latest/download/timetrack-linux-x64.tar.gz) | Unpack, start `bundle/timetrack`; for a launcher use `bundle/data/app_icon.png` as icon |
 
 All versions: [Releases](https://github.com/Naclador89/timetrack/releases). A new release is built by pushing a
 tag `vX.Y.Z` that matches the version in `app/pubspec.yaml` (see `docs/dev-setup.md`).
