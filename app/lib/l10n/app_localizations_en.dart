@@ -766,10 +766,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editTrip => 'Edit trip';
 
   @override
-  String get absenceDayHint => 'No working time is recorded on this day.';
-
-  @override
   String tripTimes(String travel, String onSite) {
     return 'Travel $travel · On site $onSite';
   }
+
+  @override
+  String get absenceWorkHint =>
+      'Working time recorded on this day is credited as overtime.';
+
+  @override
+  String get goToToday => 'Go to today';
 }

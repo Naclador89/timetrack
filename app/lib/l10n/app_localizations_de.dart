@@ -768,10 +768,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editTrip => 'Reise bearbeiten';
 
   @override
-  String get absenceDayHint => 'An diesem Tag wird keine Arbeitszeit erfasst.';
-
-  @override
   String tripTimes(String travel, String onSite) {
     return 'Unterwegs $travel · Vor Ort $onSite';
   }
+
+  @override
+  String get absenceWorkHint =>
+      'Arbeitszeit an diesem Tag wird als Überstunden gutgeschrieben.';
+
+  @override
+  String get goToToday => 'Zu heute springen';
 }

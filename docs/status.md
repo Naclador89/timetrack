@@ -161,6 +161,8 @@ _Last updated: 2026-11-07 by Claude Code._
       "Reisetag" button was replaced by the day type picker.
 - [x] Week view: hours per project per day in small print (`bookedByProject`, incl. trip project);
       swipe left/right for the next/previous week.
+- [x] Working time on absence days (vacation, flexitime, sick, …) can be recorded and counts as
+      overtime (§15). Calendar: "Zu heute springen" icon in the week and day view.
 - [x] Day view: an X on every session, break, project time and absence deletes it after a
       confirmation.
 

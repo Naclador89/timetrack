@@ -315,12 +315,16 @@ calendar and picked in the calendar and on Today:
 | Büro (`office`) | `days` row | sessions at the office, project time |
 | Homeoffice (`home`) | `days` row | sessions at home, project time |
 | Dienstreise (`business_trip`) | the day lies in a `trip` (§9) | travel and on-site time (booked to the trip's project, §3) |
-| Urlaub | absence `vacation` | nothing |
-| Krank | absence `sick` | nothing |
-| Kinderkrankentag | absence `child_sick` (credits the target, §8) | nothing |
-| Gleitzeit | absence `comp_time` (no credit, costs the balance, §8) | nothing |
-| Kurzarbeit | absence `short_time` (lowers the target, §7) | nothing |
-| Feier-/Trauertag | absence `special_leave` (credits the target, §8) | nothing |
+| Urlaub | absence `vacation` | sessions at office/home, project time if worked; counts as overtime |
+| Krank | absence `sick` | sessions at office/home, project time if worked; counts as overtime |
+| Kinderkrankentag | absence `child_sick` (credits the target, §8) | sessions at office/home, project time if worked; counts as overtime |
+| Gleitzeit | absence `comp_time` (no credit, costs the balance, §8) | sessions at office/home, project time if worked; counts as overtime |
+| Kurzarbeit | absence `short_time` (lowers the target, §7) | sessions at office/home, project time if worked; counts as overtime |
+| Feier-/Trauertag | absence `special_leave` (credits the target, §8) | sessions at office/home, project time if worked; counts as overtime |
+
+**Work on absence days** (user request 2026-11-08): working time can be recorded on every type.
+On absence days `W_eff` is credited on top of the absence credit (§8), so it counts fully as
+overtime; on a Gleitzeit day it reduces the day's cost (`Δ = W_eff − T`).
 
 **Derived type** of D: a full-day absence (its type); else a trip day → business trip; else the
 `days` row; else, if worked, home office if more than half of `W(D)` was at home, otherwise office;

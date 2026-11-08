@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
@@ -93,6 +94,13 @@ class DayScreen extends ConsumerWidget {
         title: Text(context.longDate(date)),
         actions: [
           IconButton(
+            tooltip: l.goToToday,
+            icon: const Icon(Icons.today),
+            onPressed: date == ref.watch(todayProvider)
+                ? null
+                : () => context.go('/calendar/day/${ref.read(todayProvider)}'),
+          ),
+          IconButton(
             tooltip: l.addAbsence,
             icon: const Icon(Icons.beach_access_outlined),
             onPressed: () =>
@@ -137,62 +145,57 @@ class DayScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   DayTypePicker(date: date),
+                  if (!canWork) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l.absenceWorkHint,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
-          // What can be recorded depends on the day type (calculations §15).
-          if (!canWork && sessions.isEmpty && breaks.isEmpty)
-            Card(
-              child: ListTile(
-                leading: Icon(dayTypeIcon(day.type!)),
-                title: Text(l.absenceDayHint),
+          // Working time can be recorded on every day type; on absence days it
+          // counts as overtime (calculations §8, §15, user request 2026-11-08).
+          section(
+            l.sessions,
+            () => _editInterval(context, ref, 'work_sessions', null),
+            [
+              for (final s in sessions)
+                ListTile(
+                  leading: Icon(locationIcon(s.location)),
+                  trailing: deleteButton('work_sessions', s.id),
+                  title: Text(range(s.start, s.end)),
+                  subtitle: Text(context.locationName(s.location)),
+                  onTap: () => _editInterval(
+                    context,
+                    ref,
+                    'work_sessions',
+                    s.id,
+                    start: s.start,
+                    end: s.end,
+                    location: s.location,
+                  ),
+                ),
+            ],
+          ),
+          section(l.breaks, () => _editInterval(context, ref, 'breaks', null), [
+            for (final b in breaks)
+              ListTile(
+                leading: const Icon(Icons.coffee_outlined),
+                trailing: deleteButton('breaks', b.id),
+                title: Text(range(b.start, b.end)),
+                onTap: () => _editInterval(
+                  context,
+                  ref,
+                  'breaks',
+                  b.id,
+                  start: b.start,
+                  end: b.end,
+                ),
               ),
-            ),
-          if (canWork || sessions.isNotEmpty)
-            section(
-              l.sessions,
-              () => _editInterval(context, ref, 'work_sessions', null),
-              [
-                for (final s in sessions)
-                  ListTile(
-                    leading: Icon(locationIcon(s.location)),
-                    trailing: deleteButton('work_sessions', s.id),
-                    title: Text(range(s.start, s.end)),
-                    subtitle: Text(context.locationName(s.location)),
-                    onTap: () => _editInterval(
-                      context,
-                      ref,
-                      'work_sessions',
-                      s.id,
-                      start: s.start,
-                      end: s.end,
-                      location: s.location,
-                    ),
-                  ),
-              ],
-            ),
-          if (canWork || breaks.isNotEmpty)
-            section(
-              l.breaks,
-              () => _editInterval(context, ref, 'breaks', null),
-              [
-                for (final b in breaks)
-                  ListTile(
-                    leading: const Icon(Icons.coffee_outlined),
-                    trailing: deleteButton('breaks', b.id),
-                    title: Text(range(b.start, b.end)),
-                    onTap: () => _editInterval(
-                      context,
-                      ref,
-                      'breaks',
-                      b.id,
-                      start: b.start,
-                      end: b.end,
-                    ),
-                  ),
-              ],
-            ),
+          ]),
           // Trip days have no project time, only travel and on-site time;
           // absence days nothing (user decisions 2026-11-08). Old entries stay
           // visible so they can still be edited or deleted.
@@ -200,7 +203,8 @@ class DayScreen extends ConsumerWidget {
             TripBookingCard(date: date)
           else if (day.type == null ||
               day.type!.allowsProjectTime ||
-              hasProjectTime)
+              hasProjectTime ||
+              (!canWork && sessions.isNotEmpty))
             section(
               l.projectEntries,
               () => showProjectTimeDialog(context, date: date),

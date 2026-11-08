@@ -43,6 +43,11 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
         title: Text(l.weekNumber('${isoWeekNumber(monday)}')),
         actions: [
           IconButton(
+            tooltip: l.goToToday,
+            icon: const Icon(Icons.today),
+            onPressed: _offset == 0 ? null : () => setState(() => _offset = 0),
+          ),
+          IconButton(
             tooltip: l.absences,
             icon: const Icon(Icons.beach_access_outlined),
             onPressed: () => context.go('/calendar/absences'),

@@ -424,7 +424,6 @@
     }
   },
   "editTrip": "Edit trip",
-  "absenceDayHint": "No working time is recorded on this day.",
   "tripTimes": "Travel {travel} · On site {onSite}",
   "@tripTimes": {
     "placeholders": {
@@ -435,5 +434,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "absenceWorkHint": "Working time recorded on this day is credited as overtime.",
+  "goToToday": "Go to today"
 }

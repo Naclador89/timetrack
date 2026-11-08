@@ -233,6 +233,7 @@
   "dayType": "Tagesart",
   "tripDayLocked": "Dieser Tag gehört zur Reise {trip}. Um ihn als Büro- oder Homeoffice-Tag zu führen, passe zuerst die Reise an.",
   "editTrip": "Reise bearbeiten",
-  "absenceDayHint": "An diesem Tag wird keine Arbeitszeit erfasst.",
-  "tripTimes": "Unterwegs {travel} · Vor Ort {onSite}"
+  "tripTimes": "Unterwegs {travel} · Vor Ort {onSite}",
+  "absenceWorkHint": "Arbeitszeit an diesem Tag wird als Überstunden gutgeschrieben.",
+  "goToToday": "Zu heute springen"
 }

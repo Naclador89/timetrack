@@ -132,7 +132,7 @@ void main() {
   });
 
   testWidgets('day types: business trip offers travel and on site; '
-      'vacation records nothing', (tester) async {
+      'work on a vacation day is possible', (tester) async {
     final router = buildRouter();
     final (store, _) = await pumpApp(tester, router: router);
     router.go('/calendar/day/2026-11-04');
@@ -184,10 +184,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(store.rowsOf('absences').values.single.fields['kind'], 'vacation');
     expect(
-      find.text('No working time is recorded on this day.'),
+      find.text('Working time recorded on this day is credited as overtime.'),
       findsOneWidget,
     );
-    expect(find.text('Working times'), findsNothing);
+    expect(find.text('Working times'), findsOneWidget);
   });
 
   testWidgets('week view: hours per project; swipe changes the week', (
@@ -211,6 +211,9 @@ void main() {
     await tester.fling(find.byType(ListView).first, const Offset(400, 0), 1000);
     await tester.pumpAndSettle();
     expect(find.text('Week 44'), findsOneWidget);
+    await tester.tap(find.byTooltip('Go to today'));
+    await tester.pumpAndSettle();
+    expect(find.text('Week 45'), findsOneWidget);
   });
 
   testWidgets('day view: an X deletes an entry after a confirmation', (

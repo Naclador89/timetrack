@@ -41,8 +41,8 @@ class TodayScreen extends ConsumerWidget {
             TripBookingCard(date: today)
           else if (ledger.day(today).type?.allowsProjectTime ?? true)
             const _ProjectCard()
-          else if (ref.watch(trackerStateProvider).entry != null)
-            const _ProjectCard(),
+          else if (ref.watch(trackerStateProvider).clockedIn)
+            const _ProjectCard(), // working on an absence day
           _SummaryCard(day: ledger.day(today), ledger: ledger, quotas: quotas),
           NoticesCard(items: notices, showDates: true),
           _TodayEntries(day: ledger.day(today)),
@@ -189,43 +189,43 @@ class _AttendanceCardState extends ConsumerState<_AttendanceCard> {
               ),
             ],
             const SizedBox(height: 16),
-            if (absent && !state.clockedIn)
-              Text(l.absenceDayHint)
-            else
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  if (state.clockedIn)
-                    FilledButton.tonalIcon(
-                      onPressed: _clockOut,
-                      icon: const Icon(Icons.logout),
-                      label: Text(l.clockOut),
-                    )
-                  else
-                    FilledButton.icon(
-                      onPressed: () =>
-                          tracker.clockIn(location: _nextLocation()),
-                      icon: const Icon(Icons.login),
-                      label: Text(l.clockIn),
-                    ),
-                  OutlinedButton.icon(
-                    onPressed: !state.clockedIn
-                        ? null
-                        : state.onBreak
-                        ? tracker.endBreak
-                        : () => withSummaryPrompt(
-                            context,
-                            ref,
-                            tracker.startBreak,
-                          ),
-                    icon: Icon(
-                      state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
-                    ),
-                    label: Text(state.onBreak ? l.endBreak : l.startBreak),
-                  ),
-                ],
+            if (absent) ...[
+              Text(
+                l.absenceWorkHint,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
+              const SizedBox(height: 8),
+            ],
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                if (state.clockedIn)
+                  FilledButton.tonalIcon(
+                    onPressed: _clockOut,
+                    icon: const Icon(Icons.logout),
+                    label: Text(l.clockOut),
+                  )
+                else
+                  FilledButton.icon(
+                    onPressed: () => tracker.clockIn(location: _nextLocation()),
+                    icon: const Icon(Icons.login),
+                    label: Text(l.clockIn),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: !state.clockedIn
+                      ? null
+                      : state.onBreak
+                      ? tracker.endBreak
+                      : () =>
+                            withSummaryPrompt(context, ref, tracker.startBreak),
+                  icon: Icon(
+                    state.onBreak ? Icons.play_arrow : Icons.coffee_outlined,
+                  ),
+                  label: Text(state.onBreak ? l.endBreak : l.startBreak),
+                ),
+              ],
+            ),
             if (state.trip != null) ...[
               const Divider(height: 24),
               Row(

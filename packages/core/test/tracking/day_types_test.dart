@@ -77,6 +77,27 @@ void main() {
     expect((feier.target, feier.credited, feier.delta), (480, 480, 0));
   });
 
+  test('§8/§15 work on an absence day counts as overtime', () async {
+    await session('08:00:00', '10:00:00', 'office'); // 2 h
+    Future<DayResult> as(DayType t) async {
+      await set(t);
+      return ledger().day(wed);
+    }
+
+    for (final t in [DayType.vacation, DayType.sick, DayType.childSick]) {
+      final day = await as(t);
+      expect((day.type, day.credited, day.delta), (t, 600, 120));
+    }
+    final gleit = await as(DayType.flexTime);
+    expect(
+      gleit.delta,
+      -480 + 120,
+      reason: 'the flex day costs 8 h, work 2 h back',
+    );
+    final kurz = await as(DayType.shortTime);
+    expect(kurz.delta, 120);
+  });
+
   test('§15 a trip day is a business trip unless absent all day', () async {
     await repo.write('trips', 't', {
       'depart_utc': '2026-11-04T05:00:00Z',

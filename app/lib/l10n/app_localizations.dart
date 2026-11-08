@@ -1496,17 +1496,23 @@ abstract class AppLocalizations {
   /// **'Edit trip'**
   String get editTrip;
 
-  /// No description provided for @absenceDayHint.
-  ///
-  /// In en, this message translates to:
-  /// **'No working time is recorded on this day.'**
-  String get absenceDayHint;
-
   /// No description provided for @tripTimes.
   ///
   /// In en, this message translates to:
   /// **'Travel {travel} · On site {onSite}'**
   String tripTimes(String travel, String onSite);
+
+  /// No description provided for @absenceWorkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Working time recorded on this day is credited as overtime.'**
+  String get absenceWorkHint;
+
+  /// No description provided for @goToToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to today'**
+  String get goToToday;
 }
 
 class _AppLocalizationsDelegate
