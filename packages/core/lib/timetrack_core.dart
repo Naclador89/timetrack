@@ -40,6 +40,7 @@ export 'src/time/local_date.dart';
 export 'src/time/span.dart';
 export 'src/tracking/day_templates.dart';
 export 'src/tracking/day_types.dart';
+export 'src/tracking/project_booking.dart';
 export 'src/tracking/quick_actions.dart';
 export 'src/tracking/quick_entry.dart';
 export 'src/tracking/time_tracker.dart';

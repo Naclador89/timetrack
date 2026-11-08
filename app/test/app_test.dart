@@ -265,37 +265,68 @@ void main() {
     expect(find.text('CSV'), findsOneWidget);
   });
 
-  testWidgets('project time as a duration with a summary', (tester) async {
+  testWidgets('booking sheet: search as you type, 15-minute steps, '
+      'optional time, comment', (tester) async {
     final (store, repo) = await pumpApp(tester);
     await repo.write('projects', 'p1', {
       'name': 'Werk Süd',
       'order_number': 'A-778812',
+      'client': 'Bosch',
     });
+    await repo.write('projects', 'p2', {'name': 'Logistik'});
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Add project time'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Choose project').last);
+    expect(find.text('Book project time'), findsOneWidget);
+    // Matches appear below the field while typing: order number, client.
+    await tester.enterText(find.byType(TextField).first, '778812');
+    await tester.pumpAndSettle();
+    expect(find.text('Logistik'), findsNothing);
+    await tester.enterText(find.byType(TextField).first, 'bosch');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Werk Süd').last);
     await tester.pumpAndSettle();
+    expect(find.byTooltip('Change project'), findsOneWidget);
+
+    // 1:00 by default; + and − move by 0:15; chips set common values.
+    await tester.tap(find.byTooltip('+ 0:15'));
+    await tester.tap(find.byTooltip('+ 0:15'));
+    await tester.pumpAndSettle();
+    expect(find.text('1:30 h'), findsOneWidget);
     await tester.enterText(
-      find.widgetWithText(TextField, 'Duration (h:mm)'),
-      '1:30',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Summary'),
+      find.widgetWithText(TextField, 'What was done?'),
       'Angebot geschrieben',
     );
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text('Book'));
     await tester.pumpAndSettle();
 
-    final row = (await store.transaction((tx) => tx.rows('project_entries')))
-        .single;
+    final row = store.rowsOf('project_entries').values.single;
     expect(row.fields, containsPair('duration_min', 90));
     expect(row.fields, containsPair('date', '2026-11-04'));
     expect(row.fields, containsPair('note', 'Angebot geschrieben'));
     expect(row.fields['start_utc'], isNull);
+
+    // With a start time it becomes a span; the last comment is offered.
+    await tester.tap(find.text('Add project time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Werk Süd').last); // recently used
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2:00'));
+    await tester.tap(find.text('With start time'));
+    await tester.pumpAndSettle();
+    expect(find.text('End 10:00'), findsOneWidget);
+    await tester.tap(find.text('Angebot geschrieben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Book'));
+    await tester.pumpAndSettle();
+    final span = store
+        .rowsOf('project_entries')
+        .values
+        .firstWhere((r) => r.fields['start_utc'] != null);
+    expect(span.fields['start_utc'], '2026-11-04T07:00:00Z');
+    expect(span.fields['end_utc'], '2026-11-04T09:00:00Z');
+    expect(span.fields['note'], 'Angebot geschrieben');
   });
 
   testWidgets('quick entry: one line records times, break and project', (
@@ -345,7 +376,10 @@ void main() {
     expect(find.textContaining('5:00 without a project'), findsOneWidget);
     await tester.tap(find.text('Assign'));
     await tester.pumpAndSettle();
+    expect(find.text('5:00 h'), findsOneWidget, reason: 'the gap, prefilled');
     await tester.tap(find.text('Werk Süd').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Book'));
     await tester.pumpAndSettle();
     final entry = store.rowsOf('project_entries').values.single;
     expect(entry.fields['start_utc'], '2026-11-03T07:00:00Z');
@@ -477,5 +511,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('5:00 without a project'), findsNothing);
     expect(find.text('1 hidden notices'), findsOneWidget);
+  });
+
+  testWidgets('booking sheet fits a phone', (tester) async {
+    final (_, repo) = await pumpApp(tester);
+    tester.view.physicalSize = const Size(412, 860);
+    await repo.write('projects', 'p1', {
+      'name': 'Werk Süd Umbau Halle 3',
+      'project_number': 'P-2026/014',
+      'order_number': 'A-778812',
+      'client': 'Robert Bosch GmbH',
+    });
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Add project time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add project time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Werk Süd Umbau Halle 3').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('With start time'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 }

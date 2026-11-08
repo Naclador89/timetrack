@@ -165,7 +165,7 @@
   "archived": "Archived",
   "searchProjects": "Name, project or order number",
   "showArchived": "Show archived",
-  "createProjectNamed": "Create project “{name}”",
+  "createProjectNamed": "New project \"{name}\"",
   "@createProjectNamed": {
     "placeholders": {
       "name": {
@@ -674,5 +674,21 @@
   },
   "noticeCategoryOff": "Switched off in the settings",
   "showAgain": "Show again",
-  "hasNotices": "Has notices"
+  "hasNotices": "Has notices",
+  "bookProjectTime": "Book project time",
+  "editProjectTime": "Edit project time",
+  "projectSearchHint": "Project: name, number, order, client …",
+  "recentlyUsed": "Recently used",
+  "changeProject": "Change project",
+  "duration": "Duration",
+  "restOfDay": "Rest of the day {minutes}",
+  "@restOfDay": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "whatWasDone": "What was done?",
+  "book": "Book"
 }

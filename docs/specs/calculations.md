@@ -58,6 +58,12 @@ no project time. If a trip touching D has a `project_id` (the earliest such trip
 to that project: it is added to the project's total for D (order report, statistics, with the
 destination as the activity), and the day's unassigned time is 0.
 
+**Booking project time** (user request 2026-11-08): durations are entered in hours on a 15-minute
+grid (`snapToQuarter`: nearest step, at least 0:15); existing values off the grid stay as they are
+until changed. A start time is optional (then the entry is a span `start + duration`, start on the
+quarter hour). The sheet suggests the day's unassigned time ("rest of the day", snapped) and the last
+three comments of the chosen project (`recentNotes`).
+
 ## §4 Breaks: ArbZG §4
 
 Let `W = W(D)` before any deduction.

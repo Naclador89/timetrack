@@ -114,7 +114,15 @@ class ProjectTile extends StatelessWidget {
     required this.match,
     this.onTap,
     this.trailing,
+    this.leading,
+    this.selected = false,
   });
+
+  /// Replaces the favourite/work icon.
+  final Widget? leading;
+
+  /// Highlighted (keyboard selection).
+  final bool selected;
 
   /// The search result (use `ProjectMatch(project, 0, {})` without a search).
   final ProjectMatch match;
@@ -140,7 +148,8 @@ class ProjectTile extends StatelessWidget {
     ].where((d) => d.$1.isNotEmpty).toList();
     return ListTile(
       onTap: onTap,
-      leading: Icon(p.favorite ? Icons.star : Icons.work_outline),
+      selected: selected,
+      leading: leading ?? Icon(p.favorite ? Icons.star : Icons.work_outline),
       title: Text.rich(
         _highlight(p.name, match.highlights[ProjectField.name], strong),
         style: p.archived

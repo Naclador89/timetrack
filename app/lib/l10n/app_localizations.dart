@@ -641,7 +641,7 @@ abstract class AppLocalizations {
   /// No description provided for @createProjectNamed.
   ///
   /// In en, this message translates to:
-  /// **'Create project “{name}”'**
+  /// **'New project \"{name}\"'**
   String createProjectNamed(String name);
 
   /// No description provided for @noProjects.
@@ -2089,6 +2089,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Has notices'**
   String get hasNotices;
+
+  /// No description provided for @bookProjectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Book project time'**
+  String get bookProjectTime;
+
+  /// No description provided for @editProjectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit project time'**
+  String get editProjectTime;
+
+  /// No description provided for @projectSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Project: name, number, order, client …'**
+  String get projectSearchHint;
+
+  /// No description provided for @recentlyUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently used'**
+  String get recentlyUsed;
+
+  /// No description provided for @changeProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Change project'**
+  String get changeProject;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @restOfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest of the day {minutes}'**
+  String restOfDay(String minutes);
+
+  /// No description provided for @whatWasDone.
+  ///
+  /// In en, this message translates to:
+  /// **'What was done?'**
+  String get whatWasDone;
+
+  /// No description provided for @book.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get book;
 }
 
 class _AppLocalizationsDelegate

@@ -301,7 +301,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String createProjectNamed(String name) {
-    return 'Projekt „$name“ anlegen';
+    return 'Neues Projekt „$name“ anlegen';
   }
 
   @override
@@ -1125,4 +1125,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hasNotices => 'Hat Hinweise';
+
+  @override
+  String get bookProjectTime => 'Projektzeit buchen';
+
+  @override
+  String get editProjectTime => 'Projektzeit bearbeiten';
+
+  @override
+  String get projectSearchHint => 'Projekt: Name, Nummer, Auftrag, Kunde …';
+
+  @override
+  String get recentlyUsed => 'Zuletzt verwendet';
+
+  @override
+  String get changeProject => 'Projekt ändern';
+
+  @override
+  String get duration => 'Dauer';
+
+  @override
+  String restOfDay(String minutes) {
+    return 'Rest des Tages $minutes';
+  }
+
+  @override
+  String get whatWasDone => 'Was wurde gemacht?';
+
+  @override
+  String get book => 'Buchen';
 }

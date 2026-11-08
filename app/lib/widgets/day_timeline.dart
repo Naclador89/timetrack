@@ -7,9 +7,8 @@ import 'package:timetrack_core/timetrack_core.dart';
 import '../app/format.dart';
 import '../app/providers.dart';
 import '../app/theme.dart';
-import '../features/projects/project_picker.dart';
+import '../features/projects/project_time_dialog.dart';
 import 'motion.dart';
-import 'undo.dart';
 
 /// What a timeline bar stands for.
 typedef TimelineRef = ({String table, String id});
@@ -309,28 +308,17 @@ class _DayTimelineState extends ConsumerState<DayTimeline> {
     );
   }
 
-  Future<void> _assignGap(Span gap) async {
-    final projectId = await showProjectPicker(context);
-    if (projectId == null || !mounted) return;
-    final repo = ref.read(repositoryProvider);
-    final id = repo.newId();
-    await repo.write('project_entries', id, {
-      'project_id': projectId,
-      'start_utc': isoMinute(instantOfEpochMinute(gap.start)),
-      'end_utc': isoMinute(instantOfEpochMinute(gap.end)),
-      'source': 'manual',
-    });
-    if (!mounted) return;
-    offerUndoCreate(
-      context,
-      ref,
-      [('project_entries', id)],
-      context.l10n.assignedTo(
-        formatMinutes(gap.length),
-        ref.read(projectByIdProvider)[projectId]?.name ?? '',
-      ),
-    );
-  }
+  /// Opens the booking sheet with the gap's start and length.
+  Future<void> _assignGap(Span gap) => showProjectTimeDialog(
+    context,
+    date: widget.date,
+    startMinutes: localMinuteOf(
+      instantOfEpochMinute(gap.start),
+      widget.date,
+      ref.read(zoneProvider),
+    ),
+    durationMinutes: gap.length,
+  );
 }
 
 class _Hatch extends CustomPainter {

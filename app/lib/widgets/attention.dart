@@ -5,10 +5,9 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../app/format.dart';
 import '../app/providers.dart';
-import '../features/projects/project_picker.dart';
+import '../features/projects/project_time_dialog.dart';
 import 'interval_dialog.dart';
 import 'notices.dart';
-import 'undo.dart';
 
 /// Review items (calculations.md §12) as cards with a one-tap fix: add the
 /// missing break, set the end of a forgotten session, assign unassigned
@@ -221,51 +220,35 @@ class AttentionCards extends ConsumerWidget {
   }
 }
 
-/// Books the unassigned working time of [date] to a project the user picks:
-/// timed entries over the gaps, or one duration when the gaps can't be
-/// placed (the day already has durations).
+/// Opens the booking sheet for the unassigned time of [date]: one gap is
+/// prefilled with its times, several as a duration (the rest of the day).
 Future<void> assignUnassigned(
   BuildContext context,
   WidgetRef ref,
   LocalDate date,
-) async {
-  final projectId = await showProjectPicker(context);
-  if (projectId == null || !context.mounted) return;
+) {
   final day = ref.read(ledgerProvider).day(date);
-  final repo = ref.read(repositoryProvider);
-  final created = <(String, String)>[];
+  final gaps = day.work.unassignedSpans.spans;
   final hasDurations = ref
       .read(ledgerDataProvider)
       .durations
       .any((d) => d.date == date);
-  if (hasDurations) {
-    final id = repo.newId();
-    await repo.write('project_entries', id, {
-      'project_id': projectId,
-      'date': '$date',
-      'duration_min': day.unassigned,
-      'source': 'manual',
-    });
-    created.add(('project_entries', id));
-  } else {
-    for (final gap in day.work.unassignedSpans.spans) {
-      final id = repo.newId();
-      await repo.write('project_entries', id, {
-        'project_id': projectId,
-        'start_utc': isoMinute(instantOfEpochMinute(gap.start)),
-        'end_utc': isoMinute(instantOfEpochMinute(gap.end)),
-        'source': 'manual',
-      });
-      created.add(('project_entries', id));
-    }
+  if (gaps.length == 1 && !hasDurations) {
+    return showProjectTimeDialog(
+      context,
+      date: date,
+      startMinutes: localMinuteOf(
+        instantOfEpochMinute(gaps.single.start),
+        date,
+        ref.read(zoneProvider),
+      ),
+      durationMinutes: gaps.single.length,
+    );
   }
-  if (!context.mounted) return;
-  final name = ref.read(projectByIdProvider)[projectId]?.name ?? '';
-  offerUndoCreate(
+  return showProjectTimeDialog(
     context,
-    ref,
-    created,
-    context.l10n.assignedTo(formatMinutes(day.unassigned), name),
+    date: date,
+    durationMinutes: snapToQuarter(day.unassigned),
   );
 }
 

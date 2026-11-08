@@ -199,6 +199,11 @@ _Last updated: 2026-11-07 by Claude Code._
       threshold (default 0:30); × dismisses a card for good (synced, `dismissed_notices`), the
       calendar keeps a small dot on the day, the day view lists hidden notices ("show again");
       settings can restore all dismissed ones.
+- [x] Booking project time as a bottom sheet (user chose layout A, 2026-11-08): search as you type
+      with matches below the field (name, project/order number, client; recent 5 when empty; ↑↓
+      Enter; create from the text), duration in hours with −/+ 0:15 and chips (0:15 … 8:00, rest of
+      the day), optional start time (quarter hours, end shown), comment with the project's last
+      comments as chips. Also opened by "Zuordnen" and by tapping a timeline gap (prefilled).
 
 **Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
@@ -296,3 +301,5 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   tests green.
 - 2026-11-08, Claude Code: notice settings and permanent dismissal (calculations §12, data-model §14);
   208 core tests, 20 widget tests green.
+- 2026-11-08, Claude Code: project booking sheet (`snapToQuarter`, `recentNotes`); 210 core tests,
+  21 widget tests green.

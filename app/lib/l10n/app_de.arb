@@ -90,7 +90,7 @@
   "archived": "Archiviert",
   "searchProjects": "Name, Projekt- oder Auftragsnummer",
   "showArchived": "Archivierte anzeigen",
-  "createProjectNamed": "Projekt „{name}“ anlegen",
+  "createProjectNamed": "Neues Projekt „{name}“ anlegen",
   "noProjects": "Noch keine Projekte",
   "federalState": "Bundesland",
   "notSet": "Nicht festgelegt",
@@ -331,5 +331,14 @@
   "hiddenNotices": "{count} ausgeblendete Hinweise",
   "noticeCategoryOff": "In den Einstellungen ausgeschaltet",
   "showAgain": "Wieder anzeigen",
-  "hasNotices": "Hat Hinweise"
+  "hasNotices": "Hat Hinweise",
+  "bookProjectTime": "Projektzeit buchen",
+  "editProjectTime": "Projektzeit bearbeiten",
+  "projectSearchHint": "Projekt: Name, Nummer, Auftrag, Kunde …",
+  "recentlyUsed": "Zuletzt verwendet",
+  "changeProject": "Projekt ändern",
+  "duration": "Dauer",
+  "restOfDay": "Rest des Tages {minutes}",
+  "whatWasDone": "Was wurde gemacht?",
+  "book": "Buchen"
 }
