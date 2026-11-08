@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../app/appearance.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../reminders/reminders.dart';
 import '../../sync/sync_controller.dart';
 import '../../update/update_banner.dart';
 import '../../update/update_controller.dart';
@@ -147,6 +148,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         value: s.resumeAfterBreak,
         onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
       ),
+      // spec: reminders.md §2 (Android notifications, Windows tray)
+      if (ref.watch(remindersAvailableProvider)) ...[
+        SwitchListTile(
+          secondary: const Icon(Icons.notifications_active_outlined),
+          title: Text('${l.reminders}: ${l.remindBreak}'),
+          subtitle: Text(l.remindBreakHint),
+          value: s.remindBreak,
+          onChanged: (v) => save(SettingKeys.remindBreak, v),
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.notifications_active_outlined),
+          title: Text('${l.reminders}: ${l.remindLongDay}'),
+          subtitle: Text(l.remindLongDayHint),
+          value: s.remindLongDay,
+          onChanged: (v) => save(SettingKeys.remindLongDay, v),
+        ),
+      ],
       ListTile(
         leading: Icon(locationIcon(WorkLocation.home)),
         title: Text(l.homeOfficeRules),

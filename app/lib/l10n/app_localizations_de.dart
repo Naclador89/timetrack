@@ -1531,4 +1531,71 @@ class AppLocalizationsDe extends AppLocalizations {
   String forecastLimit(String time) {
     return '10 Std. um $time';
   }
+
+  @override
+  String get reminders => 'Erinnerungen';
+
+  @override
+  String get remindBreak => 'Pause fällig';
+
+  @override
+  String get remindBreakHint => 'Nach 5:45 Std. ohne Pause';
+
+  @override
+  String get remindLongDay => 'Langer Tag';
+
+  @override
+  String get remindLongDayHint => 'Bei 9:45 Std., bevor 10 Std. erreicht sind';
+
+  @override
+  String get reminderBreakTitle => 'Pause fällig';
+
+  @override
+  String get reminderBreakText =>
+      'Seit 5:45 Std. ohne Pause – nach 6 Std. ist eine Pause Pflicht.';
+
+  @override
+  String get reminderLongDayTitle => 'Gleich 10 Stunden';
+
+  @override
+  String get reminderLongDayText =>
+      'Noch eingestempelt? Mehr als 10 Std. Arbeit am Tag sind nicht erlaubt.';
+
+  @override
+  String get forgottenTitle => 'Noch eingestempelt?';
+
+  @override
+  String forgottenText(String since) {
+    return 'Eingestempelt seit $since. Wann war Feierabend?';
+  }
+
+  @override
+  String yesterdayAt(String time) {
+    return 'gestern, $time';
+  }
+
+  @override
+  String get suggestLastActivity => 'Letzte Aktivität';
+
+  @override
+  String get suggestTarget => 'Soll erreicht';
+
+  @override
+  String get suggestUsualEnd => 'Üblicher Feierabend';
+
+  @override
+  String get otherTime => 'Andere Zeit…';
+
+  @override
+  String get stillWorking => 'Ich arbeite noch';
+
+  @override
+  String forgottenTimeInvalid(String from) {
+    return 'Bitte eine Zeit zwischen $from und jetzt wählen.';
+  }
+
+  @override
+  String clockedOutAt(String time) {
+    return 'Ausgestempelt um $time';
+  }
 }

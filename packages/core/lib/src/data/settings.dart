@@ -62,6 +62,12 @@ abstract final class SettingKeys {
   /// Minimum unassigned time of a day before it is a notice (§12).
   static const noticeUnassignedMin = 'notices.unassigned_min';
 
+  /// Remind when a break is due (reminders.md §2).
+  static const remindBreak = 'reminders.break';
+
+  /// Remind before 10 hours of work (reminders.md §2).
+  static const remindLongDay = 'reminders.long_day';
+
   /// Whether notices of [category] are shown as cards (§12).
   static String noticeShow(String category) => 'notices.show.$category';
 
@@ -88,6 +94,8 @@ final class AppSettings {
     this.autoClockIn = true,
     this.resumeAfterBreak = true,
     this.noticeUnassignedMinMinutes = 30,
+    this.remindBreak = true,
+    this.remindLongDay = true,
     this.raw = const {},
   });
 
@@ -179,6 +187,8 @@ final class AppSettings {
         SettingKeys.noticeUnassignedMin,
         30,
       ).toInt(),
+      remindBreak: pick(SettingKeys.remindBreak, true),
+      remindLongDay: pick(SettingKeys.remindLongDay, true),
       raw: v,
     );
   }
@@ -218,6 +228,12 @@ final class AppSettings {
 
   /// Unassigned time below this is no notice (§12).
   final int noticeUnassignedMinMinutes;
+
+  /// Remind when a break is due (reminders.md §2).
+  final bool remindBreak;
+
+  /// Remind before 10 hours of work (reminders.md §2).
+  final bool remindLongDay;
 
   /// Whether notices of the category with this wire name are shown as
   /// cards (default yes).

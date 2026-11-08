@@ -10,6 +10,7 @@ import '../features/projects/project_picker.dart';
 import '../features/projects/project_time_dialog.dart';
 import '../update/update_banner.dart';
 import '../update/update_controller.dart';
+import '../reminders/reminders.dart';
 import 'quick_access.dart';
 
 /// What notification, tile and widget should show, from the UI's providers.
@@ -139,12 +140,13 @@ class _QuickAccessHostState extends ConsumerState<QuickAccessHost> {
       unawaited(requestNotificationPermission());
     }
     final project = ref.read(projectByIdProvider)[status.projectId];
+    final store = ref.read(storeProvider);
     unawaited(
       publishQuickStatus(
         status,
         quickLocalizations(),
         projectName: project?.name ?? '',
-      ),
+      ).then((_) => scheduleReminders(store)),
     );
   }
 

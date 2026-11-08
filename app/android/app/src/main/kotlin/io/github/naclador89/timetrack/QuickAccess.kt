@@ -56,7 +56,7 @@ object QuickAccess {
     fun action(context: Context, name: String): PendingIntent =
         HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("timetrack://quick/$name"))
 
-    private fun openApp(context: Context, uri: Uri? = null): PendingIntent =
+    fun openApp(context: Context, uri: Uri? = null): PendingIntent =
         HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java, uri)
 
     /** Redraws everything from the current snapshot. */
@@ -64,6 +64,7 @@ object QuickAccess {
         val s = snapshot(context)
         renderNotification(context, s)
         UpdateNotice.render(context)
+        ReminderNotice.render(context, s)
         renderWidgets(context, s)
         TileService.requestListeningState(
             context,

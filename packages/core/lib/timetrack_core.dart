@@ -46,6 +46,7 @@ export 'src/tracking/day_types.dart';
 export 'src/tracking/project_booking.dart';
 export 'src/tracking/quick_actions.dart';
 export 'src/tracking/quick_entry.dart';
+export 'src/tracking/reminders.dart';
 export 'src/tracking/start_prompt.dart';
 export 'src/tracking/time_tracker.dart';
 export 'src/tracking/trip_log.dart';

@@ -124,12 +124,23 @@ final class TimeTracker {
   }
 
   /// Clocks out: ends the running break and project entry, then the session.
-  Future<void> clockOut() async {
+  ///
+  /// [at] clocks out afterwards, e.g. for a forgotten clock-out: a running
+  /// break or project entry that only started after it is deleted
+  /// (reminders.md §1).
+  Future<void> clockOut({DateTime? at}) async {
     final s = await state();
-    final at = _stamp;
-    if (s.breakRow != null) await _end('breaks', s.breakRow!, at);
-    if (s.entry != null) await _end('project_entries', s.entry!, at);
-    if (s.session != null) await _end('work_sessions', s.session!, at);
+    final end = at == null ? _stamp : isoMinute(at);
+    for (final (table, row) in [
+      ('breaks', s.breakRow),
+      ('project_entries', s.entry),
+    ]) {
+      if (row == null) continue;
+      (row.fields['start_utc']! as String).compareTo(end) > 0
+          ? await repository.delete(table, row.id)
+          : await _end(table, row, end);
+    }
+    if (s.session != null) await _end('work_sessions', s.session!, end);
   }
 
   /// Starts a break (clocked in only). Stops the running project entry.

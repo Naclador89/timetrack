@@ -2785,6 +2785,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'10 h at {time}'**
   String forecastLimit(String time);
+
+  /// No description provided for @reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get reminders;
+
+  /// No description provided for @remindBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Break due'**
+  String get remindBreak;
+
+  /// No description provided for @remindBreakHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After 5:45 h without a break'**
+  String get remindBreakHint;
+
+  /// No description provided for @remindLongDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Long day'**
+  String get remindLongDay;
+
+  /// No description provided for @remindLongDayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'At 9:45 h, before reaching 10 h'**
+  String get remindLongDayHint;
+
+  /// No description provided for @reminderBreakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for a break'**
+  String get reminderBreakTitle;
+
+  /// No description provided for @reminderBreakText.
+  ///
+  /// In en, this message translates to:
+  /// **'5:45 h without a break – after 6 h a break is required.'**
+  String get reminderBreakText;
+
+  /// No description provided for @reminderLongDayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost 10 hours'**
+  String get reminderLongDayTitle;
+
+  /// No description provided for @reminderLongDayText.
+  ///
+  /// In en, this message translates to:
+  /// **'Still clocked in? More than 10 hours of work a day aren\'t allowed.'**
+  String get reminderLongDayText;
+
+  /// No description provided for @forgottenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still clocked in?'**
+  String get forgottenTitle;
+
+  /// No description provided for @forgottenText.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in since {since}. When did you finish?'**
+  String forgottenText(String since);
+
+  /// No description provided for @yesterdayAt.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday, {time}'**
+  String yesterdayAt(String time);
+
+  /// No description provided for @suggestLastActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Last activity'**
+  String get suggestLastActivity;
+
+  /// No description provided for @suggestTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target reached'**
+  String get suggestTarget;
+
+  /// No description provided for @suggestUsualEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual finish'**
+  String get suggestUsualEnd;
+
+  /// No description provided for @otherTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Other time…'**
+  String get otherTime;
+
+  /// No description provided for @stillWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Still working'**
+  String get stillWorking;
+
+  /// No description provided for @forgottenTimeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a time between {from} and now.'**
+  String forgottenTimeInvalid(String from);
+
+  /// No description provided for @clockedOutAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked out at {time}'**
+  String clockedOutAt(String time);
 }
 
 class _AppLocalizationsDelegate

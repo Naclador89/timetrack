@@ -31,6 +31,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
   GoRouter? router,
   DateTime Function()? clock,
   List<Override> overrides = const [],
+  Future<void> Function(SyncedRepository repo)? seed,
 }) async {
   final now = clock ?? () => appTestNow;
   final store = InMemorySyncStore();
@@ -39,6 +40,8 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
     'aaaaaaaaaaaaaaaa',
     now: () => now().millisecondsSinceEpoch,
   );
+  // Before the first frame the fake clock doesn't run: write for real.
+  if (seed != null) await tester.runAsync(() => seed(repo));
   tester.view.physicalSize = const Size(1200, 1600);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -56,7 +59,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
       child: TimeTrackApp(router: router ?? buildRouter()),
     ),
   );
-  await tester.pumpAndSettle();
+  await settle(tester);
   return (store, repo);
 }
 

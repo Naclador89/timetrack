@@ -21,7 +21,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows start prompt). |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows start prompt), `reminders.md` (forgotten clock-out, reminders). |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |

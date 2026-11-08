@@ -289,7 +289,13 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - [x] Finish-time forecast (calculations §18, core `dayForecast`): Today shows "Soll erreicht um …
       (inkl. n min Pause) · 10 Std. um …" while clocked in; the Android notification shows the target
       time as subtext (`QuickStatus.targetAt`, `qa_finish_text`; Kotlin not yet built locally).
-- [ ] Forgotten clock-out dialog and reminders (reminders.md)
+- [x] Forgotten clock-out and reminders (new spec `reminders.md`): core `forgottenClockOut` (suggested
+      ends: last activity, target reached, usual finish), `TimeTracker.clockOut(at:)`,
+      `nextReminders` (break due at 5:45 h of a stretch, long day at 9:45 h); app
+      `ForgottenClockOutHost` (start and resume; "Ich arbeite noch" not asked again), settings
+      Allgemein → Erinnerungen (Android/Windows), Android: one-off WorkManager task `reminder` at the
+      next due time + `ReminderNotice.kt` (channel "Erinnerungen", action Pause/Ausstempeln); debug
+      APK builds. **User**: check the reminders on the phone. Windows reminders come with the tray.
 - [ ] Week check (grouped notices, review flow, complete week/month)
 - [ ] Project page with hour budget
 - [ ] Vacation planner with bridge days (calculations §10.1)

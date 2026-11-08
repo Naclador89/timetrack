@@ -14,6 +14,7 @@ import 'app/theme.dart';
 import 'l10n/app_localizations.dart';
 import 'quick/quick_access.dart';
 import 'quick/quick_access_host.dart';
+import 'reminders/forgotten_clock_out.dart';
 import 'sync/sync_controller.dart';
 import 'update/update_controller.dart';
 import 'work_pc/start_prompt_host.dart';
@@ -83,9 +84,12 @@ class TimeTrackApp extends ConsumerWidget {
           builder: (context, child) => _SyncLifecycle(
             child: QuickAccessHost(
               navigatorKey: router.routerDelegate.navigatorKey,
-              child: StartPromptHost(
+              child: ForgottenClockOutHost(
                 navigatorKey: router.routerDelegate.navigatorKey,
-                child: child!,
+                child: StartPromptHost(
+                  navigatorKey: router.routerDelegate.navigatorKey,
+                  child: child!,
+                ),
               ),
             ),
           ),

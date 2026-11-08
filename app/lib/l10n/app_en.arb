@@ -945,5 +945,52 @@
         "type": "String"
       }
     }
+  },
+  "reminders": "Reminders",
+  "remindBreak": "Break due",
+  "remindBreakHint": "After 5:45 h without a break",
+  "remindLongDay": "Long day",
+  "remindLongDayHint": "At 9:45 h, before reaching 10 h",
+  "reminderBreakTitle": "Time for a break",
+  "reminderBreakText": "5:45 h without a break – after 6 h a break is required.",
+  "reminderLongDayTitle": "Almost 10 hours",
+  "reminderLongDayText": "Still clocked in? More than 10 hours of work a day aren't allowed.",
+  "forgottenTitle": "Still clocked in?",
+  "forgottenText": "Clocked in since {since}. When did you finish?",
+  "@forgottenText": {
+    "placeholders": {
+      "since": {
+        "type": "String"
+      }
+    }
+  },
+  "yesterdayAt": "yesterday, {time}",
+  "@yesterdayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestLastActivity": "Last activity",
+  "suggestTarget": "Target reached",
+  "suggestUsualEnd": "Usual finish",
+  "otherTime": "Other time…",
+  "stillWorking": "Still working",
+  "forgottenTimeInvalid": "Pick a time between {from} and now.",
+  "@forgottenTimeInvalid": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      }
+    }
+  },
+  "clockedOutAt": "Clocked out at {time}",
+  "@clockedOutAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   }
 }

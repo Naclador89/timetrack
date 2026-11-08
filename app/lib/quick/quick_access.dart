@@ -12,6 +12,7 @@ import 'package:workmanager/workmanager.dart';
 import '../app/format.dart';
 import '../app/services.dart';
 import '../l10n/app_localizations.dart';
+import '../reminders/reminders.dart';
 import '../sync/sync_controller.dart';
 import '../update/background_check.dart';
 
@@ -40,8 +41,10 @@ const _channel = MethodChannel('timetrack/quick');
 Future<void> initQuickAccess() async {
   if (!hasQuickAccess) return;
   await HomeWidget.registerInteractivityCallback(onQuickAction);
-  if (syncDisabled) return;
+  // Reminders need WorkManager too (reminders.md §2), the sync job doesn't
+  // run in demo builds.
   await Workmanager().initialize(backgroundTaskDispatcher);
+  if (syncDisabled) return;
   await Workmanager().registerPeriodicTask(
     'sync',
     'sync',
@@ -127,6 +130,7 @@ Future<void> publishFromStore(SyncStore store, {DateTime? now}) async {
     quickLocalizations(),
     projectName: project?.name ?? '',
   );
+  await scheduleReminders(store, now: at);
 }
 
 /// Texts for notification, tile and widget in the system language. Also used
@@ -161,16 +165,20 @@ Future<void> onQuickAction(Uri? uri) {
 }
 
 /// Background entry point for WorkManager jobs (periodic sync, daily update
-/// check).
+/// check, reminders).
 @pragma('vm:entry-point')
 void backgroundTaskDispatcher() {
   Workmanager().executeTask((task, _) async {
     WidgetsFlutterBinding.ensureInitialized();
     final services = await AppServices.open(shareAcrossIsolates: false);
     try {
-      await syncInBackground(services.repository);
-      await publishFromStore(services.store);
-      await checkUpdateInBackground(services.store);
+      if (task != reminderTask) {
+        await syncInBackground(services.repository);
+        await publishFromStore(services.store);
+        await checkUpdateInBackground(services.store);
+      }
+      await showDueReminders(services.store);
+      await scheduleReminders(services.store);
     } finally {
       await services.close();
     }

@@ -1524,4 +1524,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String forecastLimit(String time) {
     return '10 h at $time';
   }
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get remindBreak => 'Break due';
+
+  @override
+  String get remindBreakHint => 'After 5:45 h without a break';
+
+  @override
+  String get remindLongDay => 'Long day';
+
+  @override
+  String get remindLongDayHint => 'At 9:45 h, before reaching 10 h';
+
+  @override
+  String get reminderBreakTitle => 'Time for a break';
+
+  @override
+  String get reminderBreakText =>
+      '5:45 h without a break – after 6 h a break is required.';
+
+  @override
+  String get reminderLongDayTitle => 'Almost 10 hours';
+
+  @override
+  String get reminderLongDayText =>
+      'Still clocked in? More than 10 hours of work a day aren\'t allowed.';
+
+  @override
+  String get forgottenTitle => 'Still clocked in?';
+
+  @override
+  String forgottenText(String since) {
+    return 'Clocked in since $since. When did you finish?';
+  }
+
+  @override
+  String yesterdayAt(String time) {
+    return 'yesterday, $time';
+  }
+
+  @override
+  String get suggestLastActivity => 'Last activity';
+
+  @override
+  String get suggestTarget => 'Target reached';
+
+  @override
+  String get suggestUsualEnd => 'Usual finish';
+
+  @override
+  String get otherTime => 'Other time…';
+
+  @override
+  String get stillWorking => 'Still working';
+
+  @override
+  String forgottenTimeInvalid(String from) {
+    return 'Pick a time between $from and now.';
+  }
+
+  @override
+  String clockedOutAt(String time) {
+    return 'Clocked out at $time';
+  }
 }
