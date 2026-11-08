@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:timetrack/features/calendar/day_screen.dart';
 import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/back_navigation.dart';
 import 'package:timetrack/app/router.dart';
@@ -316,7 +317,7 @@ void main() {
     await tester.tap(find.text('Werk Süd').last); // recently used
     await tester.pumpAndSettle();
     await tester.tap(find.text('2:00'));
-    await tester.tap(find.text('With start time'));
+    await tester.tap(find.text('Set a start time'));
     await tester.pumpAndSettle();
     expect(find.text('End 10:00'), findsOneWidget);
     await tester.tap(find.text('Angebot geschrieben'));
@@ -532,7 +533,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Werk Süd Umbau Halle 3').last);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('With start time'));
+    await tester.tap(find.text('Set a start time'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
@@ -632,5 +633,31 @@ void main() {
     expect(left, 0);
     await back();
     expect(left, 1);
+  });
+
+  testWidgets('day: the quick entry button folds while scrolling down', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    await pumpApp(tester, router: router);
+    tester.view.physicalSize = const Size(412, 420);
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    final list = find.descendant(
+      of: find.byType(DayScreen),
+      matching: find.byType(ListView),
+    );
+    bool extended() => tester
+        .widget<FloatingActionButton>(find.byType(FloatingActionButton))
+        .isExtended;
+    expect(extended(), isTrue);
+
+    await tester.drag(list.first, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(extended(), isFalse);
+
+    await tester.drag(list.first, const Offset(0, 200));
+    await tester.pumpAndSettle();
+    expect(extended(), isTrue);
   });
 }

@@ -623,7 +623,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get durationHours => 'Duration (h:mm)';
 
   @override
-  String get withClockTime => 'With start time';
+  String get withClockTime => 'Set a start time';
+
+  @override
+  String get withClockTimeHint =>
+      'Optional; without it only the duration counts';
 
   @override
   String get summary => 'Summary';

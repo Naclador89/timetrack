@@ -404,6 +404,7 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(l.withClockTime),
+                subtitle: Text(l.withClockTimeHint),
                 value: _withTime,
                 onChanged: (v) => setState(() => _withTime = v),
               ),

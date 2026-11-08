@@ -1241,8 +1241,14 @@ abstract class AppLocalizations {
   /// No description provided for @withClockTime.
   ///
   /// In en, this message translates to:
-  /// **'With start time'**
+  /// **'Set a start time'**
   String get withClockTime;
+
+  /// No description provided for @withClockTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional; without it only the duration counts'**
+  String get withClockTimeHint;
 
   /// No description provided for @summary.
   ///

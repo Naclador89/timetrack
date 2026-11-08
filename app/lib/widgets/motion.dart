@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/services.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
@@ -127,4 +128,65 @@ class _RingPainter extends CustomPainter {
   @override
   bool shouldRepaint(_RingPainter old) =>
       old.fraction != fraction || old.color != color || old.track != track;
+}
+
+/// An extended floating button that folds to its icon while the content
+/// scrolls down, so it doesn't sit on top of what you are reading, and
+/// unfolds again when you scroll back up.
+class CollapsingFab extends StatefulWidget {
+  /// Creates the button; [builder] gets the callback to put on the
+  /// scrollable body's [NotificationListener].
+  const CollapsingFab({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    required this.builder,
+  });
+
+  /// Icon, always visible.
+  final Widget icon;
+
+  /// Label, hidden while folded.
+  final Widget label;
+
+  /// Tap action.
+  final VoidCallback onPressed;
+
+  /// Builds the screen from the button and the scroll handler.
+  final Widget Function(
+    BuildContext context,
+    Widget fab,
+    bool Function(UserScrollNotification) onScroll,
+  )
+  builder;
+
+  @override
+  State<CollapsingFab> createState() => _CollapsingFabState();
+}
+
+class _CollapsingFabState extends State<CollapsingFab> {
+  bool _extended = true;
+
+  bool _onScroll(UserScrollNotification n) {
+    final extended = switch (n.direction) {
+      ScrollDirection.reverse => false,
+      ScrollDirection.forward => true,
+      ScrollDirection.idle => n.metrics.pixels <= 0 || _extended,
+    };
+    if (extended != _extended) setState(() => _extended = extended);
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(
+    context,
+    FloatingActionButton.extended(
+      onPressed: widget.onPressed,
+      icon: widget.icon,
+      label: widget.label,
+      isExtended: _extended,
+    ),
+    _onScroll,
+  );
 }

@@ -213,8 +213,10 @@ _Last updated: 2026-11-08 by Claude Code._
 - [x] Back behaviour (user, 2026-11-08; `docs/specs/navigation.md`): close → page up → reset view →
       previous tab → on Today ask once, then move to the background; days open inside the current tab.
 
-**Next tasks**, one at a time (user, 2026-11-08): polish ("Mit Uhrzeit" label, FAB over the
-timeline), per-diem rate editing, JSON restore, sync log, network-change sync trigger, release
+- [x] Polish: the day view's quick-entry button folds to its icon while scrolling down
+      (`CollapsingFab`); the booking sheet's time switch reads "Startzeit angeben" with a hint.
+
+**Next tasks**, one at a time (user, 2026-11-08): per-diem rate editing, JSON restore, sync log, network-change sync trigger, release
 keystore. The user checks the builds on the phone and re-enters the three reset settings.
 **The Windows build (tag v0.3.0) comes last** (user, 2026-11-08); the CI action bumps get verified there.
 
