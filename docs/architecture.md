@@ -60,4 +60,15 @@ Rules for dependencies:
 | `core/testing.dart` (`fakeNextcloud` for tests) | | done |
 | `app/lib/sync` (`SyncController`, `SyncConfig` in secure storage) | sync-format §7.2 | done |
 | `core/sync/engine` (`SyncEngine`, `connectSyncFolder`) | sync-format §7, §7.1 | done |
-| everything else | | planned (see `docs/status.md`) |
+| `core/sync/backup`, `sync_log` (JSON backup/restore, device-local sync log) | backup, sync-log | done |
+| `core/rules/explain`, `forecast`, `notices`, `project_history`, `bridge_days` | calculations §3.1, §10.1, §12, §18 | done |
+| `core/reports` (timesheet, travel, order report, CSV) | concept §6 | done |
+| `core/tracking` (`day_types`, `day_templates`, `quick_entry`, `project_booking`, `quick_actions`, `reminders`, `start_prompt`, `trip_log`) | calculations §4.1, §15, §17; reminders; work-pc | done |
+| `core/update` (update check against GitHub releases) | updates | done |
+| `app/lib/app` (providers, router, theme, `actions.dart` shared by Today, palette, shortcuts and tray) | navigation | done |
+| `app/lib/features/*` (today, calendar incl. month view and vacation planner, projects incl. project page, reports, settings) | concept §5 | done |
+| `app/lib/quick`, `reminders` (Android notification, tile, widget, WorkManager reminders) | reminders | done |
+| `app/lib/update` (banner, installers per platform) | updates | done |
+| `app/lib/work_pc` (Windows autostart, start prompt, tray) | work-pc | done |
+
+What is in progress or planned is in `docs/status.md`, not here.

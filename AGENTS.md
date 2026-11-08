@@ -21,7 +21,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows start prompt), `reminders.md` (forgotten clock-out, reminders). |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows autostart, start prompt, tray icon), `reminders.md` (forgotten clock-out, reminders). |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
@@ -77,7 +77,40 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 - **Android permissions go into `app/android/app/src/main/AndroidManifest.xml`.** Flutter adds `INTERNET` only to the debug/profile manifests, so a missing permission shows up only in release builds (that's how sync broke on the phone once). Intents opened via `url_launcher` need a `<queries>` entry.
 - **Demo data never meets real accounts.** The sync connection lives in the OS keyring per *app id*, not per database. A demo or screenshot build of the same app would find it, so it must be built with `--dart-define=TIMETRACK_DISABLE_SYNC=true` (`tool/screenshot.sh` does this). The connection is also bound to the device id of its database (`SyncConfig.deviceId`). On 2026-11-07 a screenshot run once uploaded sample data to the user's Nextcloud; it was cleaned up with tombstones.
 - **Never commit secrets**: no keystores, Nextcloud credentials or personal time data. **The repo is public** (ADR 0008): nothing personal either, and commits use the GitHub noreply address, never a personal email.
-- **Releases**: bump `version:` in `app/pubspec.yaml`, then tag `v<that version>`; CI refuses a tag that doesn't match, because the in-app updater compares the two (`docs/specs/updates.md`).
+- **Releases** only when the maintainer asks for one: bump `version:` in `app/pubspec.yaml` (the build number after `+` must grow for Android), add a line under "Releases" in `docs/status.md`, commit, then an annotated tag `v<that version>` and push both. CI refuses a tag that doesn't match, because the in-app updater compares the two (`docs/specs/updates.md`). Steps: `docs/dev-setup.md`, "Releasing".
+
+## Working with the maintainer
+
+- The maintainer writes in **German** and usually reports from real use, often with a screenshot from the Windows work PC or the Android phone. Answer in German; code, docs and commits stay in English.
+- **Ask before anything outward-facing or hard to undo**: tags, releases, changing repo settings or secrets, deleting data, anything that touches the real Nextcloud.
+- **Never publish personal data**: no personal email address anywhere (commits use `210590356+Naclador89@users.noreply.github.com`), no names, no real time data in tests or screenshots (use `tool/seed_demo.dart`).
+- The Android signing key exists since v0.3.0 (`docs/dev-setup.md` §5, CI secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_PROPERTIES`). **Never create a new one**: phones could no longer update.
+- A bug report usually becomes: spec section → core fix with a test citing it → UI → widget test → `docs/status.md`. Look in `docs/status.md` for the latest sections first; they say which files a feature lives in.
+
+## Where things live (common tasks)
+
+| Task | Look here |
+|---|---|
+| A time rule (target, balance, breaks, travel, home office) | `docs/specs/calculations.md` → `packages/core/lib/src/rules/` (`ledger.dart` ties them together) |
+| Clocking, breaks, projects, day types, quick entry | `packages/core/lib/src/tracking/` (`time_tracker.dart`, `day_types.dart`, `quick_entry.dart`) |
+| A new synced field or setting | `docs/specs/data-model.md`, `core/lib/src/data/settings.dart` (`SettingKeys`, `AppSettings`), `mapping.dart` |
+| Device-local values (theme, Windows switches) | `local_values` via the store, e.g. `app/lib/app/appearance.dart`, `app/lib/work_pc/work_pc.dart` |
+| A screen | `app/lib/features/<today\|calendar\|projects\|reports\|settings>/`, routes in `app/lib/app/router.dart` |
+| Actions shared by Today, command palette, shortcuts and tray | `app/lib/app/actions.dart` |
+| Snack bars with undo | `app/lib/widgets/undo.dart` (always `persist: false`) |
+| UI texts | `app/lib/l10n/app_en.arb` + `app_de.arb`, then `flutter gen-l10n` |
+| Android notification, tile, widget, reminders | `app/lib/quick/`, `app/lib/reminders/`, Kotlin in `app/android/app/src/main/kotlin/` |
+| Windows tray, autostart | `app/lib/work_pc/`, `app/windows/runner/` (C++, only built in CI) |
+| Updates | `docs/specs/updates.md`, `core/lib/src/update/`, `app/lib/update/` |
+| CI and releases | `.github/workflows/ci.yml` |
+| Widget test helpers | `app/test/helpers.dart` (`settle`, in-memory store); see `app/test/ui_fixes_test.dart` for a recent example |
+
+## Notes for GitHub Copilot
+
+- `.github/copilot-instructions.md` points here; `.github/workflows/copilot-setup-steps.yml` installs Flutter (version from `app/pubspec.yaml`) and the Linux libraries for the **coding agent**, so `dart test`, `flutter test` and `flutter analyze` work there. `tool/dev.sh` runs commands directly when there is no toolbox.
+- The coding agent has no Windows, no phone, no keystore and no Nextcloud. Windows and Android code only gets compiled by `ci.yml` (manual *Run workflow* on the branch); say in the PR what the maintainer has to test on the device.
+- Integration tests against a real Nextcloud (`packages/core/test/integration/`) are skipped while `NEXTCLOUD_URL` is not set; that's expected.
+- Reusable prompts for VS Code Copilot Chat are in `.github/prompts/` (`/feedback`, `/release`, `/handoff`).
 
 ## Definition of done
 

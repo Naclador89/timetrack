@@ -1,9 +1,31 @@
 # Status / handoff log
 
-_Last updated: 2026-11-08 by Claude Code._
+_Last updated: 2026-11-09 by Claude Code (handoff to GitHub Copilot)._
 **Read this first, update it last** (see `AGENTS.md`).
 
-## Current milestone: in-app updates (v0.4.0); v0.3.0 published
+## Where things stand (read this first)
+
+- **Latest release: `v0.5.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.5.2+8`. All planned
+  milestones are done; work now comes as feedback from the user (German, often with screenshots
+  from the Windows work PC or the Android phone).
+- **Tests**: core 275, app 66 widget tests, all green; CI green on `main`.
+- **Nothing is in progress.** No open task, no half-done branch.
+- **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
+  - Windows: tray icon and menu, "Im Infobereich weiterlaufen" (close hides), "Mit Windows starten"
+    and "Arbeits-PC" (question after sign-in), Windows notifications for reminders, the updater
+    quitting through the channel without a ghost tray icon.
+  - Android: reminders ("Pause fällig", "Langer Tag" with Ausstempeln), the finish time as
+    notification subtext, the forgotten clock-out dialog.
+  - Both: the new month view, the usual break, snack bars, "Tagesart entfernen".
+- **Not wanted** (don't propose again unless the user asks): Garmin glance, auto clock-in by
+  Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows, copying hours into the company
+  booking system.
+- **How a change usually goes**: user reports a problem or wish → update the spec in `docs/specs/`
+  → logic + tests in `packages/core` → UI in `app/` (strings in both ARB files) → widget test →
+  a new section or entry below plus a session log line → commit → push. A release only when the
+  user asks for it (`docs/dev-setup.md`, "Releasing").
+
+## History by milestone (all done)
 
 ### M0: Setup
 - [x] Toolbox `flutter` with Flutter 3.47.9, JDK 21 and Android SDK 36 (`docs/dev-setup.md`)
@@ -464,3 +486,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-08, Claude Code: Windows autostart as its own setting, split from "Arbeits-PC".
   65 widget tests green.
 - 2026-11-08, Claude Code: day types can be removed (with undo). 275 core, 66 widget tests green.
+- 2026-11-09, Claude Code: release v0.5.2; docs prepared for handoff to GitHub Copilot ("Where things stand" at the top, AGENTS.md: working with the maintainer, where things live, Copilot notes; prompt files in `.github/prompts/`; architecture module table and README brought up to date).
