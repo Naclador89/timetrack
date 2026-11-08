@@ -130,6 +130,10 @@ _Last updated: 2026-11-08 by Claude Code._
   first release with the release signing key (phones uninstall the old debug-signed app once).
   CI steps that run build hooks go through `tool/retry-download.sh`: GitHub release downloads (the
   sqlite3 hook fetches its binary from there) returned error pages for a while on that day.
+- `v0.4.0`, `v0.4.1` (2026-11-08): in-app updates, hourglass icon, Aurora colours.
+- `v0.5.0` (2026-11-08): work PC start prompt and the eight picked improvements (theme, shortcuts,
+  finish-time forecast, forgotten clock-out + reminders, week check, project page with budget,
+  vacation planner, Windows tray). The first release that reaches v0.4.1 through the updater.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
