@@ -100,6 +100,8 @@ object QuickAccess {
             .setSmallIcon(R.drawable.ic_quick)
             .setContentTitle(s.title)
             .setContentText(text)
+            // "Soll erreicht um 15:30" while working (calculations §18).
+            .setSubText(if (s.working) s.text("qa_finish_text").ifEmpty { null } else null)
             .setWhen(start)
             .setShowWhen(true)
             .setUsesChronometer(true)

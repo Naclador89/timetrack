@@ -921,5 +921,29 @@
   "keysTabs": "Today, Calendar, Projects, Reports",
   "keysPrevNext": "Previous or next week, month or day",
   "keysWeekMonth": "Switch between week and month",
-  "keysHelp": "This overview"
+  "keysHelp": "This overview",
+  "forecastTarget": "Target reached at {time}",
+  "@forecastTarget": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastBreak": "incl. {minutes} min break",
+  "@forecastBreak": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "forecastLimit": "10 h at {time}",
+  "@forecastLimit": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -2767,6 +2767,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This overview'**
   String get keysHelp;
+
+  /// No description provided for @forecastTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target reached at {time}'**
+  String forecastTarget(String time);
+
+  /// No description provided for @forecastBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'incl. {minutes} min break'**
+  String forecastBreak(int minutes);
+
+  /// No description provided for @forecastLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'10 h at {time}'**
+  String forecastLimit(String time);
 }
 
 class _AppLocalizationsDelegate

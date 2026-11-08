@@ -444,5 +444,8 @@
   "keysTabs": "Heute, Kalender, Projekte, Berichte",
   "keysPrevNext": "Vorherige oder nächste Woche, Monat oder Tag",
   "keysWeekMonth": "Zwischen Woche und Monat wechseln",
-  "keysHelp": "Diese Übersicht"
+  "keysHelp": "Diese Übersicht",
+  "forecastTarget": "Soll erreicht um {time}",
+  "forecastBreak": "inkl. {minutes} min Pause",
+  "forecastLimit": "10 Std. um {time}"
 }

@@ -286,7 +286,9 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - [x] Keyboard shortcuts (navigation.md, "Keyboard shortcuts"): Ctrl+E/P/B/J, Ctrl+1–4, Ctrl+,, F5,
       F1/? help; ←/→, T, M on the calendar and day pages (`PageKeys`); plain keys stay out of text
       fields. Today, palette and keys share `app/lib/app/actions.dart`; the palette shows the keys.
-- [ ] Finish-time forecast (calculations §18)
+- [x] Finish-time forecast (calculations §18, core `dayForecast`): Today shows "Soll erreicht um …
+      (inkl. n min Pause) · 10 Std. um …" while clocked in; the Android notification shows the target
+      time as subtext (`QuickStatus.targetAt`, `qa_finish_text`; Kotlin not yet built locally).
 - [ ] Forgotten clock-out dialog and reminders (reminders.md)
 - [ ] Week check (grouped notices, review flow, complete week/month)
 - [ ] Project page with hour budget

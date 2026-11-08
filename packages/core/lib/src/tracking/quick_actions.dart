@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../data/settings.dart';
 import '../model/attendance.dart';
+import '../rules/forecast.dart';
 import '../rules/ledger.dart';
 import '../sync/change.dart';
 import '../sync/repository.dart';
@@ -165,6 +166,7 @@ final class QuickStatus {
     this.breakSince,
     this.projectId,
     this.location,
+    this.targetAt,
   });
 
   /// Derives the status at [nowMinute] (epoch minutes) for [today].
@@ -181,6 +183,18 @@ final class QuickStatus {
         ? QuickPhase.onBreak
         : QuickPhase.working;
     final breakStart = state.breakRow?.fields['start_utc'];
+    final day = ledger.day(today);
+    // While working the forecast stays put (calculations §18), so it needs
+    // no updates; on a break it would move every minute.
+    final targetAt = phase == QuickPhase.working
+        ? dayForecast(
+            day,
+            now: DateTime.fromMillisecondsSinceEpoch(
+              nowMinute * 60000,
+              isUtc: true,
+            ),
+          ).targetAt
+        : null;
     return QuickStatus(
       phase: phase,
       todayMinutes: worked,
@@ -192,6 +206,7 @@ final class QuickStatus {
           : null,
       projectId: state.projectId,
       location: state.location,
+      targetAt: targetAt == null ? null : epochMinute(targetAt),
     );
   }
 
@@ -214,6 +229,10 @@ final class QuickStatus {
   /// Location of the open session.
   final WorkLocation? location;
 
+  /// While working: when today's target will be reached (epoch minute;
+  /// calculations §18), if it isn't yet.
+  final int? targetAt;
+
   @override
   bool operator ==(Object other) =>
       other is QuickStatus &&
@@ -222,10 +241,17 @@ final class QuickStatus {
       other.breakSince == breakSince &&
       other.projectId == projectId &&
       other.location == location &&
+      other.targetAt == targetAt &&
       // Only meaningful while the stopwatch isn't running.
       (phase == QuickPhase.working || other.todayMinutes == todayMinutes);
 
   @override
-  int get hashCode =>
-      Object.hash(phase, runningSince, breakSince, projectId, location);
+  int get hashCode => Object.hash(
+    phase,
+    runningSince,
+    breakSince,
+    projectId,
+    location,
+    targetAt,
+  );
 }

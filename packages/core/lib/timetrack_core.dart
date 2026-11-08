@@ -17,6 +17,7 @@ export 'src/rules/arbzg.dart';
 export 'src/rules/credit.dart';
 export 'src/rules/day_work.dart';
 export 'src/rules/explain.dart';
+export 'src/rules/forecast.dart';
 export 'src/rules/holidays.dart';
 export 'src/rules/home_office.dart';
 export 'src/rules/ledger.dart';

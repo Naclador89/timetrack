@@ -404,3 +404,23 @@ of project time by §3). A line without a range or duration records nothing.
 captures the previous day's finished sessions, breaks, entries and durations (`captureDay`) and
 applies them to the chosen day (`applyDayTemplate`); saved templates work the same. Applying only
 adds rows; the UI offers undo.
+
+## §18 Finish-time forecast
+
+Requested by the user 2026-11-08. While clocked in, Today shows when the day's target will be
+reached and when 10 hours of work (ArbZG §3, §5) are reached, at the current pace. It assumes the
+user works on without interruption **and takes the break still required by §4** (it is added once).
+
+With `W`, `C`, `R` from §4, `d` the §4 deduction and `Cr` the credited time (§8) of today:
+
+- **Countable break** `C' = C + b`, where `b` is the running break if it is at least 15 min long
+  (it counts once work resumes), else 0.
+- **Target**: if `T(D) > 0`, the day is no trip day (§9 credits the target there anyway) and
+  `Cr + d < T(D)`, then `rest = T(D) − (Cr + d)` and
+  `targetAt = now + rest + max(0, R(W + rest) − C')`; the second term is shown as "incl. n min break".
+  Otherwise there is no target time (reached, or nothing to reach).
+- **10-hour limit**: if `W < 600`, `limitAt = now + (600 − W) + max(0, 45 − C')`; otherwise none
+  (the §5 warning covers it).
+- On a break, both assume work resumes now. Times are whole minutes and move with the clock.
+
+`dayForecast` implements this; the Android notification shows the target time as its subtext.

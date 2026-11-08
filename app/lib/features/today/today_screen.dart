@@ -419,6 +419,7 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
                 if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
               ],
             ),
+            if (state.clockedIn) _ForecastLine(day: day, state: state),
             const SizedBox(height: 16),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
@@ -429,6 +430,67 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// "Soll erreicht um 15:30 (inkl. 30 min Pause) · 10 Std. um 17:45" while
+/// clocked in (calculations §18).
+class _ForecastLine extends ConsumerWidget {
+  const _ForecastLine({required this.day, required this.state});
+
+  final DayResult day;
+  final TrackerState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final zone = ref.watch(zoneProvider);
+    final minute = ref.watch(ledgerProvider).nowMinute;
+    final now = DateTime.fromMillisecondsSinceEpoch(
+      minute * 60000,
+      isUtc: true,
+    );
+    final breakStart = state.breakRow?.fields['start_utc'] as String?;
+    final f = dayForecast(
+      day,
+      now: now,
+      runningBreak: breakStart == null
+          ? 0
+          : now.difference(DateTime.parse(breakStart)).inMinutes,
+    );
+    final parts = [
+      if (f.targetAt case final at?)
+        f.breakIncluded > 0
+            ? '${l.forecastTarget(context.time(at, zone))} '
+                  '(${l.forecastBreak(f.breakIncluded)})'
+            : l.forecastTarget(context.time(at, zone)),
+      if (f.limitAt case final at?) l.forecastLimit(context.time(at, zone)),
+    ];
+    if (parts.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.flag_outlined,
+            size: 16,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              parts.join(' · '),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

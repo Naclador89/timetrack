@@ -1516,4 +1516,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get keysHelp => 'Diese Übersicht';
+
+  @override
+  String forecastTarget(String time) {
+    return 'Soll erreicht um $time';
+  }
+
+  @override
+  String forecastBreak(int minutes) {
+    return 'inkl. $minutes min Pause';
+  }
+
+  @override
+  String forecastLimit(String time) {
+    return '10 Std. um $time';
+  }
 }

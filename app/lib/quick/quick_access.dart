@@ -5,6 +5,7 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -79,6 +80,14 @@ Future<void> publishQuickStatus(
     'qa_project': projectName,
     'qa_location': location == null ? '' : locationLabel(l, location),
     'qa_today_text': formatMinutes(status.todayMinutes),
+    // Device time: the notification is read on this device.
+    'qa_finish_text': switch (status.targetAt) {
+      final at? => l.forecastTarget(
+        DateFormat.Hm(l.localeName)
+            .format(DateTime.fromMillisecondsSinceEpoch(at * minute)),
+      ),
+      null => '',
+    },
     'qa_l_off': l.notClockedIn,
     'qa_l_working': l.quickWorking,
     'qa_l_break': l.quickOnBreak,
