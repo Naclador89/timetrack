@@ -2437,6 +2437,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup loaded: {counts}'**
   String restoreDone(String counts);
+
+  /// No description provided for @syncLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync log'**
+  String get syncLog;
+
+  /// No description provided for @syncLogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only on this device, the last 100 cycles'**
+  String get syncLogHint;
+
+  /// No description provided for @syncLogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No sync cycles yet.'**
+  String get syncLogEmpty;
+
+  /// No description provided for @syncLogIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to sync'**
+  String get syncLogIdle;
+
+  /// No description provided for @syncLogFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get syncLogFailed;
+
+  /// No description provided for @syncLogUp.
+  ///
+  /// In en, this message translates to:
+  /// **'↑ {count} changes sent'**
+  String syncLogUp(String count);
+
+  /// No description provided for @syncLogDown.
+  ///
+  /// In en, this message translates to:
+  /// **'↓ {count} changes received'**
+  String syncLogDown(String count);
+
+  /// No description provided for @syncLogResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} entries corrected'**
+  String syncLogResolved(String count);
+
+  /// No description provided for @syncLogBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'in the background'**
+  String get syncLogBackground;
+
+  /// No description provided for @syncLogClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear log'**
+  String get syncLogClear;
+
+  /// No description provided for @syncLogTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}×'**
+  String syncLogTimes(String count);
 }
 
 class _AppLocalizationsDelegate

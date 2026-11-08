@@ -14,6 +14,7 @@ import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/setup_wizard.dart';
 import '../widgets/command_palette.dart';
+import '../features/settings/sync_log_screen.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
 import 'back_navigation.dart';
@@ -92,7 +93,13 @@ GoRouter buildRouter() => GoRouter(
       builder: (_, _) => const SettingsScreen(),
       routes: [
         GoRoute(path: 'schedules', builder: (_, _) => const SchedulesScreen()),
-        GoRoute(path: 'sync', builder: (_, _) => const SyncScreen()),
+        GoRoute(
+          path: 'sync',
+          builder: (_, _) => const SyncScreen(),
+          routes: [
+            GoRoute(path: 'log', builder: (_, _) => const SyncLogScreen()),
+          ],
+        ),
         GoRoute(
           path: 'home-office',
           builder: (_, _) => const HomeOfficeRulesScreen(),

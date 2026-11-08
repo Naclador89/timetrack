@@ -99,9 +99,20 @@ void main() {
       isNot(contains('work_sessions')),
     );
 
+    // The log has the start cycle and the upload; never the password.
+    final log = await SyncLog(store).entries();
+    expect(log.first.uploadedChanges, greaterThan(0));
+    expect(log.any((e) => '${e.toJson()}'.contains('secret')), isFalse);
+
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('cloud.example.com'), findsOneWidget);
+
+    await tester.tap(find.text('cloud.example.com'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sync log'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('changes sent'), findsWidgets);
   });
 
   testWidgets('a connection bound to another database does not sync', (

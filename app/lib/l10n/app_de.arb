@@ -389,5 +389,16 @@
   "restoreNoChange": "keine Änderungen",
   "restoreSyncFailed": "Sync fehlgeschlagen: Einträge anderer Geräte, die noch nicht angekommen sind, werden nicht berücksichtigt.",
   "restoreTip": "Tipp: Speichere vorher eine aktuelle Sicherung.",
-  "restoreDone": "Sicherung geladen: {counts}"
+  "restoreDone": "Sicherung geladen: {counts}",
+  "syncLog": "Sync-Protokoll",
+  "syncLogHint": "Nur auf diesem Gerät, die letzten 100 Läufe",
+  "syncLogEmpty": "Noch keine Sync-Läufe.",
+  "syncLogIdle": "Nichts zu synchronisieren",
+  "syncLogFailed": "Fehlgeschlagen",
+  "syncLogUp": "↑ {count} Änderungen gesendet",
+  "syncLogDown": "↓ {count} Änderungen empfangen",
+  "syncLogResolved": "{count} Einträge korrigiert",
+  "syncLogBackground": "im Hintergrund",
+  "syncLogClear": "Protokoll leeren",
+  "syncLogTimes": "{count}×"
 }

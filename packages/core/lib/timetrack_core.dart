@@ -35,6 +35,7 @@ export 'src/sync/hlc.dart';
 export 'src/sync/remote.dart';
 export 'src/sync/repository.dart';
 export 'src/sync/store.dart';
+export 'src/sync/sync_log.dart';
 export 'src/sync/webdav.dart';
 export 'src/time/home_time_zone.dart';
 export 'src/time/local_date.dart';

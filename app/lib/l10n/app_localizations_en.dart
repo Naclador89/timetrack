@@ -1321,4 +1321,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String restoreDone(String counts) {
     return 'Backup loaded: $counts';
   }
+
+  @override
+  String get syncLog => 'Sync log';
+
+  @override
+  String get syncLogHint => 'Only on this device, the last 100 cycles';
+
+  @override
+  String get syncLogEmpty => 'No sync cycles yet.';
+
+  @override
+  String get syncLogIdle => 'Nothing to sync';
+
+  @override
+  String get syncLogFailed => 'Failed';
+
+  @override
+  String syncLogUp(String count) {
+    return '↑ $count changes sent';
+  }
+
+  @override
+  String syncLogDown(String count) {
+    return '↓ $count changes received';
+  }
+
+  @override
+  String syncLogResolved(String count) {
+    return '$count entries corrected';
+  }
+
+  @override
+  String get syncLogBackground => 'in the background';
+
+  @override
+  String get syncLogClear => 'Clear log';
+
+  @override
+  String syncLogTimes(String count) {
+    return '$count×';
+  }
 }

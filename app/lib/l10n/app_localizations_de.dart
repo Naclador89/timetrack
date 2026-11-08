@@ -1327,4 +1327,45 @@ class AppLocalizationsDe extends AppLocalizations {
   String restoreDone(String counts) {
     return 'Sicherung geladen: $counts';
   }
+
+  @override
+  String get syncLog => 'Sync-Protokoll';
+
+  @override
+  String get syncLogHint => 'Nur auf diesem Gerät, die letzten 100 Läufe';
+
+  @override
+  String get syncLogEmpty => 'Noch keine Sync-Läufe.';
+
+  @override
+  String get syncLogIdle => 'Nichts zu synchronisieren';
+
+  @override
+  String get syncLogFailed => 'Fehlgeschlagen';
+
+  @override
+  String syncLogUp(String count) {
+    return '↑ $count Änderungen gesendet';
+  }
+
+  @override
+  String syncLogDown(String count) {
+    return '↓ $count Änderungen empfangen';
+  }
+
+  @override
+  String syncLogResolved(String count) {
+    return '$count Einträge korrigiert';
+  }
+
+  @override
+  String get syncLogBackground => 'im Hintergrund';
+
+  @override
+  String get syncLogClear => 'Protokoll leeren';
+
+  @override
+  String syncLogTimes(String count) {
+    return '$count×';
+  }
 }

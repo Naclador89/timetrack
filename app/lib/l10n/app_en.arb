@@ -793,5 +793,44 @@
         "type": "String"
       }
     }
+  },
+  "syncLog": "Sync log",
+  "syncLogHint": "Only on this device, the last 100 cycles",
+  "syncLogEmpty": "No sync cycles yet.",
+  "syncLogIdle": "Nothing to sync",
+  "syncLogFailed": "Failed",
+  "syncLogUp": "↑ {count} changes sent",
+  "@syncLogUp": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncLogDown": "↓ {count} changes received",
+  "@syncLogDown": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncLogResolved": "{count} entries corrected",
+  "@syncLogResolved": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncLogBackground": "in the background",
+  "syncLogClear": "Clear log",
+  "syncLogTimes": "{count}×",
+  "@syncLogTimes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   }
 }

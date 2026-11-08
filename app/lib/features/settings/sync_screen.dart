@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+
+import 'sync_log_screen.dart';
+
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -218,6 +222,21 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
                       ? null
                       : controller.syncNow,
                 ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.receipt_long_outlined),
+                title: Text(l.syncLog),
+                subtitle: Text(switch (ref.watch(syncLogProvider).value) {
+                  final entries? when entries.isNotEmpty => syncLogTitle(
+                    l,
+                    entries.first,
+                  ),
+                  _ => l.syncLogEmpty,
+                }),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/settings/sync/log'),
               ),
             ),
             const SizedBox(height: 8),

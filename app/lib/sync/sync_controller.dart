@@ -179,12 +179,32 @@ Future<void> syncInBackground(SyncedRepository repository) async {
     final config = await SecureSyncConfigStore().load();
     if (config == null || config.deviceId != repository.clock.deviceId) return;
     final client = proxiedClient(config.proxy);
+    final start = DateTime.now();
+    final log = SyncLog(repository.store);
     try {
-      await buildSyncEngine(
+      final report = await buildSyncEngine(
         repository,
         config,
         client,
       ).sync().timeout(const Duration(seconds: 60));
+      await log.record(
+        SyncLogEntry.of(
+          start: start,
+          end: DateTime.now(),
+          trigger: SyncTrigger.background,
+          report: report,
+        ),
+      );
+    } on Object catch (e) {
+      await log.record(
+        SyncLogEntry.of(
+          start: start,
+          end: DateTime.now(),
+          trigger: SyncTrigger.background,
+          error: e,
+        ),
+      );
+      rethrow;
     } finally {
       client.close();
     }
@@ -287,14 +307,31 @@ class SyncController extends Notifier<SyncStatus> {
       lastSuccess: previous.lastSuccess,
       root: previous.root,
     );
+    final start = DateTime.now();
     try {
-      await engine.sync();
+      final report = await engine.sync();
+      await _log(
+        SyncLogEntry.of(
+          start: start,
+          end: DateTime.now(),
+          trigger: SyncTrigger.app,
+          report: report,
+        ),
+      );
       state = SyncStatus(
         SyncPhase.idle,
         lastSuccess: DateTime.now(),
         root: previous.root,
       );
     } on Object catch (e) {
+      await _log(
+        SyncLogEntry.of(
+          start: start,
+          end: DateTime.now(),
+          trigger: SyncTrigger.app,
+          error: e,
+        ),
+      );
       state = SyncStatus(
         SyncPhase.error,
         lastSuccess: previous.lastSuccess,
@@ -305,7 +342,20 @@ class SyncController extends Notifier<SyncStatus> {
   }
 
   /// Call when the app returns to the foreground.
-  void onResume() => _schedule(Duration.zero);
+  void onResume() {
+    // Background cycles may have written to the log meanwhile.
+    ref.invalidate(syncLogProvider);
+    _schedule(Duration.zero);
+  }
+
+  Future<void> _log(SyncLogEntry entry) async {
+    try {
+      await SyncLog(ref.read(storeProvider)).record(entry);
+    } on Object {
+      // The log must never break the sync itself.
+    }
+    ref.invalidate(syncLogProvider);
+  }
 
   void _schedule(Duration delay) {
     if (_engine == null) return;
@@ -338,4 +388,9 @@ class SyncController extends Notifier<SyncStatus> {
 /// The sync controller and its status.
 final syncControllerProvider = NotifierProvider<SyncController, SyncStatus>(
   SyncController.new,
+);
+
+/// This device's sync log, newest first (spec: sync-log.md).
+final syncLogProvider = FutureProvider<List<SyncLogEntry>>(
+  (ref) => SyncLog(ref.watch(storeProvider)).entries(),
 );
