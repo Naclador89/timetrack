@@ -15,3 +15,6 @@ key.properties
 # Local personal data
 *.sqlite
 *.db
+
+# Python bytecode (tool/make_icons.py)
+__pycache__/
