@@ -3139,6 +3139,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other absence'**
   String get otherAbsence;
+
+  /// No description provided for @trayOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open TimeTrack'**
+  String get trayOpen;
+
+  /// No description provided for @trayQuit.
+  ///
+  /// In en, this message translates to:
+  /// **'Quit'**
+  String get trayQuit;
+
+  /// No description provided for @closeToTray.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep running in the tray'**
+  String get closeToTray;
+
+  /// No description provided for @closeToTrayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing hides the window; the tray icon\'s menu has Quit.'**
+  String get closeToTrayHint;
 }
 
 class _AppLocalizationsDelegate

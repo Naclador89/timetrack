@@ -1755,4 +1755,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otherAbsence => 'Other absence';
+
+  @override
+  String get trayOpen => 'Open TimeTrack';
+
+  @override
+  String get trayQuit => 'Quit';
+
+  @override
+  String get closeToTray => 'Keep running in the tray';
+
+  @override
+  String get closeToTrayHint =>
+      'Closing hides the window; the tray icon\'s menu has Quit.';
 }

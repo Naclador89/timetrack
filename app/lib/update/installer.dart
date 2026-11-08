@@ -265,6 +265,14 @@ final class WindowsUpdateInstaller extends UpdateInstaller {
       '-Exe',
       _exe,
     ], mode: ProcessStartMode.detached);
+    // Closing the window ends the process and takes the tray icon with it
+    // (work-pc.md §3); exit is the fallback.
+    try {
+      await const MethodChannel('timetrack/window').invokeMethod<void>('quit');
+      await Future<void>.delayed(const Duration(seconds: 3));
+    } on Object {
+      // No window channel: just exit.
+    }
     exit(0);
   }
 }

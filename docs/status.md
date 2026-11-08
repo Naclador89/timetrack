@@ -311,7 +311,13 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       left), 12 mini months (holidays red, absences in their colours, bridge days ringed, tap adds
       an absence), the year's absences with undo-delete. Fixed: the absence dialog's type dropdown
       overflowed with long names.
-- [ ] Windows tray icon (work-pc.md §3)
+- [x] Windows tray icon (work-pc.md §3): runner `Shell_NotifyIcon` (grey `app_icon_idle.ico` while
+      clocked out, tooltip, menu from Dart via `setTray`, `trayAction` back, `notify` balloons,
+      `hide`, `quit`, `setCloseToTray`, re-add on `TaskbarCreated`); Dart `TrayHost`: status,
+      clock in/out, break, five projects, switch/book, open, quit; reminders as Windows
+      notifications; Einstellungen → App → "Im Infobereich weiterlaufen" (default on; close hides);
+      a quiet autostart goes to the tray; the updater quits through the channel. **Only compiled in
+      CI; user test on the work PC pending.**
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -419,3 +425,8 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
   checker, app banner/settings/installers, Android notification, CI checksums and tag check.
 - 2026-11-08, Claude Code: work PC start prompt on Windows (spec `work-pc.md`); 242 core tests,
   40 widget tests green.
+- 2026-11-08, Claude Code: app review with 10 suggestions, the user picked 8 and all are built (one
+  commit each): theme switch, keyboard shortcuts, finish-time forecast, forgotten clock-out +
+  reminders, week check, project page with budget, vacation planner with bridge days, Windows tray.
+  New spec `reminders.md`; calculations §3.1, §10.1, §12 (checks), §18. 272 core tests, 58 widget
+  tests green.

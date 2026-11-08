@@ -506,5 +506,9 @@
   "noBridges": "Keine Brückentage mehr in {year}",
   "absencesOfYear": "Abwesenheiten {year}",
   "bridgeDay": "Brückentag",
-  "otherAbsence": "Andere Abwesenheit"
+  "otherAbsence": "Andere Abwesenheit",
+  "trayOpen": "TimeTrack öffnen",
+  "trayQuit": "Beenden",
+  "closeToTray": "Im Infobereich weiterlaufen",
+  "closeToTrayHint": "Schließen blendet das Fenster aus; Beenden steht im Menü des Symbols."
 }

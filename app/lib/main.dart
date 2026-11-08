@@ -18,6 +18,7 @@ import 'reminders/forgotten_clock_out.dart';
 import 'sync/sync_controller.dart';
 import 'update/update_controller.dart';
 import 'work_pc/start_prompt_host.dart';
+import 'work_pc/tray.dart';
 import 'work_pc/work_pc.dart';
 
 Future<void> main(List<String> args) async {
@@ -88,7 +89,10 @@ class TimeTrackApp extends ConsumerWidget {
                 navigatorKey: router.routerDelegate.navigatorKey,
                 child: StartPromptHost(
                   navigatorKey: router.routerDelegate.navigatorKey,
-                  child: child!,
+                  child: TrayHost(
+                    navigatorKey: router.routerDelegate.navigatorKey,
+                    child: child!,
+                  ),
                 ),
               ),
             ),

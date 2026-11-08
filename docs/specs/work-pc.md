@@ -1,7 +1,7 @@
-# Work PC: ask to start tracking after sign-in
+# Work PC: ask to start tracking after sign-in, tray icon
 
 Status: **normative**. Code: `packages/core/lib/src/tracking/start_prompt.dart` (whether to ask,
-which location, "not today"), `app/lib/work_pc/` (autostart, prompt), Windows runner
+which location, "not today"), `app/lib/work_pc/` (autostart, prompt, tray), Windows runner
 (`app/windows/runner/main.cpp`, `flutter_window.cpp`). Requested by the user 2026-11-08.
 
 ## 1. The setting (Windows only)
@@ -32,6 +32,33 @@ Started with `--autostart`, the window first appears **minimized and without foc
    location (as the quick actions do), office for anything else.
    - **Starten** clocks in at the chosen location.
    - **Nicht heute** stores today's date; further sign-ins today don't ask.
-4. If not asked, the window stays minimized.
+4. If not asked, the window goes to the tray (§3; hidden) when "Im Infobereich weiterlaufen" is on,
+   else it stays minimized.
 
 A start by hand (no `--autostart`) never asks.
+
+## 3. Tray icon (Windows)
+
+Requested by the user 2026-11-08. On Windows the app always has a tray icon (Shell_NotifyIcon in the
+runner, channel `timetrack/window`):
+
+- **Icon**: the app icon while clocked in, a grey one (`app_icon_idle.ico`, made by
+  `tool/make_icons.py`) while clocked out. **Tooltip**: "TimeTrack · <status> · <today's worked>".
+- **Left click** opens the window. **Right click** opens the menu:
+  1. the status (greyed): "Eingestempelt seit 08:00 · Büro · 5:12", on a break "Pause seit …";
+  2. Einstempeln / Ausstempeln, and while clocked in Pause starten / Pause beenden;
+  3. up to five projects (favourites first, then by recent use; the running one ticked) to start or
+     switch to;
+  4. "Projekt wechseln…" and "Projektzeit buchen…" (open the window with the picker or sheet);
+  5. "TimeTrack öffnen", "Beenden".
+- The actions are the app's own (`app/lib/app/actions.dart`): the same location rules, trip-day
+  steps and summary prompt. Whatever may ask something (a running project's summary, the end of a
+  trip) brings the window up first.
+- **Im Infobereich weiterlaufen** (Einstellungen → App, Windows only, per device in `local_values`
+  `close_to_tray`, default on): the close button hides the window; it keeps running in the tray, and
+  "Beenden" in the menu quits. Off: closing quits as before.
+- **Notifications**: while the app runs, the reminders (reminders.md §2) are checked every minute and
+  shown as Windows notifications through the tray icon.
+- The icon is removed when the window is destroyed (quit, update; the updater quits through the
+  channel instead of `exit`) and added again when Explorer restarts (`TaskbarCreated`).
+

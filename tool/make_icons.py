@@ -209,6 +209,14 @@ def write_desktop(tmp, square):
         sizes.append(out)
     sizes += [small_desktop(tmp, 24), small_desktop(tmp, 16)]
     magick(*sizes, ROOT / 'app/windows/runner/resources/app_icon.ico')
+    # The tray icon while clocked out (docs/specs/work-pc.md §3): grey and a little faded.
+    idle = []
+    for size in sizes:
+        out = size.with_name(f'{size.stem}-idle.png')
+        magick(size, '-colorspace', 'Gray', '-channel', 'A', '-evaluate', 'multiply', '0.7',
+               '+channel', f'PNG32:{out}')
+        idle.append(out)
+    magick(*idle, ROOT / 'app/windows/runner/resources/app_icon_idle.ico')
     return big
 
 

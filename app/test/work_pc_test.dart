@@ -1,4 +1,6 @@
 // spec: work-pc.md
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +20,12 @@ final fixedNow = DateTime.utc(2026, 11, 9, 7);
 class FakeWorkPc implements WorkPcPlatform {
   var enabled = false;
   var shown = 0;
+  var hidden = 0;
+  var quitted = false;
+  bool? closeToTray;
+  TrayModel? tray;
+  final notifications = <(String, String)>[];
+  final actions = StreamController<String>.broadcast();
 
   @override
   Future<bool> isEnabled() async => enabled;
@@ -27,6 +35,31 @@ class FakeWorkPc implements WorkPcPlatform {
 
   @override
   Future<void> showWindow() async => shown++;
+
+  @override
+  Future<void> hideWindow() async => hidden++;
+
+  @override
+  Future<void> setTray(TrayModel tray) async => this.tray = tray;
+
+  @override
+  Future<void> setCloseToTray(bool on) async => closeToTray = on;
+
+  @override
+  Future<void> notify(String title, String body) async =>
+      notifications.add((title, body));
+
+  @override
+  Future<void> quit() async => quitted = true;
+
+  @override
+  Stream<String> get trayActions => actions.stream;
+
+  /// The labels of the tray menu, without separators.
+  List<String> get menu => [
+    for (final i in tray!.items)
+      if (!i.separator) i.label,
+  ];
 }
 
 Future<void> pump(
@@ -116,6 +149,7 @@ void main() {
     await pump(tester, store, repo, workPc);
     expect(find.text('Start tracking for today?'), findsNothing);
     expect(workPc.shown, 0);
+    expect(workPc.hidden, 1, reason: 'into the tray (§3)');
   });
 
   testWidgets('§2 "Not today" is not asked again on the next sign-in', (
@@ -157,5 +191,73 @@ void main() {
     await tester.tap(find.text('Work PC'));
     await tester.pumpAndSettle();
     expect(workPc.enabled, isFalse);
+  });
+
+  group('§3 tray icon', () {
+    testWidgets('the menu follows the state and clocks in', (tester) async {
+      t = tester;
+      await pump(tester, store, repo, workPc, autostarted: false);
+      expect(workPc.closeToTray, isTrue, reason: 'default on');
+      expect(workPc.tray!.idle, isTrue);
+      expect(workPc.menu, [
+        'Not clocked in · 0:00',
+        'Clock in',
+        'Switch project…',
+        'Book project time…',
+        'Open TimeTrack',
+        'Quit',
+      ]);
+      workPc.actions.add('clock');
+      await settle(tester);
+      expect((await state()).clockedIn, isTrue);
+      expect(workPc.tray!.idle, isFalse);
+      expect(workPc.menu, containsAll(['Clock out', 'Break']));
+      expect(workPc.menu.first, startsWith('Clocked in since 08:00'));
+    });
+
+    testWidgets('a project from the menu starts; quit quits', (tester) async {
+      await tester.runAsync(
+        () =>
+            repo.write('projects', 'p', {'name': 'Werk Süd', 'favorite': true}),
+      );
+      t = tester;
+      await pump(tester, store, repo, workPc, autostarted: false);
+      expect(workPc.menu, contains('Werk Süd'));
+      workPc.actions.add('project:p');
+      await settle(tester);
+      expect((await state()).projectId, 'p');
+      expect(
+        workPc.tray!.items.singleWhere((i) => i.label == 'Werk Süd').checked,
+        isTrue,
+      );
+      workPc.actions.add('quit');
+      await settle(tester);
+      expect(workPc.quitted, isTrue);
+    });
+
+    testWidgets('due reminders become Windows notifications', (tester) async {
+      // Working since 02:00 Berlin without a break: 6 h at 08:00.
+      await tester.runAsync(
+        () => repo.write('work_sessions', 's', {
+          'start_utc': '2026-11-09T01:00:00Z',
+          'end_utc': null,
+          'location': 'office',
+        }),
+      );
+      t = tester;
+      await pump(tester, store, repo, workPc, autostarted: false);
+      await tester.pump(const Duration(minutes: 1));
+      await settle(tester);
+      expect(workPc.notifications, [
+        (
+          'Time for a break',
+          '5:45 h without a break – after 6 h a break is required.',
+        ),
+      ]);
+      // Shown once.
+      await tester.pump(const Duration(minutes: 1));
+      await settle(tester);
+      expect(workPc.notifications, hasLength(1));
+    });
   });
 }

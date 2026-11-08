@@ -48,7 +48,13 @@ class _StartPromptHostState extends ConsumerState<StartPromptHost> {
       now: ref.read(clockProvider),
     );
     final offered = await prompt.offer();
-    if (offered == null) return;
+    if (offered == null) {
+      // Nothing to ask: from the taskbar into the tray (work-pc.md §3).
+      if (await ref.read(closeToTrayProvider.future)) {
+        await ref.read(workPcPlatformProvider)?.hideWindow();
+      }
+      return;
+    }
     await ref.read(workPcPlatformProvider)?.showWindow();
     final context = widget.navigatorKey.currentContext;
     if (context == null || !context.mounted) return;

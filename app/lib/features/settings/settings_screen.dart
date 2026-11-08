@@ -464,6 +464,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ref.invalidate(workPcEnabledProvider);
           },
         ),
+      // spec: work-pc.md §3 (Windows only)
+      if (ref.watch(workPcPlatformProvider) != null)
+        SwitchListTile(
+          secondary: const Icon(Icons.minimize),
+          title: Text(l.closeToTray),
+          subtitle: Text(l.closeToTrayHint),
+          value: ref.watch(closeToTrayProvider).value ?? true,
+          onChanged: (v) async {
+            await ref
+                .read(storeProvider)
+                .transaction((tx) => tx.setLocalValue(closeToTrayKey, '$v'));
+            ref.invalidate(closeToTrayProvider);
+          },
+        ),
       ListTile(
         leading: const Icon(Icons.open_in_new),
         title: Text(l.releasePage),

@@ -1762,4 +1762,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get otherAbsence => 'Andere Abwesenheit';
+
+  @override
+  String get trayOpen => 'TimeTrack öffnen';
+
+  @override
+  String get trayQuit => 'Beenden';
+
+  @override
+  String get closeToTray => 'Im Infobereich weiterlaufen';
+
+  @override
+  String get closeToTrayHint =>
+      'Schließen blendet das Fenster aus; Beenden steht im Menü des Symbols.';
 }
