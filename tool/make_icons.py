@@ -32,9 +32,12 @@ BACKGROUND = '#24242A'  # the square's colour beside the hourglass
 DP_PER_PX = 35 / 733
 DENSITIES = {'mdpi': 1, 'hdpi': 1.5, 'xhdpi': 2, 'xxhdpi': 3, 'xxxhdpi': 4}
 
-# Desktop variant in the app's colour (seedColor = Colors.teal): brightness mapped onto these.
-TEAL_RAMP = ['#000000', '#24262A', '#00695C', '#26A69A', '#B2DFDB', '#FFFFFF']
-TEAL = '#26A69A'
+# The icon's colour gradient, from the hourglass's top-left to its bottom-right corner (the
+# original runs orange -> pink -> purple). Palette "Aurora", chosen by the user on 2026-11-08 from
+# four turquoise proposals.
+GRADIENT = ['#34D399', '#22D3EE', '#3B82F6']
+ACCENT = '#22D3EE'  # one colour for the 16/24 px desktop icon
+HOURGLASS_BOX = (600, 450, 1445, 1600)  # in the source, for the gradient's direction
 
 
 def magick(*args):
@@ -89,12 +92,12 @@ def vector_drawable(svg, size_dp, scale, comment):
 '''
 
 
-def rounded_square(tmp):
+def rounded_square(tmp, source):
     """The source's dark square without the white page and shadow: transparent corners."""
     out = tmp / 'square.png'
     x, y, size = SQUARE
     magick(
-        SOURCE, '-crop', f'{size}x{size}+{x}+{y}', '+repage',
+        source, '-crop', f'{size}x{size}+{x}+{y}', '+repage',
         '(', '-size', f'{size}x{size}', 'xc:black', '-fill', 'white',
         '-draw', f'roundrectangle 0,0 {size - 1},{size - 1} {SQUARE_RADIUS},{SQUARE_RADIUS}', ')',
         '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', out,
@@ -102,22 +105,40 @@ def rounded_square(tmp):
     return out
 
 
-def teal(image, out):
-    """[image] recoloured by brightness onto TEAL_RAMP (keeps glow and grains)."""
-    ramp = ['xc:' + c for c in TEAL_RAMP]
+def recoloured_source(tmp):
+    """The source with the hourglass in GRADIENT instead of its own colours: brightness from the
+    original (glow, grains, glass), colour from a diagonal gradient. Darks stay neutral, midtones
+    take the gradient, highlights go towards white. A plain hue shift can't do this: it would turn
+    orange -> purple into green -> red, not green -> blue."""
+    out = tmp / 'source-recoloured.png'
+    luma = tmp / 'luma.png'
+    magick(SOURCE, '-colorspace', 'gray', '-colorspace', 'sRGB', '-define', 'png:color-type=2', luma)
+    x0, y0, x1, y1 = HOURGLASS_BOX
+    scale = 4  # the gradient is smooth: compute it at a quarter size
+    size = 2048 // scale
+    gradient = tmp / 'gradient.png'
     magick(
-        image, '-write', 'mpr:orig', '+delete',
-        '(', 'mpr:orig', '-alpha', 'off', '-colorspace', 'gray', '-colorspace', 'sRGB',
-        '(', '-size', '1x1', *ramp, '+append', '-filter', 'Triangle', '-resize', '256x1!', ')',
-        '-clut', ')',
-        '(', 'mpr:orig', '-alpha', 'extract', ')',
-        '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', out,
+        '-size', f'{size}x{size}', 'xc:',
+        '-fx', f'pos=((i+j)*{scale}-{x0 + y0})/{(x1 + y1) - (x0 + y0)}; pos<0?0:(pos>1?1:pos)',
+        '(', '-size', '1x1', *['xc:' + c for c in GRADIENT], '+append',
+        '-filter', 'Triangle', '-resize', '256x1!', ')', '-clut',
+        '-resize', '2048x2048!', '-colorspace', 'sRGB', gradient,
+    )
+    magick(
+        luma,
+        # the gradient, as bright as the original there
+        '(', gradient, '(', luma, '-level', '0%,48%', ')', '-compose', 'Multiply', '-composite', ')',
+        # where: midtones and up (not the dark background)
+        '(', luma, '-level', '18%,55%', '-colorspace', 'gray', ')',
+        '-compose', 'Over', '-composite',
+        '(', luma, '-level', '68%,100%', ')', '-compose', 'Screen', '-composite',
+        '-define', 'png:color-type=2', out,
     )
     return out
 
 
 def small_desktop(tmp, px):
-    """Desktop icon for 16–24 px: teal hourglass (small variant) on the dark rounded square."""
+    """Desktop icon for 16–24 px: the small hourglass in ACCENT on the dark rounded square."""
     out = tmp / f'small-{px}.png'
     big = 256
     radius = big * SQUARE_RADIUS // SQUARE[2]
@@ -125,13 +146,13 @@ def small_desktop(tmp, px):
         '-size', f'{big}x{big}', 'xc:none', '-fill', BACKGROUND,
         '-draw', f'roundrectangle 0,0 {big - 1},{big - 1} {radius},{radius}',
         '(', '-background', 'none', '-density', 96, BRANDING / 'hourglass-small.svg',
-        '-fill', TEAL, '-colorize', '100', '-resize', f'x{int(big * 0.8)}', ')',
+        '-fill', ACCENT, '-colorize', '100', '-resize', f'x{int(big * 0.8)}', ')',
         '-gravity', 'center', '-composite', '-resize', f'{px}x{px}', out,
     )
     return out
 
 
-def foreground(tmp):
+def foreground(tmp, source):
     """The adaptive icon's foreground at 432 px (xxxhdpi): the hourglass with its glow, cut out
     softly so the edge disappears in the background colour."""
     out = tmp / 'foreground.png'
@@ -139,7 +160,7 @@ def foreground(tmp):
     cx, cy = CENTRE
     canvas = round(108 / DP_PER_PX)  # source px that the 108 dp canvas covers
     magick(
-        SOURCE, '-crop', f'{region}x{region}+{cx - region // 2}+{cy - region // 2}', '+repage',
+        source, '-crop', f'{region}x{region}+{cx - region // 2}+{cy - region // 2}', '+repage',
         '(', '-size', f'{region}x{region}', 'xc:black', '-fill', 'white',
         '-draw', f'roundrectangle 110,110 {region - 111},{region - 111} 400,400',
         '-blur', '0x55', ')',
@@ -150,9 +171,9 @@ def foreground(tmp):
     return out
 
 
-def write_android(tmp):
-    fg = foreground(tmp)
-    square = rounded_square(tmp)
+def write_android(tmp, source):
+    fg = foreground(tmp, source)
+    square = rounded_square(tmp, source)
     for name, factor in DENSITIES.items():
         folder = RES / f'mipmap-{name}'
         folder.mkdir(exist_ok=True)
@@ -177,7 +198,7 @@ def write_android(tmp):
 
 
 def write_desktop(tmp, square):
-    big = teal(square, tmp / 'teal.png')
+    big = square  # one icon everywhere
     linux = ROOT / 'app/linux/runner/resources'
     linux.mkdir(parents=True, exist_ok=True)
     magick(big, '-resize', '512x512', linux / 'app_icon.png')
@@ -253,7 +274,8 @@ def main():
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as t:
         tmp = Path(t)
-        fg, square = write_android(tmp)
+        source = recoloured_source(tmp)
+        fg, square = write_android(tmp, source)
         big = write_desktop(tmp, square)
         if args.preview:
             preview(tmp, fg, square, big, args.preview)
