@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../app/back_navigation.dart';
 import '../app/format.dart';
 import '../app/providers.dart';
 import '../features/projects/project_time_dialog.dart';
@@ -157,7 +158,7 @@ class AttentionCards extends ConsumerWidget {
   ) {
     final l = context.l10n;
     final zone = ref.read(zoneProvider);
-    void openDay() => context.go('/calendar/day/${item.date}');
+    void openDay() => context.go(dayLocation(context, item.date));
     int local(int epochMinute) {
       final t = zone.toLocal(instantOfEpochMinute(epochMinute));
       return t.hour * 60 + t.minute;

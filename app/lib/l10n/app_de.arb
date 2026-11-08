@@ -363,5 +363,6 @@
   "recordsSectionHint": "Minutengenau so erfasst, wie es war, unabhängig davon, was das Konto anrechnet.",
   "travelRecordHint": "Anfahrt, beim Kunden und Rückfahrt mit Uhrzeit, Abwesenheit und Verpflegungspauschale",
   "projectTimesRecord": "Projektzeiten",
-  "projectTimesRecordHint": "In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht"
+  "projectTimesRecordHint": "In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht",
+  "backAgainToLeave": "Zum Verlassen nochmal zurück"
 }

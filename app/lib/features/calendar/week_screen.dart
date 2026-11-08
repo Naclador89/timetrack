@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
@@ -33,6 +34,25 @@ class WeekScreen extends ConsumerStatefulWidget {
 class _WeekScreenState extends ConsumerState<WeekScreen> {
   int _offset = 0; // weeks or months from the current one
   bool _month = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BackSteps.register(1, _back);
+  }
+
+  @override
+  void dispose() {
+    BackSteps.unregister(1, _back);
+    super.dispose();
+  }
+
+  /// Back first returns to the current week (docs/specs/navigation.md).
+  bool _back() {
+    if (_offset == 0 && !_month) return false;
+    setState(() => _offset != 0 ? _offset = 0 : _month = false);
+    return true;
+  }
 
   void _shift(int by) {
     tapFeedback();

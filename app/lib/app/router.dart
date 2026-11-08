@@ -15,6 +15,7 @@ import '../features/settings/setup_wizard.dart';
 import '../widgets/command_palette.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
+import 'back_navigation.dart';
 import 'format.dart';
 
 /// Routes. Each tab keeps its own navigation stack.
@@ -32,7 +33,20 @@ GoRouter buildRouter() => GoRouter(
       branches: [
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/today', builder: (_, _) => const TodayScreen()),
+            GoRoute(
+              path: '/today',
+              builder: (_, _) => const TodayScreen(),
+              routes: [
+                // The day opened from Today stays in this tab, so back
+                // returns to Today (docs/specs/navigation.md).
+                GoRoute(
+                  path: 'day/:date',
+                  builder: (_, s) => DayScreen(
+                    date: LocalDate.parse(s.pathParameters['date']!),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -108,7 +122,10 @@ class AdaptiveShell extends StatelessWidget {
     ];
     void go(int i) =>
         shell.goBranch(i, initialLocation: i == shell.currentIndex);
-    return CommandPaletteShortcut(child: _layout(context, items, go));
+    return TabBackHandler(
+      shell: shell,
+      child: CommandPaletteShortcut(child: _layout(context, items, go)),
+    );
   }
 
   Widget _layout(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
@@ -28,6 +29,25 @@ class ReportsScreen extends ConsumerStatefulWidget {
 
 class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   int _offset = 0; // months back from the current one
+
+  @override
+  void initState() {
+    super.initState();
+    BackSteps.register(3, _back);
+  }
+
+  @override
+  void dispose() {
+    BackSteps.unregister(3, _back);
+    super.dispose();
+  }
+
+  /// Back first returns to the current month (docs/specs/navigation.md).
+  bool _back() {
+    if (_offset == 0) return false;
+    setState(() => _offset = 0);
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {

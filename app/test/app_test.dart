@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack/app/providers.dart';
+import 'package:timetrack/app/back_navigation.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
 import 'package:timetrack/sync/sync_controller.dart';
@@ -587,5 +588,49 @@ void main() {
     ]..sort();
     expect(locations, ['on_site', 'travel', 'travel']);
     expect(store.rowsOf('trips')['t1']!.fields['return_utc'], isNotNull);
+  });
+
+  testWidgets('back: page, view, previous tab, then ask before leaving', (
+    tester,
+  ) async {
+    var left = 0;
+    TabBackHandler.leaveApp = () async => left++;
+    await pumpApp(tester);
+    Future<void> back() async {
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+    }
+
+    // From Today, the day opens inside the Today tab: back returns there.
+    await tester.tap(find.byTooltip('Quick entry'));
+    await tester.pumpAndSettle();
+    await back(); // closes the sheet
+    expect(find.text('Quick entry'), findsNothing);
+    expect(find.text('Not clocked in'), findsOneWidget);
+
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Next week'));
+    await tester.pumpAndSettle();
+    expect(find.text('Week 46'), findsOneWidget);
+    await tester.tap(find.text('Reports').last);
+    await tester.pumpAndSettle();
+
+    await back(); // Reports → the calendar, the tab visited before
+    expect(find.text('Week 46'), findsOneWidget);
+    await back(); // the calendar's own step: back to this week
+    expect(find.text('Week 45'), findsOneWidget);
+    await tester.tap(find.text('Wed, 11/4').first);
+    await tester.pumpAndSettle();
+    await back(); // day → week
+    expect(find.text('Week 45'), findsOneWidget);
+    await back(); // → Today
+    expect(find.text('Not clocked in'), findsOneWidget);
+
+    await back(); // asks first
+    expect(find.text('Press back again to leave'), findsOneWidget);
+    expect(left, 0);
+    await back();
+    expect(left, 1);
   });
 }

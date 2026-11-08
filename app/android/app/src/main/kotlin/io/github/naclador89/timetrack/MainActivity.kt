@@ -26,6 +26,15 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // lib/app/back_navigation.dart: back on Today sends the app to the
+        // background like Home instead of closing it.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "timetrack/system")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "moveToBack" -> result.success(moveTaskToBack(true))
+                    else -> result.notImplemented()
+                }
+            }
     }
 
     override fun onRequestPermissionsResult(

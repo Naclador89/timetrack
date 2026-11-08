@@ -2281,6 +2281,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In 15-minute steps per order; timesheet and order report'**
   String get projectTimesRecordHint;
+
+  /// No description provided for @backAgainToLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Press back again to leave'**
+  String get backAgainToLeave;
 }
 
 class _AppLocalizationsDelegate

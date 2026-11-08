@@ -1232,4 +1232,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get projectTimesRecordHint =>
       'In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht';
+
+  @override
+  String get backAgainToLeave => 'Zum Verlassen nochmal zurück';
 }

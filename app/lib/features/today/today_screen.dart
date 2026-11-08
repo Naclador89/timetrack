@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
@@ -732,7 +733,7 @@ class _TimelineCard extends ConsumerWidget {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () => context.go('/calendar/day/$date'),
+                  onPressed: () => context.go(dayLocation(context, date)),
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: Text(l.editDay),
                 ),
@@ -743,7 +744,7 @@ class _TimelineCard extends ConsumerWidget {
               child: DayTimeline(
                 date: date,
                 editable: true,
-                onTap: (_) => context.go('/calendar/day/$date'),
+                onTap: (_) => context.go(dayLocation(context, date)),
               ),
             ),
           ],

@@ -210,6 +210,8 @@ _Last updated: 2026-11-07 by Claude Code._
       has Anfahrt / Beim Kunden / Rückfahrt with from–to times plus "Angerechnet (Konto)"; settings
       grouped into Arbeitszeitkonto (with travel and weekend crediting, each explained) and
       Nachweise.
+- [x] Back behaviour (user, 2026-11-08; `docs/specs/navigation.md`): close → page up → reset view →
+      previous tab → on Today ask once, then move to the background; days open inside the current tab.
 
 **Next task**: the user checks the redesign on the phone, then tag release v0.3.0 (Windows build).
 The user re-enters the three reset settings. Then: release keystore (if approved), M6 Garmin glance.
@@ -311,3 +313,4 @@ The user re-enters the three reset settings. Then: release keystore (if approved
   21 widget tests green.
 - 2026-11-08, Claude Code: travel record vs. overtime account (`tripLegs`, `tripSteps`); 213 core
   tests, 22 widget tests green.
+- 2026-11-08, Claude Code: back navigation concept and implementation; 23 widget tests green.

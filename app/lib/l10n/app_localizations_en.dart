@@ -1226,4 +1226,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get projectTimesRecordHint =>
       'In 15-minute steps per order; timesheet and order report';
+
+  @override
+  String get backAgainToLeave => 'Press back again to leave';
 }

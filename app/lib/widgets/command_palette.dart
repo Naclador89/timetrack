@@ -123,7 +123,7 @@ class _PaletteState extends ConsumerState<_Palette> {
       (
         icon: Icons.edit_calendar_outlined,
         label: l.editDay,
-        run: () async => go('/calendar/day/$today'),
+        run: () async => go('/today/day/$today'),
         color: null,
         stay: false,
       ),

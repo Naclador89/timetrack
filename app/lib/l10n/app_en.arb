@@ -720,5 +720,6 @@
   "recordsSectionHint": "Recorded to the minute as it happened, independent of what the account credits.",
   "travelRecordHint": "Outbound, at the customer and return with times, hours away and per-diem",
   "projectTimesRecord": "Project times",
-  "projectTimesRecordHint": "In 15-minute steps per order; timesheet and order report"
+  "projectTimesRecordHint": "In 15-minute steps per order; timesheet and order report",
+  "backAgainToLeave": "Press back again to leave"
 }

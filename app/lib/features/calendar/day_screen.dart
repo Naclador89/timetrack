@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
@@ -144,7 +145,8 @@ class DayScreen extends ConsumerWidget {
             icon: const Icon(Icons.today),
             onPressed: date == ref.watch(todayProvider)
                 ? null
-                : () => context.go('/calendar/day/${ref.read(todayProvider)}'),
+                : () =>
+                      context.go(dayLocation(context, ref.read(todayProvider))),
           ),
           IconButton(
             tooltip: l.addAbsence,
