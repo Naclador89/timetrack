@@ -28,8 +28,8 @@ class BalanceZoneDot extends ConsumerWidget {
     final l = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final (color, label) = switch (zone) {
-      BalanceZone.green => (scheme.deltaColor(1), l.zoneGreen),
-      BalanceZone.yellow => (const Color(0xFFF2B300), l.zoneYellow),
+      BalanceZone.green => (scheme.positive, l.zoneGreen),
+      BalanceZone.yellow => (scheme.warning, l.zoneYellow),
       BalanceZone.red => (scheme.error, l.zoneRed),
       BalanceZone.overLimit => (scheme.error, l.zoneOverLimit),
     };

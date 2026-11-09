@@ -1,3 +1,4 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
@@ -75,6 +76,10 @@ ThemeData buildTheme(ColorScheme scheme) {
       backgroundColor: scheme.surfaceContainer,
       indicatorColor: scheme.secondaryContainer,
     ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: scheme.surfaceContainer,
+      indicatorColor: scheme.secondaryContainer,
+    ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
@@ -86,15 +91,43 @@ ThemeData buildTheme(ColorScheme scheme) {
   );
 }
 
-/// Colours that carry meaning: plus, minus and the day types.
+/// The fallback scheme where the system gives no colours (Linux without an
+/// accent, Android < 12, or wallpaper colours switched off).
+ColorScheme fallbackScheme(Brightness brightness) => ColorScheme.fromSeed(
+  seedColor: seedColor,
+  brightness: brightness,
+  dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+);
+
+/// Colours that carry meaning: plus, minus and the day types. All of them
+/// are harmonised with the scheme's primary colour, so they follow the
+/// wallpaper or accent colour; the UI uses no raw colours.
 extension SemanticColors on ColorScheme {
-  /// A balance or difference: green-ish for plus, error for minus.
+  /// "Good": a plus balance, the green zone.
+  Color get positive => _harmonized(
+    brightness == Brightness.dark
+        ? const Color(0xFF7BD88F)
+        : const Color(0xFF1B7F3B),
+  );
+
+  /// "Watch out": the yellow zone.
+  Color get warning => _harmonized(
+    brightness == Brightness.dark
+        ? const Color(0xFFF2C14E)
+        : const Color(0xFFB98900),
+  );
+
+  /// Text and icons on a filled [background] of any colour.
+  Color inkOn(Color background) =>
+      ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+      ? (brightness == Brightness.dark ? onSurface : surface)
+      : (brightness == Brightness.dark ? surface : onSurface);
+
+  /// A balance or difference: [positive] for plus, error for minus.
   Color deltaColor(int minutes) => minutes < 0
       ? error
       : minutes > 0
-      ? (brightness == Brightness.dark
-            ? const Color(0xFF7BD88F)
-            : const Color(0xFF1B7F3B))
+      ? positive
       : onSurfaceVariant;
 
   /// The tint of a day type (calendar dots, chips).
@@ -117,6 +150,15 @@ extension SemanticColors on ColorScheme {
     const hues = [205.0, 145.0, 25.0, 50.0, 0.0, 275.0, 320.0, 175.0];
     final hue = hues[index % hues.length] + 13.0 * (index ~/ hues.length % 3);
     final dark = brightness == Brightness.dark;
-    return HSLColor.fromAHSL(1, hue % 360, 0.55, dark ? 0.68 : 0.45).toColor();
+    return _harmonized(
+      HSLColor.fromAHSL(1, hue % 360, 0.55, dark ? 0.68 : 0.45).toColor(),
+    );
   }
+
+  Color _harmonized(Color color) =>
+      (_cache[this] ??= {})[color] ??= color.harmonizeWith(primary);
 }
+
+/// Harmonised colours per scheme; the blend is too costly for every cell of
+/// a calendar.
+final _cache = Expando<Map<Color, Color>>();

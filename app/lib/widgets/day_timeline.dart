@@ -235,11 +235,7 @@ class _DayTimelineState extends ConsumerState<DayTimeline> {
                   e,
                   top: _lane + _gap,
                   fill: e.color!,
-                  ink:
-                      ThemeData.estimateBrightnessForColor(e.color!) ==
-                          Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
+                  ink: scheme.inkOn(e.color!),
                 ),
               if (widget.date == ledger.today && nowX >= 0 && nowX <= width)
                 Positioned(

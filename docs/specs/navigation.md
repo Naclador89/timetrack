@@ -64,3 +64,43 @@ overview; each category opens its own page (`SettingsSection` in
 
 Each tile shows a one-line summary of its page. The search on the overview covers the tiles of
 every page, grouped as "Page › Group", and works in place. Back from a page returns to the overview.
+
+## Layout
+
+The shell (`MainShell`, `app/lib/app/main_shell.dart`) follows the Material 3 window classes:
+
+| Window width | Navigation |
+|---|---|
+| < 600 px | `NavigationBar` at the bottom |
+| 600–1199 px | `NavigationRail`, labels below the icons, palette button |
+| ≥ 1200 px | extended `NavigationRail`, labels beside the icons, palette button with its name |
+
+The four tabs stay (Heute, Kalender, Projekte, Berichte); Einstellungen open from the gear. The tab
+that comes in fades through (250 ms); every tab keeps its state.
+
+## Today tiles
+
+Requested by the user 2026-11-09. Below the hero card (stamping) and the project strip, Today shows
+overview tiles, two columns from 300 px content width (phones too) (`DashboardGrid`,
+`app/lib/features/today/dashboard.dart`). Each grows into its detail screen (container transform,
+`OpenContainer`), pushed in the Today tab; back closes it like any page.
+
+| Tile | Figure | Opens |
+|---|---|---|
+| Zeitkonto | balance with traffic light dot, change this month, trend of the last month ends | month by month: change and closing balance (`BalanceDetailScreen`) |
+| Diese Woche | worked of target | the week's days; a day opens its day view (`WeekDetailScreen`) |
+| Urlaub | days left of entitlement + carry-over (only with an entitlement) | the vacation planner |
+| Homeoffice (one per day quota) | days left, used of allowed | the home-office rules |
+
+The balance is no longer a figure of the hero card; the tile shows it.
+
+## Motion and colours
+
+- Cards on Today fade in and rise 8 % one after the other: 250 ms, `easeOutCubic`, 50 ms apart
+  (`app/lib/widgets/staggered.dart`). It plays once per card, not on rebuilds.
+- With a mouse a tile lifts 2 px and gets a slightly stronger surface (180 ms).
+- With the system's reduced motion (`MediaQuery.disableAnimations`) nothing animates.
+- The UI uses only `colorScheme` colours. Meaning colours (`positive`, `warning`, day types,
+  projects) are extensions on `ColorScheme` in `app/lib/app/theme.dart`, harmonised with
+  `primary`, so they follow the wallpaper (Android 12+) or accent colour (Windows, Linux). Without
+  system colours the scheme comes from the icon's cyan (`fallbackScheme`, tonal spot).

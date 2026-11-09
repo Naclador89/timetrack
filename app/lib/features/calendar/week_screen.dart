@@ -602,19 +602,26 @@ class _MonthView extends ConsumerWidget {
                   style: theme.textTheme.bodySmall,
                 ),
               if (shown)
+                // Narrow cells (a navigation rail beside the month) shrink
+                // the figures instead of cutting them off.
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      formatMinutes(day.credited),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    const Spacer(),
-                    if (day.delta != 0)
-                      Text(
-                        signed(day.delta),
-                        style: small?.copyWith(
-                          color: deltaColor,
-                          fontWeight: FontWeight.w600,
+                    for (final (text, style) in [
+                      (formatMinutes(day.credited), theme.textTheme.bodySmall),
+                      if (day.delta != 0)
+                        (
+                          signed(day.delta),
+                          small?.copyWith(
+                            color: deltaColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                    ])
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(text, style: style),
                         ),
                       ),
                   ],

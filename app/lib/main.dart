@@ -56,24 +56,17 @@ class TimeTrackApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appearance = ref.watch(appearanceProvider);
     return DynamicColorBuilder(
-      // Material You: the wallpaper colours on Android 12+ (unless switched
-      // off), the icon's cyan elsewhere.
+      // Material You: the wallpaper colours on Android 12+, the accent
+      // colour on Windows and Linux (unless switched off), the icon's cyan
+      // elsewhere.
       builder: (light, dark) {
         if (!appearance.wallpaperColors) light = dark = null;
         return MaterialApp.router(
           onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,
           debugShowCheckedModeBanner: false,
           themeMode: appearance.mode,
-          theme: buildTheme(
-            light ?? ColorScheme.fromSeed(seedColor: seedColor),
-          ),
-          darkTheme: buildTheme(
-            dark ??
-                ColorScheme.fromSeed(
-                  seedColor: seedColor,
-                  brightness: Brightness.dark,
-                ),
-          ),
+          theme: buildTheme(light ?? fallbackScheme(Brightness.light)),
+          darkTheme: buildTheme(dark ?? fallbackScheme(Brightness.dark)),
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

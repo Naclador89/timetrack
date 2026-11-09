@@ -666,5 +666,14 @@
   "weekMaxSetting": "Höchstens pro Woche",
   "weekAverageSetting": "Schnitt über {weeks} Wochen höchstens",
   "weekLimitsHint": "Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab.",
-  "addWorkTime": "Arbeitszeit eintragen"
+  "addWorkTime": "Arbeitszeit eintragen",
+  "dashOfTarget": "von {target}",
+  "dashMonthDelta": "{delta} diesen Monat",
+  "dashDaysOf": "von {total} Tagen übrig",
+  "dashQuotaWeek": "{used} von {allowed} Tagen diese Woche",
+  "dashQuotaMonth": "{used} von {allowed} Tagen diesen Monat",
+  "dashDaysLeft": "noch {days}",
+  "balanceHistory": "Saldo nach Monaten",
+  "balanceCountedSince": "Gezählt seit {date}, Übertrag {balance}",
+  "dashAccount": "Zeitkonto"
 }

@@ -10,17 +10,18 @@ import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
-import '../../widgets/balance_zone.dart';
 import '../../widgets/day_timeline.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/interval_dialog.dart';
 import '../../widgets/motion.dart';
+import '../../widgets/staggered.dart';
 import '../../work_pc/month_report.dart';
 import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
 import '../calendar/trip_expenses.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
+import 'dashboard.dart';
 import 'vacation_carry_card.dart';
 
 /// The home screen. It answers "where do I stand right now?": one button
@@ -83,9 +84,9 @@ class TodayScreen extends ConsumerWidget {
           const _HeroCard(),
           if (type == DayType.businessTrip) TripBookingCard(date: today),
           if (showProjects) const _ProjectStrip(),
+          const DashboardGrid(),
           _TimelineCard(date: today),
-          const _QuotaCard(),
-        ],
+        ].staggered(context),
       ),
     );
   }
@@ -227,7 +228,6 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
     final ledger = ref.watch(ledgerProvider);
     final day = ledger.day(today);
     final type = day.type;
-    final balance = ledger.balanceAtEndOf(today);
     String at(String field, StoredRow row) =>
         context.time(DateTime.parse(row.fields[field]! as String), zone);
     final status = state.onBreak
@@ -449,12 +449,6 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
                 if (day.credited != day.work.worked)
                   figure(l.credited, day.credited),
                 figure(l.difference, day.delta, signed: true),
-                figure(
-                  l.balance,
-                  balance,
-                  signed: true,
-                  badge: BalanceZoneDot(balance),
-                ),
                 if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
                 if (day.specialHolidayHours > 0)
                   figure(l.specialHolidayHours, day.specialHolidayHours),
@@ -618,11 +612,7 @@ class _ProjectStrip extends ConsumerWidget {
                     Builder(
                       builder: (context) {
                         final color = scheme.projectColor(running.id);
-                        final ink =
-                            ThemeData.estimateBrightnessForColor(color) ==
-                                Brightness.dark
-                            ? Colors.white
-                            : Colors.black;
+                        final ink = scheme.inkOn(color);
                         return tile(
                           filled: true,
                           color: color,
@@ -796,66 +786,6 @@ class _TimelineCard extends ConsumerWidget {
                 onTap: (_) => context.go(dayLocation(context, date)),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Home-office quotas as bars: used of allowed, with what is left.
-class _QuotaCard extends ConsumerWidget {
-  const _QuotaCard();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = context.l10n;
-    final theme = Theme.of(context);
-    final quotas = ref
-        .watch(homeOfficeQuotasProvider)
-        .where((q) => q.rule.unit == QuotaUnit.days)
-        .toList();
-    if (quotas.isEmpty) return const SizedBox.shrink();
-    final color = theme.colorScheme.dayTypeColor(DayType.home);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final q in quotas) ...[
-              Row(
-                children: [
-                  Icon(dayTypeIcon(DayType.home), size: 18, color: color),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      (q.rule.period == QuotaPeriod.week
-                          ? l.homeOfficeWeek
-                          : l.homeOfficeMonth)(
-                        context.days(q.used),
-                        '${q.allowedTotal}',
-                        context.days(q.left),
-                      ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  minHeight: 8,
-                  value: q.allowedTotal <= 0
-                      ? 0
-                      : (q.used / q.allowedTotal).clamp(0, 1).toDouble(),
-                  color: q.left <= 0 ? theme.colorScheme.error : color,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-              ),
-              if (q != quotas.last) const SizedBox(height: 12),
-            ],
           ],
         ),
       ),

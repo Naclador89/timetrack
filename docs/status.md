@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.3`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.3+12`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 320, app 97 tests; CI green on `main`.
+- **Tests**: core 320, app 103 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -474,6 +474,19 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
       folding button open the normal working-time dialog (`showIntervalDialog`). The quick entry
       line stays reachable via Ctrl+J and the command palette.
 
+### Modern UI architecture (requested by the user 2026-11-09; navigation.md "Layout", "Today tiles", "Motion and colours")
+- [x] Theme: meaning colours (`positive`, `warning`, `inkOn`, day types, projects) harmonised with
+      `primary`; no raw colours left in widgets; `fallbackScheme` (cyan, tonal spot) where the
+      system gives none. Windows and Linux already get their accent colour through `dynamic_color`.
+- [x] `MainShell` (`app/lib/app/main_shell.dart`): bottom bar < 600 px, rail, extended rail
+      ≥ 1200 px; tabs fade through (`FadeThroughBranches`, `animations`). Four tabs kept (user).
+- [x] Today: tiles Zeitkonto, Diese Woche, Urlaub, Homeoffice (`DashboardGrid`) with
+      `OpenContainer` detail screens (`BalanceDetailScreen`, `WeekDetailScreen`, vacation planner,
+      home-office rules); hover lift on desktop; cards stagger in (`flutter_animate`). The quota
+      card is gone (now a tile), and so is the balance figure in the hero card.
+- [x] Month view cells shrink their figures instead of overflowing next to the extended rail.
+- [ ] On the devices: Windows accent colour, hover, the transitions' smoothness.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -608,3 +621,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: step 5 of the employer rules: travel expenses (calculations §13.0–§13.5): BMF 2026 rates built in, places per trip day, lodging, mileage, site allowance, expense report per trip, claim deadline card. 317 core, 95 app tests green.
 - 2026-11-09, Claude Code: step 6 of the employer rules: weekly limits 60 h and Ø 48 h over 24 weeks (calculations §22); all six steps done. 320 core, 97 app tests green.
 - 2026-11-09, Claude Code: the quick entry buttons on Today and the day view became "+" (new working time). 320 core, 98 app tests green.
+- 2026-11-09, Claude Code: modern UI architecture: harmonised theme colours, `MainShell` with window classes and fade-through, Today tiles with container transform (navigation.md "Layout", "Today tiles"). 320 core, 103 app tests green.

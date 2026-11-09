@@ -2352,4 +2352,45 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addWorkTime => 'Arbeitszeit eintragen';
+
+  @override
+  String dashOfTarget(String target) {
+    return 'von $target';
+  }
+
+  @override
+  String dashMonthDelta(String delta) {
+    return '$delta diesen Monat';
+  }
+
+  @override
+  String dashDaysOf(String total) {
+    return 'von $total Tagen übrig';
+  }
+
+  @override
+  String dashQuotaWeek(String used, String allowed) {
+    return '$used von $allowed Tagen diese Woche';
+  }
+
+  @override
+  String dashQuotaMonth(String used, String allowed) {
+    return '$used von $allowed Tagen diesen Monat';
+  }
+
+  @override
+  String dashDaysLeft(String days) {
+    return 'noch $days';
+  }
+
+  @override
+  String get balanceHistory => 'Saldo nach Monaten';
+
+  @override
+  String balanceCountedSince(String date, String balance) {
+    return 'Gezählt seit $date, Übertrag $balance';
+  }
+
+  @override
+  String get dashAccount => 'Zeitkonto';
 }

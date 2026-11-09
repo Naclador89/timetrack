@@ -4099,6 +4099,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add working time'**
   String get addWorkTime;
+
+  /// No description provided for @dashOfTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'of {target}'**
+  String dashOfTarget(String target);
+
+  /// No description provided for @dashMonthDelta.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta} this month'**
+  String dashMonthDelta(String delta);
+
+  /// No description provided for @dashDaysOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total} days left'**
+  String dashDaysOf(String total);
+
+  /// No description provided for @dashQuotaWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {allowed} days this week'**
+  String dashQuotaWeek(String used, String allowed);
+
+  /// No description provided for @dashQuotaMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {allowed} days this month'**
+  String dashQuotaMonth(String used, String allowed);
+
+  /// No description provided for @dashDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} left'**
+  String dashDaysLeft(String days);
+
+  /// No description provided for @balanceHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance by month'**
+  String get balanceHistory;
+
+  /// No description provided for @balanceCountedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted since {date}, starting with {balance}'**
+  String balanceCountedSince(String date, String balance);
+
+  /// No description provided for @dashAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account'**
+  String get dashAccount;
 }
 
 class _AppLocalizationsDelegate

@@ -1604,5 +1604,72 @@
     }
   },
   "weekLimitsHint": "All recorded work including travel, without breaks (§ 3 ArbZG). 0 switches it off.",
-  "addWorkTime": "Add working time"
+  "addWorkTime": "Add working time",
+  "dashOfTarget": "of {target}",
+  "@dashOfTarget": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "dashMonthDelta": "{delta} this month",
+  "@dashMonthDelta": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "dashDaysOf": "of {total} days left",
+  "@dashDaysOf": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "dashQuotaWeek": "{used} of {allowed} days this week",
+  "@dashQuotaWeek": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "allowed": {
+        "type": "String"
+      }
+    }
+  },
+  "dashQuotaMonth": "{used} of {allowed} days this month",
+  "@dashQuotaMonth": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "allowed": {
+        "type": "String"
+      }
+    }
+  },
+  "dashDaysLeft": "{days} left",
+  "@dashDaysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceHistory": "Balance by month",
+  "balanceCountedSince": "Counted since {date}, starting with {balance}",
+  "@balanceCountedSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "dashAccount": "Time account"
 }
