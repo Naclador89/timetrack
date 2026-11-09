@@ -3217,6 +3217,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This day belongs to the trip {trip}. To remove it, change the trip.'**
   String tripDayRemove(String trip);
+
+  /// No description provided for @bookingTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to booking system'**
+  String get bookingTransfer;
+
+  /// No description provided for @bookingSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking system'**
+  String get bookingSystem;
+
+  /// No description provided for @bookingUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking system (address)'**
+  String get bookingUrl;
+
+  /// No description provided for @bookingUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Page for the weekly project time; saved only on this PC'**
+  String get bookingUrlHint;
+
+  /// No description provided for @bookingPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer week {week}'**
+  String bookingPreviewTitle(String week);
+
+  /// No description provided for @bookingOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in booking system'**
+  String get bookingOpen;
+
+  /// No description provided for @bookingNoRows.
+  ///
+  /// In en, this message translates to:
+  /// **'No project time with a project number in this week.'**
+  String get bookingNoRows;
+
+  /// No description provided for @bookingRunningTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'A project timer is still running; its time counts up to now.'**
+  String get bookingRunningTimer;
+
+  /// No description provided for @bookingUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}: {time} without a project, not transferred'**
+  String bookingUnassigned(String day, String time);
+
+  /// No description provided for @bookingRounding.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded to half hours: {rounded} instead of {exact}'**
+  String bookingRounding(String rounded, String exact);
+
+  /// No description provided for @bookingSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({time}) has no project number and is not transferred'**
+  String bookingSkipped(String name, String time);
+
+  /// No description provided for @bookingSum.
+  ///
+  /// In en, this message translates to:
+  /// **'Sum'**
+  String get bookingSum;
+
+  /// No description provided for @bookingTransferredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Transferred on {date}'**
+  String bookingTransferredOn(String date);
+
+  /// No description provided for @bookingChangedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed since the transfer on {date}'**
+  String bookingChangedSince(String date);
+
+  /// No description provided for @bookingNotTransferred.
+  ///
+  /// In en, this message translates to:
+  /// **'Not transferred yet'**
+  String get bookingNotTransferred;
+
+  /// No description provided for @bookingLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the booking page…'**
+  String get bookingLoading;
+
+  /// No description provided for @bookingFilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Filling in…'**
+  String get bookingFilling;
+
+  /// No description provided for @bookingFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row} other{{count} rows}} filled. Add Kostengruppe and Position, check the hours, then click Buchen.'**
+  String bookingFilled(int count);
+
+  /// No description provided for @bookingUnknownProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown in the booking system, not filled: {projects}'**
+  String bookingUnknownProjects(String projects);
+
+  /// No description provided for @bookingLockedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking period locked, not filled: {days}'**
+  String bookingLockedDays(String days);
+
+  /// No description provided for @bookingReplaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the entries?'**
+  String get bookingReplaceTitle;
+
+  /// No description provided for @bookingReplaceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The form already contains entries. Replace them with this week?'**
+  String get bookingReplaceBody;
+
+  /// No description provided for @bookingReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get bookingReplace;
+
+  /// No description provided for @bookingKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Form left unchanged.'**
+  String get bookingKept;
+
+  /// No description provided for @bookingBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking started; the week is marked as transferred.'**
+  String get bookingBooked;
+
+  /// No description provided for @bookingAskBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Was the week booked?'**
+  String get bookingAskBooked;
+
+  /// No description provided for @bookingAskBookedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you clicked Buchen, TimeTrack marks the week as transferred.'**
+  String get bookingAskBookedBody;
+
+  /// No description provided for @bookingWasBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, booked'**
+  String get bookingWasBooked;
+
+  /// No description provided for @bookingNotBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get bookingNotBooked;
+
+  /// No description provided for @bookingErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The booking page didn\'t get ready within 30 s. Check the address and the company network.'**
+  String get bookingErrorTimeout;
+
+  /// No description provided for @bookingErrorPage.
+  ///
+  /// In en, this message translates to:
+  /// **'The page looks different than expected ({detail}); nothing was filled.'**
+  String bookingErrorPage(String detail);
+
+  /// No description provided for @bookingErrorFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Filling in failed: {detail}'**
+  String bookingErrorFill(String detail);
+
+  /// No description provided for @bookingErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'The page couldn\'t be loaded ({detail}).'**
+  String bookingErrorLoad(String detail);
+
+  /// No description provided for @bookingNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'The Microsoft Edge WebView2 Runtime is missing; please install it.'**
+  String get bookingNoRuntime;
+
+  /// No description provided for @bookingClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get bookingClose;
 }
 
 class _AppLocalizationsDelegate

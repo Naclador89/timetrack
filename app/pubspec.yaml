@@ -33,6 +33,7 @@ dependencies:
   timetrack_core:
     path: ../packages/core
   url_launcher: ^6.3.3
+  webview_windows: ^0.4.0
   workmanager: ^0.10.10
 
 dev_dependencies:
@@ -43,3 +44,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    # Fills the company booking page (docs/specs/booking-transfer.md §6).
+    - assets/booking/applus_fill.js

@@ -8,6 +8,7 @@ import '../../app/back_navigation.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
+import '../../booking/booking_transfer.dart';
 import '../../sync/sync_controller.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
@@ -280,6 +281,7 @@ class _WeekView extends ConsumerWidget {
             ),
           ),
         ),
+        if (!monday.isAfter(today)) BookingWeekTile(monday: monday),
       ],
     );
   }

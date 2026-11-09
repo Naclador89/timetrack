@@ -1,6 +1,6 @@
 # Status / handoff log
 
-_Last updated: 2026-11-09 by Claude Code (handoff to GitHub Copilot)._
+_Last updated: 2026-11-09 by GitHub Copilot._
 **Read this first, update it last** (see `AGENTS.md`).
 
 ## Where things stand (read this first)
@@ -8,8 +8,9 @@ _Last updated: 2026-11-09 by Claude Code (handoff to GitHub Copilot)._
 - **Latest release: `v0.5.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.5.2+8`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 275, app 66 widget tests, all green; CI green on `main`.
-- **Nothing is in progress.** No half-done branch.
+- **Tests**: core 280, app 70 widget tests; CI green on `main`.
+- **In progress**: branch `feat/booking-transfer` (transfer a week to APplus, Windows; see the
+  section below). Pushed, not merged; merge and release only when the user asks.
 - **To do** (requested by the user, not started):
   - [ ] Clock in at an earlier time from Today (user, 2026-11-09: "Beim Einstempeln über die
         Startseite kann ich keine abweichende Zeit eingeben, falls ich eigentlich früher da war.").
@@ -25,9 +26,10 @@ _Last updated: 2026-11-09 by Claude Code (handoff to GitHub Copilot)._
   - Android: reminders ("Pause fällig", "Langer Tag" with Ausstempeln), the finish time as
     notification subtext, the forgotten clock-out dialog.
   - Both: the new month view, the usual break, snack bars, "Tagesart entfernen".
+  - Windows: "An Buchungssystem übertragen" in the installed app (address in Einstellungen → App),
+    picker popups for Kostengruppe/Position, booking detection after "Buchen", the marker.
 - **Not wanted** (don't propose again unless the user asks): Garmin glance, auto clock-in by
-  Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows, copying hours into the company
-  booking system.
+  Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows.
 - **How a change usually goes**: user reports a problem or wish → update the spec in `docs/specs/`
   → logic + tests in `packages/core` → UI in `app/` (strings in both ARB files) → widget test →
   a new section or entry below plus a session log line → commit → push. A release only when the
@@ -377,6 +379,19 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       picker deletes the `days` row and the day's absences (not `extra_holiday`), with undo; a trip
       day points to the trip.
 
+### Transfer a week to the booking system (requested by the user 2026-11-09; spec `docs/specs/booking-transfer.md`, ADR 0009)
+- [x] Core `buildWeekBooking`: rows per project number and order, Mo–So rounded to 0.5 h after
+      summing; skipped projects without a number; warnings for a running timer, unassigned time
+      and rounding differences; fingerprint and ISO week.
+- [x] Windows: card in the week view (status "übertragen am …" / "seit Übertragung geändert"),
+      preview dialog, WebView2 window that fills KW/Jahr, Projekt, Auftrag and hours through the
+      page's own functions. The user adds Kostengruppe/Position and clicks "Buchen"; the booking
+      job is detected and the week is marked (or the app asks on close). Address in
+      Einstellungen → App (device-local, never committed).
+- [x] Tested on the work PC against the real page with a temporary entry point: Windows login
+      without a prompt, KW 45/2026 set, project name and order filled, Mo 1:30 / Di 1:00, sums
+      right, unknown project reported. Nothing booked.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -495,3 +510,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
   65 widget tests green.
 - 2026-11-08, Claude Code: day types can be removed (with undo). 275 core, 66 widget tests green.
 - 2026-11-09, Claude Code: release v0.5.2; docs prepared for handoff to GitHub Copilot ("Where things stand" at the top, AGENTS.md: working with the maintainer, where things live, Copilot notes; prompt files in `.github/prompts/`; architecture module table and README brought up to date).
+- 2026-11-09, GitHub Copilot: transfer a week to the booking system on Windows (spec `booking-transfer.md`, ADR 0009, `webview_windows`); spike and end-to-end test on the work PC, nothing booked. 280 core tests, 70 widget tests.

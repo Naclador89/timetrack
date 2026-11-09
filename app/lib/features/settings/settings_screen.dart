@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../app/appearance.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../booking/booking_store.dart';
 import '../../reminders/reminders.dart';
 import '../../sync/sync_controller.dart';
 import '../../update/update_banner.dart';
@@ -531,6 +532,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .read(storeProvider)
                 .transaction((tx) => tx.setLocalValue(closeToTrayKey, '$v'));
             ref.invalidate(closeToTrayProvider);
+          },
+        ),
+      // spec: booking-transfer.md §1 (Windows only)
+      if (ref.watch(bookingSupportedProvider))
+        ListTile(
+          leading: const Icon(Icons.upload_outlined),
+          title: Text(l.bookingUrl),
+          subtitle: Text(
+            (ref.watch(bookingUrlProvider).value ?? '').isEmpty
+                ? '${l.notSet} · ${l.bookingUrlHint}'
+                : '${ref.watch(bookingUrlProvider).value} · ${l.bookingUrlHint}',
+          ),
+          onTap: () async {
+            final url = await showTextPrompt(
+              context,
+              title: l.bookingUrl,
+              okLabel: l.save,
+              cancelLabel: l.cancel,
+              initial: ref.read(bookingUrlProvider).value ?? '',
+              hint: 'http://…',
+            );
+            if (url == null) return;
+            await saveBookingUrl(ref.read(storeProvider), url);
+            ref.invalidate(bookingUrlProvider);
           },
         ),
       ListTile(

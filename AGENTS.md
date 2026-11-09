@@ -21,7 +21,7 @@ A personal, local-first time tracker for an employee in Germany. It covers worki
 | `packages/core/` | **All business logic**, in pure Dart with no Flutter imports: models, database, calculation rules, holidays, HLC, sync engine, WebDAV client, project search. Tested with `dart test`. |
 | `app/` | Flutter app (Android, Linux, Windows): only UI and platform glue. `lib/app/` holds providers, router and formatting, `lib/features/<screen>/` the screens, `lib/l10n/` the ARB texts (de, en). |
 | `docs/concept.md` | The approved concept (features, architecture, milestones). |
-| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows autostart, start prompt, tray icon), `reminders.md` (forgotten clock-out, reminders). |
+| `docs/specs/` | Normative specs: `calculations.md` (time rules), `sync-format.md` (sync files and merging), `data-model.md` (field names per synced table), `project-search.md`, `navigation.md` (back behaviour), `backup.md` (JSON backup and restore), `sync-log.md` (device-local sync log), `updates.md` (update notice and self-update), `work-pc.md` (Windows autostart, start prompt, tray icon), `reminders.md` (forgotten clock-out, reminders), `booking-transfer.md` (filling the company booking form, Windows). |
 | `docs/decisions/` | Architecture decision records (ADRs), numbered. |
 | `docs/dev-setup.md` | How to set up the toolchain from scratch. |
 | `tool/dev.sh` | Runs a command inside the maintainer's `flutter` toolbox (or directly, if there is no toolbox). |
@@ -102,6 +102,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 | Android notification, tile, widget, reminders | `app/lib/quick/`, `app/lib/reminders/`, Kotlin in `app/android/app/src/main/kotlin/` |
 | Windows tray, autostart | `app/lib/work_pc/`, `app/windows/runner/` (C++, only built in CI) |
 | Updates | `docs/specs/updates.md`, `core/lib/src/update/`, `app/lib/update/` |
+| Transfer a week to the booking system (Windows) | `docs/specs/booking-transfer.md`, `core/lib/src/reports/week_booking.dart`, `app/lib/booking/`, `app/assets/booking/applus_fill.js` |
 | CI and releases | `.github/workflows/ci.yml` |
 | Widget test helpers | `app/test/helpers.dart` (`settle`, in-memory store); see `app/test/ui_fixes_test.dart` for a recent example |
 

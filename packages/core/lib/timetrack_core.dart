@@ -13,6 +13,7 @@ export 'src/model/day_type.dart';
 export 'src/model/planning.dart';
 export 'src/model/project.dart';
 export 'src/reports/reports.dart';
+export 'src/reports/week_booking.dart';
 export 'src/rules/arbzg.dart';
 export 'src/rules/bridge_days.dart';
 export 'src/rules/credit.dart';

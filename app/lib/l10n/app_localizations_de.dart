@@ -1807,4 +1807,147 @@ class AppLocalizationsDe extends AppLocalizations {
   String tripDayRemove(String trip) {
     return 'Dieser Tag gehört zur Reise $trip. Um ihn zu entfernen, passe die Reise an.';
   }
+
+  @override
+  String get bookingTransfer => 'An Buchungssystem übertragen';
+
+  @override
+  String get bookingSystem => 'Buchungssystem';
+
+  @override
+  String get bookingUrl => 'Buchungssystem (Adresse)';
+
+  @override
+  String get bookingUrlHint =>
+      'Seite für Wochen-Projektzeiten; nur auf diesem PC gespeichert';
+
+  @override
+  String bookingPreviewTitle(String week) {
+    return 'KW $week übertragen';
+  }
+
+  @override
+  String get bookingOpen => 'Im Buchungssystem öffnen';
+
+  @override
+  String get bookingNoRows =>
+      'Keine Projektzeit mit Projektnummer in dieser Woche.';
+
+  @override
+  String get bookingRunningTimer =>
+      'Ein Projekt-Timer läuft noch; seine Zeit zählt bis jetzt.';
+
+  @override
+  String bookingUnassigned(String day, String time) {
+    return '$day: $time ohne Projekt, wird nicht übertragen';
+  }
+
+  @override
+  String bookingRounding(String rounded, String exact) {
+    return 'Auf halbe Stunden gerundet: $rounded statt $exact';
+  }
+
+  @override
+  String bookingSkipped(String name, String time) {
+    return '$name ($time) hat keine Projektnummer und wird nicht übertragen';
+  }
+
+  @override
+  String get bookingSum => 'Summe';
+
+  @override
+  String bookingTransferredOn(String date) {
+    return 'Übertragen am $date';
+  }
+
+  @override
+  String bookingChangedSince(String date) {
+    return 'Seit der Übertragung am $date geändert';
+  }
+
+  @override
+  String get bookingNotTransferred => 'Noch nicht übertragen';
+
+  @override
+  String get bookingLoading => 'Buchungsseite wird geöffnet…';
+
+  @override
+  String get bookingFilling => 'Wird ausgefüllt…';
+
+  @override
+  String bookingFilled(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Zeilen',
+      one: '1 Zeile',
+    );
+    return '$_temp0 ausgefüllt. Kostengruppe und Position ergänzen, Stunden prüfen, dann Buchen klicken.';
+  }
+
+  @override
+  String bookingUnknownProjects(String projects) {
+    return 'Im Buchungssystem unbekannt, nicht ausgefüllt: $projects';
+  }
+
+  @override
+  String bookingLockedDays(String days) {
+    return 'Buchungsperiode gesperrt, nicht ausgefüllt: $days';
+  }
+
+  @override
+  String get bookingReplaceTitle => 'Einträge ersetzen?';
+
+  @override
+  String get bookingReplaceBody =>
+      'Das Formular enthält schon Einträge. Durch diese Woche ersetzen?';
+
+  @override
+  String get bookingReplace => 'Ersetzen';
+
+  @override
+  String get bookingKept => 'Formular unverändert gelassen.';
+
+  @override
+  String get bookingBooked =>
+      'Buchung gestartet; die Woche ist als übertragen markiert.';
+
+  @override
+  String get bookingAskBooked => 'Wurde die Woche gebucht?';
+
+  @override
+  String get bookingAskBookedBody =>
+      'Wenn du auf Buchen geklickt hast, markiert TimeTrack die Woche als übertragen.';
+
+  @override
+  String get bookingWasBooked => 'Ja, gebucht';
+
+  @override
+  String get bookingNotBooked => 'Nein';
+
+  @override
+  String get bookingErrorTimeout =>
+      'Die Buchungsseite wurde nicht innerhalb von 30 s bereit. Adresse und Firmennetz prüfen.';
+
+  @override
+  String bookingErrorPage(String detail) {
+    return 'Die Seite sieht anders aus als erwartet ($detail); nichts ausgefüllt.';
+  }
+
+  @override
+  String bookingErrorFill(String detail) {
+    return 'Ausfüllen fehlgeschlagen: $detail';
+  }
+
+  @override
+  String bookingErrorLoad(String detail) {
+    return 'Die Seite konnte nicht geladen werden ($detail).';
+  }
+
+  @override
+  String get bookingNoRuntime =>
+      'Die Microsoft Edge WebView2 Runtime fehlt; bitte installieren.';
+
+  @override
+  String get bookingClose => 'Schließen';
 }
