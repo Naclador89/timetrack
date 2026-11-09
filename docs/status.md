@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.6.3`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.3+12`. All planned
+- **Latest release: `v0.7.0`** (2026-11-09), `app/pubspec.yaml` `version: 0.7.0+13`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 320, app 103 tests; CI green on `main`.
@@ -175,6 +175,9 @@ _Last updated: 2026-11-09 by Claude Code._
   (travel crediting by service trip, monthly balance reminder on the work PC, balance traffic light
   and vacation carry-over deadline, supplement hours, travel expenses with the BMF 2026 rates,
   weekly limits); settings as an overview with category pages.
+- `v0.7.0` (2026-11-09): modern UI: Today tiles (Zeitkonto, Diese Woche, Urlaub, Homeoffice) that
+  grow into their detail screens, extended navigation rail on wide windows, fade-through between
+  tabs, theme colours harmonised with the system accent; "+" instead of "Schnell erfassen".
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
