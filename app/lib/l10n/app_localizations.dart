@@ -2225,7 +2225,7 @@ abstract class AppLocalizations {
   /// No description provided for @perDiemRatesHint.
   ///
   /// In en, this message translates to:
-  /// **'For the travel report. Each trip day uses the newest rate of the trip\'s country that is valid on that day. Meals provided reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.'**
+  /// **'The BMF rates of every country and city from 2026 are built in; search to see them. A trip day uses the newest rate of its place valid on that day; your own rows supersede the built-in ones. Provided meals reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.'**
   String get perDiemRatesHint;
 
   /// No description provided for @perDiemRatesSummary.

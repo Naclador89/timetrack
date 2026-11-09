@@ -1201,7 +1201,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get perDiemRatesHint =>
-      'Für den Reisebericht. Jeder Reisetag nutzt den neuesten Satz des Reiselands, der an dem Tag gilt. Gestellte Mahlzeiten mindern ihn: Frühstück um 20 %, Mittag- und Abendessen um je 40 % des Satzes für den ganzen Tag.';
+      'Die BMF-Sätze aller Länder und Städte ab 2026 sind eingebaut; die Suche zeigt sie. Jeder Reisetag nutzt den neuesten Satz seines Orts, der an dem Tag gilt; eigene Sätze ersetzen die eingebauten. Gestellte Mahlzeiten mindern ihn: Frühstück um 20 %, Mittag- und Abendessen um je 40 % des Satzes für den ganzen Tag.';
 
   @override
   String perDiemRatesSummary(String count) {
