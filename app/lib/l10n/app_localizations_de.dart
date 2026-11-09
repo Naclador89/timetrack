@@ -2165,4 +2165,150 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get columnNightHours => 'Nacht';
+
+  @override
+  String get searchCountry => 'Land oder Stadt suchen';
+
+  @override
+  String get restOfCountry => 'Übriges Land';
+
+  @override
+  String get placeHint => 'Bestimmt Tages- und Übernachtungspauschale';
+
+  @override
+  String get otherPlaces => 'Weitere Orte';
+
+  @override
+  String placeFrom(String date) {
+    return 'Ab $date';
+  }
+
+  @override
+  String get changePlace => 'Ort wechseln';
+
+  @override
+  String get changePlaceFrom => 'Ab welchem Tag?';
+
+  @override
+  String get lodging => 'Übernachtung';
+
+  @override
+  String get lodgingCompany => 'Firma';
+
+  @override
+  String get lodgingFlat => 'Pauschale';
+
+  @override
+  String get lodgingReceipt => 'Beleg';
+
+  @override
+  String get lodgingReceiptTotal => 'Belege gesamt';
+
+  @override
+  String get lodgingFlatHint =>
+      'Keine Pauschale für Nächte im Flugzeug, Zug oder Schiff.';
+
+  @override
+  String get lodgingRate => 'Übernachtung je Nacht (optional)';
+
+  @override
+  String get carKm => 'Privat-Pkw';
+
+  @override
+  String get markClaimed => 'Abgerechnet';
+
+  @override
+  String claimedOn(String date) {
+    return 'Abgerechnet am $date';
+  }
+
+  @override
+  String claimTitle(String trip, String date) {
+    return 'Reisekosten $trip abrechnen bis $date';
+  }
+
+  @override
+  String get tripExpenses => 'Reiseabrechnung';
+
+  @override
+  String get place => 'Ort';
+
+  @override
+  String get siteAllowance => 'Baustellenzulage';
+
+  @override
+  String get siteAllowanceHint =>
+      'Die Baustellenzulage wird mit dem Gehalt gezahlt (zu versteuern), nicht mit der Reisekostenabrechnung.';
+
+  @override
+  String get siteAllowanceRatesHint =>
+      'Je Baustellentag eines Serviceeinsatzes, vom ersten bis zum letzten Baustellentag, sobald genug aufeinanderfolgen. Land * gilt für alle übrigen.';
+
+  @override
+  String siteAllowanceSummary(String days) {
+    return 'Ab $days Baustellentagen in Folge';
+  }
+
+  @override
+  String get siteAllowanceMinDays =>
+      'Baustellenzulage ab … Baustellentagen in Folge';
+
+  @override
+  String get siteAllowanceCountryHint =>
+      'ISO-Code, oder * für alle übrigen Länder';
+
+  @override
+  String get allOtherCountries => 'Alle übrigen Länder';
+
+  @override
+  String get perSiteDay => 'Je Baustellentag';
+
+  @override
+  String get mileageRate => 'Kilometergeld (Privat-Pkw)';
+
+  @override
+  String get mileage => 'Kilometergeld';
+
+  @override
+  String get laundryAfterDays => 'Wäschereinigung bei Reisen von';
+
+  @override
+  String get laundryHint =>
+      'Für diese Reise kann die Wäschereinigung abgerechnet werden.';
+
+  @override
+  String moreThanDays(String days) {
+    return 'mehr als $days Tagen';
+  }
+
+  @override
+  String get claimDeadlineMonths => 'Reisekosten abrechnen innerhalb';
+
+  @override
+  String get claimDeadlineHint =>
+      'Heute erinnert nach jeder Reise, bis sie als abgerechnet markiert ist';
+
+  @override
+  String get claimDeadline => 'Abrechnen bis';
+
+  @override
+  String monthsCount(String count) {
+    return '$count Monaten';
+  }
+
+  @override
+  String get claimTotal => 'Erstattung gesamt';
+
+  @override
+  String nightsCount(String count) {
+    return '$count Nächte';
+  }
+
+  @override
+  String daysCount(String count) {
+    return '$count Tage';
+  }
+
+  @override
+  String get cityOptional => 'Stadt (optional)';
 }

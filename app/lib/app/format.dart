@@ -26,6 +26,10 @@ extension Formatting on BuildContext {
   /// Numeric date, e.g. `04.11.2026`.
   String date(LocalDate d) => DateFormat.yMd(_locale).format(_dt(d));
 
+  /// Money from cents, `14,00 €`.
+  String euro(int cents) =>
+      NumberFormat.currency(locale: _locale, symbol: '€').format(cents / 100);
+
   /// Days with up to one decimal, e.g. `2,5`.
   String days(num value) => NumberFormat('#0.#', _locale).format(value);
 
@@ -139,3 +143,10 @@ String noticeCategoryLabel(AppLocalizations l, NoticeCategory c) => switch (c) {
 /// The balance with its sign, e.g. `+12:30` or `−3:15`.
 String signedBalance(int minutes) =>
     minutes > 0 ? '+${formatMinutes(minutes)}' : formatMinutes(minutes);
+
+/// The country of an ISO code by its name in the BMF table (German, as
+/// published), or the code itself (calculations §13.0).
+String countryName(String code) => bmfCountryNames[code] ?? code;
+
+/// `Frankreich · Paris`.
+String placeLabel(TripPlace p) => [countryName(p.country), ?p.city].join(' · ');

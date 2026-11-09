@@ -3793,6 +3793,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Night'**
   String get columnNightHours;
+
+  /// No description provided for @searchCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country or city'**
+  String get searchCountry;
+
+  /// No description provided for @restOfCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Elsewhere in the country'**
+  String get restOfCountry;
+
+  /// No description provided for @placeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks the per-diem and lodging rate'**
+  String get placeHint;
+
+  /// No description provided for @otherPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Other places'**
+  String get otherPlaces;
+
+  /// No description provided for @placeFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {date}'**
+  String placeFrom(String date);
+
+  /// No description provided for @changePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Change place'**
+  String get changePlace;
+
+  /// No description provided for @changePlaceFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From which day?'**
+  String get changePlaceFrom;
+
+  /// No description provided for @lodging.
+  ///
+  /// In en, this message translates to:
+  /// **'Lodging'**
+  String get lodging;
+
+  /// No description provided for @lodgingCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get lodgingCompany;
+
+  /// No description provided for @lodgingFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'Lump sum'**
+  String get lodgingFlat;
+
+  /// No description provided for @lodgingReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts'**
+  String get lodgingReceipt;
+
+  /// No description provided for @lodgingReceiptTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts total'**
+  String get lodgingReceiptTotal;
+
+  /// No description provided for @lodgingFlatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No lump sum for nights on a plane, train or ship.'**
+  String get lodgingFlatHint;
+
+  /// No description provided for @lodgingRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Lodging per night (optional)'**
+  String get lodgingRate;
+
+  /// No description provided for @carKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Own car'**
+  String get carKm;
+
+  /// No description provided for @markClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed'**
+  String get markClaimed;
+
+  /// No description provided for @claimedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed on {date}'**
+  String claimedOn(String date);
+
+  /// No description provided for @claimTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim the expenses of {trip} by {date}'**
+  String claimTitle(String trip, String date);
+
+  /// No description provided for @tripExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense report'**
+  String get tripExpenses;
+
+  /// No description provided for @place.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get place;
+
+  /// No description provided for @siteAllowance.
+  ///
+  /// In en, this message translates to:
+  /// **'Site allowance'**
+  String get siteAllowance;
+
+  /// No description provided for @siteAllowanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The site allowance is paid with the salary (taxable), not with the expense claim.'**
+  String get siteAllowanceHint;
+
+  /// No description provided for @siteAllowanceRatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Per site day of a service trip, from the first to the last site day once there are enough in a row. Country * covers all others.'**
+  String get siteAllowanceRatesHint;
+
+  /// No description provided for @siteAllowanceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'From {days} site days in a row'**
+  String siteAllowanceSummary(String days);
+
+  /// No description provided for @siteAllowanceMinDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Site allowance from … site days in a row'**
+  String get siteAllowanceMinDays;
+
+  /// No description provided for @siteAllowanceCountryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ISO code, or * for all other countries'**
+  String get siteAllowanceCountryHint;
+
+  /// No description provided for @allOtherCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'All other countries'**
+  String get allOtherCountries;
+
+  /// No description provided for @perSiteDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Per site day'**
+  String get perSiteDay;
+
+  /// No description provided for @mileageRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Mileage (own car)'**
+  String get mileageRate;
+
+  /// No description provided for @mileage.
+  ///
+  /// In en, this message translates to:
+  /// **'Mileage'**
+  String get mileage;
+
+  /// No description provided for @laundryAfterDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Laundry on trips of'**
+  String get laundryAfterDays;
+
+  /// No description provided for @laundryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Laundry can be claimed for this trip.'**
+  String get laundryHint;
+
+  /// No description provided for @moreThanDays.
+  ///
+  /// In en, this message translates to:
+  /// **'more than {days} days'**
+  String moreThanDays(String days);
+
+  /// No description provided for @claimDeadlineMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim expenses within'**
+  String get claimDeadlineMonths;
+
+  /// No description provided for @claimDeadlineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Today reminds you after each trip until it is marked as claimed'**
+  String get claimDeadlineHint;
+
+  /// No description provided for @claimDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim by'**
+  String get claimDeadline;
+
+  /// No description provided for @monthsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String monthsCount(String count);
+
+  /// No description provided for @claimTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim total'**
+  String get claimTotal;
+
+  /// No description provided for @nightsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} nights'**
+  String nightsCount(String count);
+
+  /// No description provided for @daysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String daysCount(String count);
+
+  /// No description provided for @cityOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'City (optional)'**
+  String get cityOptional;
 }
 
 class _AppLocalizationsDelegate

@@ -2156,4 +2156,148 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnNightHours => 'Night';
+
+  @override
+  String get searchCountry => 'Search country or city';
+
+  @override
+  String get restOfCountry => 'Elsewhere in the country';
+
+  @override
+  String get placeHint => 'Picks the per-diem and lodging rate';
+
+  @override
+  String get otherPlaces => 'Other places';
+
+  @override
+  String placeFrom(String date) {
+    return 'From $date';
+  }
+
+  @override
+  String get changePlace => 'Change place';
+
+  @override
+  String get changePlaceFrom => 'From which day?';
+
+  @override
+  String get lodging => 'Lodging';
+
+  @override
+  String get lodgingCompany => 'Company';
+
+  @override
+  String get lodgingFlat => 'Lump sum';
+
+  @override
+  String get lodgingReceipt => 'Receipts';
+
+  @override
+  String get lodgingReceiptTotal => 'Receipts total';
+
+  @override
+  String get lodgingFlatHint =>
+      'No lump sum for nights on a plane, train or ship.';
+
+  @override
+  String get lodgingRate => 'Lodging per night (optional)';
+
+  @override
+  String get carKm => 'Own car';
+
+  @override
+  String get markClaimed => 'Claimed';
+
+  @override
+  String claimedOn(String date) {
+    return 'Claimed on $date';
+  }
+
+  @override
+  String claimTitle(String trip, String date) {
+    return 'Claim the expenses of $trip by $date';
+  }
+
+  @override
+  String get tripExpenses => 'Expense report';
+
+  @override
+  String get place => 'Place';
+
+  @override
+  String get siteAllowance => 'Site allowance';
+
+  @override
+  String get siteAllowanceHint =>
+      'The site allowance is paid with the salary (taxable), not with the expense claim.';
+
+  @override
+  String get siteAllowanceRatesHint =>
+      'Per site day of a service trip, from the first to the last site day once there are enough in a row. Country * covers all others.';
+
+  @override
+  String siteAllowanceSummary(String days) {
+    return 'From $days site days in a row';
+  }
+
+  @override
+  String get siteAllowanceMinDays => 'Site allowance from … site days in a row';
+
+  @override
+  String get siteAllowanceCountryHint =>
+      'ISO code, or * for all other countries';
+
+  @override
+  String get allOtherCountries => 'All other countries';
+
+  @override
+  String get perSiteDay => 'Per site day';
+
+  @override
+  String get mileageRate => 'Mileage (own car)';
+
+  @override
+  String get mileage => 'Mileage';
+
+  @override
+  String get laundryAfterDays => 'Laundry on trips of';
+
+  @override
+  String get laundryHint => 'Laundry can be claimed for this trip.';
+
+  @override
+  String moreThanDays(String days) {
+    return 'more than $days days';
+  }
+
+  @override
+  String get claimDeadlineMonths => 'Claim expenses within';
+
+  @override
+  String get claimDeadlineHint =>
+      'Today reminds you after each trip until it is marked as claimed';
+
+  @override
+  String get claimDeadline => 'Claim by';
+
+  @override
+  String monthsCount(String count) {
+    return '$count months';
+  }
+
+  @override
+  String get claimTotal => 'Claim total';
+
+  @override
+  String nightsCount(String count) {
+    return '$count nights';
+  }
+
+  @override
+  String daysCount(String count) {
+    return '$count days';
+  }
+
+  @override
+  String get cityOptional => 'City (optional)';
 }

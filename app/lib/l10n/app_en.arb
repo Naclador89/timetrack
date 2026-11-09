@@ -1450,5 +1450,105 @@
     }
   },
   "columnSpecialHours": "Special",
-  "columnNightHours": "Night"
+  "columnNightHours": "Night",
+  "searchCountry": "Search country or city",
+  "restOfCountry": "Elsewhere in the country",
+  "placeHint": "Picks the per-diem and lodging rate",
+  "otherPlaces": "Other places",
+  "placeFrom": "From {date}",
+  "@placeFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "changePlace": "Change place",
+  "changePlaceFrom": "From which day?",
+  "lodging": "Lodging",
+  "lodgingCompany": "Company",
+  "lodgingFlat": "Lump sum",
+  "lodgingReceipt": "Receipts",
+  "lodgingReceiptTotal": "Receipts total",
+  "lodgingFlatHint": "No lump sum for nights on a plane, train or ship.",
+  "lodgingRate": "Lodging per night (optional)",
+  "carKm": "Own car",
+  "markClaimed": "Claimed",
+  "claimedOn": "Claimed on {date}",
+  "@claimedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "claimTitle": "Claim the expenses of {trip} by {date}",
+  "@claimTitle": {
+    "placeholders": {
+      "trip": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tripExpenses": "Expense report",
+  "place": "Place",
+  "siteAllowance": "Site allowance",
+  "siteAllowanceHint": "The site allowance is paid with the salary (taxable), not with the expense claim.",
+  "siteAllowanceRatesHint": "Per site day of a service trip, from the first to the last site day once there are enough in a row. Country * covers all others.",
+  "siteAllowanceSummary": "From {days} site days in a row",
+  "@siteAllowanceSummary": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "siteAllowanceMinDays": "Site allowance from … site days in a row",
+  "siteAllowanceCountryHint": "ISO code, or * for all other countries",
+  "allOtherCountries": "All other countries",
+  "perSiteDay": "Per site day",
+  "mileageRate": "Mileage (own car)",
+  "mileage": "Mileage",
+  "laundryAfterDays": "Laundry on trips of",
+  "laundryHint": "Laundry can be claimed for this trip.",
+  "moreThanDays": "more than {days} days",
+  "@moreThanDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "claimDeadlineMonths": "Claim expenses within",
+  "claimDeadlineHint": "Today reminds you after each trip until it is marked as claimed",
+  "claimDeadline": "Claim by",
+  "monthsCount": "{count} months",
+  "@monthsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "claimTotal": "Claim total",
+  "nightsCount": "{count} nights",
+  "@nightsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "daysCount": "{count} days",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "cityOptional": "City (optional)"
 }

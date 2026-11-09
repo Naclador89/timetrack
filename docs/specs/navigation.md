@@ -56,7 +56,7 @@ overview; each category opens its own page (`SettingsSection` in
 | Arbeitszeit & Konto | `/settings/account` | Sollzeit (schedules, federal state), Arbeitszeitkonto (starting balance, balance start, traffic light), Urlaub (carry-over deadline) |
 | Stempeln & Pausen | `/settings/clocking` | Stempeln, Pausen (missing-break rule, default break), Erinnerungen (where available) |
 | Homeoffice-Regeln | `/settings/home-office` | |
-| Reisen & Zuschläge | `/settings/travel` | crediting on trips, weekends and holidays (with special holidays), Nachtarbeit, Spesen (per-diem rates) |
+| Reisen & Zuschläge | `/settings/travel` | crediting on trips, weekends and holidays (with special holidays), Nachtarbeit, Spesen (per-diem rates `/settings/per-diem`, site allowance `/settings/site-allowance`, mileage, laundry, claim deadline) |
 | Hinweise | `/settings/notices` | threshold, one switch per category, restore dismissed |
 | Darstellung & Updates | `/settings/app` | Darstellung, Updates |
 | Arbeits-PC (Windows only) | `/settings/work-pc` | autostart, start prompt, tray, monthly reminder, booking URL |

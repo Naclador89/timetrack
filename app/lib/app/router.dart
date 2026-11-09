@@ -15,6 +15,7 @@ import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/settings_sections.dart';
 import '../features/settings/setup_wizard.dart';
+import '../features/settings/site_allowance_screen.dart';
 import '../features/settings/sync_log_screen.dart';
 import '../features/settings/sync_screen.dart';
 import '../features/today/today_screen.dart';
@@ -126,6 +127,10 @@ GoRouter buildRouter() => GoRouter(
         GoRoute(
           path: 'per-diem',
           builder: (_, _) => const PerDiemRatesScreen(),
+        ),
+        GoRoute(
+          path: 'site-allowance',
+          builder: (_, _) => const SiteAllowanceScreen(),
         ),
       ],
     ),

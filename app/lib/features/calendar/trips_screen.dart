@@ -5,8 +5,11 @@ import 'package:timetrack_core/timetrack_core.dart';
 import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../widgets/dialogs.dart';
+import '../../widgets/place_picker.dart';
 import '../projects/project_picker.dart';
 import '../reports/report_documents.dart' show projectLabel;
+import '../settings/per_diem_rates_screen.dart' show parseCents;
+import 'trip_expenses.dart';
 
 /// All business trips; tap to edit, + to add one afterwards.
 class TripsScreen extends ConsumerWidget {
@@ -38,14 +41,22 @@ class TripsScreen extends ConsumerWidget {
               title: Text(
                 t.destination.isEmpty
                     ? l.tripDay
-                    : '${t.destination} (${t.country})',
+                    : '${t.destination} (${placeLabel(TripPlace(t.country, t.city))})',
               ),
               subtitle: Text(
                 [
                   '${when(t.depart)} – ${t.returnAt == null ? l.running : when(t.returnAt!)}',
                   if (projects[t.projectId] case final p?) projectLabel(p),
+                  if (t.claimedOn case final c?) l.claimedOn(context.date(c)),
                 ].join('\n'),
               ),
+              trailing: t.returnAt == null
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      tooltip: l.tripExpenses,
+                      onPressed: () => openTripExpenses(context, ref, t),
+                    ),
               onTap: () => showTripDialog(context, trip: t),
             ),
         ],
@@ -101,8 +112,26 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   late final _destination = TextEditingController(
     text: widget.trip?.destination,
   );
-  late final _country = TextEditingController(
-    text: widget.trip?.country ?? 'DE',
+  late TripPlace _place = TripPlace(
+    widget.trip?.country ?? 'DE',
+    widget.trip?.city,
+  );
+
+  /// Places from a date on (calculations §13.1), as stored and as edited.
+  late final Map<LocalDate, TripPlace> _storedStops = {
+    for (final s in ref.read(ledgerDataProvider).tripStops)
+      if (s.tripId == _id) s.date: TripPlace(s.country, s.city),
+  };
+  late final Map<LocalDate, TripPlace> _stops = {..._storedStops};
+  late LodgingMode _lodging = widget.trip?.lodging ?? LodgingMode.company;
+  late final _lodgingAmount = TextEditingController(
+    text: (widget.trip?.lodgingCents ?? 0) == 0
+        ? ''
+        : (widget.trip!.lodgingCents / 100).toStringAsFixed(2),
+  );
+  late LocalDate? _claimedOn = widget.trip?.claimedOn;
+  late final _carKm = TextEditingController(
+    text: (widget.trip?.carKm ?? 0) == 0 ? '' : '${widget.trip!.carKm}',
   );
   late bool _overnight = widget.trip?.overnight ?? true;
   late bool _service = widget.trip?.service ?? true;
@@ -160,7 +189,8 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   @override
   void dispose() {
     _destination.dispose();
-    _country.dispose();
+    _lodgingAmount.dispose();
+    _carKm.dispose();
     super.dispose();
   }
 
@@ -183,13 +213,31 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       'depart_utc': isoMinute(depart),
       'return_utc': back == null ? null : isoMinute(back),
       'destination': _destination.text.trim(),
-      'country': _country.text.trim().toUpperCase().isEmpty
-          ? 'DE'
-          : _country.text.trim().toUpperCase(),
+      'country': _place.country,
+      'city': _place.city,
       'overnight': _overnight,
       'service': _service,
       'project_id': _projectId,
+      'lodging': _lodging.name,
+      'lodging_cents': _lodging == LodgingMode.receipt
+          ? parseCents(_lodgingAmount.text) ?? 0
+          : 0,
+      'car_km': int.tryParse(_carKm.text.trim()) ?? 0,
+      'claimed_on': _claimedOn?.toString(),
     });
+    // One row per trip and date, like the meals.
+    for (final MapEntry(key: d, value: place) in _stops.entries) {
+      if (_storedStops[d] == place) continue;
+      await repo.write('trip_stops', '${_id}_$d', {
+        'trip_id': _id,
+        'date': '$d',
+        'country': place.country,
+        'city': place.city,
+      });
+    }
+    for (final d in _storedStops.keys) {
+      if (!_stops.containsKey(d)) await repo.delete('trip_stops', '${_id}_$d');
+    }
     for (final d in _tripDays) {
       final meals = _meals[d] ?? (false, false, false);
       if (meals == (_storedMeals[d] ?? (false, false, false))) continue;
@@ -203,6 +251,27 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       });
     }
     if (mounted) Navigator.pop(context, true);
+  }
+
+  /// Asks for the first day at a new place, then the place (§13.1).
+  Future<void> _addStop() async {
+    final days = _tripDays.skip(1).toList();
+    final day = await showDialog<LocalDate>(
+      context: context,
+      builder: (c) => SimpleDialog(
+        title: Text(c.l10n.changePlaceFrom),
+        children: [
+          for (final d in days)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(c, d),
+              child: Text(c.shortDate(d)),
+            ),
+        ],
+      ),
+    );
+    if (day == null || !mounted) return;
+    final place = await showPlacePicker(context);
+    if (place != null) setState(() => _stops[day] = place);
   }
 
   Widget _projectTile(BuildContext context) {
@@ -242,9 +311,16 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                 controller: _destination,
                 decoration: InputDecoration(labelText: l.destination),
               ),
-              TextField(
-                controller: _country,
-                decoration: InputDecoration(labelText: l.country),
+              // calculations §13.0: picks the per-diem and lodging rate.
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.public),
+                title: Text(placeLabel(_place)),
+                subtitle: Text(l.placeHint),
+                onTap: () async {
+                  final p = await showPlacePicker(context);
+                  if (p != null) setState(() => _place = p);
+                },
               ),
               _projectTile(context),
               SwitchListTile(
@@ -337,6 +413,103 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                     ),
                   ),
               ],
+              if (_tripDays.length > 1) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l.otherPlaces,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                for (final d in _stops.keys.toList()..sort())
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(
+                      '${l.placeFrom(context.shortDate(d))}: '
+                      '${placeLabel(_stops[d]!)}',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: l.delete,
+                      onPressed: () => setState(() => _stops.remove(d)),
+                    ),
+                  ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.add_location_alt_outlined),
+                    label: Text(l.changePlace),
+                    onPressed: _addStop,
+                  ),
+                ),
+              ],
+              // calculations §13.2, §13.3
+              const SizedBox(height: 12),
+              if (_overnight) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l.lodging,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SegmentedButton<LodgingMode>(
+                  segments: [
+                    ButtonSegment(
+                      value: LodgingMode.company,
+                      label: Text(l.lodgingCompany),
+                    ),
+                    ButtonSegment(
+                      value: LodgingMode.flat,
+                      label: Text(l.lodgingFlat),
+                    ),
+                    ButtonSegment(
+                      value: LodgingMode.receipt,
+                      label: Text(l.lodgingReceipt),
+                    ),
+                  ],
+                  selected: {_lodging},
+                  onSelectionChanged: (v) =>
+                      setState(() => _lodging = v.single),
+                ),
+                if (_lodging == LodgingMode.receipt)
+                  TextField(
+                    controller: _lodgingAmount,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: l.lodgingReceiptTotal,
+                      suffixText: '€',
+                    ),
+                  ),
+              ],
+              TextField(
+                controller: _carKm,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: l.carKm,
+                  suffixText: 'km',
+                ),
+              ),
+              // calculations §13.5
+              if (_returnDate != null)
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.markClaimed),
+                  subtitle: _claimedOn == null
+                      ? null
+                      : Text(l.claimedOn(context.date(_claimedOn!))),
+                  value: _claimedOn != null,
+                  onChanged: (v) => setState(
+                    () => _claimedOn = v ?? false
+                        ? ref.read(todayProvider)
+                        : null,
+                  ),
+                ),
               if (_error != null)
                 Text(
                   _error!,

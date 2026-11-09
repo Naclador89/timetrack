@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 304, app 91 tests; CI green on `main`.
+- **Tests**: core 317, app 95 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -428,10 +428,16 @@ against the app; the agreed order of steps:
        workdays keep `T(D)`. Shown on Today, day, week, the explanation, the timesheet (columns and
        totals, screen and PDF) and in the monthly reminder on the work PC. Settings on the page
        "Reisen & Zuschläge" (formerly "Reisen & Wochenende").
-5. [ ] Travel expenses: built-in BMF per-diem and lodging rates 2026 (with cities), site allowance
-       per site day (≥ 2 consecutive; ask the user whether the policy's "Auslandzulagen" column is
-       its rate), several countries per trip, lodging per night, mileage 0.30 €/km, 3-month claim
-       deadline notice, laundry hint for trips over 5 days.
+5. [x] **Travel expenses** (calculations §13.0–§13.5; core `bmf_rates.dart` generated from the BMF
+       letter of 5 Dec 2025, `trip_expenses.dart`): built-in per-diem and lodging rates of every
+       country and city from 2026 (aliases, Luxembourg for unlisted countries, 20 € domestic
+       lodging); trips get a city and stops (`trip_stops`) per date; lodging per trip (company,
+       lump sum, receipts), own-car km × 0.30 €; site allowance per country (`site_allowances`,
+       none built in; the user enters the policy's "Auslandzulagen" column) from the first to the
+       last site day once two are in a row, monthly sum in the timesheet; expense report per trip
+       (trips list → receipt icon; screen and PDF) with laundry hint; claim deadline card on Today
+       until "Abgerechnet". Settings on "Reisen & Zuschläge" → Spesen. The trip dialog has a place
+       picker (country search, then city). Country names are the German BMF names in every locale.
 6. [ ] Weekly limits (60 h, 48 h average over 24 weeks), on-call duty (Rufbereitschaft) counts.
 Later if needed: a switch for when the flat supplement is suspended (the rules allow that).
 
@@ -588,3 +594,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. The year-end balance carry-over card was removed again: only vacation has a deadline.
 - 2026-11-09, Claude Code: settings reorganised into an overview with category pages (navigation.md, "Settings structure"; `settings_sections.dart`); the links to Reports in settings are gone, the search covers all pages. 295 core, 89 app tests green.
 - 2026-11-09, Claude Code: step 4 of the employer rules: special holiday hours and night hours (calculations §21), night hours optionally off the account; timesheet, day views and the monthly reminder show them. 304 core, 91 app tests green.
+- 2026-11-09, Claude Code: step 5 of the employer rules: travel expenses (calculations §13.0–§13.5): BMF 2026 rates built in, places per trip day, lodging, mileage, site allowance, expense report per trip, claim deadline card. 317 core, 95 app tests green.

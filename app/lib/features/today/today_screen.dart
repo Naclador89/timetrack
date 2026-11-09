@@ -18,6 +18,7 @@ import '../../widgets/quick_entry_sheet.dart';
 import '../../work_pc/month_report.dart';
 import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
+import '../calendar/trip_expenses.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
 import 'vacation_carry_card.dart';
@@ -67,6 +68,7 @@ class TodayScreen extends ConsumerWidget {
           if (!ref.watch(isSetUpProvider)) const _SetupCard(),
           const MonthReportCard(),
           const VacationCarryCard(),
+          const ClaimCards(),
           AttentionCards(
             from: today.addDays(-1),
             to: today,

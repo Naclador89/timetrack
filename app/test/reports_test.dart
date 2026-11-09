@@ -241,7 +241,7 @@ void main() {
       '8:00',
     ]);
     expect(table[2][10], '−5,60\u00a0€');
-    expect(table[1][1], 'München (DE) · Werk Süd · A-4711');
+    expect(table[1][1], 'München (Deutschland) · Werk Süd · A-4711');
     final travel = await travelPdf(reports, 2026, 11, f, now: now);
     expect(utf8.decode(travel.sublist(0, 5)), '%PDF-');
   });

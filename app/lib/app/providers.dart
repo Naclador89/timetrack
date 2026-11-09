@@ -146,6 +146,7 @@ final ledgerProvider = Provider<Ledger>((ref) {
       startingBalance: settings.startingBalance,
       breakMode: settings.breakMode,
       travel: settings.travel,
+      expenses: settings.expenses,
     ),
     nowMinute: epochMinute(now),
   );

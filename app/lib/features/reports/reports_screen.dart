@@ -172,6 +172,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 _figure(context, l.tripDays, '${sheet.tripDays}'),
                 if (sheet.servicePayDays > 0)
                   _figure(context, l.servicePayDays, '${sheet.servicePayDays}'),
+                if (sheet.siteAllowanceDays > 0)
+                  _figure(
+                    context,
+                    l.siteAllowance,
+                    '${l.daysCount('${sheet.siteAllowanceDays}')} · '
+                    '${format.money(sheet.siteAllowanceCents)}',
+                  ),
                 _figure(
                   context,
                   l.vacationDaysTaken,
@@ -359,7 +366,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       for (final trip in [
         ...ref.watch(ledgerDataProvider).trips,
       ]..sort((a, b) => a.depart.compareTo(b.depart)))
-        if (perDiemForTrip(trip, zone: zone, rates: rates, meals: meals)
+        if (perDiemForTrip(
+                  trip,
+                  zone: zone,
+                  rates: rates,
+                  meals: meals,
+                  stops: ledger.data.tripStops,
+                )
                 .where((d) => !d.date.isBefore(first) && !d.date.isAfter(last))
                 .toList()
             case final days when days.isNotEmpty)

@@ -16,6 +16,7 @@ import '../../update/update_controller.dart';
 import '../../widgets/dialogs.dart';
 import '../../work_pc/month_report.dart';
 import '../../work_pc/work_pc.dart';
+import 'per_diem_rates_screen.dart' show parseCents;
 import 'settings_screen.dart';
 
 /// The pages of the settings (navigation.md, "Settings structure"), each
@@ -475,7 +476,86 @@ class _Tiles {
       trailing: const Icon(Icons.chevron_right),
       onTap: () => context.push('/settings/per-diem'),
     ),
+    // calculations §13.2–§13.5: the employer's rules.
+    ListTile(
+      leading: const Icon(Icons.construction_outlined),
+      title: Text(l.siteAllowance),
+      subtitle: Text(
+        ref.watch(ledgerDataProvider).siteAllowances.isEmpty
+            ? '${l.notSet} · ${l.siteAllowanceRatesHint}'
+            : l.siteAllowanceSummary('${s.expenses.siteAllowanceMinDays}'),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.push('/settings/site-allowance'),
+    ),
+    _choiceTile(
+      icon: Icons.linear_scale,
+      title: l.siteAllowanceMinDays,
+      value: s.expenses.siteAllowanceMinDays,
+      options: {for (var n = 1; n <= 5; n++) n: '$n'},
+      onChanged: (v) => save(SettingKeys.siteAllowanceMinDays, v),
+    ),
+    ListTile(
+      leading: const Icon(Icons.directions_car_outlined),
+      title: Text(l.mileageRate),
+      trailing: Text('${context.euro(s.expenses.mileageCentsPerKm)}/km'),
+      onTap: () async {
+        final v = await showTextPrompt(
+          context,
+          title: l.mileageRate,
+          okLabel: l.save,
+          cancelLabel: l.cancel,
+          initial: (s.expenses.mileageCentsPerKm / 100).toStringAsFixed(2),
+          hint: '0,30',
+        );
+        final cents = v == null ? null : parseCents(v);
+        if (cents != null) await save(SettingKeys.mileageCentsPerKm, cents);
+      },
+    ),
+    _choiceTile(
+      icon: Icons.local_laundry_service_outlined,
+      title: l.laundryAfterDays,
+      value: s.expenses.laundryAfterDays,
+      options: {
+        0: l.deadlineOff,
+        for (var n = 1; n <= 14; n++) n: l.moreThanDays('$n'),
+      },
+      onChanged: (v) => save(SettingKeys.laundryAfterDays, v),
+    ),
+    _choiceTile(
+      icon: Icons.event_busy_outlined,
+      title: l.claimDeadlineMonths,
+      hint: l.claimDeadlineHint,
+      value: s.expenses.claimDeadlineMonths,
+      options: {
+        0: l.deadlineOff,
+        for (var n = 1; n <= 12; n++) n: l.monthsCount('$n'),
+      },
+      onChanged: (v) => save(SettingKeys.claimDeadlineMonths, v),
+    ),
   ];
+
+  /// A setting picked from a few [options] (value → label).
+  Widget _choiceTile({
+    required IconData icon,
+    required String title,
+    String? hint,
+    required int value,
+    required Map<int, String> options,
+    required ValueChanged<int> onChanged,
+  }) => ListTile(
+    leading: Icon(icon),
+    title: Text(title),
+    subtitle: hint == null ? null : Text(hint),
+    trailing: DropdownButton<int>(
+      value: options.containsKey(value) ? value : options.keys.first,
+      onChanged: (v) => v == null ? null : onChanged(v),
+      items: [
+        for (final MapEntry(:key, :value) in options.entries)
+          DropdownMenuItem(value: key, child: Text(value)),
+      ],
+    ),
+  );
 
   /// Which notices appear as cards (calculations §12); a dismissed card
   /// stays away and only leaves the marker in the calendar.

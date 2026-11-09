@@ -8,25 +8,45 @@ import '../../app/providers.dart';
 import '../../widgets/dialogs.dart';
 import '../../widgets/undo.dart';
 
-/// Per-diem rates per country (calculations.md §13). Rows of one country
-/// are versions: a trip day uses the newest one valid on that day. The
-/// built-in domestic rate can't be changed, only superseded by a newer row.
-class PerDiemRatesScreen extends ConsumerWidget {
+/// Per-diem and lodging rates per country and city (calculations.md §13.0).
+/// Rows of one place are versions: a trip day uses the newest one valid on
+/// that day. Built-in rows (Germany, the BMF table) can't be changed, only
+/// superseded by a newer row. Without a search only Germany and the places
+/// with own rows are listed.
+class PerDiemRatesScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const PerDiemRatesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PerDiemRatesScreen> createState() => _PerDiemRatesState();
+}
+
+class _PerDiemRatesState extends ConsumerState<PerDiemRatesScreen> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final rates = ref.watch(perDiemRatesProvider);
     final today = ref.watch(todayProvider);
-    final byCountry = <String, List<PerDiemRate>>{};
+    final byPlace = <TripPlace, List<PerDiemRate>>{};
     for (final r in rates) {
-      (byCountry[r.country] ??= []).add(r);
+      (byPlace[TripPlace(r.country, r.city)] ??= []).add(r);
     }
-    final countries = byCountry.keys.toList()
-      ..sort((a, b) => a == 'DE' ? -1 : (b == 'DE' ? 1 : a.compareTo(b)));
+    final q = _query.trim().toLowerCase();
+    bool shown(TripPlace p) => q.isEmpty
+        ? p.country == 'DE' || byPlace[p]!.any((r) => !_isBuiltIn(r))
+        : placeLabel(p).toLowerCase().contains(q) ||
+              p.country.toLowerCase() == q;
+    final places = byPlace.keys.where(shown).toList()
+      ..sort(
+        (a, b) => a.country == 'DE' && b.country != 'DE'
+            ? -1
+            : b.country == 'DE' && a.country != 'DE'
+            ? 1
+            : placeLabel(a).compareTo(placeLabel(b)),
+      );
     return Scaffold(
       appBar: AppBar(title: Text(l.perDiemRates)),
       floatingActionButton: FloatingActionButton.extended(
@@ -41,17 +61,32 @@ class PerDiemRatesScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: Text(l.perDiemRatesHint, style: theme.textTheme.bodySmall),
           ),
-          for (final country in countries) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: SearchBar(
+              hintText: l.searchCountry,
+              leading: const Icon(Icons.search),
+              elevation: const WidgetStatePropertyAll(0),
+              onChanged: (v) => setState(() => _query = v),
+            ),
+          ),
+          for (final place in places) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-              child: Text(country, style: theme.textTheme.titleSmall),
+              child: Text(
+                '${placeLabel(place)} (${place.country})',
+                style: theme.textTheme.titleSmall,
+              ),
             ),
             for (final r
-                in byCountry[country]!.toList()
+                in byPlace[place]!.toList()
                   ..sort((a, b) => b.validFrom.compareTo(a.validFrom)))
               _RateTile(
                 rate: r,
-                inUse: identical(perDiemRateOn(rates, country, today), r),
+                inUse: identical(
+                  perDiemRateOn(rates, place.country, today, city: place.city),
+                  r,
+                ),
                 onTap: () => _isBuiltIn(r)
                     ? _edit(context, copyOf: r, validFrom: today)
                     : _edit(context, existing: r, validFrom: r.validFrom),
@@ -77,7 +112,8 @@ class PerDiemRatesScreen extends ConsumerWidget {
   );
 }
 
-bool _isBuiltIn(PerDiemRate r) => r.id.startsWith('default-');
+bool _isBuiltIn(PerDiemRate r) =>
+    r.id.startsWith('default-') || r.id.startsWith('bmf-');
 
 String _euro(BuildContext context, int cents) => NumberFormat.currency(
   locale: Localizations.localeOf(context).toString(),
@@ -102,10 +138,14 @@ class _RateTile extends StatelessWidget {
     return ListTile(
       leading: Icon(builtIn ? Icons.lock_outline : Icons.restaurant_outlined),
       title: Text(
-        l.rateAmounts(
-          _euro(context, rate.partialCents),
-          _euro(context, rate.fullCents),
-        ),
+        [
+          l.rateAmounts(
+            _euro(context, rate.partialCents),
+            _euro(context, rate.fullCents),
+          ),
+          if (rate.lodgingCents case final c?)
+            '${l.lodging} ${_euro(context, c)}',
+        ].join(' · '),
       ),
       subtitle: Text(
         [
@@ -144,6 +184,10 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
   late final _full = TextEditingController(
     text: _amount(widget.template?.fullCents),
   );
+  late final _city = TextEditingController(text: widget.template?.city);
+  late final _lodging = TextEditingController(
+    text: _amount(widget.template?.lodgingCents),
+  );
   String? _error;
 
   static String _amount(int? cents) => cents == null
@@ -155,6 +199,8 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
     _country.dispose();
     _partial.dispose();
     _full.dispose();
+    _city.dispose();
+    _lodging.dispose();
     super.dispose();
   }
 
@@ -162,9 +208,11 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
     final country = _country.text.trim().toUpperCase();
     final partial = parseCents(_partial.text);
     final full = parseCents(_full.text);
+    final lodging = parseCents(_lodging.text);
     if (!RegExp(r'^[A-Z]{2}$').hasMatch(country) ||
         partial == null ||
-        full == null) {
+        full == null ||
+        (_lodging.text.trim().isNotEmpty && lodging == null)) {
       setState(() => _error = context.l10n.invalidValue);
       return;
     }
@@ -174,6 +222,8 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
       'valid_from': '$_validFrom',
       'partial_cents': partial,
       'full_cents': full,
+      'city': _city.text.trim().isEmpty ? null : _city.text.trim(),
+      'lodging_cents': lodging,
     });
     if (mounted) Navigator.pop(context);
   }
@@ -195,6 +245,10 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
                 textCapitalization: TextCapitalization.characters,
                 maxLength: 2,
                 decoration: InputDecoration(labelText: l.countryIso),
+              ),
+              TextField(
+                controller: _city,
+                decoration: InputDecoration(labelText: l.cityOptional),
               ),
               DateTile(
                 label: l.validFrom,
@@ -218,6 +272,16 @@ class _RateDialogState extends ConsumerState<_RateDialog> {
                 ),
                 decoration: InputDecoration(
                   labelText: l.fullDayRate,
+                  suffixText: '€',
+                ),
+              ),
+              TextField(
+                controller: _lodging,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: InputDecoration(
+                  labelText: l.lodgingRate,
                   suffixText: '€',
                   errorText: _error,
                 ),

@@ -689,7 +689,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, 'A'), 'at');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
-    expect(find.text('AT'), findsOneWidget);
+    expect(find.text('Österreich (AT)'), findsOneWidget);
     expect(store.rowsOf('per_diem_rates'), hasLength(2));
   });
 

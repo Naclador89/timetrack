@@ -217,7 +217,7 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
         [
           f.date(d.date),
           [
-            '${t.trip.destination} (${t.trip.country})',
+            '${t.trip.destination} (${placeLabel(d.place)})',
             if (t.project != null) projectLabel(t.project),
           ].join(' · '),
           times(t.legs[d.date], TripLegKind.outbound),
@@ -227,7 +227,7 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
           _minutesOrEmpty(t.times[d.date]?.onSite),
           _minutesOrEmpty(t.credited[d.date]),
           formatMinutes(d.absenceMinutes),
-          d.rateMissing ? l.rateMissing(t.trip.country) : _category(f, d),
+          d.rateMissing ? l.rateMissing(d.place.country) : _category(f, d),
           d.reductionCents == 0 ? '' : '−${f.money(d.reductionCents)}',
           f.money(d.amountCents),
         ],
@@ -299,6 +299,12 @@ List<(String, String)> timesheetFigures(Timesheet t, ReportFormat f) {
     (l.homeOfficeDays, '${t.homeOfficeDays}'),
     (l.tripDays, '${t.tripDays}'),
     if (t.servicePayDays > 0) (l.servicePayDays, '${t.servicePayDays}'),
+    if (t.siteAllowanceDays > 0)
+      (
+        l.siteAllowance,
+        '${l.daysCount('${t.siteAllowanceDays}')} · '
+            '${f.money(t.siteAllowanceCents)}',
+      ),
     (l.vacationDaysTaken, f.days(t.vacationDays)),
   ];
 }
@@ -427,6 +433,136 @@ Future<List<int>> travelPdf(
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
           ),
         ),
+      ],
+    ),
+  );
+  return doc.save();
+}
+
+/// The expense report of one trip (calculations §13.5), one row per date:
+/// place, hours away, per-diem with reductions, and the site allowance.
+List<List<String>> tripExpensesTable(TripExpenses e, ReportFormat f) {
+  final l = f.l;
+  final allowance = {for (final a in e.allowanceDays) a.date: a};
+  return [
+    [
+      l.colDate,
+      l.place,
+      l.hoursAway,
+      l.perDiem,
+      l.mealsProvided,
+      l.amount,
+      l.siteAllowance,
+    ],
+    for (final d in e.perDiem)
+      [
+        f.date(d.date),
+        placeLabel(d.place),
+        formatMinutes(d.absenceMinutes),
+        d.rateMissing ? l.rateMissing(d.place.country) : _category(f, d),
+        d.reductionCents == 0 ? '' : '−${f.money(d.reductionCents)}',
+        f.money(d.amountCents),
+        switch (allowance[d.date]) {
+          null => '',
+          (cents: null, date: _, place: _) => l.rateMissing(d.place.country),
+          (cents: final c?, date: _, place: _) => f.money(c),
+        },
+      ],
+  ];
+}
+
+/// Columns of [tripExpensesTable] that hold numbers (right-aligned).
+const tripExpensesNumericColumns = {2, 4, 5, 6};
+
+/// The totals of a trip's expense report as (label, value).
+List<(String, String)> tripExpensesFigures(TripExpenses e, ReportFormat f) {
+  final l = f.l;
+  final trip = e.trip;
+  return [
+    (l.perDiem, f.money(e.perDiemCents)),
+    if (trip.overnight)
+      (
+        l.lodging,
+        switch (trip.lodging) {
+          LodgingMode.company => l.lodgingCompany,
+          LodgingMode.flat =>
+            '${l.nightsCount('${e.nights.length}')} · ${f.money(e.lodgingCents)}',
+          LodgingMode.receipt =>
+            '${l.lodgingReceipt} · ${f.money(e.lodgingCents)}',
+        },
+      ),
+    if (trip.carKm > 0)
+      (l.mileage, '${trip.carKm} km · ${f.money(e.mileageCents)}'),
+    (l.claimTotal, f.money(e.claimCents)),
+    if (e.allowanceDays.isNotEmpty)
+      (
+        l.siteAllowance,
+        '${l.daysCount('${e.allowanceDays.length}')} · '
+            '${f.money(e.siteAllowanceCents)}',
+      ),
+    if (e.deadline case final d?)
+      (
+        l.claimDeadline,
+        trip.claimedOn == null
+            ? f.date(d)
+            : l.claimedOn(f.date(trip.claimedOn!)),
+      ),
+  ];
+}
+
+/// Hints under the totals: what the allowance is, laundry (§13.4, §13.5).
+String tripExpensesLegend(TripExpenses e, ReportFormat f) => [
+  if (e.allowanceDays.isNotEmpty) f.l.siteAllowanceHint,
+  if (e.laundry) f.l.laundryHint,
+  if (e.trip.lodging == LodgingMode.flat) f.l.lodgingFlatHint,
+].join(' ');
+
+/// The title of a trip's expense report, `Reiseabrechnung Paris 02.11.–06.11.2026`.
+String tripExpensesTitle(TripExpenses e, ReportFormat f) {
+  final dates = e.perDiem.map((d) => d.date);
+  return [
+    f.l.tripExpenses,
+    if (e.trip.destination.isNotEmpty) e.trip.destination,
+    '${f.date(dates.first)} – ${f.date(dates.last)}',
+  ].join(' · ');
+}
+
+/// The expense report of one trip as a PDF.
+Future<List<int>> tripExpensesPdf(
+  TripExpenses e,
+  ReportFormat f, {
+  Project? project,
+  required DateTime now,
+}) {
+  final title = tripExpensesTitle(e, f);
+  final legend = tripExpensesLegend(e, f);
+  final doc = pw.Document(title: title);
+  doc.addPage(
+    pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(32),
+      footer: (ctx) => _footer(f, ctx, now),
+      build: (ctx) => [
+        pw.Text(
+          _pdfSafe(title),
+          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+        ),
+        if (project != null) pw.Text(_pdfSafe(projectLabel(project))),
+        pw.SizedBox(height: 10),
+        _table(
+          tripExpensesTable(e, f),
+          align: {
+            for (final c in tripExpensesNumericColumns)
+              c: pw.Alignment.centerRight,
+          },
+        ),
+        pw.SizedBox(height: 10),
+        for (final (label, value) in tripExpensesFigures(e, f))
+          pw.Text(_pdfSafe('$label: $value')),
+        if (legend.isNotEmpty) ...[
+          pw.SizedBox(height: 8),
+          pw.Text(_pdfSafe(legend), style: const pw.TextStyle(fontSize: 9)),
+        ],
       ],
     ),
   );
