@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
+- **Latest release: `v0.6.3`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.3+12`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 320, app 97 tests; CI green on `main`.
@@ -171,6 +171,10 @@ _Last updated: 2026-11-09 by Claude Code._
   started from Einstellungen shows its progress and "Neu starten" there.
 - `v0.6.2` (2026-11-09): a clock-in time ahead of now is refused instead of landing on the day
   before; the time question stays on by default (user, 2026-11-09).
+- `v0.6.3` (2026-11-09): Windows updater swaps its files in-app; the employer rules in six steps
+  (travel crediting by service trip, monthly balance reminder on the work PC, balance traffic light
+  and vacation carry-over deadline, supplement hours, travel expenses with the BMF 2026 rates,
+  weekly limits); settings as an overview with category pages.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
