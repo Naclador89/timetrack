@@ -5,12 +5,11 @@ _Last updated: 2026-11-09 by GitHub Copilot._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.5.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.5.2+8`. All planned
+- **Latest release: `v0.6.0`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.0+9`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 280, app 70 widget tests; CI green on `main`.
-- **In progress**: branch `feat/booking-transfer` (transfer a week to APplus, Windows; see the
-  section below). Pushed, not merged; merge and release only when the user asks.
+- **Nothing is in progress.** No half-done branch.
 - **To do** (requested by the user, not started):
   - [ ] Clock in at an earlier time from Today (user, 2026-11-09: "Beim Einstempeln über die
         Startseite kann ich keine abweichende Zeit eingeben, falls ich eigentlich früher da war.").
@@ -169,6 +168,7 @@ _Last updated: 2026-11-09 by GitHub Copilot._
 - `v0.5.1` (2026-11-08): work-PC feedback: usual break settings, undo snack bars that go away,
   new month view, no target before the balance start, "Mit Windows starten" as its own switch.
 - `v0.5.2` (2026-11-09): a day type can be removed again ("Tagesart entfernen", with undo).
+- `v0.6.0` (2026-11-09): Windows: transfer a week's project hours to the booking system (APplus).
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -511,3 +511,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-08, Claude Code: day types can be removed (with undo). 275 core, 66 widget tests green.
 - 2026-11-09, Claude Code: release v0.5.2; docs prepared for handoff to GitHub Copilot ("Where things stand" at the top, AGENTS.md: working with the maintainer, where things live, Copilot notes; prompt files in `.github/prompts/`; architecture module table and README brought up to date).
 - 2026-11-09, GitHub Copilot: transfer a week to the booking system on Windows (spec `booking-transfer.md`, ADR 0009, `webview_windows`); spike and end-to-end test on the work PC, nothing booked. 280 core tests, 70 widget tests.
+- 2026-11-09, GitHub Copilot: merged `feat/booking-transfer` into `main`, release v0.6.0.
