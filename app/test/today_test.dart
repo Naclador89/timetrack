@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timetrack_core/timetrack_core.dart';
 
 import 'helpers.dart';
 
@@ -69,6 +70,30 @@ void main() {
       await enterTime(tester, 9, 0);
       expect(find.text('That time is in the future.'), findsOneWidget);
       expect(find.text('Not clocked in'), findsOneWidget);
+    });
+
+    testWidgets('a clock-in ahead of now is refused, not moved to yesterday', (
+      tester,
+    ) async {
+      // Monday 07:58; the last session ended on Friday.
+      final (_, repo) = await pumpApp(
+        tester,
+        askStampTime: true,
+        clock: () => DateTime.utc(2026, 11, 9, 6, 58),
+        seed: (repo) => repo.write('work_sessions', 'fri', {
+          'start_utc': '2026-11-06T07:00:00Z',
+          'end_utc': '2026-11-06T15:00:00Z',
+          'location': 'office',
+        }),
+      );
+      await tester.tap(find.text('Clock in'));
+      await tester.pumpAndSettle();
+      await enterTime(tester, 8, 0);
+      expect(find.text('That time is in the future.'), findsOneWidget);
+      final open = await tester.runAsync(
+        () => TimeTracker(repo, now: () => appTestNow).state(),
+      );
+      expect(open!.clockedIn, isFalse);
     });
   });
 }

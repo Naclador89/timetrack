@@ -487,9 +487,11 @@ picker; its title is the button's label). Cancelling stamps nothing. Synced sett
 `ask_stamp_time` (Einstellungen, default **on**); off stamps right away, as before. The Android
 notification, tile and widget run without a window and always stamp now.
 
-The picked local time means today (home time zone); if that is still in the future and the
-earliest instant (below) lies before today, yesterday (a session that runs past midnight;
-`stampInstant`). A time in the future or before the earliest instant is refused with a snack bar
+The picked local time means today (home time zone); if that is still in the future, the user is
+clocked in and the earliest instant (below) lies before today, yesterday (a session that runs past
+midnight; `stampInstant`). A clock-in while clocked out never moves to yesterday: a time ahead of
+now is refused, even when the last session ended days ago (else 08:00 picked at 07:58 on a Monday
+would clock in on Sunday). A time in the future or before the earliest instant is refused with a snack bar
 and nothing is stamped. Earliest instants (`TimeTracker.earliestAt`), so nothing overlaps:
 
 | Stamp | Not before |

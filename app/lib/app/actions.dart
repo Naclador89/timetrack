@@ -53,12 +53,16 @@ Future<DateTime?> askStampTime(
   );
   if (picked == null || !context.mounted) return null;
   final earliest = await ref.read(trackerProvider).earliestAt(action);
+  // Only a running session can reach back into yesterday; for a fresh
+  // clock-in the bound is an old session's end and a time ahead of now is
+  // a mistake, not last night.
+  final open = ref.read(trackerStateProvider).clockedIn;
   final at = stampInstant(
     zone,
     now,
     picked.hour,
     picked.minute,
-    earliest: earliest,
+    earliest: open ? earliest : null,
   );
   final tooEarly =
       earliest != null && isoMinute(at).compareTo(isoMinute(earliest)) < 0;
@@ -77,9 +81,7 @@ Future<DateTime?> askStampTime(
   ScaffoldMessenger.maybeOf(context)?.showSnackBar(
     SnackBar(
       content: Text(
-        earliest == null
-            ? l.stampTimeFuture
-            : l.forgottenTimeInvalid(when(earliest)),
+        tooEarly ? l.forgottenTimeInvalid(when(earliest)) : l.stampTimeFuture,
       ),
     ),
   );

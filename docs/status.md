@@ -1,6 +1,6 @@
 # Status / handoff log
 
-_Last updated: 2026-11-09 by GitHub Copilot._
+_Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
 **Read this first, update it last** (see `AGENTS.md`).
 
 ## Where things stand (read this first)
@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by GitHub Copilot._
 - **Latest release: `v0.6.1`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.1+10`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 286, app 73 widget tests; CI green on `main`.
+- **Tests**: core 286, app 74 widget tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -393,6 +393,10 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       (no overlaps), `stampInstant` (yesterday across midnight); setting `ask_stamp_time`.
 - [x] App: time picker before every stamp from Today (incl. trip steps), tray, command palette,
       shortcuts and the sign-in question; switch in Einstellungen. Android quick access stamps now.
+- [x] Fix (review): a clock-in time ahead of now moved to *yesterday* whenever an earlier session
+      existed (Monday 07:58, picked 08:00 → Sunday 08:00, open for a day). Yesterday is now only
+      possible while clocked in; a future time is refused with "Diese Uhrzeit liegt in der Zukunft"
+      (the snack bar said "nicht vor <last session end>" before). Not released yet.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -516,3 +520,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-09, GitHub Copilot: merged `feat/booking-transfer` into `main`, release v0.6.0.
 - 2026-11-09, GitHub Copilot: fix: an update started from Einstellungen → Nach Updates suchen ran hidden (banner only above the tabs) and the dialog's ref died when the banner appeared (`UpdateBannerHost` swapped the tree). Banner now also above Settings, tree stable; widget test.
 - 2026-11-09, GitHub Copilot: stamping asks for the time (calculations §19, setting `ask_stamp_time`). 286 core tests, 73 widget tests. Release v0.6.1 with the updater fix.
+- 2026-11-09, Claude Code: reviewed the Copilot work (booking transfer, stamp time, updater fix): docs and tests in order; fixed the clock-in that moved a future time to yesterday, and the wrong snack bar for it. 286 core, 74 widget tests green.
