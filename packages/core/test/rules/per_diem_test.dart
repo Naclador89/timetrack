@@ -128,9 +128,16 @@ void main() {
     () {
       expect(
         perDiem(
-          trip('2026-11-04', '06:00', '2026-11-04', '20:00', country: 'AT'),
+          trip('2025-11-04', '06:00', '2025-11-04', '20:00', country: 'AT'),
         ).single.amountCents,
         2000,
+      );
+      // §13.0: the built-in BMF rate from 2026 supersedes the 2024 row.
+      expect(
+        perDiem(
+          trip('2026-11-04', '06:00', '2026-11-04', '20:00', country: 'AT'),
+        ).single.amountCents,
+        3300,
       );
       expect(
         perDiem(
@@ -138,8 +145,9 @@ void main() {
         ).single.amountCents,
         2200,
       );
+      // No foreign rates are built in before 2026.
       final unknown = perDiem(
-        trip('2026-11-04', '06:00', '2026-11-04', '20:00', country: 'FR'),
+        trip('2025-11-04', '06:00', '2025-11-04', '20:00', country: 'FR'),
       ).single;
       expect((unknown.amountCents, unknown.rateMissing), (0, true));
     },
@@ -171,6 +179,7 @@ void main() {
     final all = [...own, ...defaultPerDiemRates()];
     expect(perDiemRateOn(all, 'DE', d('2025-12-31'))!.id, 'default-de-2020');
     expect(perDiemRateOn(all, 'DE', d('2026-01-01'))!.id, 'mine');
-    expect(perDiemRateOn(all, 'AT', d('2026-01-01')), isNull);
+    expect(perDiemRateOn(all, 'AT', d('2026-01-01'))!.id, 'bmf-2026-AT');
+    expect(perDiemRateOn(all, 'AT', d('2025-12-31')), isNull);
   });
 }

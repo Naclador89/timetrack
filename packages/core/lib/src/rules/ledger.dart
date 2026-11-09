@@ -9,6 +9,7 @@ import 'credit.dart';
 import 'day_work.dart';
 import 'holidays.dart';
 import 'target.dart';
+import 'trip_expenses.dart';
 
 /// Settings that affect the daily calculation.
 final class LedgerSettings {
@@ -18,6 +19,7 @@ final class LedgerSettings {
     this.startingBalance = 0,
     this.breakMode = BreakRuleMode.warn,
     this.travel = const TravelRules(),
+    this.expenses = const ExpenseRules(),
   });
 
   /// First day counted in the overtime balance (setting `balance_start_date`).
@@ -32,6 +34,9 @@ final class LedgerSettings {
 
   /// The employer's travel rules (§9).
   final TravelRules travel;
+
+  /// The employer's expense rules (§13.2–§13.5).
+  final ExpenseRules expenses;
 }
 
 /// All rows the ledger works on, already converted to plain values.
@@ -45,8 +50,16 @@ final class LedgerData {
     this.schedules = const [],
     this.absences = const [],
     this.trips = const [],
+    this.tripStops = const [],
+    this.siteAllowances = const [],
     this.dayChoices = const {},
   });
+
+  /// Places of trips from a date on (§13.1).
+  final List<TripStop> tripStops;
+
+  /// The employer's site allowance rates (§13.4).
+  final List<SiteAllowanceRate> siteAllowances;
 
   /// Day types picked by the user for office and home-office days
   /// (`days` table, data-model §12). Other types come from trips and

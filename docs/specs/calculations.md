@@ -396,17 +396,81 @@ For each trip with `depart` and `return`. An open trip has no per-diem yet.
   if the total is more than 480 min. All other dates get `none`.
 - **Several dates, `overnight = true`**: the departure date and the return date are `partial`
   (regardless of hours); every date in between is `full`.
-- **Amount** = the rate for the category from `per_diem_rates` for `trip.country`, using the row
-  with the greatest `valid_from ≤ D`.
+- **Location of a day** (§13.1): country and city in effect on D. **Amount** = the rate for the
+  category for that location (§13.0).
 - **Meal reduction** for each provided meal (`trip_meals` for D): breakfast 20 %, lunch 40 %,
-  dinner 40 % **of the full-day rate** (settings). The amount never goes below 0.
-- Rate defaults to pre-fill: `DE`, valid from 2020-01-01: partial 14.00 €, full 28.00 €.
-  Checked on 2026-11-07 against several secondary sources: still valid in 2026 (the discussed raise
-  to 16/32 € wasn't enacted), and the meal reductions are 5.60 € / 11.20 € / 11.20 €. Foreign rates
-  change yearly (BMF letter; the 2026 rates are from 5 Dec 2025) and are entered by the user in
-  Settings → Tagespauschalen; the built-in row can't be edited, a newer row for `DE` supersedes it.
-- Not covered: the three-month rule, several countries in one trip (the trip has one `country`),
-  accommodation and travel costs.
+  dinner 40 % **of the full-day rate of that day's location** (settings). The amount never goes
+  below 0.
+
+### §13.0 Rates
+
+Requested by the user 2026-11-09 (step 5). Rates are public values and built in; the user's own
+rows (`per_diem_rates`, data-model §11) supersede them.
+
+- **Built in**: `DE` from 2020-01-01: partial 14 €, full 28 €, lodging 20 € (R 9.7 (3) LStR), and
+  every country and city of the BMF letter of 5 Dec 2025 (BStBl I 2025, 2078) from 2026-01-01:
+  partial, full and lodging (`bmfRates2026`, generated from the letter's table with ISO codes). The
+  letter's notes are built in too: Micronesia (`FM`) uses the Philippines' rates; Antigua and
+  Barbuda, Dominica, Grenada, Guyana, St. Kitts and Nevis, St. Lucia, St. Vincent and the
+  Grenadines and Suriname use those of Trinidad and Tobago; **any other country not listed uses
+  Luxembourg's rates**. Older foreign rates are not built in (user rows).
+- **Lookup** for country C, city Y, date D (`perDiemRateOn`): among the rows of C (after the alias
+  above) with `valid_from ≤ D`, the rows for city Y if any exist, otherwise the rows without a city;
+  the greatest `valid_from` wins, user rows win ties. If C has no row at all, Luxembourg's.
+- Checked 2026-11-09: the 2026 domestic rates are unchanged (14/28 €); meal reductions 5.60 € /
+  11.20 € / 11.20 €.
+
+### §13.1 Several places in one trip
+
+A trip has a country and an optional city (data-model §9). **Stops** (`trip_stops`, data-model
+§9.1) change the place from a date on: the place of D is the stop with the greatest date ≤ D, else
+the trip's own. This follows the BMF rules: the arrival and in-between days use the place reached
+before midnight (enter the stop on that date), the return day keeps the last place of work abroad.
+
+### §13.2 Lodging
+
+Trip field `lodging`: `company` (default: booked and paid by the employer, nothing to claim),
+`flat` (lump sum) or `receipt` (field `lodging_cents`, the total of the receipts). **Nights** = every
+date of an overnight trip except the last. `flat`: Σ over the nights of the lodging rate of that
+night's place (§13.0). No lump sum for nights on a plane, train or ship: pick `receipt` or adjust.
+
+### §13.3 Mileage
+
+Trip field `car_km` (own car, default 0). Amount = km × `travel.mileage_cents_per_km` (default 30,
+the tax-free maximum of § 9 (1) no. 4a EStG).
+
+### §13.4 Site allowance
+
+Employers may pay an allowance per site day of a service trip; rates are settings per country
+(`site_allowances`, data-model §11.1; country `*` = every other country), none built in.
+
+- A **site day** is a date of a service trip (§9) with on-site time.
+- If the trip has at least `travel.site_allowance_min_days` (default 2) site days in a row
+  (consecutive dates), **allowance days** are all dates from its first to its last site day,
+  continuously; otherwise none.
+- Amount per allowance day = the rate for that day's place (§13.1), greatest `valid_from ≤ D`;
+  missing rate → 0 and flagged.
+- It is paid with the salary (taxable), so it is not part of the claim total. The timesheet counts
+  the month's allowance days and amount (§21.3 style, only if there are any).
+
+### §13.5 Trip expense report and claim deadline
+
+Per finished trip (`tripExpenses`): the per-diem days (§13) with place, the lodging (§13.2),
+mileage (§13.3), **claim total** = per-diem + lodging + mileage, the site allowance (§13.4) apart,
+and two hints:
+
+- **Laundry**: if the trip touches more than `travel.laundry_after_days` dates (default 0 = off;
+  the user sets 5), "laundry can be claimed".
+- **Claim deadline**: setting `travel.claim_deadline_months` (default 0 = off; the user sets 3).
+  Deadline = the return date plus N months (the same day of month, or the month's last day). Trip
+  field `claimed_on` (date) marks it as claimed. From the return until the deadline, while not
+  claimed, Today shows a card "Reisekosten <destination> abrechnen bis <date>" with **Abgerechnet**
+  (sets `claimed_on` to today); it turns red in the last 14 days. After the deadline nothing is
+  shown.
+
+Not covered: the higher per-diem when a return day is followed by another trip, flights over two
+days (the BMF letter's Austria rate), and travel costs other than mileage (tickets are booked by the
+employer or claimed with receipts).
 
 ## §14 Display
 

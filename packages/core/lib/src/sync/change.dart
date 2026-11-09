@@ -15,6 +15,8 @@ const syncedTables = {
   'trips',
   'trip_meals',
   'per_diem_rates',
+  'trip_stops',
+  'site_allowances',
   'days',
   'day_templates',
   'dismissed_notices',

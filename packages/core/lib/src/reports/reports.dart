@@ -3,6 +3,7 @@ import '../model/planning.dart';
 import '../model/project.dart';
 import '../rules/home_office.dart';
 import '../rules/ledger.dart';
+import '../rules/trip_expenses.dart';
 import '../time/local_date.dart';
 
 /// One day of the monthly timesheet (concept §5, "Monthly timesheet PDF").
@@ -51,7 +52,15 @@ final class Timesheet {
     required this.balanceAfter,
     required this.homeOfficeDays,
     required this.workedDays,
+    this.siteAllowanceDays = 0,
+    this.siteAllowanceCents = 0,
   });
+
+  /// Site allowance days of finished trips in this month (§13.4).
+  final int siteAllowanceDays;
+
+  /// Their allowance, paid with the salary (§13.4).
+  final int siteAllowanceCents;
 
   /// The year.
   final int year;
@@ -137,10 +146,28 @@ Timesheet buildTimesheet(Ledger ledger, int year, int month) {
     if (day.work.worked > 0) worked++;
   }
   final lastDay = rows.isEmpty ? first.addDays(-1) : rows.last.day.date;
+  var allowanceDays = 0, allowanceCents = 0;
+  for (final trip in ledger.data.trips) {
+    final expenses = tripExpenses(
+      trip,
+      ledger: ledger,
+      rates: const [],
+      stops: ledger.data.tripStops,
+      siteRates: ledger.data.siteAllowances,
+      rules: ledger.settings.expenses,
+    );
+    for (final d in expenses?.allowanceDays ?? const <AllowanceDay>[]) {
+      if (d.date.isBefore(first) || !d.date.isBefore(next)) continue;
+      allowanceDays++;
+      allowanceCents += d.cents ?? 0;
+    }
+  }
   return Timesheet(
     year: year,
     month: month,
     rows: rows,
+    siteAllowanceDays: allowanceDays,
+    siteAllowanceCents: allowanceCents,
     balanceBefore: ledger.balanceAtEndOf(first.addDays(-1)),
     balanceAfter: ledger.balanceAtEndOf(lastDay),
     homeOfficeDays: homeOffice,

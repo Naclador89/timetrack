@@ -31,6 +31,8 @@ LedgerData ledgerDataFromRows(Iterable<StoredRow> rows) {
     schedules: all('work_schedules', workScheduleFromRow),
     absences: all('absences', absenceFromRow),
     trips: all('trips', tripFromRow),
+    tripStops: all('trip_stops', tripStopFromRow),
+    siteAllowances: all('site_allowances', siteAllowanceFromRow),
     dayChoices: {for (final c in all('days', dayChoiceFromRow)) c.$1: c.$2},
   );
 }
@@ -147,8 +149,42 @@ Trip? tripFromRow(StoredRow r) => _use(
     overnight: f.boolean('overnight') ?? true,
     service: f.boolean('service') ?? true,
     projectId: f.string('project_id'),
+    city: _blankToNull(f.string('city')),
+    // An unknown mode from a newer app: claim nothing rather than guess.
+    lodging: LodgingMode.values.firstWhere(
+      (m) => m.name == f.string('lodging'),
+      orElse: () => LodgingMode.company,
+    ),
+    lodgingCents: f.number('lodging_cents')?.toInt() ?? 0,
+    carKm: f.number('car_km')?.toInt() ?? 0,
+    claimedOn: f.date('claimed_on'),
   ),
 );
+
+/// data-model.md §9.1.
+TripStop? tripStopFromRow(StoredRow r) => _use(
+  r,
+  (f) => TripStop(
+    id: r.id,
+    tripId: f.string('trip_id')!,
+    date: f.date('date')!,
+    country: f.string('country')!,
+    city: _blankToNull(f.string('city')),
+  ),
+);
+
+/// data-model.md §11.1.
+SiteAllowanceRate? siteAllowanceFromRow(StoredRow r) => _use(
+  r,
+  (f) => SiteAllowanceRate(
+    id: r.id,
+    country: f.string('country')!,
+    validFrom: f.date('valid_from')!,
+    cents: f.number('cents')!.toInt(),
+  ),
+);
+
+String? _blankToNull(String? s) => s == null || s.trim().isEmpty ? null : s;
 
 /// data-model.md §12: the type picked for a date (office or home office).
 (LocalDate, DayType)? dayChoiceFromRow(StoredRow r) =>
@@ -176,6 +212,8 @@ PerDiemRate? perDiemRateFromRow(StoredRow r) => _use(
     validFrom: f.date('valid_from')!,
     partialCents: f.number('partial_cents')!.toInt(),
     fullCents: f.number('full_cents')!.toInt(),
+    city: _blankToNull(f.string('city')),
+    lodgingCents: f.number('lodging_cents')?.toInt(),
   ),
 );
 
@@ -235,6 +273,7 @@ Ledger appLedger(Iterable<StoredRow> rows, DateTime now) {
       startingBalance: settings.startingBalance,
       breakMode: settings.breakMode,
       travel: settings.travel,
+      expenses: settings.expenses,
     ),
     nowMinute: epochMinute(now),
   );

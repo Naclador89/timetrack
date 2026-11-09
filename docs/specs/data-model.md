@@ -88,12 +88,26 @@ the rules they configure are in `calculations.md`. Enum values are stored in sna
 | overnight | bool | | `true` |
 | service | bool | | `true`: service, installation or commissioning work on a site (calculations §9); `false` for other business trips (fair, training) |
 | note | string | | `''` |
+| city | string | | none: the country's general rate (calculations §13.0) |
+| lodging | enum `company` `flat` `receipt` | | `company` (calculations §13.2) |
+| lodging_cents | int | | `0`: receipts total for `receipt` |
+| car_km | int | | `0`: kilometres with the own car (§13.3) |
+| claimed_on | date | | none: the expense claim is not submitted yet (§13.5) |
+
+## §9.1 trip_stops
+`trip_id` string ✓, `date` date ✓, `country` string ✓, `city` string (none = general rate). The place
+of the trip from that date on (calculations §13.1).
 
 ## §10 trip_meals
 `trip_id` string ✓, `date` date ✓, `breakfast` / `lunch` / `dinner` bool (default `false`).
 
 ## §11 per_diem_rates
-`country` string ✓, `valid_from` date ✓, `partial_cents` int ✓, `full_cents` int ✓.
+`country` string ✓, `valid_from` date ✓, `partial_cents` int ✓, `full_cents` int ✓, `city` string
+(none = the whole country), `lodging_cents` int (none = keep the built-in lodging rate).
+
+## §11.1 site_allowances
+`country` string ✓ (ISO code, or `*` for every other country), `valid_from` date ✓, `cents` int ✓
+(calculations §13.4).
 
 ## §12 days
 The day type picked for a date (calculations §15). **Row id = the date** (`YYYY-MM-DD`), so picks on

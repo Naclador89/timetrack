@@ -3,6 +3,7 @@ import '../rules/balance_zone.dart';
 import '../rules/credit.dart';
 import '../rules/holidays.dart';
 import '../rules/home_office.dart';
+import '../rules/trip_expenses.dart';
 import '../sync/change.dart';
 import '../sync/repository.dart';
 import '../time/local_date.dart';
@@ -55,6 +56,18 @@ abstract final class SettingKeys {
 
   /// `count` or `exclude` (§21.2).
   static const nightWorkCredit = 'night_work.credit';
+
+  /// Mileage for the own car in cents per km (§13.3).
+  static const mileageCentsPerKm = 'travel.mileage_cents_per_km';
+
+  /// Site days in a row that start the site allowance (§13.4).
+  static const siteAllowanceMinDays = 'travel.site_allowance_min_days';
+
+  /// Laundry on trips touching more dates than this, 0 = off (§13.5).
+  static const laundryAfterDays = 'travel.laundry_after_days';
+
+  /// Months to submit an expense claim, 0 = off (§13.5).
+  static const claimDeadlineMonths = 'travel.claim_deadline_months';
 
   /// Balance zone limits in minutes, unset = none (§20).
   static const balanceYellowPlus = 'balance.yellow_plus_min';
@@ -126,6 +139,7 @@ final class AppSettings {
     this.balanceStart,
     this.homeOfficeDayRule = HomeOfficeDayRule.majority,
     this.travel = const TravelRules(),
+    this.expenses = const ExpenseRules(),
     this.balanceLimits = const BalanceLimits(),
     this.vacationCarryDeadlineMonths = 3,
     this.openSessionLimitMinutes = 720,
@@ -224,6 +238,24 @@ final class AppSettings {
           d.night,
         ),
       ),
+      expenses: ExpenseRules(
+        mileageCentsPerKm: pick<num>(
+          SettingKeys.mileageCentsPerKm,
+          30,
+        ).toInt().clamp(0, 1000),
+        siteAllowanceMinDays: pick<num>(
+          SettingKeys.siteAllowanceMinDays,
+          2,
+        ).toInt().clamp(1, 31),
+        laundryAfterDays: pick<num>(
+          SettingKeys.laundryAfterDays,
+          0,
+        ).toInt().clamp(0, 365),
+        claimDeadlineMonths: pick<num>(
+          SettingKeys.claimDeadlineMonths,
+          0,
+        ).toInt().clamp(0, 24),
+      ),
       balanceLimits: BalanceLimits(
         yellowPlus: limit(SettingKeys.balanceYellowPlus),
         yellowMinus: limit(SettingKeys.balanceYellowMinus),
@@ -284,6 +316,9 @@ final class AppSettings {
 
   /// The employer's travel rules.
   final TravelRules travel;
+
+  /// The employer's expense rules (§13.2–§13.5).
+  final ExpenseRules expenses;
 
   /// Limits of the overtime account (§20).
   final BalanceLimits balanceLimits;

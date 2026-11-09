@@ -2,6 +2,7 @@ import '../model/planning.dart';
 import '../time/home_time_zone.dart';
 import '../time/local_date.dart';
 import '../time/span.dart';
+import 'bmf_rates.dart';
 
 /// Per-diem category of a trip day (spec: calculations.md §13).
 enum PerDiemCategory {
@@ -44,10 +45,14 @@ final class PerDiemDay {
     required this.rateCents,
     required this.reductionCents,
     required this.rateMissing,
+    this.place = const TripPlace('DE'),
   });
 
   /// The local date.
   final LocalDate date;
+
+  /// Where the trip is on this date (§13.1).
+  final TripPlace place;
 
   /// Minutes away from home on this date, `A(D)`.
   final int absenceMinutes;
@@ -71,6 +76,58 @@ final class PerDiemDay {
   }
 }
 
+/// A country and an optional city (spec: calculations.md §13.0).
+final class TripPlace {
+  /// Creates a place.
+  const TripPlace(this.country, [this.city]);
+
+  /// ISO 3166-1 alpha-2 country code.
+  final String country;
+
+  /// City for a city rate, or `null`.
+  final String? city;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TripPlace && other.country == country && other.city == city;
+
+  @override
+  int get hashCode => Object.hash(country, city);
+
+  @override
+  String toString() => city == null ? country : '$country/$city';
+}
+
+/// The place of [trip] on [date] (§13.1): the stop with the greatest date
+/// on or before [date], else the trip's own destination.
+TripPlace tripPlaceOn(Trip trip, List<TripStop> stops, LocalDate date) {
+  TripStop? best;
+  for (final s in stops) {
+    if (s.tripId != trip.id || s.date.isAfter(date)) continue;
+    if (best == null || s.date.isAfter(best.date)) best = s;
+  }
+  return best == null
+      ? TripPlace(trip.country, trip.city)
+      : TripPlace(best.country, best.city);
+}
+
+/// The local dates [trip] touches, first to last; empty while it is open.
+List<LocalDate> tripDates(Trip trip, HomeTimeZone zone) {
+  final returnAt = trip.returnAt;
+  if (returnAt == null) return const [];
+  final away = Span.fromInstants(trip.depart, returnAt);
+  if (away.isEmpty) return const [];
+  final last = zone.dateOfMinute(away.end - 1);
+  return [
+    for (
+      var d = zone.dateOfMinute(away.start);
+      !d.isAfter(last);
+      d = d.addDays(1)
+    )
+      d,
+  ];
+}
+
 /// The per-diem days of [trip] (spec: calculations.md §13). An open trip has
 /// no per-diem yet and yields an empty list.
 List<PerDiemDay> perDiemForTrip(
@@ -78,6 +135,7 @@ List<PerDiemDay> perDiemForTrip(
   required HomeTimeZone zone,
   required List<PerDiemRate> rates,
   List<TripMeals> meals = const [],
+  List<TripStop> stops = const [],
   MealReductions reductions = const MealReductions(),
 }) {
   final returnAt = trip.returnAt;
@@ -99,7 +157,8 @@ List<PerDiemDay> perDiemForTrip(
         date,
         minutes,
         categories[date]!,
-        perDiemRateOn(rates, trip.country, date),
+        tripPlaceOn(trip, stops, date),
+        rates,
         meals.where((m) => m.tripId == trip.id && m.date == date),
         reductions,
       ),
@@ -135,30 +194,60 @@ Map<LocalDate, PerDiemCategory> _categories(
   };
 }
 
-/// The rate a trip day in [country] on [date] uses: the row with the greatest
-/// `valid_from ≤ date`; on a tie the earlier row in [rates] wins
-/// (spec: calculations.md §13).
+/// The rate a trip day in [country] (and [city]) on [date] uses (spec:
+/// calculations.md §13.0): the city's rows if there are any, else the
+/// country's general ones; the greatest `valid_from ≤ date` wins, on a tie
+/// the earlier row in [rates]. A country without any row uses the BMF
+/// letter's alias or Luxembourg. [where] narrows the rows, e.g. to those
+/// with a lodging rate.
 PerDiemRate? perDiemRateOn(
   List<PerDiemRate> rates,
   String country,
-  LocalDate date,
-) {
-  PerDiemRate? best;
-  for (final r in rates) {
-    if (r.country != country || r.validFrom.isAfter(date)) continue;
-    if (best == null || r.validFrom.isAfter(best.validFrom)) best = r;
+  LocalDate date, {
+  String? city,
+  bool Function(PerDiemRate r)? where,
+}) {
+  var c = bmfRateAliases[country] ?? country;
+  if (!rates.any((r) => r.country == c)) c = 'LU';
+  final cityKey = city?.trim().toLowerCase();
+  PerDiemRate? pick(bool Function(PerDiemRate r) matches) {
+    PerDiemRate? best;
+    for (final r in rates) {
+      if (r.country != c || r.validFrom.isAfter(date) || !matches(r)) continue;
+      if (where != null && !where(r)) continue;
+      if (best == null || r.validFrom.isAfter(best.validFrom)) best = r;
+    }
+    return best;
   }
-  return best;
+
+  if (cityKey != null && cityKey.isNotEmpty) {
+    final forCity = pick((r) => r.city?.trim().toLowerCase() == cityKey);
+    if (forCity != null) return forCity;
+  }
+  return pick((r) => r.city == null);
 }
+
+/// The lodging lump sum of a night at [place] on [date], in cents (§13.2);
+/// `null` without a rate.
+int? lodgingRateOn(List<PerDiemRate> rates, TripPlace place, LocalDate date) =>
+    perDiemRateOn(
+      rates,
+      place.country,
+      date,
+      city: place.city,
+      where: (r) => r.lodgingCents != null,
+    )?.lodgingCents;
 
 PerDiemDay _priced(
   LocalDate date,
   int minutes,
   PerDiemCategory category,
-  PerDiemRate? rate,
+  TripPlace place,
+  List<PerDiemRate> rates,
   Iterable<TripMeals> meals,
   MealReductions reductions,
 ) {
+  final rate = perDiemRateOn(rates, place.country, date, city: place.city);
   final rateCents = switch (category) {
     PerDiemCategory.none => 0,
     PerDiemCategory.partial => rate?.partialCents ?? 0,
@@ -179,5 +268,6 @@ PerDiemDay _priced(
     rateCents: rateCents,
     reductionCents: ((rate?.fullCents ?? 0) * percent) ~/ 100,
     rateMissing: category != PerDiemCategory.none && rate == null,
+    place: place,
   );
 }

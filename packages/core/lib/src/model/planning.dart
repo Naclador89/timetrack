@@ -1,3 +1,4 @@
+import '../rules/bmf_rates.dart';
 import '../time/local_date.dart';
 
 /// A work schedule (contract), valid from [validFrom] until the next one
@@ -120,10 +121,31 @@ final class Trip {
     this.overnight = true,
     this.service = true,
     this.projectId,
+    this.city,
+    this.lodging = LodgingMode.company,
+    this.lodgingCents = 0,
+    this.carKm = 0,
+    this.claimedOn,
   });
 
   /// Row id (UUIDv7).
   final String id;
+
+  /// City of the destination for a city rate (calculations.md §13.0), or
+  /// `null` for the country's general rate.
+  final String? city;
+
+  /// How the nights are claimed (§13.2).
+  final LodgingMode lodging;
+
+  /// Receipts total for [LodgingMode.receipt], in cents.
+  final int lodgingCents;
+
+  /// Kilometres driven with the own car (§13.3).
+  final int carKm;
+
+  /// The day the expense claim was submitted, or `null` (§13.5).
+  final LocalDate? claimedOn;
 
   /// Whether this is a service trip: service, installation or commissioning
   /// work on a site, paid with a flat supplement (calculations.md §9).
@@ -146,6 +168,69 @@ final class Trip {
 
   /// Whether the trip includes an overnight stay (§13 "Mitternachtsregel").
   final bool overnight;
+}
+
+/// How the nights of a trip are claimed (spec: calculations.md §13.2).
+enum LodgingMode {
+  /// Booked and paid by the employer: nothing to claim (default).
+  company,
+
+  /// The lodging lump sum of each night's place.
+  flat,
+
+  /// The receipts, as a total.
+  receipt,
+}
+
+/// The place of a trip from [date] on (spec: calculations.md §13.1).
+final class TripStop {
+  /// Creates a stop.
+  const TripStop({
+    required this.id,
+    required this.tripId,
+    required this.date,
+    required this.country,
+    this.city,
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// The trip.
+  final String tripId;
+
+  /// First day at this place.
+  final LocalDate date;
+
+  /// ISO 3166-1 alpha-2 country code.
+  final String country;
+
+  /// City for a city rate, or `null`.
+  final String? city;
+}
+
+/// The employer's site allowance per day in a country (spec:
+/// calculations.md §13.4).
+final class SiteAllowanceRate {
+  /// Creates a rate row.
+  const SiteAllowanceRate({
+    required this.id,
+    required this.country,
+    required this.validFrom,
+    required this.cents,
+  });
+
+  /// Row id (UUIDv7).
+  final String id;
+
+  /// ISO 3166-1 alpha-2 country code, or `*` for every other country.
+  final String country;
+
+  /// First day the rate applies to.
+  final LocalDate validFrom;
+
+  /// Amount per allowance day, in cents.
+  final int cents;
 }
 
 /// Length of a home-office quota period (spec: calculations.md §11.2).
@@ -219,6 +304,8 @@ final class PerDiemRate {
     required this.validFrom,
     required this.partialCents,
     required this.fullCents,
+    this.city,
+    this.lodgingCents,
   });
 
   /// Row id (UUIDv7).
@@ -226,6 +313,13 @@ final class PerDiemRate {
 
   /// ISO 3166-1 alpha-2 country code.
   final String country;
+
+  /// The city the rate is for, or `null` for the whole country (the rest of
+  /// it, where cities have their own rate).
+  final String? city;
+
+  /// Lodging lump sum per night (§13.2), or `null` to keep the built-in one.
+  final int? lodgingCents;
 
   /// First day the rates apply to.
   final LocalDate validFrom;
@@ -237,18 +331,30 @@ final class PerDiemRate {
   final int fullCents;
 }
 
-/// The domestic rates to pre-fill (spec: calculations.md §13).
-///
-/// **Check the current values (BMF) before relying on them.**
-List<PerDiemRate> defaultPerDiemRates() => [
+/// The built-in rates (spec: calculations.md §13.0): Germany and the BMF
+/// table from 2026.
+List<PerDiemRate> defaultPerDiemRates() => _defaults;
+
+final _defaults = List<PerDiemRate>.unmodifiable([
   PerDiemRate(
     id: 'default-de-2020',
     country: 'DE',
     validFrom: LocalDate(2020, 1, 1),
     partialCents: 1400,
     fullCents: 2800,
+    lodgingCents: 2000,
   ),
-];
+  for (final (country, city, full, partial, lodging) in bmfRates2026)
+    PerDiemRate(
+      id: 'bmf-2026-$country${city == null ? '' : '-$city'}',
+      country: country,
+      city: city,
+      validFrom: LocalDate(2026, 1, 1),
+      partialCents: partial * 100,
+      fullCents: full * 100,
+      lodgingCents: lodging * 100,
+    ),
+]);
 
 /// Meals provided on one trip day; each reduces the per-diem (§13).
 final class TripMeals {

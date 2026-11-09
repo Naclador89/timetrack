@@ -67,7 +67,8 @@ Rules (the standard HLC algorithm), with local state `(l_ms, l_c)`:
 
 Synced tables (fields: see `docs/concept.md` §2):
 `work_sessions`, `breaks`, `projects`, `project_entries`, `absences`, `work_schedules`,
-`settings`, `home_office_rules`, `trips`, `trip_meals`, `per_diem_rates`.
+`settings`, `home_office_rules`, `trips`, `trip_meals`, `per_diem_rates`, `trip_stops`,
+`site_allowances`, `days`, `day_templates`, `dismissed_notices`.
 
 Every synced row has:
 - `id`: UUIDv7 string. For `settings` the id is the setting key (for example `home_office.day_rule`).
