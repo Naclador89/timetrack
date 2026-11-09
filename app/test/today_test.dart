@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers.dart';
@@ -24,5 +25,50 @@ void main() {
       find.text('Target reached at 17:00 (incl. 30 min break) · 10 h at 19:15'),
       findsOneWidget,
     );
+  });
+
+  // spec: calculations.md §19
+  group('§19 the time of a stamp is asked', () {
+    Future<void> enterTime(WidgetTester tester, int hour, int minute) async {
+      await tester.tap(find.byIcon(Icons.keyboard_outlined));
+      await tester.pumpAndSettle();
+      final fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(0), '$hour');
+      await tester.enterText(fields.at(1), '$minute'.padLeft(2, '0'));
+      await tester.tap(find.text('OK'));
+      await settle(tester);
+    }
+
+    testWidgets('now is preselected; an earlier time is stored', (
+      tester,
+    ) async {
+      await pumpApp(tester, askStampTime: true);
+      await tester.tap(find.text('Clock in'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TimePickerDialog), findsOneWidget);
+      await enterTime(tester, 8, 10);
+      expect(find.text('Clocked in since 08:10'), findsOneWidget);
+
+      await tester.tap(find.text('Break'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await settle(tester);
+      expect(find.text('On break since 08:30'), findsOneWidget);
+    });
+
+    testWidgets('cancelled or impossible: nothing is stamped', (tester) async {
+      await pumpApp(tester, askStampTime: true);
+      await tester.tap(find.text('Clock in'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await settle(tester);
+      expect(find.text('Not clocked in'), findsOneWidget);
+
+      await tester.tap(find.text('Clock in'));
+      await tester.pumpAndSettle();
+      await enterTime(tester, 9, 0);
+      expect(find.text('That time is in the future.'), findsOneWidget);
+      expect(find.text('Not clocked in'), findsOneWidget);
+    });
   });
 }

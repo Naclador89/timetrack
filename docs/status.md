@@ -5,19 +5,12 @@ _Last updated: 2026-11-09 by GitHub Copilot._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.6.0`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.0+9`. All planned
+- **Latest release: `v0.6.1`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.1+10`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 280, app 70 widget tests; CI green on `main`.
+- **Tests**: core 286, app 73 widget tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
-- **To do** (requested by the user, not started):
-  - [ ] Clock in at an earlier time from Today (user, 2026-11-09: "Beim Einstempeln über die
-        Startseite kann ich keine abweichende Zeit eingeben, falls ich eigentlich früher da war.").
-        Today the button always uses now: `TimeTracker.clockIn` (`core/lib/src/tracking/time_tracker.dart`)
-        has no `at`, unlike `clockOut({DateTime? at})`. Idea: `clockIn({at})` (not in the future,
-        not overlapping an earlier session of the day), plus a way on Today to pick the time
-        (e.g. long-press or a small "Zeit ändern" next to the button, a time picker); spec it in
-        calculations.md or concept §2, with tests.
+- **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
   - Windows: tray icon and menu, "Im Infobereich weiterlaufen" (close hides), "Mit Windows starten"
     and "Arbeits-PC" (question after sign-in), Windows notifications for reminders, the updater
@@ -27,6 +20,7 @@ _Last updated: 2026-11-09 by GitHub Copilot._
   - Both: the new month view, the usual break, snack bars, "Tagesart entfernen".
   - Windows: "An Buchungssystem übertragen" in the installed app (address in Einstellungen → App),
     picker popups for Kostengruppe/Position, booking detection after "Buchen", the marker.
+  - Both: the time question when stamping (calculations §19), also from the tray and at sign-in.
 - **Not wanted** (don't propose again unless the user asks): Garmin glance, auto clock-in by
   Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows.
 - **How a change usually goes**: user reports a problem or wish → update the spec in `docs/specs/`
@@ -169,6 +163,8 @@ _Last updated: 2026-11-09 by GitHub Copilot._
   new month view, no target before the balance start, "Mit Windows starten" as its own switch.
 - `v0.5.2` (2026-11-09): a day type can be removed again ("Tagesart entfernen", with undo).
 - `v0.6.0` (2026-11-09): Windows: transfer a week's project hours to the booking system (APplus).
+- `v0.6.1` (2026-11-09): stamping asks for the time (now preselected, switchable); the updater
+  started from Einstellungen shows its progress and "Neu starten" there.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -392,6 +388,12 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       without a prompt, KW 45/2026 set, project name and order filled, Mo 1:30 / Di 1:00, sums
       right, unknown project reported. Nothing booked.
 
+### Stamping at another time (requested by the user 2026-11-09; calculations §19)
+- [x] Core: `at` for clock in/out, breaks, location change and trip end; `earliestAt`
+      (no overlaps), `stampInstant` (yesterday across midnight); setting `ask_stamp_time`.
+- [x] App: time picker before every stamp from Today (incl. trip steps), tray, command palette,
+      shortcuts and the sign-in question; switch in Einstellungen. Android quick access stamps now.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -512,4 +514,5 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-09, Claude Code: release v0.5.2; docs prepared for handoff to GitHub Copilot ("Where things stand" at the top, AGENTS.md: working with the maintainer, where things live, Copilot notes; prompt files in `.github/prompts/`; architecture module table and README brought up to date).
 - 2026-11-09, GitHub Copilot: transfer a week to the booking system on Windows (spec `booking-transfer.md`, ADR 0009, `webview_windows`); spike and end-to-end test on the work PC, nothing booked. 280 core tests, 70 widget tests.
 - 2026-11-09, GitHub Copilot: merged `feat/booking-transfer` into `main`, release v0.6.0.
-- 2026-11-09, GitHub Copilot: fix: an update started from Einstellungen → Nach Updates suchen ran hidden (banner only above the tabs) and the dialog's ref died when the banner appeared (`UpdateBannerHost` swapped the tree). Banner now also above Settings, tree stable; widget test. Not released yet.
+- 2026-11-09, GitHub Copilot: fix: an update started from Einstellungen → Nach Updates suchen ran hidden (banner only above the tabs) and the dialog's ref died when the banner appeared (`UpdateBannerHost` swapped the tree). Banner now also above Settings, tree stable; widget test.
+- 2026-11-09, GitHub Copilot: stamping asks for the time (calculations §19, setting `ask_stamp_time`). 286 core tests, 73 widget tests. Release v0.6.1 with the updater fix.

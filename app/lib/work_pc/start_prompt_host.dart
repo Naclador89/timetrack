@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
+import '../app/actions.dart';
 import '../app/format.dart';
 import '../app/providers.dart';
 import '../sync/sync_controller.dart';
@@ -67,8 +68,17 @@ class _StartPromptHostState extends ConsumerState<StartPromptHost> {
     );
     if (location == null) {
       await prompt.decline();
-    } else {
-      await ref.read(trackerProvider).clockIn(location: location);
+      return;
+    }
+    if (!context.mounted) return;
+    final at = await askStampTime(
+      context,
+      ref,
+      StampAction.clockIn,
+      context.l10n.clockIn,
+    );
+    if (at != null) {
+      await ref.read(trackerProvider).clockIn(location: location, at: at);
     }
   }
 

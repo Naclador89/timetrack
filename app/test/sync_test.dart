@@ -75,6 +75,7 @@ void main() {
           httpClientFactoryProvider.overrideWithValue((_) => client),
           localWritesProvider.overrideWithValue(writes.stream),
           networkChangesProvider.overrideWithValue(network.stream),
+          askStampTimeProvider.overrideWithValue(false),
         ],
         child: TimeTrackApp(router: buildRouter()),
       ),

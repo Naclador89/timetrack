@@ -7,6 +7,7 @@ import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
 import 'package:timetrack/sync/sync_controller.dart';
+import 'package:timetrack/work_pc/work_pc.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 /// Keeps the sync config in memory (no platform channels in tests).
@@ -32,6 +33,7 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
   DateTime Function()? clock,
   List<Override> overrides = const [],
   Future<void> Function(SyncedRepository repo)? seed,
+  bool askStampTime = false,
 }) async {
   final now = clock ?? () => appTestNow;
   final store = InMemorySyncStore();
@@ -54,6 +56,10 @@ Future<(InMemorySyncStore, SyncedRepository)> pumpApp(
         nowProvider.overrideWith((ref) => Stream.value(now())),
         syncConfigStoreProvider.overrideWithValue(MemorySyncConfigStore()),
         networkChangesProvider.overrideWithValue(const Stream.empty()),
+        // Most tests stamp right away; calculations §19 is tested on its own.
+        if (!askStampTime) askStampTimeProvider.overrideWithValue(false),
+        // No tray or window channel in tests, also on a Windows host.
+        workPcPlatformProvider.overrideWithValue(null),
         ...overrides,
       ],
       child: TimeTrackApp(router: router ?? buildRouter()),

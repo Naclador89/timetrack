@@ -37,7 +37,8 @@ Started with `--autostart`, the window first appears **minimized and without foc
    where Windows refuses the focus, the taskbar button flashes). Dialog *Tracking für heute
    starten?* with office / home office, preselected from today's day type, else the last session's
    location (as the quick actions do), office for anything else.
-   - **Starten** clocks in at the chosen location.
+   - **Starten** asks for the time (calculations §19, now preselected) and clocks in at the chosen
+     location.
    - **Nicht heute** stores today's date; further sign-ins today don't ask.
 4. If not asked, the window goes to the tray (§3; hidden) when "Im Infobereich weiterlaufen" is on,
    else it stays minimized.
@@ -59,8 +60,8 @@ runner, channel `timetrack/window`):
   4. "Projekt wechseln…" and "Projektzeit buchen…" (open the window with the picker or sheet);
   5. "TimeTrack öffnen", "Beenden".
 - The actions are the app's own (`app/lib/app/actions.dart`): the same location rules, trip-day
-  steps and summary prompt. Whatever may ask something (a running project's summary, the end of a
-  trip) brings the window up first.
+  steps, time question (calculations §19) and summary prompt. Whatever may ask something (the time,
+  a running project's summary, the end of a trip) brings the window up first.
 - **Im Infobereich weiterlaufen** (Einstellungen → App, Windows only, per device in `local_values`
   `close_to_tray`, default on): the close button hides the window; it keeps running in the tray, and
   "Beenden" in the menu quits. Off: closing quits as before.

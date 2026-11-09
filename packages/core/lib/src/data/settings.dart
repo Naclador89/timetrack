@@ -59,6 +59,9 @@ abstract final class SettingKeys {
   /// Ending a break resumes the project that was running before it.
   static const resumeAfterBreak = 'resume_after_break';
 
+  /// Ask for the time when clocking in or out and at breaks (§19).
+  static const askStampTime = 'ask_stamp_time';
+
   /// Minimum unassigned time of a day before it is a notice (§12).
   static const noticeUnassignedMin = 'notices.unassigned_min';
 
@@ -99,6 +102,7 @@ final class AppSettings {
     this.openSessionLimitMinutes = 720,
     this.autoClockIn = true,
     this.resumeAfterBreak = true,
+    this.askStampTime = true,
     this.noticeUnassignedMinMinutes = 30,
     this.defaultBreakStart = 720,
     this.defaultBreakMinutes = 30,
@@ -191,6 +195,7 @@ final class AppSettings {
       ).toInt(),
       autoClockIn: pick(SettingKeys.autoClockIn, true),
       resumeAfterBreak: pick(SettingKeys.resumeAfterBreak, true),
+      askStampTime: pick(SettingKeys.askStampTime, true),
       noticeUnassignedMinMinutes: pick<num>(
         SettingKeys.noticeUnassignedMin,
         30,
@@ -241,6 +246,9 @@ final class AppSettings {
 
   /// Ending a break resumes the project that ran before it.
   final bool resumeAfterBreak;
+
+  /// Ask for the time when clocking in or out and at breaks (§19).
+  final bool askStampTime;
 
   /// Unassigned time below this is no notice (§12).
   final int noticeUnassignedMinMinutes;

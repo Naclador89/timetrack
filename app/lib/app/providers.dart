@@ -62,6 +62,12 @@ final trackerProvider = Provider<TimeTracker>((ref) {
   );
 });
 
+/// Whether clocking in or out and breaks ask for the time (calculations
+/// §19); a provider of its own so tests can turn it off.
+final askStampTimeProvider = Provider<bool>(
+  (ref) => ref.watch(settingsProvider).askStampTime,
+);
+
 /// What is running right now.
 final trackerStateProvider = Provider<TrackerState>(
   (ref) => TrackerState.fromRows(ref.watch(_rows)),

@@ -148,24 +148,26 @@ class _TrayHostState extends ConsumerState<TrayHost> {
       [for (var i = 0; i < a.items.length; i++) a.items[i] == b.items[i]]
           .every((same) => same);
 
-  /// Runs a tray menu item. Whatever may ask something (the summary of a
-  /// stopped project, the trip's end) brings the window up first.
+  /// Runs a tray menu item. Whatever may ask something (the time of a
+  /// stamp, the summary of a stopped project, the trip's end) brings the
+  /// window up first.
   Future<void> _run(String id) async {
     final platform = _platform;
     final context = widget.navigatorKey.currentContext;
     if (platform == null || context == null || !context.mounted) return;
     final state = ref.read(trackerStateProvider);
-    final asks = state.entry != null || state.trip != null;
+    final asksTime = ref.read(askStampTimeProvider);
+    final asks = asksTime || state.entry != null || state.trip != null;
     Future<void> visible() async {
       if (asks) await platform.showWindow();
     }
 
     switch (id) {
       case 'clock':
-        if (state.clockedIn) await visible();
+        if (state.clockedIn || asksTime) await visible();
         if (context.mounted) await toggleClock(context, ref);
       case 'break':
-        if (!state.onBreak) await visible();
+        if (!state.onBreak || asksTime) await visible();
         if (context.mounted) await toggleBreak(context, ref);
       case 'switch':
         await platform.showWindow();

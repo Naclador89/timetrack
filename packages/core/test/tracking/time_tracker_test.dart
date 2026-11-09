@@ -173,6 +173,127 @@ void main() {
     expect((await rows('trips')).single.fields['return_utc'], t('20:00'));
   });
 
+  // spec: calculations.md §19
+  group('§19 stamping at another time', () {
+    DateTime u(String hhmm) => DateTime.parse(t(hhmm));
+
+    test('every stamp can be dated back; a resumed project starts '
+        'when the break ends', () async {
+      final tr = tracker();
+      at('09:00');
+      await tr.clockIn(at: u('08:10'));
+      await tr.startProject('A');
+      at('12:30');
+      await tr.startBreak(at: u('12:05'));
+      at('13:00');
+      await tr.endBreak(at: u('12:50'));
+      at('17:00');
+      await tr.clockOut(at: u('16:45'));
+      final session = (await rows('work_sessions')).single.fields;
+      expect(
+        (session['start_utc'], session['end_utc']),
+        (t('08:10'), t('16:45')),
+      );
+      final brk = (await rows('breaks')).single.fields;
+      expect((brk['start_utc'], brk['end_utc']), (t('12:05'), t('12:50')));
+      final entries = [
+        for (final r in await rows('project_entries'))
+          (r.fields['start_utc'], r.fields['end_utc']),
+      ]..sort((a, b) => (a.$1! as String).compareTo(b.$1! as String));
+      expect(entries, [(t('09:00'), t('12:05')), (t('12:50'), t('16:45'))]);
+    });
+
+    test('the location change can be dated back', () async {
+      final tr = tracker();
+      await tr.clockIn(location: WorkLocation.home);
+      at('10:00');
+      await tr.clockIn(location: WorkLocation.office, at: u('09:30'));
+      final starts = [
+        for (final r in await rows('work_sessions'))
+          (r.fields['start_utc'], r.fields['end_utc']),
+      ];
+      expect(
+        starts,
+        containsAll([(t('07:00'), t('09:30')), (t('09:30'), null)]),
+      );
+    });
+
+    test(
+      'earliest instants: no overlap with what is already recorded',
+      () async {
+        final tr = tracker();
+        expect(await tr.earliestAt(StampAction.clockIn), isNull);
+        await tr.clockIn();
+        at('08:00');
+        await tr.clockOut();
+        expect(await tr.earliestAt(StampAction.clockIn), u('08:00'));
+
+        at('09:00');
+        await tr.clockIn();
+        expect(await tr.earliestAt(StampAction.clockOut), u('09:00'));
+        at('10:00');
+        await tr.startBreak();
+        expect(await tr.earliestAt(StampAction.endBreak), u('10:00'));
+        at('10:20');
+        await tr.endBreak();
+        // The finished break bounds the next break and the clock-out.
+        expect(await tr.earliestAt(StampAction.clockOut), u('10:20'));
+        at('11:00');
+        await tr.startProject('A');
+        expect(
+          await tr.earliestAt(StampAction.startBreak),
+          u('11:00'),
+          reason: 'not before the running project started',
+        );
+        expect(await tr.earliestAt(StampAction.changeLocation), u('09:00'));
+      },
+    );
+
+    test('times in the future or before the earliest instant throw', () async {
+      final tr = tracker();
+      await tr.clockIn();
+      at('08:00');
+      await tr.clockOut();
+      at('09:00');
+      await expectLater(tr.clockIn(at: u('07:50')), throwsArgumentError);
+      await expectLater(tr.clockIn(at: u('09:01')), throwsArgumentError);
+      await tr.clockIn(at: u('08:00'));
+      await expectLater(tr.startBreak(at: u('07:59')), throwsArgumentError);
+      expect((await tr.state()).onBreak, isFalse);
+    });
+
+    test('a trip can end at the dated-back clock-out', () async {
+      final tr = tracker();
+      await tr.startTrip();
+      at('20:00');
+      await tr.endTrip(at: u('19:40'));
+      expect((await rows('trips')).single.fields['return_utc'], t('19:40'));
+    });
+
+    test('stampInstant: today, yesterday only across midnight', () {
+      final zone = HomeTimeZone('Europe/Berlin');
+      // 00:20 Berlin on 5 Nov.
+      final now = DateTime.utc(2026, 11, 4, 23, 20);
+      expect(stampInstant(zone, now, 0, 10), DateTime.utc(2026, 11, 4, 23, 10));
+      expect(
+        stampInstant(zone, now, 23, 50),
+        DateTime.utc(2026, 11, 5, 22, 50),
+        reason: 'no earliest before today: stays today (in the future)',
+      );
+      expect(
+        stampInstant(
+          zone,
+          now,
+          23,
+          50,
+          earliest: DateTime.utc(2026, 11, 4, 16),
+        ),
+        DateTime.utc(2026, 11, 4, 22, 50),
+        reason: 'the session started yesterday',
+      );
+    });
+  });
+
   group('AppSettings (data-model.md §7)', () {
     test('defaults when nothing is stored', () {
       final s = AppSettings.fromRows(const []);

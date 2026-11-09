@@ -32,18 +32,88 @@ WorkLocation nextClockInLocation(WidgetRef ref) {
   return allowed.contains(last) ? last! : allowed.first;
 }
 
-/// Clocks in at [nextClockInLocation].
-Future<void> clockIn(WidgetRef ref) async {
-  tapFeedback(strong: true);
-  await ref.read(trackerProvider).clockIn(location: nextClockInLocation(ref));
+/// Asks when [action] happened, the current time preselected (calculations
+/// §19); [title] heads the picker. Returns now without asking if the setting
+/// is off, `null` if cancelled or the time isn't possible (a snack bar says
+/// why).
+Future<DateTime?> askStampTime(
+  BuildContext context,
+  WidgetRef ref,
+  StampAction action,
+  String title,
+) async {
+  final now = ref.read(clockProvider)();
+  if (!ref.read(askStampTimeProvider)) return now;
+  final zone = ref.read(zoneProvider);
+  final local = zone.toLocal(now);
+  final picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay(hour: local.hour, minute: local.minute),
+    helpText: title,
+  );
+  if (picked == null || !context.mounted) return null;
+  final earliest = await ref.read(trackerProvider).earliestAt(action);
+  final at = stampInstant(
+    zone,
+    now,
+    picked.hour,
+    picked.minute,
+    earliest: earliest,
+  );
+  final tooEarly =
+      earliest != null && isoMinute(at).compareTo(isoMinute(earliest)) < 0;
+  if (!tooEarly && isoMinute(at).compareTo(isoMinute(now)) <= 0) return at;
+  if (!context.mounted) return null;
+  final l = context.l10n;
+  String when(DateTime instant) {
+    final time = context.time(instant, zone);
+    final day = zone.dateOf(instant);
+    final today = zone.dateOf(now);
+    if (day == today) return time;
+    if (day == today.addDays(-1)) return l.yesterdayAt(time);
+    return '${context.shortDate(day)} $time';
+  }
+
+  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+    SnackBar(
+      content: Text(
+        earliest == null
+            ? l.stampTimeFuture
+            : l.forgottenTimeInvalid(when(earliest)),
+      ),
+    ),
+  );
+  return null;
 }
 
-/// Clocks out, asks for the project summary and, after travelling, whether
-/// the trip has ended.
+/// Clocks in at [nextClockInLocation], at the time the user confirms.
+Future<void> clockIn(BuildContext context, WidgetRef ref) async {
+  tapFeedback(strong: true);
+  final location = nextClockInLocation(ref);
+  final at = await askStampTime(
+    context,
+    ref,
+    StampAction.clockIn,
+    context.l10n.clockIn,
+  );
+  if (at == null) return;
+  await ref.read(trackerProvider).clockIn(location: location, at: at);
+}
+
+/// Clocks out at the time the user confirms, asks for the project summary
+/// and, after travelling, whether the trip has ended.
 Future<void> clockOut(BuildContext context, WidgetRef ref) async {
   tapFeedback(strong: true);
   final state = ref.read(trackerStateProvider);
-  await withSummaryPrompt(context, ref, ref.read(trackerProvider).clockOut);
+  final at = await askStampTime(
+    context,
+    ref,
+    StampAction.clockOut,
+    context.l10n.clockOut,
+  );
+  if (at == null || !context.mounted) return;
+  final tracker = ref.read(trackerProvider);
+  await withSummaryPrompt(context, ref, () => tracker.clockOut(at: at));
   if (!context.mounted) return;
   if (state.trip != null && state.location == WorkLocation.travel) {
     final end = await showDialog<bool>(
@@ -62,7 +132,7 @@ Future<void> clockOut(BuildContext context, WidgetRef ref) async {
         ],
       ),
     );
-    if (end == true) await ref.read(trackerProvider).endTrip();
+    if (end == true) await ref.read(trackerProvider).endTrip(at: at);
   }
 }
 
@@ -76,7 +146,7 @@ Future<void> toggleClock(BuildContext context, WidgetRef ref) async {
   }
   ref.read(trackerStateProvider).clockedIn
       ? await clockOut(context, ref)
-      : await clockIn(ref);
+      : await clockIn(context, ref);
 }
 
 /// Starts or ends a break (only while clocked in).
@@ -84,10 +154,18 @@ Future<void> toggleBreak(BuildContext context, WidgetRef ref) async {
   final state = ref.read(trackerStateProvider);
   if (!state.clockedIn) return;
   tapFeedback();
+  final l = context.l10n;
+  final at = await askStampTime(
+    context,
+    ref,
+    state.onBreak ? StampAction.endBreak : StampAction.startBreak,
+    state.onBreak ? l.endBreak : l.startBreak,
+  );
+  if (at == null || !context.mounted) return;
   final tracker = ref.read(trackerProvider);
   state.onBreak
-      ? await tracker.endBreak()
-      : await withSummaryPrompt(context, ref, tracker.startBreak);
+      ? await tracker.endBreak(at: at)
+      : await withSummaryPrompt(context, ref, () => tracker.startBreak(at: at));
 }
 
 /// Opens the booking sheet for today.

@@ -149,6 +149,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         value: s.resumeAfterBreak,
         onChanged: (v) => save(SettingKeys.resumeAfterBreak, v),
       ),
+      // spec: calculations.md §19
+      SwitchListTile(
+        secondary: const Icon(Icons.schedule),
+        title: Text(l.askStampTime),
+        subtitle: Text(l.askStampTimeHint),
+        value: s.askStampTime,
+        onChanged: (v) => save(SettingKeys.askStampTime, v),
+      ),
       // spec: calculations.md §4.1 (only prefills, never deducts)
       ListTile(
         leading: const Icon(Icons.coffee_outlined),

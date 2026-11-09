@@ -1,6 +1,7 @@
 import '../model/attendance.dart';
 import '../sync/change.dart';
 import '../sync/repository.dart';
+import '../time/home_time_zone.dart';
 
 /// The current attendance state, derived from the stored rows.
 final class TrackerState {
@@ -68,6 +69,49 @@ String isoMinute(DateTime instant) {
       'T${two(u.hour)}:${two(u.minute)}:00Z';
 }
 
+/// A stamp the user can date back (spec: calculations.md §19).
+enum StampAction {
+  /// Clocking in (or switching the location, when clocked in elsewhere).
+  clockIn,
+
+  /// Clocking out.
+  clockOut,
+
+  /// Starting a break.
+  startBreak,
+
+  /// Ending the break.
+  endBreak,
+
+  /// Ending the session and starting one at another location.
+  changeLocation,
+}
+
+/// The instant the user means by [hour]:[minute] (home time, [zone]) when
+/// stamping at [now] (spec: calculations.md §19): today; yesterday if that
+/// is still in the future and [earliest] lies before today (a session that
+/// runs past midnight).
+DateTime stampInstant(
+  HomeTimeZone zone,
+  DateTime now,
+  int hour,
+  int minute, {
+  DateTime? earliest,
+}) {
+  DateTime utc(DateTime t) => DateTime.fromMillisecondsSinceEpoch(
+    t.millisecondsSinceEpoch,
+    isUtc: true,
+  );
+  final today = zone.dateOf(now);
+  final at = utc(zone.instantAt(today, hour, minute));
+  if (isoMinute(at).compareTo(isoMinute(now)) <= 0 ||
+      earliest == null ||
+      !zone.dateOf(earliest).isBefore(today)) {
+    return at;
+  }
+  return utc(zone.instantAt(today.addDays(-1), hour, minute));
+}
+
 /// The commands behind the clock-in, break and project buttons. They keep the
 /// two layers consistent (concept §2, "How the two layers interact"):
 ///
@@ -99,9 +143,8 @@ final class TimeTracker {
 
   String get _stamp => isoMinute(_now());
 
-  /// Reads the current state.
-  Future<TrackerState> state() => repository.store.transaction(
-    (tx) async => TrackerState.fromRows([
+  Future<List<StoredRow>> _rows() => repository.store.transaction(
+    (tx) async => [
       for (final t in const [
         'work_sessions',
         'breaks',
@@ -109,28 +152,98 @@ final class TimeTracker {
         'trips',
       ])
         ...await tx.rows(t),
-    ]),
+    ],
   );
+
+  /// Reads the current state.
+  Future<TrackerState> state() async => TrackerState.fromRows(await _rows());
+
+  /// The earliest instant [action] may be dated back to; `null` if there is
+  /// no lower bound (spec: calculations.md §19).
+  Future<DateTime?> earliestAt(StampAction action) async {
+    final rows = await _rows();
+    final s = TrackerState.fromRows(rows);
+    String? latest(Iterable<Object?> values) {
+      String? best;
+      for (final v in values) {
+        if (v is String && (best == null || v.compareTo(best) > 0)) best = v;
+      }
+      return best;
+    }
+
+    final sessionStart = s.session?.fields['start_utc'] as String?;
+    // Breaks and project entries of the open session that already ended.
+    Iterable<Object?> closedInSession() => [
+      if (sessionStart != null)
+        for (final r in rows)
+          if (!r.isDeleted &&
+              (r.table == 'breaks' || r.table == 'project_entries') &&
+              r.fields['end_utc'] is String &&
+              (r.fields['start_utc'] as String? ?? '').compareTo(
+                    sessionStart,
+                  ) >=
+                  0)
+            r.fields['end_utc'],
+    ];
+    final bound = switch (action) {
+      StampAction.clockIn when s.clockedIn => sessionStart,
+      StampAction.clockIn => latest([
+        for (final r in rows)
+          if (r.table == 'work_sessions' && !r.isDeleted) r.fields['end_utc'],
+      ]),
+      StampAction.changeLocation => sessionStart,
+      StampAction.endBreak => s.breakRow?.fields['start_utc'] as String?,
+      StampAction.clockOut => latest([sessionStart, ...closedInSession()]),
+      StampAction.startBreak => latest([
+        sessionStart,
+        ...closedInSession(),
+        s.entry?.fields['start_utc'],
+      ]),
+    };
+    return bound == null ? null : DateTime.parse(bound);
+  }
+
+  /// [at] as stored, or now. Throws [ArgumentError] if [at] is in the future
+  /// or before [earliest].
+  String _when(DateTime? at, [DateTime? earliest]) {
+    if (at == null) return _stamp;
+    final stamp = isoMinute(at);
+    if (stamp.compareTo(_stamp) > 0) {
+      throw ArgumentError.value(at, 'at', 'is in the future');
+    }
+    if (earliest != null && stamp.compareTo(isoMinute(earliest)) < 0) {
+      throw ArgumentError.value(at, 'at', 'is before $earliest');
+    }
+    return stamp;
+  }
+
+  Future<String> _checked(DateTime? at, StampAction action) async =>
+      _when(at, at == null ? null : await earliestAt(action));
 
   /// Clocks in at [location]. Does nothing if already clocked in at that
   /// location; switches the location (new session) if clocked in elsewhere.
-  Future<void> clockIn({WorkLocation location = WorkLocation.office}) async {
+  /// [at] dates it back (calculations.md §19).
+  Future<void> clockIn({
+    WorkLocation location = WorkLocation.office,
+    DateTime? at,
+  }) async {
     final s = await state();
     if (s.clockedIn) {
-      if (s.location != location) await changeLocation(location);
+      if (s.location != location) await changeLocation(location, at: at);
       return;
     }
-    await _openSession(location);
+    await _openSession(location, await _checked(at, StampAction.clockIn));
   }
 
   /// Clocks out: ends the running break and project entry, then the session.
   ///
   /// [at] clocks out afterwards, e.g. for a forgotten clock-out: a running
   /// break or project entry that only started after it is deleted
-  /// (reminders.md §1).
+  /// (reminders.md §1). It must not be before the session start.
   Future<void> clockOut({DateTime? at}) async {
     final s = await state();
-    final end = at == null ? _stamp : isoMinute(at);
+    final start = s.session?.fields['start_utc'] as String?;
+    final end = _when(at, start == null ? null : DateTime.parse(start));
     for (final (table, row) in [
       ('breaks', s.breakRow),
       ('project_entries', s.entry),
@@ -144,28 +257,30 @@ final class TimeTracker {
   }
 
   /// Starts a break (clocked in only). Stops the running project entry.
-  Future<void> startBreak() async {
+  /// [at] dates it back (calculations.md §19).
+  Future<void> startBreak({DateTime? at}) async {
     final s = await state();
     if (!s.clockedIn || s.onBreak) return;
-    final at = _stamp;
-    if (s.entry != null) await _end('project_entries', s.entry!, at);
+    final start = await _checked(at, StampAction.startBreak);
+    if (s.entry != null) await _end('project_entries', s.entry!, start);
     await repository.write('breaks', repository.newId(), {
-      'start_utc': at,
+      'start_utc': start,
       'end_utc': null,
     });
   }
 
   /// Ends the running break and, if [resumeAfterBreak], restarts the project
-  /// that ran until the break started.
-  Future<void> endBreak() async {
+  /// that ran until the break started. [at] dates it back (§19).
+  Future<void> endBreak({DateTime? at}) async {
     final s = await state();
     final b = s.breakRow;
     if (b == null) return;
-    await _end('breaks', b, _stamp);
+    final end = await _checked(at, StampAction.endBreak);
+    await _end('breaks', b, end);
     if (!resumeAfterBreak || s.entry != null) return;
     final previous = await _entryEndedAt(b.fields['start_utc']! as String);
     if (previous != null) {
-      await _startEntry(previous.fields['project_id']! as String);
+      await _startEntry(previous.fields['project_id']! as String, end);
     }
   }
 
@@ -184,7 +299,7 @@ final class TimeTracker {
     if (s.breakRow != null) await _end('breaks', s.breakRow!, at);
     if (s.projectId == projectId) return;
     if (s.entry != null) await _end('project_entries', s.entry!, at);
-    await _startEntry(projectId);
+    await _startEntry(projectId, _stamp);
   }
 
   /// Stops the running project entry (attendance continues).
@@ -195,11 +310,13 @@ final class TimeTracker {
 
   /// Changes the location while clocked in: the current session ends now and
   /// a new one starts with [location] (location is per session, ADR 0002).
-  Future<void> changeLocation(WorkLocation location) async {
+  /// [at] dates the change back (calculations.md §19).
+  Future<void> changeLocation(WorkLocation location, {DateTime? at}) async {
     final s = await state();
     if (s.session == null || s.location == location) return;
-    await _end('work_sessions', s.session!, _stamp);
-    await _openSession(location);
+    final when = await _checked(at, StampAction.changeLocation);
+    await _end('work_sessions', s.session!, when);
+    await _openSession(location, when);
   }
 
   /// Starts a business trip now (spec: calculations.md §9).
@@ -219,25 +336,28 @@ final class TimeTracker {
     return id;
   }
 
-  /// Ends the open trip now.
-  Future<void> endTrip() async {
+  /// Ends the open trip now, or at [at] (e.g. the dated-back clock-out).
+  Future<void> endTrip({DateTime? at}) async {
     final s = await state();
     if (s.trip == null) return;
-    await repository.write('trips', s.trip!.id, {'return_utc': _stamp});
+    final depart = DateTime.parse(s.trip!.fields['depart_utc']! as String);
+    await repository.write('trips', s.trip!.id, {
+      'return_utc': _when(at, depart),
+    });
   }
 
-  Future<void> _openSession(WorkLocation location) =>
+  Future<void> _openSession(WorkLocation location, [String? at]) =>
       repository.write('work_sessions', repository.newId(), {
-        'start_utc': _stamp,
+        'start_utc': at ?? _stamp,
         'end_utc': null,
         'location': location.wireName,
         'source': 'app',
       });
 
-  Future<void> _startEntry(String projectId) =>
+  Future<void> _startEntry(String projectId, String at) =>
       repository.write('project_entries', repository.newId(), {
         'project_id': projectId,
-        'start_utc': _stamp,
+        'start_utc': at,
         'end_utc': null,
         'source': 'app',
       });

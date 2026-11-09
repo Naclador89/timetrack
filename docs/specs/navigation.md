@@ -27,8 +27,8 @@ are open); F1 or `?` lists them, and the command palette shows each action's key
 | Key | Action |
 |---|---|
 | Ctrl+K | command palette |
-| Ctrl+E | clock in or out (at the location Today would use; on a trip day it opens Today, whose steps decide) |
-| Ctrl+P | start or end a break (while clocked in) |
+| Ctrl+E | clock in or out (at the location Today would use; on a trip day it opens Today, whose steps decide); asks for the time first, calculations §19 |
+| Ctrl+P | start or end a break (while clocked in; asks for the time first, calculations §19) |
 | Ctrl+B | book project time for today |
 | Ctrl+J | quick entry for today |
 | Ctrl+1 … 4 | Today, Calendar, Projects, Reports |

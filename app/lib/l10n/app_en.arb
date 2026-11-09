@@ -222,6 +222,9 @@
   "saturdayCap": "Saturday: max. hours",
   "autoClockIn": "Clock in automatically when a project starts",
   "resumeAfterBreak": "Resume the project after a break",
+  "askStampTime": "Ask for the time when stamping",
+  "askStampTimeHint": "When clocking in or out and at breaks; the current time is suggested",
+  "stampTimeFuture": "That time is in the future.",
   "general": "General",
   "vacationLeft": "Vacation {year}: {remaining} of {total} days left",
   "@vacationLeft": {

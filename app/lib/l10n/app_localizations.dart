@@ -800,6 +800,24 @@ abstract class AppLocalizations {
   /// **'Resume the project after a break'**
   String get resumeAfterBreak;
 
+  /// No description provided for @askStampTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for the time when stamping'**
+  String get askStampTime;
+
+  /// No description provided for @askStampTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When clocking in or out and at breaks; the current time is suggested'**
+  String get askStampTimeHint;
+
+  /// No description provided for @stampTimeFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'That time is in the future.'**
+  String get stampTimeFuture;
+
   /// No description provided for @general.
   ///
   /// In en, this message translates to:

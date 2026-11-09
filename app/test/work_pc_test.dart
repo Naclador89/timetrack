@@ -119,6 +119,8 @@ void main() {
     expect(workPc.shown, 1, reason: 'window brought to the front');
     await tester.tap(find.text('Start'));
     await settle(tester);
+    await tester.tap(find.text('OK')); // the time, now (calculations §19)
+    await settle(tester);
     final s = await state();
     expect(s.clockedIn, isTrue);
     expect(s.location, WorkLocation.office);
@@ -130,6 +132,8 @@ void main() {
     await tester.tap(find.text('Home office'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Start'));
+    await settle(tester);
+    await tester.tap(find.text('OK')); // the time, now (calculations §19)
     await settle(tester);
     expect((await state()).location, WorkLocation.home);
   });
@@ -237,6 +241,9 @@ void main() {
         'Quit',
       ]);
       workPc.actions.add('clock');
+      await settle(tester);
+      expect(workPc.shown, 1, reason: 'the time is asked in the window');
+      await tester.tap(find.text('OK'));
       await settle(tester);
       expect((await state()).clockedIn, isTrue);
       expect(workPc.tray!.idle, isFalse);

@@ -478,3 +478,30 @@ With `W`, `C`, `R` from §4, `d` the §4 deduction and `Cr` the credited time (�
 - On a break, both assume work resumes now. Times are whole minutes and move with the clock.
 
 `dayForecast` implements this; the Android notification shows the target time as its subtext.
+
+## §19 Stamping at another time
+
+Requested by the user 2026-11-09. Clocking in or out, starting or ending a break, a location change
+and the trip steps (§9.1) first ask for the time, with the current time preselected (Flutter time
+picker; its title is the button's label). Cancelling stamps nothing. Synced setting
+`ask_stamp_time` (Einstellungen, default **on**); off stamps right away, as before. The Android
+notification, tile and widget run without a window and always stamp now.
+
+The picked local time means today (home time zone); if that is still in the future and the
+earliest instant (below) lies before today, yesterday (a session that runs past midnight;
+`stampInstant`). A time in the future or before the earliest instant is refused with a snack bar
+and nothing is stamped. Earliest instants (`TimeTracker.earliestAt`), so nothing overlaps:
+
+| Stamp | Not before |
+|---|---|
+| clock in | the end of the latest finished session |
+| clock out | the session start and the end of every finished break or project entry of the session |
+| start break | as clock out, and the start of the running project entry |
+| end break | the break start |
+| location change (also clock in while clocked in elsewhere) | the session start |
+
+The stamp is stored at the picked minute; the rows it ends end there too (a running project at the
+break start or clock-out, the session at a location change). A project resumed after a break
+(`resume_after_break`) starts when the break ends. Ending the trip after the last trip step uses
+the clock-out time. `TimeTracker` throws an `ArgumentError` for a time in the future or before the
+earliest instant (for clock-out: before the session start, reminders.md §1).

@@ -224,6 +224,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Check for updates'));
+    await tester.pumpAndSettle();
     await tapAndWait(tester, find.text('Check for updates'));
     expect(find.text('Neu: Updates aus der App'), findsOneWidget);
     expect(find.text('Update'), findsNWidgets(2), reason: 'banner + dialog');

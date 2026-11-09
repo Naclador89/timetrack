@@ -1,7 +1,6 @@
 // spec: booking-transfer.md §1, §5, §7
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timetrack/booking/booking_store.dart';
-import 'package:timetrack/work_pc/work_pc.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import 'helpers.dart';
@@ -34,10 +33,7 @@ Future<void> week(SyncedRepository repo, {bool withUrl = true}) async {
   if (withUrl) await saveBookingUrl(repo.store, 'http://booking.example/x');
 }
 
-final overrides = [
-  bookingSupportedProvider.overrideWithValue(true),
-  workPcPlatformProvider.overrideWithValue(null),
-];
+final overrides = [bookingSupportedProvider.overrideWithValue(true)];
 
 void main() {
   testWidgets('§1 not offered without an address', (tester) async {
@@ -54,10 +50,7 @@ void main() {
     await pumpApp(
       tester,
       seed: week,
-      overrides: [
-        bookingSupportedProvider.overrideWithValue(false),
-        workPcPlatformProvider.overrideWithValue(null),
-      ],
+      overrides: [bookingSupportedProvider.overrideWithValue(false)],
     );
     await openCalendar(tester);
     expect(find.text('Booking system'), findsNothing);

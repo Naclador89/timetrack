@@ -143,33 +143,45 @@ class _HeroCard extends ConsumerStatefulWidget {
 }
 
 class _HeroCardState extends ConsumerState<_HeroCard> {
-  Future<void> _clockIn() => clockIn(ref);
+  Future<void> _clockIn() => clockIn(context, ref);
 
   Future<void> _clockOut() => clockOut(context, ref);
 
   Future<void> _toggleBreak() => toggleBreak(context, ref);
 
   /// Runs a trip step (calculations §9.1): each records the exact minute
-  /// for the travel report.
+  /// for the travel report, at the time the user confirms (§19).
   Future<void> _tripStep(TripStep step) async {
+    if (step == TripStep.endInbound) {
+      await _clockOut(); // asks the time and offers to end the trip
+      return;
+    }
     tapFeedback(strong: true);
     final tracker = ref.read(trackerProvider);
     final clockedIn = ref.read(trackerStateProvider).clockedIn;
+    final action = switch (step) {
+      TripStep.arriveOnSite => StampAction.changeLocation,
+      TripStep.startInbound when clockedIn => StampAction.changeLocation,
+      TripStep.endOutbound || TripStep.endOnSite => StampAction.clockOut,
+      _ => StampAction.clockIn,
+    };
+    final at = await askStampTime(context, ref, action, _stepLabel(step));
+    if (at == null || !mounted) return;
     switch (step) {
       case TripStep.startOutbound:
-        await tracker.clockIn(location: WorkLocation.travel);
+        await tracker.clockIn(location: WorkLocation.travel, at: at);
       case TripStep.arriveOnSite:
-        await tracker.changeLocation(WorkLocation.onSite);
+        await tracker.changeLocation(WorkLocation.onSite, at: at);
       case TripStep.startOnSite:
-        await tracker.clockIn(location: WorkLocation.onSite);
+        await tracker.clockIn(location: WorkLocation.onSite, at: at);
       case TripStep.startInbound:
         clockedIn
-            ? await tracker.changeLocation(WorkLocation.travel)
-            : await tracker.clockIn(location: WorkLocation.travel);
+            ? await tracker.changeLocation(WorkLocation.travel, at: at)
+            : await tracker.clockIn(location: WorkLocation.travel, at: at);
       case TripStep.endOutbound || TripStep.endOnSite:
-        await withSummaryPrompt(context, ref, tracker.clockOut);
+        await withSummaryPrompt(context, ref, () => tracker.clockOut(at: at));
       case TripStep.endInbound:
-        await _clockOut(); // also offers to end the trip
+        break;
     }
   }
 

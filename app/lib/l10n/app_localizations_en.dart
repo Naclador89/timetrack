@@ -387,6 +387,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumeAfterBreak => 'Resume the project after a break';
 
   @override
+  String get askStampTime => 'Ask for the time when stamping';
+
+  @override
+  String get askStampTimeHint =>
+      'When clocking in or out and at breaks; the current time is suggested';
+
+  @override
+  String get stampTimeFuture => 'That time is in the future.';
+
+  @override
   String get general => 'General';
 
   @override

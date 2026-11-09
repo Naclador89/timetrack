@@ -387,6 +387,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get resumeAfterBreak => 'Nach der Pause Projekt fortsetzen';
 
   @override
+  String get askStampTime => 'Uhrzeit beim Stempeln abfragen';
+
+  @override
+  String get askStampTimeHint =>
+      'Beim Ein- und Ausstempeln und bei Pausen; vorgeschlagen ist die aktuelle Uhrzeit';
+
+  @override
+  String get stampTimeFuture => 'Die Uhrzeit liegt in der Zukunft.';
+
+  @override
   String get general => 'Allgemein';
 
   @override
