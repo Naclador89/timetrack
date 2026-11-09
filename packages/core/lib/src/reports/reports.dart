@@ -89,6 +89,9 @@ final class Timesheet {
   /// Days touched by a business trip (§9).
   int get tripDays => rows.where((r) => r.day.isTripDay).length;
 
+  /// Days of a service trip that earn the flat supplement (§9, "35 % days").
+  int get servicePayDays => rows.where((r) => r.day.servicePayDay).length;
+
   /// Total Sunday hours of trip Sundays, for HR (§9, not in the balance).
   int get sundayHours => _sum((d) => d.sundayHours);
 

@@ -58,9 +58,10 @@ void main() {
     await trip('2026-11-07', '2026-11-08');
     await work('2026-11-07', '06:00:00', '19:00:00', 'travel'); // 13 h
     await work('2026-11-08', '08:00:00', '12:00:00', 'travel');
+    // A service trip (the default): Saturday at most 8 h.
     final sat = explain(LocalDate(2026, 11, 7));
-    expect((sat.rule, sat.ruleCredit), (TripDayType.saturday, 660));
-    expect(sat.notCounted, sat.effective - 660);
+    expect((sat.rule, sat.ruleCredit), (TripDayType.saturday, 480));
+    expect(sat.notCounted, sat.effective - 480);
     final sun = explain(LocalDate(2026, 11, 8));
     expect(
       (sun.rule, sun.ruleCredit, sun.sundayHours),

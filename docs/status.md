@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 286, app 77 tests; CI green on `main`.
+- **Tests**: core 285, app 78 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -391,6 +391,30 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       without a prompt, KW 45/2026 set, project name and order filled, Mo 1:30 / Di 1:00, sums
       right, unknown project reported. Nothing booked.
 
+### Employer rules: working time and travel expenses (user 2026-11-09, step by step)
+The user shared the employer's working-time rules and travel expense policy (internal documents:
+**never commit them, nor the company name**; build every company value as a setting). Reviewed
+against the app; the agreed order of steps:
+1. [x] **Travel crediting** (calculations §9, data-model §9 `trips.service`): service trips
+       (service/installation/commissioning on a site, default) credit the target on weekdays and at
+       most 8 h on Saturdays; other trips (fair, training) the real time up to 10 h; Saturdays
+       without a trip up to 10 h; Sunday hours up to 12 h. "Tage mit Reisezuschlag" (35 % days:
+       Mon–Sat of a service trip) in the timesheet. New setting keys (`travel.service_saturday_cap_min`,
+       `travel.day_cap_min`, `travel.sunday_hours_cap_min`); the old ones are no longer read.
+       Switch "Serviceeinsatz / Inbetriebnahme" in the trip dialog.
+2. [ ] Monthly report to HR: over/under hours, days over 10 h and missed breaks, each with a reason
+       (notices get a reason field; export).
+3. [ ] Traffic light for the account (green to +300/−100 h, yellow to +350/−150 h, red beyond,
+       limits +400/−200 h) and the yearly account (balance on 31 Dec, reduce by 31 Mar, extended by
+       vacation and sick days).
+4. [ ] Supplements per month: Sunday/holiday hours, the four 150 % days, night hours 23–6 (≥ 2 h).
+5. [ ] Travel expenses: built-in BMF per-diem and lodging rates 2026 (with cities), site allowance
+       per site day (≥ 2 consecutive; ask the user whether the policy's "Auslandzulagen" column is
+       its rate), several countries per trip, lodging per night, mileage 0.30 €/km, 3-month claim
+       deadline notice, laundry hint for trips over 5 days.
+6. [ ] Weekly limits (60 h, 48 h average over 24 weeks), on-call duty (Rufbereitschaft) counts.
+Later if needed: a switch for when the flat supplement is suspended (the rules allow that).
+
 ### Windows self-update without a script (bug reported by the user 2026-11-09; updates.md §5)
 - [x] After "Neu starten" the app quit, didn't come back, and a manual start opened the old version:
       the PowerShell script that copied the files is most likely blocked on the company PC
@@ -445,6 +469,8 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - **Trip Sundays → Sunday hours** (user, 2026-11-07): travel and on-site work on a trip Sunday count
   as Sunday hours for HR (extra pay), max 11 h, shown in the monthly timesheet, **not** in the
   overtime balance (`travel.sunday = sunday_hours`, `travel.sunday_cap_min = 660`, calculations §9).
+  **Superseded 2026-11-09** by the employer's rules (calculations §9): Saturday 8 h (service trip) /
+  10 h, Sunday hours up to 12 h, other trips their real time.
   Holidays on trips follow the same rule. All travel rules are now editable in Settings.
 - **Weekend and holiday rules apply on every day** (user, 2026-11-08), trip or not: Saturday work is
   overtime up to the cap, Sunday and holiday work become Sunday/holiday hours (not in the balance).
@@ -537,3 +563,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-09, GitHub Copilot: stamping asks for the time (calculations §19, setting `ask_stamp_time`). 286 core tests, 73 widget tests. Release v0.6.1 with the updater fix.
 - 2026-11-09, Claude Code: reviewed the Copilot work (booking transfer, stamp time, updater fix): docs and tests in order; fixed the clock-in that moved a future time to yesterday, and the wrong snack bar for it. 286 core, 74 widget tests green.
 - 2026-11-09, Claude Code: Windows self-update no longer needs PowerShell (the script was most likely blocked on the company PC); files are swapped in by the app itself. 286 core, 77 app tests green.
+- 2026-11-09, Claude Code: reviewed the employer's working-time and travel expense rules with the user; step 1 done: travel crediting by service trip (calculations §9, `trips.service`), 35 % days in the timesheet. 285 core, 78 app tests green.

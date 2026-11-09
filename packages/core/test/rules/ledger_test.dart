@@ -169,7 +169,39 @@ void main() {
       reason: 'Sunday hours for HR, not in the balance',
     );
     expect(fri.work.worked, 660, reason: 'actual times are kept');
+    expect([fri, sat, sun, mon].map((x) => x.servicePayDay), [
+      true,
+      true,
+      false,
+      true,
+    ], reason: '35 % days: Mon–Sat of a service trip');
     expect(l.day(d('2026-11-17')).isTripDay, isFalse);
+  });
+
+  test('§9 another trip (fair, training): the real time, at most 10 h', () {
+    final l = ledger(
+      LedgerData(
+        schedules: [schedule],
+        trips: [
+          Trip(
+            id: 't',
+            depart: at('2026-11-13', '13:00'),
+            returnAt: at('2026-11-14', '20:00'),
+            service: false,
+          ),
+        ],
+        sessions: [
+          work('2026-11-13', '08:00', '13:00'),
+          work('2026-11-13', '13:00', '15:00', WorkLocation.travel),
+          work('2026-11-14', '07:00', '20:00', WorkLocation.travel),
+        ],
+      ),
+    );
+    final fri = l.day(d('2026-11-13')), sat = l.day(d('2026-11-14'));
+    expect(fri.credited, fri.breaks.effectiveWorked);
+    expect(fri.credited, 420, reason: '5 h office + 2 h travel');
+    expect(sat.credited, 600);
+    expect([fri.servicePayDay, sat.servicePayDay], [false, false]);
   });
 
   test('§9 weekends and holidays follow their rule without a trip too', () {
@@ -194,9 +226,9 @@ void main() {
       [sat.isTripDay, sun.isTripDay, hol.isTripDay],
       [false, false, false],
     );
-    expect((sat.credited, sat.sundayHours), (660, 0), reason: 'max 11 h');
+    expect((sat.credited, sat.sundayHours), (600, 0), reason: 'max 10 h');
     expect((sun.credited, sun.sundayHours), (0, 300));
-    expect((hol.credited, hol.sundayHours), (0, 660), reason: 'like Sunday');
+    expect((hol.credited, hol.sundayHours), (0, 720), reason: 'like Sunday');
     expect(
       (thu.credited, thu.sundayHours),
       (thu.breaks.effectiveWorked, 0),

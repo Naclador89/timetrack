@@ -91,7 +91,18 @@ final class DayResult {
     this.tripProjectId,
     this.type,
     this.creditRule,
+    this.serviceTrip = false,
   });
+
+  /// Whether a service trip touches this day (§9).
+  final bool serviceTrip;
+
+  /// Whether this day earns the flat supplement of a service trip: a day of
+  /// a service trip that is no Sunday and no public holiday (§9, "35 % days").
+  bool get servicePayDay =>
+      serviceTrip &&
+      tripDayType != TripDayType.sunday &&
+      tripDayType != TripDayType.holiday;
 
   /// The §9 rule the credited time follows (trip days, Saturdays, Sundays
   /// and holidays), or `null` when the effective worked time counts as is.
@@ -210,7 +221,9 @@ final class Ledger {
         if (a.date == date) a,
     ];
     final type = tripDayType(date, isHoliday: isHoliday, target: target);
-    final tripType = _isTripDay(date) ? type : null;
+    final trips = tripsOn(date);
+    final tripType = trips.isEmpty ? null : type;
+    final service = trips.any((t) => t.service);
     // Saturdays, Sundays and holidays follow their rule on every day, trip
     // or not (user decision 2026-11-08); workdays and days off only on trips.
     final ruleType =
@@ -228,6 +241,7 @@ final class Ledger {
             target: target,
             effectiveWorked: breaks.effectiveWorked,
             travelWorked: work.workedAt(WorkLocation.travel),
+            service: service,
             rules: settings.travel,
           );
     return DayResult(
@@ -238,10 +252,9 @@ final class Ledger {
       credited: base + absenceCredit(absences, target),
       tripDayType: tripType,
       creditRule: ruleType,
+      serviceTrip: service,
       type: _dayType(date, work, absences, isTripDay: tripType != null),
-      tripProjectId: tripType == null
-          ? null
-          : tripsOn(date).map((t) => t.projectId).nonNulls.firstOrNull,
+      tripProjectId: trips.map((t) => t.projectId).nonNulls.firstOrNull,
       sundayHours: ruleType == null
           ? 0
           : tripSundayHours(
@@ -329,8 +342,6 @@ final class Ledger {
     }
     return absenceType(fullDay: false);
   }
-
-  bool _isTripDay(LocalDate date) => tripsOn(date).isNotEmpty;
 
   /// The trips touching [date] (§9), earliest departure first.
   List<Trip> tripsOn(LocalDate date) {

@@ -116,20 +116,55 @@ void main() {
       final sheet = buildTimesheet(ledger, 2026, 11);
       expect(
         sheet.sundayHours,
-        660,
-        reason: '4 h travel + 9 h on site, max 11 h',
+        720,
+        reason: '4 h travel + 9 h on site, max 12 h',
       );
       expect(sheet.rows.first.day.credited, 0);
       final table = timesheetTable(sheet, f);
       final column = table.first.indexOf('Sonn-/Feiertagsstunden');
       expect(column, greaterThan(0));
-      expect(table[1][column], '11:00');
+      expect(table[1][column], '12:00');
+      expect(sheet.servicePayDays, 0, reason: 'no supplement on a Sunday');
       expect(
         timesheetTable(buildTimesheet(sampleLedger(), 2026, 11), f).first,
         isNot(contains('Sonn-/Feiertagsstunden')),
       );
     },
   );
+
+  test('§9 days of a service trip are counted for the supplement', () {
+    final base = sampleLedger();
+    Timesheet sheet({required bool service}) => buildTimesheet(
+      Ledger(
+        data: LedgerData(
+          schedules: base.data.schedules,
+          trips: [
+            Trip(
+              id: 't',
+              depart: at('2026-11-02', '06:00'),
+              returnAt: at('2026-11-03', '20:00'),
+              service: service,
+            ),
+          ],
+        ),
+        zone: zone,
+        holidays: HolidayCalendar(FederalState.nw),
+        settings: LedgerSettings(balanceStart: d('2026-11-01')),
+        nowMinute: epochMinute(at('2026-11-04', '20:00')),
+      ),
+      2026,
+      11,
+    );
+    expect(sheet(service: true).servicePayDays, 2);
+    expect(
+      timesheetFigures(sheet(service: true), f),
+      contains(('Tage mit Reisezuschlag', '2')),
+    );
+    expect(
+      timesheetFigures(sheet(service: false), f).map((x) => x.$1),
+      isNot(contains('Tage mit Reisezuschlag')),
+    );
+  });
 
   test('timesheet and travel PDFs are valid PDF documents', () async {
     final pdf = await timesheetPdf(

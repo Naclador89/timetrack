@@ -29,20 +29,18 @@ abstract final class SettingKeys {
   /// `majority`, `any` or `proportional` (§11.1).
   static const homeOfficeDayRule = 'home_office.day_rule';
 
-  /// `target` or `actual` (§9).
-  static const travelWorkday = 'travel.workday';
+  /// Max minutes on a Saturday of a service trip (§9).
+  static const travelServiceSaturdayCap = 'travel.service_saturday_cap_min';
 
-  /// Saturday cap in minutes (§9).
-  static const travelSaturdayCap = 'travel.saturday_cap_min';
-
-  /// `total` or `travel_only` (§9).
-  static const travelSaturdayCapScope = 'travel.saturday_cap_scope';
+  /// Max minutes on a day of another trip or a Saturday without one (§9).
+  static const travelDayCap = 'travel.day_cap_min';
 
   /// `sunday_hours` or `work_only` (§9).
   static const travelSunday = 'travel.sunday';
 
-  /// Cap for Sunday hours per trip Sunday, in minutes (§9).
-  static const travelSundayCap = 'travel.sunday_cap_min';
+  /// Cap for Sunday hours per day, in minutes (§9). A new key: the old
+  /// `travel.sunday_cap_min` held the earlier 11 h default.
+  static const travelSundayCap = 'travel.sunday_hours_cap_min';
 
   /// `like_sunday` or `like_saturday` (§9).
   static const travelHoliday = 'travel.holiday';
@@ -159,20 +157,14 @@ final class AppSettings {
         HomeOfficeDayRule.majority,
       ),
       travel: TravelRules(
-        workday: enumOf(
-          TripWorkdayCredit.values,
-          SettingKeys.travelWorkday,
-          d.workday,
-        ),
-        saturdayCapMinutes: pick<num>(
-          SettingKeys.travelSaturdayCap,
-          d.saturdayCapMinutes,
+        serviceSaturdayCapMinutes: pick<num>(
+          SettingKeys.travelServiceSaturdayCap,
+          d.serviceSaturdayCapMinutes,
         ).toInt(),
-        saturdayCapScope: enumOf(
-          SaturdayCapScope.values,
-          SettingKeys.travelSaturdayCapScope,
-          d.saturdayCapScope,
-        ),
+        dayCapMinutes: pick<num>(
+          SettingKeys.travelDayCap,
+          d.dayCapMinutes,
+        ).toInt(),
         sunday: enumOf(
           TripSundayCredit.values,
           SettingKeys.travelSunday,

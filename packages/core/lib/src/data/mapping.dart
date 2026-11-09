@@ -145,6 +145,7 @@ Trip? tripFromRow(StoredRow r) => _use(
     destination: f.string('destination') ?? '',
     country: f.string('country') ?? 'DE',
     overnight: f.boolean('overnight') ?? true,
+    service: f.boolean('service') ?? true,
     projectId: f.string('project_id'),
   ),
 );

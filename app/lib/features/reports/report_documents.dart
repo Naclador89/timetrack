@@ -277,6 +277,7 @@ List<(String, String)> timesheetFigures(Timesheet t, ReportFormat f) {
     (l.workedDays, '${t.workedDays}'),
     (l.homeOfficeDays, '${t.homeOfficeDays}'),
     (l.tripDays, '${t.tripDays}'),
+    if (t.servicePayDays > 0) (l.servicePayDays, '${t.servicePayDays}'),
     (l.vacationDaysTaken, f.days(t.vacationDays)),
   ];
 }

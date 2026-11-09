@@ -86,6 +86,7 @@ the rules they configure are in `calculations.md`. Enum values are stored in sna
 | purpose | string | | `''` |
 | project_id | string | | none |
 | overnight | bool | | `true` |
+| service | bool | | `true`: service, installation or commissioning work on a site (calculations §9); `false` for other business trips (fair, training) |
 | note | string | | `''` |
 
 ## §10 trip_meals

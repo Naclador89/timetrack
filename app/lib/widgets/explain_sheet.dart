@@ -35,7 +35,12 @@ class _ExplainSheet extends ConsumerWidget {
 
     final ruleText = switch (e.rule) {
       null => null,
-      TripDayType.workday => l.explainTripWorkday(m(e.ruleCredit)),
+      TripDayType.workday =>
+        day.serviceTrip
+            ? l.explainTripWorkday(m(e.ruleCredit))
+            : l.explainOtherTripWorkday(
+                m(ref.watch(ledgerProvider).settings.travel.dayCapMinutes),
+              ),
       TripDayType.saturday =>
         e.notCounted > 0
             ? l.explainSaturdayCapped(m(e.ruleCredit), m(e.notCounted))

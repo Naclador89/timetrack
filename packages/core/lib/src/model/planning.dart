@@ -118,11 +118,16 @@ final class Trip {
     this.destination = '',
     this.country = 'DE',
     this.overnight = true,
+    this.service = true,
     this.projectId,
   });
 
   /// Row id (UUIDv7).
   final String id;
+
+  /// Whether this is a service trip: service, installation or commissioning
+  /// work on a site, paid with a flat supplement (calculations.md §9).
+  final bool service;
 
   /// The project the trip is for, if any (shown in the travel report).
   final String? projectId;

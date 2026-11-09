@@ -208,34 +208,43 @@ Day type of D:
 5. `day_off`: weekday 1–5 with `T(D) = 0`, for example a part-time day off. Treated like `saturday`
    (default; the user works full-time Mon–Fri, so this doesn't apply to them yet).
 
-`Wt(D)` = `W_loc(D, travel)` (time in transit), `Wo(D)` = `W_eff(D) − Wt(D)` (all other work).
+**Service trip** (user decision 2026-11-09, from the employer's working-time rules): a trip with
+`service = true` (data-model §9, default) is a business trip with service, installation or
+commissioning work on a site. Its extra work is paid as a flat 35 % supplement per trip day, so
+the account gets at most 8 h. Other business trips (`service = false`: fair, training, meeting)
+get their real time, travel included, up to 10 h. A day touched by several trips is a service day
+if any of them is a service trip. Days without a trip follow the "other" column.
 
-| Day type | Credited `Cr(D)` | Setting |
-|---|---|---|
-| workday | `T(D)` exactly, even if `W_eff` is longer **or shorter** | `travel.workday = target` |
-| saturday | `min(Wt + Wo, cap)`, cap = 660 min: the cap covers travel **and** work together | `travel.saturday_cap_min = 660`, `travel.saturday_cap_scope = total` (alternative `travel_only`: `min(Wt, cap) + Wo`) |
-| sunday | **0**; travel + work together become **Sunday hours** `S(D) = min(Wt + Wo, cap)`, cap = 660 min, reported for HR (extra pay), not in the balance | `travel.sunday = sunday_hours`, `travel.sunday_cap_min = 660` (alternative `work_only`: `Cr = Wo`, travel counts 0, no Sunday hours) |
-| holiday | like sunday | `travel.holiday = like_sunday` |
-| day_off | like saturday | `travel.day_off = like_saturday` |
+`W_eff(D)` counts travel and all other work together; `Wt(D)` = `W_loc(D, travel)` (time in transit).
 
-The workday rule applies to **every** weekday of a trip, including days spent only working at the
-destination.
+| Day type | Service trip | Other trip, or no trip | Setting |
+|---|---|---|---|
+| workday | `T(D)` exactly, however long or short the day was | `min(W_eff, 600)`; without a trip §8 (`W_eff`, no cap) | `travel.day_cap_min = 600` |
+| saturday | `min(W_eff, 480)` | `min(W_eff, 600)` | `travel.service_saturday_cap_min = 480` |
+| sunday | **0**; travel + work become **Sunday hours** `S(D) = min(W_eff, 720)`, reported for HR (extra pay), not in the balance | same | `travel.sunday = sunday_hours`, `travel.sunday_hours_cap_min = 720` (alternative `work_only`: `Cr = W_eff − Wt`, travel counts 0, no Sunday hours) |
+| holiday | like sunday | like sunday | `travel.holiday = like_sunday` |
+| day_off | like saturday | like saturday | `travel.day_off = like_saturday` |
 
-Confirmed by the user on 2026-11-07: every trip day is a normal day; a short trip day still gets the
-full target; the Saturday cap covers the whole day; holidays are treated like Sundays. Also
-2026-11-07: on trip Sundays, travel and on-site work count as Sunday hours for HR (max 11 h); they
-appear in the monthly timesheet but don't add to the overtime balance. Days that follow the Sunday
-rule (holidays `like_sunday`, days off `like_sunday`) get Sunday hours too. Since 2026-11-08 the
-Saturday, Sunday and holiday rules apply on all such days, not only on trips (see above).
+**35 % days**: every day of a service trip except Sundays and public holidays (`DayResult.servicePayDay`).
+They are counted per month (timesheet: screen and PDF), to check the payslip.
 
 **Examples** (T = 480 Mon–Fri):
-- Wed, 3 h train + 8 h on-site → `Cr = 480`, Δ = 0.
-- Wed, 2 h train only, trip starts at 16:00 → `Cr = 480`, Δ = 0.
-- Sat, 12 h train → `Cr = 660`, Δ = +660.
-- Sat, 4 h train + 3 h on-site → `Cr = 420`.
-- Sat, 8 h train + 5 h on-site → `Cr = 660` (the cap covers the whole day).
-- Sun, 6 h train → `Cr = 0`, `S = 360`.
-- Sun, 4 h train + 9 h on-site → `Cr = 0`, `S = 660` (the cap covers the whole day).
+
+| Day | Service trip | Other trip |
+|---|---|---|
+| Wed, 2 h on site + 1 h travel | 480 | 180 |
+| Wed, 3 h travel only | 480 | 180 |
+| Wed, 7 h office + 2 h travel | 480 | 540 |
+| Wed, a trip day without any work | 480 | 0 |
+| Sat, 3 h on site + 2 h travel | 300 | 300 |
+| Sat, 12 h travel | 480 | 600 |
+| Sat, 6 h on site + 6 h travel | 480 | 600 |
+| Sun, 4 h travel + 9 h on site | `Cr = 0`, `S = 720` | same |
+
+History: until v0.6.2 every trip weekday got `T(D)`, Saturdays were capped at 11 h (travel and work
+together) and Sunday hours at 11 h (user decisions 2026-11-07/08). The settings `travel.workday`,
+`travel.saturday_cap_min`, `travel.saturday_cap_scope` and `travel.sunday_cap_min` are no longer
+read. The Working Hours Act checks (§4, §5) still use the real recorded times.
 
 ### §9.1 Travel record (Reisenachweis)
 

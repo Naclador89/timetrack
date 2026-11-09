@@ -219,7 +219,6 @@
     }
   },
   "travelRules": "Crediting on trips",
-  "saturdayCap": "Saturday: max. hours",
   "autoClockIn": "Clock in automatically when a project starts",
   "resumeAfterBreak": "Resume the project after a break",
   "askStampTime": "Ask for the time when stamping",
@@ -375,14 +374,6 @@
   "quickWorking": "Working",
   "quickOnBreak": "On a break",
   "quickToday": "Today",
-  "travelWorkday": "Workdays on a trip",
-  "travelWorkdayHint": "Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.",
-  "travelWorkdayTarget": "Target hours",
-  "travelWorkdayActual": "Actual time",
-  "travelSaturdayHint": "Work and travel count as overtime, up to this cap.",
-  "saturdayCapScope": "Saturday cap covers",
-  "capTotal": "Travel + work",
-  "capTravelOnly": "Travel only",
   "travelSunday": "Sundays",
   "travelSundayHoursHint": "Work and travel count as Sunday/holiday hours for HR (monthly timesheet), not as overtime.",
   "travelSundayWorkOnlyHint": "Work counts as overtime, travel time doesn't count.",
@@ -510,7 +501,7 @@
       }
     }
   },
-  "explainTripWorkday": "Trip on a workday: credited as a normal day ({credit}), however long it was.",
+  "explainTripWorkday": "Service trip on a weekday: counts as a normal workday ({credit}), however long.",
   "@explainTripWorkday": {
     "placeholders": {
       "credit": {
@@ -1153,42 +1144,117 @@
   "defaultBreakLength": "Usual break: length",
   "defaultBreakHint": "Suggested when you add a break",
   "beforeBalanceStart": "Before the balance starts ({date}): no target, no overtime",
-  "@beforeBalanceStart": {"placeholders": {"date": {"type": "String"}}},
+  "@beforeBalanceStart": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "autostart": "Start with Windows",
   "autostartHint": "Starts TimeTrack when you sign in to Windows (this user only).",
   "removeDayType": "Remove day type",
   "dayTypeRemoved": "Day type removed",
   "tripDayRemove": "This day belongs to the trip {trip}. To remove it, change the trip.",
-  "@tripDayRemove": {"placeholders": {"trip": {"type": "String"}}},
+  "@tripDayRemove": {
+    "placeholders": {
+      "trip": {
+        "type": "String"
+      }
+    }
+  },
   "bookingTransfer": "Transfer to booking system",
   "bookingSystem": "Booking system",
   "bookingUrl": "Booking system (address)",
   "bookingUrlHint": "Page for the weekly project time; saved only on this PC",
   "bookingPreviewTitle": "Transfer week {week}",
-  "@bookingPreviewTitle": {"placeholders": {"week": {"type": "String"}}},
+  "@bookingPreviewTitle": {
+    "placeholders": {
+      "week": {
+        "type": "String"
+      }
+    }
+  },
   "bookingOpen": "Open in booking system",
   "bookingNoRows": "No project time with a project number in this week.",
   "bookingRunningTimer": "A project timer is still running; its time counts up to now.",
   "bookingUnassigned": "{day}: {time} without a project, not transferred",
-  "@bookingUnassigned": {"placeholders": {"day": {"type": "String"}, "time": {"type": "String"}}},
+  "@bookingUnassigned": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "bookingRounding": "Rounded to half hours: {rounded} instead of {exact}",
-  "@bookingRounding": {"placeholders": {"rounded": {"type": "String"}, "exact": {"type": "String"}}},
+  "@bookingRounding": {
+    "placeholders": {
+      "rounded": {
+        "type": "String"
+      },
+      "exact": {
+        "type": "String"
+      }
+    }
+  },
   "bookingSkipped": "{name} ({time}) has no project number and is not transferred",
-  "@bookingSkipped": {"placeholders": {"name": {"type": "String"}, "time": {"type": "String"}}},
+  "@bookingSkipped": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "bookingSum": "Sum",
   "bookingTransferredOn": "Transferred on {date}",
-  "@bookingTransferredOn": {"placeholders": {"date": {"type": "String"}}},
+  "@bookingTransferredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bookingChangedSince": "Changed since the transfer on {date}",
-  "@bookingChangedSince": {"placeholders": {"date": {"type": "String"}}},
+  "@bookingChangedSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "bookingNotTransferred": "Not transferred yet",
   "bookingLoading": "Opening the booking page…",
   "bookingFilling": "Filling in…",
   "bookingFilled": "{count, plural, =1{1 row} other{{count} rows}} filled. Add Kostengruppe and Position, check the hours, then click Buchen.",
-  "@bookingFilled": {"placeholders": {"count": {"type": "int"}}},
+  "@bookingFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "bookingUnknownProjects": "Unknown in the booking system, not filled: {projects}",
-  "@bookingUnknownProjects": {"placeholders": {"projects": {"type": "String"}}},
+  "@bookingUnknownProjects": {
+    "placeholders": {
+      "projects": {
+        "type": "String"
+      }
+    }
+  },
   "bookingLockedDays": "Booking period locked, not filled: {days}",
-  "@bookingLockedDays": {"placeholders": {"days": {"type": "String"}}},
+  "@bookingLockedDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
   "bookingReplaceTitle": "Replace the entries?",
   "bookingReplaceBody": "The form already contains entries. Replace them with this week?",
   "bookingReplace": "Replace",
@@ -1200,11 +1266,44 @@
   "bookingNotBooked": "No",
   "bookingErrorTimeout": "The booking page didn't get ready within 30 s. Check the address and the company network.",
   "bookingErrorPage": "The page looks different than expected ({detail}); nothing was filled.",
-  "@bookingErrorPage": {"placeholders": {"detail": {"type": "String"}}},
+  "@bookingErrorPage": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
   "bookingErrorFill": "Filling in failed: {detail}",
-  "@bookingErrorFill": {"placeholders": {"detail": {"type": "String"}}},
+  "@bookingErrorFill": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
   "bookingErrorLoad": "The page couldn't be loaded ({detail}).",
-  "@bookingErrorLoad": {"placeholders": {"detail": {"type": "String"}}},
+  "@bookingErrorLoad": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
   "bookingNoRuntime": "The Microsoft Edge WebView2 Runtime is missing; please install it.",
-  "bookingClose": "Close"
+  "bookingClose": "Close",
+  "serviceTrip": "Service or commissioning",
+  "serviceTripHint": "Work on a site: weekdays count the target, Saturdays at most 8 h; the extra work is paid as a supplement. Off for a fair, training or meeting: the real time counts, up to 10 h.",
+  "serviceSaturdayCap": "Saturday on a service trip: max. hours",
+  "serviceSaturdayCapHint": "Weekdays of a service trip always count the target; Saturdays the real time up to this cap.",
+  "dayCap": "Other trips and Saturdays: max. hours",
+  "dayCapHint": "Trips without service work and Saturdays without a trip: the real time, travel included, up to this cap.",
+  "servicePayDays": "Days with trip supplement",
+  "explainOtherTripWorkday": "Business trip without service work: the real time counts, travel included, at most {cap}.",
+  "@explainOtherTripWorkday": {
+    "placeholders": {
+      "cap": {
+        "type": "String"
+      }
+    }
+  }
 }

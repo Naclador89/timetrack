@@ -158,6 +158,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 ),
                 _figure(context, l.homeOfficeDays, '${sheet.homeOfficeDays}'),
                 _figure(context, l.tripDays, '${sheet.tripDays}'),
+                if (sheet.servicePayDays > 0)
+                  _figure(context, l.servicePayDays, '${sheet.servicePayDays}'),
                 _figure(
                   context,
                   l.vacationDaysTaken,

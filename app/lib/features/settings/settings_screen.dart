@@ -255,68 +255,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // Only the account: the travel record always has the real times.
       header(l.travelRules, description: l.travelRulesHint),
       // calculations.md §9; each rule is a setting, defaults as agreed.
-      // Weekdays on a trip:
       ListTile(
-        leading: const Icon(Icons.work_history_outlined),
-        title: Text(l.travelWorkday),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l.travelWorkdayHint),
-            const SizedBox(height: 8),
-            SegmentedButton<TripWorkdayCredit>(
-              segments: [
-                ButtonSegment(
-                  value: TripWorkdayCredit.target,
-                  label: Text(l.travelWorkdayTarget),
-                ),
-                ButtonSegment(
-                  value: TripWorkdayCredit.actual,
-                  label: Text(l.travelWorkdayActual),
-                ),
-              ],
-              selected: {s.travel.workday},
-              onSelectionChanged: (v) =>
-                  save(SettingKeys.travelWorkday, v.single),
-            ),
-          ],
-        ),
+        leading: const Icon(Icons.construction_outlined),
+        title: Text(l.serviceSaturdayCap),
+        subtitle: Text(l.serviceSaturdayCapHint),
+        trailing: Text(formatMinutes(s.travel.serviceSaturdayCapMinutes)),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.travel.serviceSaturdayCapMinutes),
+          );
+          if (v != null && v >= 0) {
+            await save(SettingKeys.travelServiceSaturdayCap, v);
+          }
+        },
       ),
       header(l.weekendRules, description: l.weekendRulesHint),
       // On every Saturday, Sunday and holiday, trip or not (§9).
       ListTile(
         leading: const Icon(Icons.weekend_outlined),
-        title: Text(l.saturdayCap),
-        subtitle: Text(l.travelSaturdayHint),
-        trailing: Text(formatMinutes(s.travel.saturdayCapMinutes)),
+        title: Text(l.dayCap),
+        subtitle: Text(l.dayCapHint),
+        trailing: Text(formatMinutes(s.travel.dayCapMinutes)),
         onTap: () async {
           final v = await _askHours(
             context,
-            formatMinutes(s.travel.saturdayCapMinutes),
+            formatMinutes(s.travel.dayCapMinutes),
           );
           if (v != null && v >= 0) {
-            await save(SettingKeys.travelSaturdayCap, v);
+            await save(SettingKeys.travelDayCap, v);
           }
         },
-      ),
-      ListTile(
-        leading: const SizedBox(width: 24),
-        title: Text(l.saturdayCapScope),
-        subtitle: SegmentedButton<SaturdayCapScope>(
-          segments: [
-            ButtonSegment(
-              value: SaturdayCapScope.total,
-              label: Text(l.capTotal),
-            ),
-            ButtonSegment(
-              value: SaturdayCapScope.travelOnly,
-              label: Text(l.capTravelOnly),
-            ),
-          ],
-          selected: {s.travel.saturdayCapScope},
-          onSelectionChanged: (v) =>
-              save(SettingKeys.travelSaturdayCapScope, v.single),
-        ),
       ),
       ListTile(
         leading: const Icon(Icons.wb_sunny_outlined),

@@ -378,9 +378,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get travelRules => 'Anrechnung auf Reisen';
 
   @override
-  String get saturdayCap => 'Samstag: max. Stunden';
-
-  @override
   String get autoClockIn => 'Beim Projektstart automatisch einstempeln';
 
   @override
@@ -675,32 +672,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get quickToday => 'Heute';
 
   @override
-  String get travelWorkday => 'Werktage auf Reise';
-
-  @override
-  String get travelWorkdayHint =>
-      'Sollzeit: Das Konto bekommt dein Soll (z. B. 8:00) gutgeschrieben, egal wie lange Fahrt und Kundentermin dauern. Tatsächliche Zeit: Es zählt, was du gearbeitet hast.';
-
-  @override
-  String get travelWorkdayTarget => 'Sollzeit';
-
-  @override
-  String get travelWorkdayActual => 'Tatsächliche Zeit';
-
-  @override
-  String get travelSaturdayHint =>
-      'Arbeit und Reise zählen als Überstunden, höchstens bis zu dieser Grenze.';
-
-  @override
-  String get saturdayCapScope => 'Samstagsgrenze gilt für';
-
-  @override
-  String get capTotal => 'Reise + Arbeit';
-
-  @override
-  String get capTravelOnly => 'Nur Reisezeit';
-
-  @override
   String get travelSunday => 'Sonntage';
 
   @override
@@ -898,7 +869,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String explainTripWorkday(String credit) {
-    return 'Dienstreise an einem Werktag: zählt als normaler Arbeitstag ($credit), egal wie lange.';
+    return 'Serviceeinsatz an einem Werktag: zählt als normaler Arbeitstag ($credit), egal wie lange.';
   }
 
   @override
@@ -1960,4 +1931,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get bookingClose => 'Schließen';
+
+  @override
+  String get serviceTrip => 'Serviceeinsatz / Inbetriebnahme';
+
+  @override
+  String get serviceTripHint =>
+      'Arbeit auf einer Baustelle: Werktage zählen das Soll, Samstage höchstens 8 Std.; die Mehrarbeit wird mit dem Zuschlag bezahlt. Aus bei Messe, Schulung oder Besprechung: Es zählt die tatsächliche Zeit, höchstens 10 Std.';
+
+  @override
+  String get serviceSaturdayCap => 'Samstag im Serviceeinsatz: max. Stunden';
+
+  @override
+  String get serviceSaturdayCapHint =>
+      'Werktage eines Serviceeinsatzes zählen immer das Soll, Samstage die tatsächliche Zeit bis zu dieser Grenze.';
+
+  @override
+  String get dayCap => 'Andere Reisen und Samstage: max. Stunden';
+
+  @override
+  String get dayCapHint =>
+      'Dienstreisen ohne Serviceeinsatz und Samstage ohne Reise: die tatsächliche Zeit, Reise eingeschlossen, höchstens bis zu dieser Grenze.';
+
+  @override
+  String get servicePayDays => 'Tage mit Reisezuschlag';
+
+  @override
+  String explainOtherTripWorkday(String cap) {
+    return 'Dienstreise ohne Serviceeinsatz: Es zählt die tatsächliche Zeit, Reise eingeschlossen, höchstens $cap.';
+  }
 }

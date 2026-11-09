@@ -105,6 +105,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     text: widget.trip?.country ?? 'DE',
   );
   late bool _overnight = widget.trip?.overnight ?? true;
+  late bool _service = widget.trip?.service ?? true;
   late String? _projectId = widget.trip?.projectId;
   late LocalDate _departDate;
   late int _departTime;
@@ -186,6 +187,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
           ? 'DE'
           : _country.text.trim().toUpperCase(),
       'overnight': _overnight,
+      'service': _service,
       'project_id': _projectId,
     });
     for (final d in _tripDays) {
@@ -250,6 +252,14 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                 title: Text(l.overnight),
                 value: _overnight,
                 onChanged: (v) => setState(() => _overnight = v),
+              ),
+              // calculations.md §9: how the account credits the trip days.
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l.serviceTrip),
+                subtitle: Text(l.serviceTripHint),
+                value: _service,
+                onChanged: (v) => setState(() => _service = v),
               ),
               DateTile(
                 label: l.depart,

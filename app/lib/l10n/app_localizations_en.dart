@@ -378,9 +378,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get travelRules => 'Crediting on trips';
 
   @override
-  String get saturdayCap => 'Saturday: max. hours';
-
-  @override
   String get autoClockIn => 'Clock in automatically when a project starts';
 
   @override
@@ -674,32 +671,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickToday => 'Today';
 
   @override
-  String get travelWorkday => 'Workdays on a trip';
-
-  @override
-  String get travelWorkdayHint =>
-      'Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.';
-
-  @override
-  String get travelWorkdayTarget => 'Target hours';
-
-  @override
-  String get travelWorkdayActual => 'Actual time';
-
-  @override
-  String get travelSaturdayHint =>
-      'Work and travel count as overtime, up to this cap.';
-
-  @override
-  String get saturdayCapScope => 'Saturday cap covers';
-
-  @override
-  String get capTotal => 'Travel + work';
-
-  @override
-  String get capTravelOnly => 'Travel only';
-
-  @override
   String get travelSunday => 'Sundays';
 
   @override
@@ -894,7 +865,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String explainTripWorkday(String credit) {
-    return 'Trip on a workday: credited as a normal day ($credit), however long it was.';
+    return 'Service trip on a weekday: counts as a normal workday ($credit), however long.';
   }
 
   @override
@@ -1953,4 +1924,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingClose => 'Close';
+
+  @override
+  String get serviceTrip => 'Service or commissioning';
+
+  @override
+  String get serviceTripHint =>
+      'Work on a site: weekdays count the target, Saturdays at most 8 h; the extra work is paid as a supplement. Off for a fair, training or meeting: the real time counts, up to 10 h.';
+
+  @override
+  String get serviceSaturdayCap => 'Saturday on a service trip: max. hours';
+
+  @override
+  String get serviceSaturdayCapHint =>
+      'Weekdays of a service trip always count the target; Saturdays the real time up to this cap.';
+
+  @override
+  String get dayCap => 'Other trips and Saturdays: max. hours';
+
+  @override
+  String get dayCapHint =>
+      'Trips without service work and Saturdays without a trip: the real time, travel included, up to this cap.';
+
+  @override
+  String get servicePayDays => 'Days with trip supplement';
+
+  @override
+  String explainOtherTripWorkday(String cap) {
+    return 'Business trip without service work: the real time counts, travel included, at most $cap.';
+  }
 }

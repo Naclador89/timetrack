@@ -138,12 +138,14 @@ void main() {
       find.widgetWithText(TextField, 'Destination'),
       'Stuttgart',
     );
+    // calculations.md §9: a service trip unless switched off.
+    await tester.ensureVisible(find.text('Service or commissioning'));
+    await tester.tap(find.text('Service or commissioning'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save').last);
     await tester.pumpAndSettle();
-    expect(
-      store.rowsOf('trips').values.single.fields['destination'],
-      'Stuttgart',
-    );
+    final trip = store.rowsOf('trips').values.single.fields;
+    expect((trip['destination'], trip['service']), ('Stuttgart', false));
     expect(find.widgetWithText(ActionChip, 'Business trip'), findsOneWidget);
     expect(find.textContaining('Trip without a project'), findsOneWidget);
 
@@ -381,7 +383,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.help_outline).first);
     await tester.pumpAndSettle();
     expect(find.textContaining('How'), findsWidgets);
-    expect(find.textContaining('at most 11:00 count'), findsOneWidget);
+    expect(find.textContaining('at most 8:00 count'), findsOneWidget);
   });
 
   testWidgets('calendar month view and the command palette', (tester) async {

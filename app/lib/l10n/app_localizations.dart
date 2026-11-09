@@ -782,12 +782,6 @@ abstract class AppLocalizations {
   /// **'Crediting on trips'**
   String get travelRules;
 
-  /// No description provided for @saturdayCap.
-  ///
-  /// In en, this message translates to:
-  /// **'Saturday: max. hours'**
-  String get saturdayCap;
-
   /// No description provided for @autoClockIn.
   ///
   /// In en, this message translates to:
@@ -1328,54 +1322,6 @@ abstract class AppLocalizations {
   /// **'Today'**
   String get quickToday;
 
-  /// No description provided for @travelWorkday.
-  ///
-  /// In en, this message translates to:
-  /// **'Workdays on a trip'**
-  String get travelWorkday;
-
-  /// No description provided for @travelWorkdayHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Target: the account gets your target (e.g. 8:00) however long travel and work took. Actual time: what you worked counts.'**
-  String get travelWorkdayHint;
-
-  /// No description provided for @travelWorkdayTarget.
-  ///
-  /// In en, this message translates to:
-  /// **'Target hours'**
-  String get travelWorkdayTarget;
-
-  /// No description provided for @travelWorkdayActual.
-  ///
-  /// In en, this message translates to:
-  /// **'Actual time'**
-  String get travelWorkdayActual;
-
-  /// No description provided for @travelSaturdayHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Work and travel count as overtime, up to this cap.'**
-  String get travelSaturdayHint;
-
-  /// No description provided for @saturdayCapScope.
-  ///
-  /// In en, this message translates to:
-  /// **'Saturday cap covers'**
-  String get saturdayCapScope;
-
-  /// No description provided for @capTotal.
-  ///
-  /// In en, this message translates to:
-  /// **'Travel + work'**
-  String get capTotal;
-
-  /// No description provided for @capTravelOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Travel only'**
-  String get capTravelOnly;
-
   /// No description provided for @travelSunday.
   ///
   /// In en, this message translates to:
@@ -1709,7 +1655,7 @@ abstract class AppLocalizations {
   /// No description provided for @explainTripWorkday.
   ///
   /// In en, this message translates to:
-  /// **'Trip on a workday: credited as a normal day ({credit}), however long it was.'**
+  /// **'Service trip on a weekday: counts as a normal workday ({credit}), however long.'**
   String explainTripWorkday(String credit);
 
   /// No description provided for @fixAddBreak.
@@ -3445,6 +3391,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get bookingClose;
+
+  /// No description provided for @serviceTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Service or commissioning'**
+  String get serviceTrip;
+
+  /// No description provided for @serviceTripHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Work on a site: weekdays count the target, Saturdays at most 8 h; the extra work is paid as a supplement. Off for a fair, training or meeting: the real time counts, up to 10 h.'**
+  String get serviceTripHint;
+
+  /// No description provided for @serviceSaturdayCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday on a service trip: max. hours'**
+  String get serviceSaturdayCap;
+
+  /// No description provided for @serviceSaturdayCapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays of a service trip always count the target; Saturdays the real time up to this cap.'**
+  String get serviceSaturdayCapHint;
+
+  /// No description provided for @dayCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Other trips and Saturdays: max. hours'**
+  String get dayCap;
+
+  /// No description provided for @dayCapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips without service work and Saturdays without a trip: the real time, travel included, up to this cap.'**
+  String get dayCapHint;
+
+  /// No description provided for @servicePayDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days with trip supplement'**
+  String get servicePayDays;
+
+  /// No description provided for @explainOtherTripWorkday.
+  ///
+  /// In en, this message translates to:
+  /// **'Business trip without service work: the real time counts, travel included, at most {cap}.'**
+  String explainOtherTripWorkday(String cap);
 }
 
 class _AppLocalizationsDelegate

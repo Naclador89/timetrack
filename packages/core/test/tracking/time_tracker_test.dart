@@ -302,9 +302,11 @@ void main() {
           s.federalState,
           s.breakMode,
           s.autoClockIn,
-          s.travel.saturdayCapMinutes,
+          s.travel.serviceSaturdayCapMinutes,
+          s.travel.dayCapMinutes,
+          s.travel.sundayCapMinutes,
         ),
-        (null, BreakRuleMode.warn, true, 660),
+        (null, BreakRuleMode.warn, true, 480, 600, 720),
       );
     });
 

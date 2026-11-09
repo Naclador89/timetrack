@@ -19,25 +19,6 @@ enum TripDayType {
   dayOff,
 }
 
-/// How a trip workday is credited.
-enum TripWorkdayCredit {
-  /// Exactly the day's target, however long the day was (default).
-  target,
-
-  /// The actual (effective) worked time.
-  actual,
-}
-
-/// What the Saturday cap limits.
-enum SaturdayCapScope {
-  /// Travel and work together: the whole Saturday counts at most the cap
-  /// (default, confirmed by the user).
-  total,
-
-  /// Only travel time; work at the destination counts on top.
-  travelOnly,
-}
-
 /// How a trip Sunday is counted.
 enum TripSundayCredit {
   /// Travel and work together count as **Sunday hours** for HR (extra pay),
@@ -59,37 +40,35 @@ enum TripDayRule {
 }
 
 /// The employer's travel rules. Each value is a setting; the defaults are the
-/// rules the user described (spec: calculations.md §9).
+/// employer's working-time rules as the user explained them (spec:
+/// calculations.md §9).
 final class TravelRules {
   /// Creates travel rules.
   const TravelRules({
-    this.workday = TripWorkdayCredit.target,
-    this.saturdayCapMinutes = 660,
-    this.saturdayCapScope = SaturdayCapScope.total,
+    this.serviceSaturdayCapMinutes = 480,
+    this.dayCapMinutes = 600,
     this.sunday = TripSundayCredit.sundayHours,
-    this.sundayCapMinutes = 660,
+    this.sundayCapMinutes = 720,
     this.holiday = TripDayRule.likeSunday,
     this.dayOff = TripDayRule.likeSaturday,
   });
 
-  /// Credit on trip workdays (setting `travel.workday`).
-  final TripWorkdayCredit workday;
+  /// Max minutes credited on a Saturday of a service trip
+  /// (setting `travel.service_saturday_cap_min`).
+  final int serviceSaturdayCapMinutes;
 
-  /// Max minutes credited on a trip Saturday (setting `travel.saturday_cap_min`).
-  final int saturdayCapMinutes;
+  /// Max minutes credited on a day of another trip and on a Saturday without
+  /// a trip (setting `travel.day_cap_min`).
+  final int dayCapMinutes;
 
-  /// Whether the cap limits the whole day or only travel time
-  /// (setting `travel.saturday_cap_scope`).
-  final SaturdayCapScope saturdayCapScope;
-
-  /// Rule for trip Sundays (setting `travel.sunday`).
+  /// Rule for Sundays (setting `travel.sunday`).
   final TripSundayCredit sunday;
 
-  /// Max Sunday hours per trip Sunday, in minutes
-  /// (setting `travel.sunday_cap_min`).
+  /// Max Sunday hours per day, in minutes
+  /// (setting `travel.sunday_hours_cap_min`).
   final int sundayCapMinutes;
 
-  /// Rule for public holidays on a trip (setting `travel.holiday`).
+  /// Rule for public holidays (setting `travel.holiday`).
   final TripDayRule holiday;
 
   /// Rule for weekdays without target on a trip (setting `travel.day_off`).
@@ -109,34 +88,32 @@ TripDayType tripDayType(
   return target > 0 ? TripDayType.workday : TripDayType.dayOff;
 }
 
-/// Credited minutes of a **trip day** before absence credit
+/// Credited minutes of a day that follows §9, before absence credit
 /// (spec: calculations.md §9).
 ///
 /// [effectiveWorked] is `W_eff(D)`; [travelWorked] is `W_loc(D, travel)`.
+/// [service] is set on days of a service trip: their workdays count the
+/// target and their Saturdays at most [TravelRules.serviceSaturdayCapMinutes];
+/// other days at most [TravelRules.dayCapMinutes].
 int tripDayCredit({
   required TripDayType type,
   required int target,
   required int effectiveWorked,
   required int travelWorked,
+  bool service = false,
   TravelRules rules = const TravelRules(),
 }) {
+  int capped(int cap) => effectiveWorked < cap ? effectiveWorked : cap;
   final travel = travelWorked < effectiveWorked
       ? travelWorked
       : effectiveWorked;
-  final other = effectiveWorked - travel;
-  int saturday() {
-    final cap = rules.saturdayCapMinutes;
-    int capped(int minutes) => minutes < cap ? minutes : cap;
-    return switch (rules.saturdayCapScope) {
-      SaturdayCapScope.total => capped(travel + other),
-      SaturdayCapScope.travelOnly => capped(travel) + other,
-    };
-  }
-
-  final sunday = rules.sunday == TripSundayCredit.sundayHours ? 0 : other;
+  int saturday() =>
+      capped(service ? rules.serviceSaturdayCapMinutes : rules.dayCapMinutes);
+  final sunday = rules.sunday == TripSundayCredit.sundayHours
+      ? 0
+      : effectiveWorked - travel;
   return switch (type) {
-    TripDayType.workday =>
-      rules.workday == TripWorkdayCredit.target ? target : effectiveWorked,
+    TripDayType.workday => service ? target : capped(rules.dayCapMinutes),
     TripDayType.saturday => saturday(),
     TripDayType.sunday => sunday,
     TripDayType.holiday =>
