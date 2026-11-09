@@ -3581,7 +3581,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionTravel.
   ///
   /// In en, this message translates to:
-  /// **'Trips & weekends'**
+  /// **'Trips & supplements'**
   String get sectionTravel;
 
   /// No description provided for @sectionApp.
@@ -3643,6 +3643,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Autostart, tray, monthly reminder, booking'**
   String get workPcSummary;
+
+  /// No description provided for @specialHolidayHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Special holiday hours'**
+  String get specialHolidayHours;
+
+  /// No description provided for @nightHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Night hours'**
+  String get nightHours;
+
+  /// No description provided for @specialDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Special holidays'**
+  String get specialDays;
+
+  /// No description provided for @specialDaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Their hours are listed apart from the Sunday/holiday hours, e.g. for a higher supplement'**
+  String get specialDaysHint;
+
+  /// No description provided for @specialDaysNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get specialDaysNone;
+
+  /// No description provided for @specialDayNewYear.
+  ///
+  /// In en, this message translates to:
+  /// **'New Year\'s Day'**
+  String get specialDayNewYear;
+
+  /// No description provided for @specialDayEasterSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Easter Sunday'**
+  String get specialDayEasterSunday;
+
+  /// No description provided for @specialDayEasterMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Easter Monday'**
+  String get specialDayEasterMonday;
+
+  /// No description provided for @specialDayMayDay.
+  ///
+  /// In en, this message translates to:
+  /// **'1 May'**
+  String get specialDayMayDay;
+
+  /// No description provided for @specialDayWhitSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Whit Sunday'**
+  String get specialDayWhitSunday;
+
+  /// No description provided for @specialDayWhitMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Whit Monday'**
+  String get specialDayWhitMonday;
+
+  /// No description provided for @specialDayChristmasDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Day'**
+  String get specialDayChristmasDay;
+
+  /// No description provided for @specialDayBoxingDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Boxing Day'**
+  String get specialDayBoxingDay;
+
+  /// No description provided for @groupNightWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Night work'**
+  String get groupNightWork;
+
+  /// No description provided for @nightWorkCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Night hours (11 pm–6 am, from 2 h)'**
+  String get nightWorkCredit;
+
+  /// No description provided for @nightCount.
+  ///
+  /// In en, this message translates to:
+  /// **'On the account'**
+  String get nightCount;
+
+  /// No description provided for @nightExclude.
+  ///
+  /// In en, this message translates to:
+  /// **'Not on the account'**
+  String get nightExclude;
+
+  /// No description provided for @nightCountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Listed and credited like any other work.'**
+  String get nightCountHint;
+
+  /// No description provided for @nightExcludeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid out: listed, but not credited to the overtime account. Service-trip workdays keep their target.'**
+  String get nightExcludeHint;
+
+  /// No description provided for @explainNightExcluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid out, not on the overtime account.'**
+  String get explainNightExcluded;
+
+  /// No description provided for @explainNightCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Work between 11 pm and 6 am in a night of at least 2 h; reported for the supplement.'**
+  String get explainNightCounted;
+
+  /// No description provided for @explainSpecialHolidayHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported apart from the Sunday/holiday hours (higher supplement), not on the overtime account.'**
+  String get explainSpecialHolidayHours;
+
+  /// No description provided for @monthReportSupplements.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplements: {items}.'**
+  String monthReportSupplements(String items);
+
+  /// No description provided for @columnSpecialHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Special'**
+  String get columnSpecialHours;
+
+  /// No description provided for @columnNightHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get columnNightHours;
 }
 
 class _AppLocalizationsDelegate

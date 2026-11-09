@@ -151,6 +151,18 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                     l.sundayHours,
                     formatMinutes(sheet.sundayHours),
                   ),
+                if (sheet.specialHolidayHours > 0)
+                  _figure(
+                    context,
+                    l.specialHolidayHours,
+                    formatMinutes(sheet.specialHolidayHours),
+                  ),
+                if (sheet.nightHours > 0)
+                  _figure(
+                    context,
+                    l.nightHours,
+                    formatMinutes(sheet.nightHours),
+                  ),
                 _figure(
                   context,
                   l.balanceAfter,
@@ -184,9 +196,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 table: timesheetTable(sheet, format),
                 figures: timesheetFigures(sheet, format),
                 legend: l.timesheetLegend,
-                numericColumns: {
-                  for (var i = 1; i <= (sheet.sundayHours > 0 ? 8 : 7); i++) i,
-                },
+                numericColumns: timesheetNumberColumns(sheet),
                 exports: [
                   (
                     'PDF',

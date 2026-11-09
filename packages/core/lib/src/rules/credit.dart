@@ -1,5 +1,6 @@
 import '../model/planning.dart';
 import '../time/local_date.dart';
+import 'holidays.dart' as holidays;
 
 /// Day types for the travel rules (spec: calculations.md §9).
 enum TripDayType {
@@ -30,6 +31,68 @@ enum TripSundayCredit {
   workOnly,
 }
 
+/// A holiday whose Sunday hours are reported separately (spec:
+/// calculations.md §21.1), e.g. for a higher supplement.
+enum SpecialDay {
+  /// 1 January.
+  newYear('new_year'),
+
+  /// Easter Sunday.
+  easterSunday('easter_sunday'),
+
+  /// Easter Monday.
+  easterMonday('easter_monday'),
+
+  /// 1 May.
+  mayDay('may_day'),
+
+  /// Whit Sunday.
+  whitSunday('whit_sunday'),
+
+  /// Whit Monday.
+  whitMonday('whit_monday'),
+
+  /// 25 December.
+  christmasDay('christmas_day'),
+
+  /// 26 December.
+  boxingDay('boxing_day');
+
+  const SpecialDay(this.code);
+
+  /// The code in the setting `supplement.special_days`.
+  final String code;
+
+  /// The date of this day in [year].
+  LocalDate inYear(int year) => switch (this) {
+    newYear => LocalDate(year, 1, 1),
+    easterSunday => holidays.easterSunday(year),
+    easterMonday => holidays.easterSunday(year).addDays(1),
+    mayDay => LocalDate(year, 5, 1),
+    whitSunday => holidays.easterSunday(year).addDays(49),
+    whitMonday => holidays.easterSunday(year).addDays(50),
+    christmasDay => LocalDate(year, 12, 25),
+    boxingDay => LocalDate(year, 12, 26),
+  };
+
+  /// Parses the comma-separated codes of the setting; unknown codes are
+  /// skipped.
+  static Set<SpecialDay> parseList(String? codes) => {
+    for (final c in (codes ?? '').split(','))
+      for (final d in values)
+        if (d.code == c.trim()) d,
+  };
+}
+
+/// How night hours (calculations.md §21.2) affect the credited time.
+enum NightWorkCredit {
+  /// Only reported; credited like any other work (default).
+  count,
+
+  /// Reported and left out of the credited time (paid out instead).
+  exclude,
+}
+
 /// Which rule a holiday or day off on a trip follows.
 enum TripDayRule {
   /// Like a Saturday: travel counts (capped), work counts.
@@ -51,6 +114,8 @@ final class TravelRules {
     this.sundayCapMinutes = 720,
     this.holiday = TripDayRule.likeSunday,
     this.dayOff = TripDayRule.likeSaturday,
+    this.specialDays = const {},
+    this.night = NightWorkCredit.count,
   });
 
   /// Max minutes credited on a Saturday of a service trip
@@ -73,6 +138,17 @@ final class TravelRules {
 
   /// Rule for weekdays without target on a trip (setting `travel.day_off`).
   final TripDayRule dayOff;
+
+  /// Holidays whose Sunday hours are reported separately (setting
+  /// `supplement.special_days`, §21.1); none built in.
+  final Set<SpecialDay> specialDays;
+
+  /// How night hours count (setting `night_work.credit`, §21.2).
+  final NightWorkCredit night;
+
+  /// Whether [date] is one of [specialDays].
+  bool isSpecialDay(LocalDate date) =>
+      specialDays.any((d) => d.inYear(date.year) == date);
 }
 
 /// The §9 day type of [date], given whether it is a public holiday and its

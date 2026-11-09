@@ -88,6 +88,8 @@ final class DayResult {
     required this.absences,
     required this.warnings,
     this.sundayHours = 0,
+    this.specialHolidayHours = 0,
+    this.nightHours = 0,
     this.tripProjectId,
     this.type,
     this.creditRule,
@@ -130,6 +132,14 @@ final class DayResult {
   /// Sunday and holiday hours for HR (§9): reported separately, not part of
   /// [credited] or the balance.
   final int sundayHours;
+
+  /// Sunday hours of a special holiday (§21.1), reported instead of
+  /// [sundayHours].
+  final int specialHolidayHours;
+
+  /// Night hours (§21.2): work in a night of at least 2 h, the part on this
+  /// day. Left out of [credited] with [NightWorkCredit.exclude].
+  final int nightHours;
 
   /// The §9 day type if this is a trip day, otherwise `null`.
   final TripDayType? tripDayType;
@@ -234,12 +244,25 @@ final class Ledger {
           TripDayType.holiday => type,
           TripDayType.workday || TripDayType.dayOff => null,
         };
+    final night = nightHours(date);
+    // §21.2: excluded night hours are no basis for the credit.
+    final basis = settings.travel.night == NightWorkCredit.exclude
+        ? (breaks.effectiveWorked - night).clamp(0, breaks.effectiveWorked)
+        : breaks.effectiveWorked;
+    final sundayHours = ruleType == null
+        ? 0
+        : tripSundayHours(
+            type: ruleType,
+            effectiveWorked: breaks.effectiveWorked,
+            rules: settings.travel,
+          );
+    final special = settings.travel.isSpecialDay(date);
     final base = ruleType == null
-        ? breaks.effectiveWorked
+        ? basis
         : tripDayCredit(
             type: ruleType,
             target: target,
-            effectiveWorked: breaks.effectiveWorked,
+            effectiveWorked: basis,
             travelWorked: work.workedAt(WorkLocation.travel),
             service: service,
             rules: settings.travel,
@@ -255,13 +278,9 @@ final class Ledger {
       serviceTrip: service,
       type: _dayType(date, work, absences, isTripDay: tripType != null),
       tripProjectId: trips.map((t) => t.projectId).nonNulls.firstOrNull,
-      sundayHours: ruleType == null
-          ? 0
-          : tripSundayHours(
-              type: ruleType,
-              effectiveWorked: breaks.effectiveWorked,
-              rules: settings.travel,
-            ),
+      sundayHours: special ? 0 : sundayHours,
+      specialHolidayHours: special ? sundayHours : 0,
+      nightHours: night,
       absences: absences,
       warnings: arbzgWarnings(
         working: work.working,
@@ -271,6 +290,29 @@ final class Ledger {
       ),
     );
   });
+
+  /// Night hours of [date] (§21.2): the parts of the nights of the day
+  /// before and of [date] that hold at least 2 h of work.
+  int nightHours(LocalDate date) {
+    int part(LocalDate day, LocalDate night) =>
+        _dayWork(day).working.intersect(SpanSet([_night(night)])).length;
+    int counting(LocalDate night, LocalDate day) {
+      final total = part(night, night) + part(night.addDays(1), night);
+      return total >= _nightWorkMin ? part(day, night) : 0;
+    }
+
+    final yesterday = date.addDays(-1);
+    return counting(yesterday, date) + counting(date, date);
+  }
+
+  /// At least this much work makes a night count (§21.2).
+  static const _nightWorkMin = 120;
+
+  /// The night from [date] 23:00 to the next day 06:00, local (§21.2).
+  Span _night(LocalDate date) => Span(
+    epochMinute(zone.instantAt(date, 23, 0)),
+    epochMinute(zone.instantAt(date.addDays(1), 6, 0)),
+  );
 
   /// Whether [date] counts in the overtime balance (on or after the balance
   /// start, §8). Earlier days show no target or difference.

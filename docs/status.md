@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 295, app 89 tests; CI green on `main`.
+- **Tests**: core 304, app 91 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -420,7 +420,14 @@ against the app; the agreed order of steps:
        `app/lib/features/today/vacation_carry_card.dart`; dot in `app/lib/widgets/balance_zone.dart`.
        The vacation carry-over of a year is now editable on the planner's account card (before only
        in the setup), with last year's rest suggested.
-4. [ ] Supplements per month: Sunday/holiday hours, the four 150 % days, night hours 23–6 (≥ 2 h).
+4. [x] **Supplement hours** (calculations §21; core `SpecialDay`, `NightWorkCredit` in `credit.dart`,
+       `Ledger.nightHours`): special holidays (setting `supplement.special_days`, none built in; the
+       user picks 1. Weihnachtstag, Ostersonntag, 1. Mai, Pfingstsonntag) report their Sunday hours
+       apart (`specialHolidayHours`). Night hours 23–6 in a night with ≥ 2 h of work, split at
+       midnight; `night_work.credit = exclude` (user's choice) keeps them off the account, service
+       workdays keep `T(D)`. Shown on Today, day, week, the explanation, the timesheet (columns and
+       totals, screen and PDF) and in the monthly reminder on the work PC. Settings on the page
+       "Reisen & Zuschläge" (formerly "Reisen & Wochenende").
 5. [ ] Travel expenses: built-in BMF per-diem and lodging rates 2026 (with cities), site allowance
        per site day (≥ 2 consecutive; ask the user whether the policy's "Auslandzulagen" column is
        its rate), several countries per trip, lodging per night, mileage 0.30 €/km, 3-month claim
@@ -580,3 +587,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: monthly reminder on the work PC to report the overtime balance (work-pc.md §4, core `monthReportDue`). 289 core, 81 app tests green.
 - 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. The year-end balance carry-over card was removed again: only vacation has a deadline.
 - 2026-11-09, Claude Code: settings reorganised into an overview with category pages (navigation.md, "Settings structure"; `settings_sections.dart`); the links to Reports in settings are gone, the search covers all pages. 295 core, 89 app tests green.
+- 2026-11-09, Claude Code: step 4 of the employer rules: special holiday hours and night hours (calculations §21), night hours optionally off the account; timesheet, day views and the monthly reminder show them. 304 core, 91 app tests green.

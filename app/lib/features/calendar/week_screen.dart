@@ -335,6 +335,10 @@ class _DayRow extends ConsumerWidget {
         '${l.credited} ${formatMinutes(day.credited)}',
       if (day.sundayHours > 0)
         '${l.sundayHours} ${formatMinutes(day.sundayHours)}',
+      if (day.specialHolidayHours > 0)
+        '${l.specialHolidayHours} ${formatMinutes(day.specialHolidayHours)}',
+      if (day.nightHours > 0)
+        '${l.nightHours} ${formatMinutes(day.nightHours)}',
     ];
     final delta = day.delta;
     final booked = day.bookedByProject.entries.toList()

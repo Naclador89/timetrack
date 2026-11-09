@@ -1398,7 +1398,7 @@
   },
   "sectionAccount": "Working time & account",
   "sectionClocking": "Clocking & breaks",
-  "sectionTravel": "Trips & weekends",
+  "sectionTravel": "Trips & supplements",
   "sectionApp": "Appearance & updates",
   "groupTarget": "Target hours",
   "groupVacation": "Vacation",
@@ -1418,5 +1418,37 @@
       }
     }
   },
-  "workPcSummary": "Autostart, tray, monthly reminder, booking"
+  "workPcSummary": "Autostart, tray, monthly reminder, booking",
+  "specialHolidayHours": "Special holiday hours",
+  "nightHours": "Night hours",
+  "specialDays": "Special holidays",
+  "specialDaysHint": "Their hours are listed apart from the Sunday/holiday hours, e.g. for a higher supplement",
+  "specialDaysNone": "None",
+  "specialDayNewYear": "New Year's Day",
+  "specialDayEasterSunday": "Easter Sunday",
+  "specialDayEasterMonday": "Easter Monday",
+  "specialDayMayDay": "1 May",
+  "specialDayWhitSunday": "Whit Sunday",
+  "specialDayWhitMonday": "Whit Monday",
+  "specialDayChristmasDay": "Christmas Day",
+  "specialDayBoxingDay": "Boxing Day",
+  "groupNightWork": "Night work",
+  "nightWorkCredit": "Night hours (11 pm–6 am, from 2 h)",
+  "nightCount": "On the account",
+  "nightExclude": "Not on the account",
+  "nightCountHint": "Listed and credited like any other work.",
+  "nightExcludeHint": "Paid out: listed, but not credited to the overtime account. Service-trip workdays keep their target.",
+  "explainNightExcluded": "Paid out, not on the overtime account.",
+  "explainNightCounted": "Work between 11 pm and 6 am in a night of at least 2 h; reported for the supplement.",
+  "explainSpecialHolidayHours": "Reported apart from the Sunday/holiday hours (higher supplement), not on the overtime account.",
+  "monthReportSupplements": "Supplements: {items}.",
+  "@monthReportSupplements": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "columnSpecialHours": "Special",
+  "columnNightHours": "Night"
 }

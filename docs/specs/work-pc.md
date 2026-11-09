@@ -83,6 +83,9 @@ overtime balance in the employer's system.
   or after the balance start (§8 of calculations.md; before it there is no balance to report).
 - **Card on Today** while due: "Überstundenkonto für Oktober melden", the balance at the end of that
   month (`Ledger.balanceAtEndOf`, signed `+12:30`) and the actions **Kopieren** (the balance as
-  text) and **Erledigt** (stores the month in `month_report_done`; the card goes).
+  text) and **Erledigt** (stores the month in `month_report_done`; the card goes). Since step 4
+  (calculations §21.3) the text also names the month's Sunday/holiday, special holiday and night
+  hours, if any: "Zuschläge: Sonn-/Feiertagsstunden 3:00, Nachtstunden 2:00." Kopieren still copies
+  only the balance.
 - **Notification**: once per month, the first time the reminder check (§3) finds it due, a Windows
   notification with the same text (`local_values` `month_report_notified` = `YYYY-MM`).

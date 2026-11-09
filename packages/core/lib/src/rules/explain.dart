@@ -34,6 +34,9 @@ final class DayExplanation {
     required this.targetReason,
     required this.credited,
     required this.sundayHours,
+    this.specialHolidayHours = 0,
+    this.nightHours = 0,
+    this.nightExcluded = false,
   });
 
   /// Worked time `W(D)` (§2).
@@ -69,17 +72,32 @@ final class DayExplanation {
   /// Sunday hours for HR (§9).
   final int sundayHours;
 
+  /// Sunday hours of a special holiday (§21.1).
+  final int specialHolidayHours;
+
+  /// Night hours (§21.2).
+  final int nightHours;
+
+  /// Whether [nightHours] are left out of the credited time (§21.2).
+  final bool nightExcluded;
+
   /// `Cr(D) − T(D)`.
   int get delta => credited - target;
 
   /// Worked time the rule didn't count (Sunday rule, Saturday cap), or
   /// negative when the rule credited more than was worked (trip workday).
-  int get notCounted => effective - ruleCredit;
+  /// Excluded night hours are not part of it (§21.2).
+  int get notCounted =>
+      effective - (nightExcluded ? nightHours : 0) - ruleCredit;
 }
 
 /// Explains [day] (calculations.md §16). [isHoliday] tells a holiday's
 /// target of 0 apart from a free weekday.
-DayExplanation explainDay(DayResult day, {required bool isHoliday}) {
+DayExplanation explainDay(
+  DayResult day, {
+  required bool isHoliday,
+  NightWorkCredit night = NightWorkCredit.count,
+}) {
   // The ledger adds absence credit last (§8), so the rest is the rule's.
   final absence = absenceCredit(day.absences, day.target);
   return DayExplanation(
@@ -103,5 +121,8 @@ DayExplanation explainDay(DayResult day, {required bool isHoliday}) {
         : TargetReason.schedule,
     credited: day.credited,
     sundayHours: day.sundayHours,
+    specialHolidayHours: day.specialHolidayHours,
+    nightHours: day.nightHours,
+    nightExcluded: night == NightWorkCredit.exclude && day.nightHours > 0,
   );
 }

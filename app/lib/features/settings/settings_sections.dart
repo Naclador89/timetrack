@@ -414,6 +414,55 @@ class _Tiles {
         onSelectionChanged: (v) => save(SettingKeys.travelHoliday, v.single),
       ),
     ),
+    // calculations §21.1: the employer's list, none built in.
+    ListTile(
+      leading: const Icon(Icons.star_outline),
+      title: Text(l.specialDays),
+      subtitle: Text(
+        s.travel.specialDays.isEmpty
+            ? '${l.specialDaysNone} · ${l.specialDaysHint}'
+            : [
+                for (final d in SpecialDay.values)
+                  if (s.travel.specialDays.contains(d)) _specialDayName(l, d),
+              ].join(', '),
+      ),
+      onTap: () => showDialog<void>(
+        context: context,
+        builder: (_) => _SpecialDaysDialog(s.travel.specialDays, save),
+      ),
+    ),
+    // calculations §21.2
+    SettingsHeader(l.groupNightWork),
+    ListTile(
+      leading: const Icon(Icons.bedtime_outlined),
+      title: Text(l.nightWorkCredit),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            s.travel.night == NightWorkCredit.exclude
+                ? l.nightExcludeHint
+                : l.nightCountHint,
+          ),
+          const SizedBox(height: 8),
+          SegmentedButton<NightWorkCredit>(
+            segments: [
+              ButtonSegment(
+                value: NightWorkCredit.count,
+                label: Text(l.nightCount),
+              ),
+              ButtonSegment(
+                value: NightWorkCredit.exclude,
+                label: Text(l.nightExclude),
+              ),
+            ],
+            selected: {s.travel.night},
+            onSelectionChanged: (v) =>
+                save(SettingKeys.nightWorkCredit, v.single),
+          ),
+        ],
+      ),
+    ),
     SettingsHeader(l.groupExpenses),
     ListTile(
       leading: const Icon(Icons.restaurant_outlined),
@@ -683,6 +732,80 @@ String _limitsSummary(BuildContext context, BalanceLimits b) {
     if (b.maxPlus != null || b.maxMinus != null)
       '${l.zoneMax} ${side(b.maxPlus, b.maxMinus)}',
   ].join(' · ');
+}
+
+/// The name of a special holiday (calculations §21.1).
+String _specialDayName(AppLocalizations l, SpecialDay d) => switch (d) {
+  SpecialDay.newYear => l.specialDayNewYear,
+  SpecialDay.easterSunday => l.specialDayEasterSunday,
+  SpecialDay.easterMonday => l.specialDayEasterMonday,
+  SpecialDay.mayDay => l.specialDayMayDay,
+  SpecialDay.whitSunday => l.specialDayWhitSunday,
+  SpecialDay.whitMonday => l.specialDayWhitMonday,
+  SpecialDay.christmasDay => l.specialDayChristmasDay,
+  SpecialDay.boxingDay => l.specialDayBoxingDay,
+};
+
+/// Picks the special holidays (calculations §21.1).
+class _SpecialDaysDialog extends StatefulWidget {
+  const _SpecialDaysDialog(this.initial, this.save);
+
+  final Set<SpecialDay> initial;
+  final Future<void> Function(String key, Object? value) save;
+
+  @override
+  State<_SpecialDaysDialog> createState() => _SpecialDaysDialogState();
+}
+
+class _SpecialDaysDialogState extends State<_SpecialDaysDialog> {
+  late final _picked = {...widget.initial};
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return AlertDialog(
+      title: Text(l.specialDays),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.specialDaysHint),
+            const SizedBox(height: 8),
+            for (final d in SpecialDay.values)
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(_specialDayName(l, d)),
+                value: _picked.contains(d),
+                onChanged: (v) => setState(
+                  () => v ?? false ? _picked.add(d) : _picked.remove(d),
+                ),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+        FilledButton(
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            await widget.save(
+              SettingKeys.specialDays,
+              [
+                for (final d in SpecialDay.values)
+                  if (_picked.contains(d)) d.code,
+              ].join(','),
+            );
+            navigator.pop();
+          },
+          child: Text(l.save),
+        ),
+      ],
+    );
+  }
 }
 
 /// Asks for a duration in h:mm (or decimal hours); `null` if cancelled.

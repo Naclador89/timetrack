@@ -92,8 +92,14 @@ final class Timesheet {
   /// Days of a service trip that earn the flat supplement (§9, "35 % days").
   int get servicePayDays => rows.where((r) => r.day.servicePayDay).length;
 
-  /// Total Sunday hours of trip Sundays, for HR (§9, not in the balance).
+  /// Total Sunday and holiday hours, for HR (§9, not in the balance).
   int get sundayHours => _sum((d) => d.sundayHours);
+
+  /// Total hours on special holidays (§21.1).
+  int get specialHolidayHours => _sum((d) => d.specialHolidayHours);
+
+  /// Total night hours (§21.2).
+  int get nightHours => _sum((d) => d.nightHours);
 
   /// Total difference; equals `balanceAfter − balanceBefore`.
   int get delta => _sum((d) => d.delta);

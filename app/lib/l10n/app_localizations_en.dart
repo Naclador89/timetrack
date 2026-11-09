@@ -2042,7 +2042,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionClocking => 'Clocking & breaks';
 
   @override
-  String get sectionTravel => 'Trips & weekends';
+  String get sectionTravel => 'Trips & supplements';
 
   @override
   String get sectionApp => 'Appearance & updates';
@@ -2075,4 +2075,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workPcSummary => 'Autostart, tray, monthly reminder, booking';
+
+  @override
+  String get specialHolidayHours => 'Special holiday hours';
+
+  @override
+  String get nightHours => 'Night hours';
+
+  @override
+  String get specialDays => 'Special holidays';
+
+  @override
+  String get specialDaysHint =>
+      'Their hours are listed apart from the Sunday/holiday hours, e.g. for a higher supplement';
+
+  @override
+  String get specialDaysNone => 'None';
+
+  @override
+  String get specialDayNewYear => 'New Year\'s Day';
+
+  @override
+  String get specialDayEasterSunday => 'Easter Sunday';
+
+  @override
+  String get specialDayEasterMonday => 'Easter Monday';
+
+  @override
+  String get specialDayMayDay => '1 May';
+
+  @override
+  String get specialDayWhitSunday => 'Whit Sunday';
+
+  @override
+  String get specialDayWhitMonday => 'Whit Monday';
+
+  @override
+  String get specialDayChristmasDay => 'Christmas Day';
+
+  @override
+  String get specialDayBoxingDay => 'Boxing Day';
+
+  @override
+  String get groupNightWork => 'Night work';
+
+  @override
+  String get nightWorkCredit => 'Night hours (11 pm–6 am, from 2 h)';
+
+  @override
+  String get nightCount => 'On the account';
+
+  @override
+  String get nightExclude => 'Not on the account';
+
+  @override
+  String get nightCountHint => 'Listed and credited like any other work.';
+
+  @override
+  String get nightExcludeHint =>
+      'Paid out: listed, but not credited to the overtime account. Service-trip workdays keep their target.';
+
+  @override
+  String get explainNightExcluded => 'Paid out, not on the overtime account.';
+
+  @override
+  String get explainNightCounted =>
+      'Work between 11 pm and 6 am in a night of at least 2 h; reported for the supplement.';
+
+  @override
+  String get explainSpecialHolidayHours =>
+      'Reported apart from the Sunday/holiday hours (higher supplement), not on the overtime account.';
+
+  @override
+  String monthReportSupplements(String items) {
+    return 'Supplements: $items.';
+  }
+
+  @override
+  String get columnSpecialHours => 'Special';
+
+  @override
+  String get columnNightHours => 'Night';
 }

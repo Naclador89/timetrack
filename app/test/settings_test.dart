@@ -26,7 +26,7 @@ void main() {
       'Working time & account',
       'Clocking & breaks',
       'Home-office rules',
-      'Trips & weekends',
+      'Trips & supplements',
       'Notices',
       'Appearance & updates',
       'Setup',
@@ -62,7 +62,7 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'resume');
     await tester.pumpAndSettle();
     expect(find.text('Clocking & breaks › Clocking'), findsOneWidget);
-    expect(find.text('Trips & weekends'), findsNothing);
+    expect(find.text('Trips & supplements'), findsNothing);
     await tester.tap(find.text('Resume the project after a break'));
     await settle(tester);
     expect(

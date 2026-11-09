@@ -308,15 +308,25 @@ void main() {
     testWidgets('after a change of month: card, one notification, done', (
       tester,
     ) async {
-      await tester.runAsync(
-        () => saveSetting(repo, SettingKeys.balanceStartDate, '2026-10-01'),
-      );
+      await tester.runAsync(() async {
+        await saveSetting(repo, SettingKeys.balanceStartDate, '2026-10-01');
+        // Sun 25 Oct, 10:00–13:00 local (calculations §21.3).
+        await repo.write('work_sessions', 'sun', {
+          'start_utc': '2026-10-25T09:00:00Z',
+          'end_utc': '2026-10-25T12:00:00Z',
+          'location': 'office',
+        });
+      });
       await pump(tester, store, repo, workPc, autostarted: false);
       expect(
         find.text('Report the overtime balance for October'),
         findsOneWidget,
       );
       expect(find.textContaining('Balance on 10/31/2026'), findsOneWidget);
+      expect(
+        find.textContaining('Supplements: Sunday/holiday hours 3:00.'),
+        findsOneWidget,
+      );
 
       await tester.pump(const Duration(minutes: 1));
       await settle(tester);

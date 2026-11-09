@@ -49,6 +49,13 @@ abstract final class SettingKeys {
   /// `like_saturday` or `like_sunday` (§9).
   static const travelDayOff = 'travel.day_off';
 
+  /// Comma-separated special holidays, e.g. `christmas_day,may_day`
+  /// (§21.1).
+  static const specialDays = 'supplement.special_days';
+
+  /// `count` or `exclude` (§21.2).
+  static const nightWorkCredit = 'night_work.credit';
+
   /// Balance zone limits in minutes, unset = none (§20).
   static const balanceYellowPlus = 'balance.yellow_plus_min';
 
@@ -208,6 +215,14 @@ final class AppSettings {
           d.holiday,
         ),
         dayOff: enumOf(TripDayRule.values, SettingKeys.travelDayOff, d.dayOff),
+        specialDays: SpecialDay.parseList(
+          pick<String>(SettingKeys.specialDays, ''),
+        ),
+        night: enumOf(
+          NightWorkCredit.values,
+          SettingKeys.nightWorkCredit,
+          d.night,
+        ),
       ),
       balanceLimits: BalanceLimits(
         yellowPlus: limit(SettingKeys.balanceYellowPlus),

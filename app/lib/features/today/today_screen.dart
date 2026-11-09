@@ -450,6 +450,9 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
                   badge: BalanceZoneDot(balance),
                 ),
                 if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
+                if (day.specialHolidayHours > 0)
+                  figure(l.specialHolidayHours, day.specialHolidayHours),
+                if (day.nightHours > 0) figure(l.nightHours, day.nightHours),
               ],
             ),
             if (state.clockedIn) _ForecastLine(day: day, state: state),

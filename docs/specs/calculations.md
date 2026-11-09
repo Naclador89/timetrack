@@ -553,3 +553,46 @@ applies: **over limit** if B > max⁺ or B < −max⁻, else **red** if B > red�
   balance is in a worse zone than the day before (green → yellow, yellow → red, red → over limit, or
   a jump), "Zeitkonto im gelben Bereich (+301:00)". Today is left out: its balance counts the full
   target against the time so far. Dismissed like any notice.
+
+## §21 Supplement hours: special holidays and night work
+
+Requested by the user 2026-11-09 (step 4 of the employer rules). Employers often pay supplements for
+Sunday, holiday and night work; the app counts the hours per day and month so the payslip can be
+checked. It computes no money.
+
+### §21.1 Special holidays
+
+Setting `supplement.special_days`: a comma-separated list of codes, default empty (none built in):
+`new_year` (1 Jan), `easter_sunday`, `easter_monday`, `may_day` (1 May), `whit_sunday`,
+`whit_monday`, `christmas_day` (25 Dec), `boxing_day` (26 Dec). Easter and Whit Sunday are Sundays,
+the others nationwide public holidays, so every special day follows the Sunday rule of §9.
+
+On a special day the Sunday hours `S(D)` of §9 are reported as **special holiday hours** instead
+(`DayResult.specialHolidayHours`); `sundayHours` is then 0, so the two sums never overlap (user
+decision: separate sums, e.g. for a 70 % and a 150 % supplement). With `travel.sunday = work_only`
+there are no Sunday hours and so no special holiday hours either.
+
+### §21.2 Night work
+
+Night time is 23:00–06:00 local (§ 2 (3) ArbZG). A **night** of D runs from D 23:00 to D+1 06:00.
+Night work counts if the working time `W` (sessions minus breaks, §2) inside one night is **at least
+2 h** (the employer's rule; § 2 (4) ArbZG says "more than two hours"). Its minutes are split by
+calendar day: the part before midnight belongs to D, the part after to D+1. **Night hours**
+`N(D)` = the counting parts of the night of D−1 (00:00–06:00) and of the night of D (23:00–24:00).
+
+Setting `night_work.credit`:
+
+- `count` (default): `N(D)` is only reported; the credited time is unchanged.
+- `exclude` (the user's choice: night work is paid out, not put on the account): the time basis of
+  §8/§9 is `W_eff(D) − N(D)` (not below 0): days without a rule credit it, Saturday and other-trip
+  caps apply to it, the `work_only` Sunday rule subtracts travel from it. A service-trip workday
+  still gets `T(D)`, and Sunday hours (§9, §21.1) still count the full `W_eff(D)`, because the
+  supplements add up.
+
+### §21.3 Display
+
+Day, week and Today show special holiday hours and night hours next to the Sunday hours when they
+are above 0. The day explanation (§16) lists them, and for `exclude` it says the night hours are
+not on the account. The timesheet (screen and PDF) has a column and a total for each. The monthly
+reminder on the work PC (work-pc.md §4) names the month's Sunday/holiday, special holiday and night
+hours next to the balance.

@@ -2049,7 +2049,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sectionClocking => 'Stempeln & Pausen';
 
   @override
-  String get sectionTravel => 'Reisen & Wochenende';
+  String get sectionTravel => 'Reisen & Zuschläge';
 
   @override
   String get sectionApp => 'Darstellung & Updates';
@@ -2083,4 +2083,86 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get workPcSummary =>
       'Autostart, Infobereich, Monatserinnerung, Buchung';
+
+  @override
+  String get specialHolidayHours => 'Stunden an besonderen Feiertagen';
+
+  @override
+  String get nightHours => 'Nachtstunden';
+
+  @override
+  String get specialDays => 'Besondere Feiertage';
+
+  @override
+  String get specialDaysHint =>
+      'Ihre Stunden werden getrennt von den Sonn-/Feiertagsstunden ausgewiesen, z. B. für einen höheren Zuschlag';
+
+  @override
+  String get specialDaysNone => 'Keine';
+
+  @override
+  String get specialDayNewYear => 'Neujahr';
+
+  @override
+  String get specialDayEasterSunday => 'Ostersonntag';
+
+  @override
+  String get specialDayEasterMonday => 'Ostermontag';
+
+  @override
+  String get specialDayMayDay => '1. Mai';
+
+  @override
+  String get specialDayWhitSunday => 'Pfingstsonntag';
+
+  @override
+  String get specialDayWhitMonday => 'Pfingstmontag';
+
+  @override
+  String get specialDayChristmasDay => '1. Weihnachtstag';
+
+  @override
+  String get specialDayBoxingDay => '2. Weihnachtstag';
+
+  @override
+  String get groupNightWork => 'Nachtarbeit';
+
+  @override
+  String get nightWorkCredit => 'Nachtstunden (23–6 Uhr, ab 2 Std.)';
+
+  @override
+  String get nightCount => 'Im Konto';
+
+  @override
+  String get nightExclude => 'Nicht im Konto';
+
+  @override
+  String get nightCountHint => 'Werden ausgewiesen und normal angerechnet.';
+
+  @override
+  String get nightExcludeHint =>
+      'Werden ausgezahlt: ausgewiesen, aber nicht aufs Arbeitszeitkonto angerechnet. Werktage im Serviceeinsatz behalten ihr Soll.';
+
+  @override
+  String get explainNightExcluded =>
+      'Werden ausgezahlt, nicht aufs Arbeitszeitkonto angerechnet.';
+
+  @override
+  String get explainNightCounted =>
+      'Arbeit zwischen 23 und 6 Uhr in einer Nacht ab 2 Std.; wird für den Zuschlag gemeldet.';
+
+  @override
+  String get explainSpecialHolidayHours =>
+      'Werden getrennt von den Sonn-/Feiertagsstunden gemeldet (höherer Zuschlag), nicht Teil des Stundenkontos.';
+
+  @override
+  String monthReportSupplements(String items) {
+    return 'Zuschläge: $items.';
+  }
+
+  @override
+  String get columnSpecialHours => 'Bes. FT';
+
+  @override
+  String get columnNightHours => 'Nacht';
 }

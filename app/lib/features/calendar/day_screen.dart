@@ -240,6 +240,13 @@ class DayScreen extends ConsumerWidget {
                               ),
                               if (day.sundayHours > 0)
                                 figure(l.sundayHours, day.sundayHours),
+                              if (day.specialHolidayHours > 0)
+                                figure(
+                                  l.specialHolidayHours,
+                                  day.specialHolidayHours,
+                                ),
+                              if (day.nightHours > 0)
+                                figure(l.nightHours, day.nightHours),
                               if (day.unassigned > 0 && !day.isTripDay)
                                 figure(l.unassigned, day.unassigned),
                             ],

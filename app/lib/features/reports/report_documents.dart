@@ -65,11 +65,14 @@ String _notes(ReportFormat f, TimesheetRow r) => [
 /// The monthly timesheet as a table: header row plus one row per day
 /// (concept §5, "Monthly timesheet").
 ///
-/// The column "Sunday hours" (trip Sundays for HR, calculations.md §9) is
-/// only there in months that have some.
+/// The columns "Sunday hours" (calculations.md §9), special holiday and
+/// night hours (§21) are only there in months that have some.
 List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
   final l = f.l;
   final sunday = t.sundayHours > 0;
+  final special = t.specialHolidayHours > 0;
+  final night = t.nightHours > 0;
+  String hours(int v) => v == 0 ? '' : formatMinutes(v);
   return [
     [
       l.colDate,
@@ -81,6 +84,8 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
       l.target,
       l.difference,
       if (sunday) l.sundayHours,
+      if (special) l.columnSpecialHours,
+      if (night) l.columnNightHours,
       l.colNotes,
     ],
     for (final r in t.rows)
@@ -93,11 +98,24 @@ List<List<String>> timesheetTable(Timesheet t, ReportFormat f) {
         formatMinutes(r.day.credited),
         formatMinutes(r.day.target),
         formatMinutes(r.day.delta),
-        if (sunday)
-          r.day.sundayHours == 0 ? '' : formatMinutes(r.day.sundayHours),
+        if (sunday) hours(r.day.sundayHours),
+        if (special) hours(r.day.specialHolidayHours),
+        if (night) hours(r.day.nightHours),
         _notes(f, r),
       ],
   ];
+}
+
+/// The indexes of the right-aligned number columns of [timesheetTable].
+Set<int> timesheetNumberColumns(Timesheet t) {
+  final last =
+      7 +
+      [
+        t.sundayHours,
+        t.specialHolidayHours,
+        t.nightHours,
+      ].where((v) => v > 0).length;
+  return {for (var i = 1; i <= last; i++) i};
 }
 
 /// Project time per day and order number (concept §5, "Order report").
@@ -272,6 +290,9 @@ List<(String, String)> timesheetFigures(Timesheet t, ReportFormat f) {
     (l.target, formatMinutes(t.target)),
     (l.difference, formatMinutes(t.delta)),
     if (t.sundayHours > 0) (l.sundayHours, formatMinutes(t.sundayHours)),
+    if (t.specialHolidayHours > 0)
+      (l.specialHolidayHours, formatMinutes(t.specialHolidayHours)),
+    if (t.nightHours > 0) (l.nightHours, formatMinutes(t.nightHours)),
     (l.balanceBefore, formatMinutes(t.balanceBefore)),
     (l.balanceAfter, formatMinutes(t.balanceAfter)),
     (l.workedDays, '${t.workedDays}'),
@@ -290,9 +311,8 @@ Future<List<int>> timesheetPdf(
 }) {
   final l = f.l;
   final doc = pw.Document(title: '${l.timesheet} ${f.month(t.year, t.month)}');
-  final lastNumber = t.sundayHours > 0 ? 8 : 7;
   final right = {
-    for (var i = 1; i <= lastNumber; i++) i: pw.Alignment.centerRight,
+    for (final i in timesheetNumberColumns(t)) i: pw.Alignment.centerRight,
   };
   pw.Widget figure(String label, String value) => pw.Padding(
     padding: const pw.EdgeInsets.only(right: 18, bottom: 4),

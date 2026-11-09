@@ -32,9 +32,17 @@ final _monthReportDoneProvider = FutureProvider<String?>(
       .transaction((tx) => tx.localValue(monthReportDoneKey)),
 );
 
-/// The month to report and its closing balance, or `null`: only on the work
-/// PC (Windows) with the reminder on (work-pc.md §4).
-final monthReportProvider = Provider<({LocalDate month, int balance})?>((ref) {
+/// What the monthly reminder reports (work-pc.md §4): the month, its
+/// closing balance and its supplement hours (calculations §9, §21).
+typedef MonthReport = ({
+  LocalDate month,
+  int balance,
+  ({int sunday, int special, int night}) supplements,
+});
+
+/// The month to report, or `null`: only on the work PC (Windows) with the
+/// reminder on (work-pc.md §4).
+final monthReportProvider = Provider<MonthReport?>((ref) {
   if (ref.watch(workPcPlatformProvider) == null) return null;
   if (!(ref.watch(monthReportReminderProvider).value ?? false)) return null;
   final done = ref.watch(_monthReportDoneProvider);
@@ -47,23 +55,40 @@ final monthReportProvider = Provider<({LocalDate month, int balance})?>((ref) {
   );
   if (month == null) return null;
   final end = month.addDays(31).startOfMonth.addDays(-1);
-  return (month: month, balance: ledger.balanceAtEndOf(end));
+  final sheet = buildTimesheet(ledger, month.year, month.month);
+  return (
+    month: month,
+    balance: ledger.balanceAtEndOf(end),
+    supplements: (
+      sunday: sheet.sundayHours,
+      special: sheet.specialHolidayHours,
+      night: sheet.nightHours,
+    ),
+  );
 });
 
 /// The reminder's title and text for [month] (also the notification).
 ({String title, String text}) monthReportTexts(
   BuildContext context,
-  LocalDate month,
-  int balance,
+  MonthReport report,
 ) {
+  final MonthReport(:month, :balance, supplements: s) = report;
   final l = context.l10n;
+  final items = [
+    if (s.sunday > 0) '${l.sundayHours} ${formatMinutes(s.sunday)}',
+    if (s.special > 0) '${l.specialHolidayHours} ${formatMinutes(s.special)}',
+    if (s.night > 0) '${l.nightHours} ${formatMinutes(s.night)}',
+  ];
   final locale = Localizations.localeOf(context).toLanguageTag();
   final name = DateFormat.MMMM(locale)
       .format(DateTime(month.year, month.month));
   final end = month.addDays(31).startOfMonth.addDays(-1);
   return (
     title: l.monthReportTitle(name),
-    text: l.monthReportText(context.date(end), signedBalance(balance)),
+    text: [
+      l.monthReportText(context.date(end), signedBalance(balance)),
+      if (items.isNotEmpty) l.monthReportSupplements(items.join(', ')),
+    ].join(' '),
   );
 }
 
@@ -87,7 +112,7 @@ class MonthReportCard extends ConsumerWidget {
     final due = ref.watch(monthReportProvider);
     if (due == null) return const SizedBox.shrink();
     final l = context.l10n;
-    final texts = monthReportTexts(context, due.month, due.balance);
+    final texts = monthReportTexts(context, due);
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),

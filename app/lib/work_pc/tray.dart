@@ -213,7 +213,7 @@ class _TrayHostState extends ConsumerState<TrayHost> {
         (tx) => tx.localValue(monthReportNotifiedKey),
       );
       if (shown != key && mounted) {
-        final texts = monthReportTexts(context, report.month, report.balance);
+        final texts = monthReportTexts(context, report);
         await platform.notify(texts.title, texts.text);
         await store.transaction(
           (tx) => tx.setLocalValue(monthReportNotifiedKey, key),

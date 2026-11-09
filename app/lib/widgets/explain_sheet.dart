@@ -29,7 +29,11 @@ class _ExplainSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final holidays = ref.watch(holidaysProvider);
     final day = ref.watch(ledgerProvider).day(date);
-    final e = explainDay(day, isHoliday: holidays.isHoliday(date));
+    final e = explainDay(
+      day,
+      isHoliday: holidays.isHoliday(date),
+      night: ref.watch(settingsProvider).travel.night,
+    );
     final holiday = holidays.holidayOn(date)?.name;
     String m(int v) => formatMinutes(v);
 
@@ -92,6 +96,13 @@ class _ExplainSheet extends ConsumerWidget {
                 '− ${m(e.breakDeduction)}',
                 hint: l.explainBreakDeductedHint,
               ),
+            // §21.2: paid out, so taken off before any rule.
+            if (e.nightExcluded)
+              row(
+                l.nightHours,
+                '− ${m(e.nightHours)}',
+                hint: l.explainNightExcluded,
+              ),
             if (ruleText != null)
               row(l.explainRule, m(e.ruleCredit), hint: ruleText),
             if (e.absenceCredit > 0)
@@ -116,6 +127,14 @@ class _ExplainSheet extends ConsumerWidget {
             ),
             if (e.sundayHours > 0)
               row(l.sundayHours, m(e.sundayHours), hint: l.explainSundayHours),
+            if (e.specialHolidayHours > 0)
+              row(
+                l.specialHolidayHours,
+                m(e.specialHolidayHours),
+                hint: l.explainSpecialHolidayHours,
+              ),
+            if (e.nightHours > 0 && !e.nightExcluded)
+              row(l.nightHours, m(e.nightHours), hint: l.explainNightCounted),
           ],
         ),
       ),
