@@ -102,10 +102,11 @@ GoRouter buildRouter() => GoRouter(
         ),
       ],
     ),
-    // Settings and the setup wizard open over the tabs (gear icon).
+    // Settings and the setup wizard open over the tabs (gear icon). Settings
+    // shows the update banner too: an update started there must stay visible.
     GoRoute(
       path: '/settings',
-      builder: (_, _) => const SettingsScreen(),
+      builder: (_, _) => const UpdateBannerHost(child: SettingsScreen()),
       routes: [
         GoRoute(path: 'schedules', builder: (_, _) => const SchedulesScreen()),
         GoRoute(

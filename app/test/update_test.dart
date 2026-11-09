@@ -14,6 +14,7 @@ import 'package:timetrack/main.dart';
 import 'package:timetrack/sync/sync_controller.dart';
 import 'package:timetrack/update/installer.dart';
 import 'package:timetrack/update/update_controller.dart';
+import 'package:timetrack/work_pc/work_pc.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import 'helpers.dart';
@@ -113,6 +114,8 @@ Future<(InMemorySyncStore, FakeInstaller)> pumpWithUpdates(
         updatePlatformProvider.overrideWithValue(UpdatePlatform.linux),
         updateInstallerProvider.overrideWithValue(installer),
         networkChangesProvider.overrideWithValue(const Stream.empty()),
+        // No tray or window channel in tests, also on a Windows host.
+        workPcPlatformProvider.overrideWithValue(null),
       ],
       child: TimeTrackApp(router: buildRouter()),
     ),
@@ -205,5 +208,30 @@ void main() {
     expect(find.textContaining('Installed: 0.4.0'), findsOneWidget);
     await tapAndWait(tester, find.text('Check for updates'));
     expect(find.text('TimeTrack is up to date.'), findsOneWidget);
+  });
+
+  testWidgets('§4 an update started in settings shows Restart there', (
+    tester,
+  ) async {
+    final (_, installer) = await pumpWithUpdates(tester, fakeGitHub('v0.4.1'));
+    await tester.tap(find.text('Later'));
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(Scaffold).first);
+    GoRouterHelper(context).push('/settings');
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Check for updates'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tapAndWait(tester, find.text('Check for updates'));
+    expect(find.text('Neu: Updates aus der App'), findsOneWidget);
+    expect(find.text('Update'), findsNWidgets(2), reason: 'banner + dialog');
+    await tapAndWait(tester, find.text('Update').last);
+    expect(installer.installed, ['the new app']);
+    // The tabs behind Settings show it too; the top one is Settings'.
+    expect(find.textContaining('is installed'), findsWidgets);
+    await tester.tap(find.text('Restart').last);
+    expect(installer.restarted, isTrue);
   });
 }

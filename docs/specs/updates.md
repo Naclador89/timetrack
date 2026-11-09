@@ -53,7 +53,8 @@ Status: **normative**. Code: `packages/core/lib/src/update/` (release, versions,
 
 ## 4. Notice
 
-- Banner above every tab: "TimeTrack 0.4.0 ist verfügbar" with *Aktualisieren*, *Was ist neu*
+- Banner above every tab and above Einstellungen (an update started from the manual check there
+  must show its progress and *Neu starten*): "TimeTrack 0.4.0 ist verfügbar" with *Aktualisieren*, *Was ist neu*
   (the release notes) and *Später* (hidden until the next start) and, in the notes dialog,
   *Überspringen* (§3 `skipped`).
 - Android: the background job additionally shows a system notification (channel "Updates"), once

@@ -20,15 +20,20 @@ class UpdateBannerHost extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(updateControllerProvider);
-    if (!status.showsBanner) return child;
+    final banner = status.showsBanner;
+    // Always the same tree around child: if the banner swapped it in and out
+    // of a Column, child would be rebuilt from scratch and lose its state
+    // (e.g. Settings in the middle of the manual check).
     return Column(
       children: [
-        SafeArea(bottom: false, child: UpdateBanner(status: status)),
-        // The banner already keeps clear of the status bar.
+        if (banner)
+          SafeArea(bottom: false, child: UpdateBanner(status: status)),
         Expanded(
+          key: const ValueKey('content'),
+          // The banner already keeps clear of the status bar.
           child: MediaQuery.removePadding(
             context: context,
-            removeTop: true,
+            removeTop: banner,
             child: child,
           ),
         ),
