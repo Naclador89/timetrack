@@ -2338,4 +2338,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weekLimitsHint =>
       'All recorded work including travel, without breaks (§ 3 ArbZG). 0 switches it off.';
+
+  @override
+  String get addWorkTime => 'Add working time';
 }

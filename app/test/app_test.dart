@@ -205,6 +205,25 @@ void main() {
     expect(find.text('Week 45'), findsOneWidget);
   });
 
+  testWidgets('day view: "+" opens a new working time for that day', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    await pumpApp(tester, router: router);
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    expect(find.text('Quick entry'), findsNothing);
+    await tester.tap(find.text('Add working time'));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Working times'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('day view: an X deletes an entry, undo brings it back', (
     tester,
   ) async {
@@ -315,7 +334,10 @@ void main() {
       'project_number': 'P-2026/014',
     });
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Quick entry'));
+    // The sheet is opened with Ctrl+J (the button gave way to "+").
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyJ);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byType(TextField).last,
@@ -576,10 +598,10 @@ void main() {
     }
 
     // From Today, the day opens inside the Today tab: back returns there.
-    await tester.tap(find.byTooltip('Quick entry'));
+    await tester.tap(find.byTooltip('Add working time'));
     await tester.pumpAndSettle();
-    await back(); // closes the sheet
-    expect(find.text('Quick entry'), findsNothing);
+    await back(); // closes the dialog
+    expect(find.byType(AlertDialog), findsNothing);
     expect(find.text('Not clocked in'), findsOneWidget);
 
     await tester.tap(find.text('Calendar').last);

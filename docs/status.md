@@ -470,6 +470,9 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
       existed (Monday 07:58, picked 08:00 → Sunday 08:00, open for a day). Yesterday is now only
       possible while clocked in; a future time is refused with "Diese Uhrzeit liegt in der Zukunft"
       (the snack bar said "nicht vor <last session end>" before). Released in v0.6.2.
+- [x] "+" instead of "Schnell erfassen" (user, 2026-11-09): Today's app bar and the day view's
+      folding button open the normal working-time dialog (`showIntervalDialog`). The quick entry
+      line stays reachable via Ctrl+J and the command palette.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
@@ -604,3 +607,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: step 4 of the employer rules: special holiday hours and night hours (calculations §21), night hours optionally off the account; timesheet, day views and the monthly reminder show them. 304 core, 91 app tests green.
 - 2026-11-09, Claude Code: step 5 of the employer rules: travel expenses (calculations §13.0–§13.5): BMF 2026 rates built in, places per trip day, lodging, mileage, site allowance, expense report per trip, claim deadline card. 317 core, 95 app tests green.
 - 2026-11-09, Claude Code: step 6 of the employer rules: weekly limits 60 h and Ø 48 h over 24 weeks (calculations §22); all six steps done. 320 core, 97 app tests green.
+- 2026-11-09, Claude Code: the quick entry buttons on Today and the day view became "+" (new working time). 320 core, 98 app tests green.

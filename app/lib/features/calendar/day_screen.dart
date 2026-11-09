@@ -12,7 +12,6 @@ import '../../widgets/day_timeline.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/interval_dialog.dart';
 import '../../widgets/motion.dart';
-import '../../widgets/quick_entry_sheet.dart';
 import '../../widgets/shortcuts.dart';
 import '../../widgets/undo.dart';
 import '../projects/project_time_dialog.dart';
@@ -144,9 +143,9 @@ class DayScreen extends ConsumerWidget {
       onNext: () => open(date.addDays(1)),
       onToday: () => open(ref.read(todayProvider)),
       child: CollapsingFab(
-        onPressed: () => showQuickEntrySheet(context, date),
-        icon: const Icon(Icons.bolt),
-        label: Text(l.quickEntry),
+        onPressed: () => _editInterval(context, ref, 'work_sessions', null),
+        icon: const Icon(Icons.add),
+        label: Text(l.addWorkTime),
         builder: (context, fab, onScroll) => Scaffold(
           appBar: AppBar(
             title: Text(context.longDate(date)),

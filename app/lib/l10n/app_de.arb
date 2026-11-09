@@ -665,5 +665,6 @@
   "groupWeekLimits": "Wochengrenzen",
   "weekMaxSetting": "Höchstens pro Woche",
   "weekAverageSetting": "Schnitt über {weeks} Wochen höchstens",
-  "weekLimitsHint": "Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab."
+  "weekLimitsHint": "Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab.",
+  "addWorkTime": "Arbeitszeit eintragen"
 }

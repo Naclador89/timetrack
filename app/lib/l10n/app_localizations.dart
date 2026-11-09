@@ -4093,6 +4093,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All recorded work including travel, without breaks (§ 3 ArbZG). 0 switches it off.'**
   String get weekLimitsHint;
+
+  /// No description provided for @addWorkTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add working time'**
+  String get addWorkTime;
 }
 
 class _AppLocalizationsDelegate

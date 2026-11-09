@@ -13,8 +13,8 @@ import '../../widgets/attention.dart';
 import '../../widgets/balance_zone.dart';
 import '../../widgets/day_timeline.dart';
 import '../../widgets/explain_sheet.dart';
+import '../../widgets/interval_dialog.dart';
 import '../../widgets/motion.dart';
-import '../../widgets/quick_entry_sheet.dart';
 import '../../work_pc/month_report.dart';
 import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
@@ -56,9 +56,13 @@ class TodayScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            tooltip: l.quickEntry,
-            icon: const Icon(Icons.bolt),
-            onPressed: () => showQuickEntrySheet(context, today),
+            tooltip: l.addWorkTime,
+            icon: const Icon(Icons.add),
+            onPressed: () => showIntervalDialog(
+              context,
+              date: today,
+              table: 'work_sessions',
+            ),
           ),
           ...commonActions(),
         ],

@@ -2349,4 +2349,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get weekLimitsHint =>
       'Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab.';
+
+  @override
+  String get addWorkTime => 'Arbeitszeit eintragen';
 }
