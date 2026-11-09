@@ -15,6 +15,7 @@ import '../../update/update_banner.dart';
 import '../../update/update_controller.dart';
 import '../../widgets/dialogs.dart';
 import '../../work_pc/work_pc.dart';
+import '../../work_pc/month_report.dart';
 
 /// Official names of the federal states (proper names, not translated).
 const stateNames = {
@@ -509,6 +510,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .read(storeProvider)
                 .transaction((tx) => tx.setLocalValue(closeToTrayKey, '$v'));
             ref.invalidate(closeToTrayProvider);
+          },
+        ),
+      // spec: work-pc.md §4 (Windows only)
+      if (ref.watch(workPcPlatformProvider) != null)
+        SwitchListTile(
+          secondary: const Icon(Icons.outbox_outlined),
+          title: Text(l.monthReportReminder),
+          subtitle: Text(l.monthReportReminderHint),
+          value: ref.watch(monthReportReminderProvider).value ?? true,
+          onChanged: (v) async {
+            await ref
+                .read(storeProvider)
+                .transaction(
+                  (tx) => tx.setLocalValue(monthReportReminderKey, '$v'),
+                );
+            ref.invalidate(monthReportReminderProvider);
           },
         ),
       // spec: booking-transfer.md §1 (Windows only)

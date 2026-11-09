@@ -556,5 +556,11 @@
   "dayCap": "Andere Reisen und Samstage: max. Stunden",
   "dayCapHint": "Dienstreisen ohne Serviceeinsatz und Samstage ohne Reise: die tatsächliche Zeit, Reise eingeschlossen, höchstens bis zu dieser Grenze.",
   "servicePayDays": "Tage mit Reisezuschlag",
-  "explainOtherTripWorkday": "Dienstreise ohne Serviceeinsatz: Es zählt die tatsächliche Zeit, Reise eingeschlossen, höchstens {cap}."
+  "explainOtherTripWorkday": "Dienstreise ohne Serviceeinsatz: Es zählt die tatsächliche Zeit, Reise eingeschlossen, höchstens {cap}.",
+  "copy": "Kopieren",
+  "copied": "Kopiert",
+  "monthReportTitle": "Überstundenkonto für {month} melden",
+  "monthReportText": "Stand zum {date}: {balance}. Bitte im Firmensystem eintragen.",
+  "monthReportReminder": "Erinnerung: Überstunden melden",
+  "monthReportReminderHint": "Erinnert nach dem Monatswechsel an den Kontostand zum Monatsende"
 }

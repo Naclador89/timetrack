@@ -11,6 +11,7 @@ import '../features/projects/project_picker.dart';
 import '../features/projects/project_time_dialog.dart';
 import '../reminders/reminders.dart';
 import 'work_pc.dart';
+import 'month_report.dart';
 
 /// The Windows tray icon (docs/specs/work-pc.md §3): mirrors the tracker in
 /// its tooltip, colour and menu, runs the menu's actions, keeps the window
@@ -199,11 +200,27 @@ class _TrayHostState extends ConsumerState<TrayHost> {
     );
   }
 
-  /// Shows the reminders that are due (reminders.md §2).
+  /// Shows the reminders that are due (reminders.md §2) and, once a month,
+  /// the one to report the balance (work-pc.md §4).
   Future<void> _remind() async {
     final platform = _platform;
     if (platform == null || !mounted) return;
     final store = ref.read(storeProvider);
+    final report = ref.read(monthReportProvider);
+    if (report != null) {
+      final key = monthKey(report.month);
+      final shown = await store.transaction(
+        (tx) => tx.localValue(monthReportNotifiedKey),
+      );
+      if (shown != key && mounted) {
+        final texts = monthReportTexts(context, report.month, report.balance);
+        await platform.notify(texts.title, texts.text);
+        await store.transaction(
+          (tx) => tx.setLocalValue(monthReportNotifiedKey, key),
+        );
+      }
+    }
+    if (!mounted) return;
     final now = ref.read(clockProvider)();
     final due = (await pendingReminders(
       store,

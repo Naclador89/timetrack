@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 285, app 78 tests; CI green on `main`.
+- **Tests**: core 289, app 81 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -22,6 +22,7 @@ _Last updated: 2026-11-09 by Claude Code._
     picker popups for Kostengruppe/Position, booking detection after "Buchen", the marker.
   - Both: the time question when stamping (calculations §19), also from the tray and at sign-in.
   - Windows: the self-update without a script (updates.md §5), from the release after the fixed one.
+  - Windows: the monthly balance reminder (work-pc.md §4) after the next change of month.
 - **Not wanted** (don't propose again unless the user asks): Garmin glance, auto clock-in by
   Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows.
 - **How a change usually goes**: user reports a problem or wish → update the spec in `docs/specs/`
@@ -402,8 +403,10 @@ against the app; the agreed order of steps:
        Mon–Sat of a service trip) in the timesheet. New setting keys (`travel.service_saturday_cap_min`,
        `travel.day_cap_min`, `travel.sunday_hours_cap_min`); the old ones are no longer read.
        Switch "Serviceeinsatz / Inbetriebnahme" in the trip dialog.
-2. [ ] Monthly report to HR: over/under hours, days over 10 h and missed breaks, each with a reason
-       (notices get a reason field; export).
+2. [x] ~~Monthly report to HR~~: not wanted (user 2026-11-09). Instead a **reminder on the work PC**
+       after a change of month to enter the overtime balance in the company system (work-pc.md §4):
+       card on Today with the closing balance, Kopieren / Erledigt, one Windows notification per
+       month, switch "Erinnerung: Überstunden melden" (device-local, default on).
 3. [ ] Traffic light for the account (green to +300/−100 h, yellow to +350/−150 h, red beyond,
        limits +400/−200 h) and the yearly account (balance on 31 Dec, reduce by 31 Mar, extended by
        vacation and sick days).
@@ -564,3 +567,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: reviewed the Copilot work (booking transfer, stamp time, updater fix): docs and tests in order; fixed the clock-in that moved a future time to yesterday, and the wrong snack bar for it. 286 core, 74 widget tests green.
 - 2026-11-09, Claude Code: Windows self-update no longer needs PowerShell (the script was most likely blocked on the company PC); files are swapped in by the app itself. 286 core, 77 app tests green.
 - 2026-11-09, Claude Code: reviewed the employer's working-time and travel expense rules with the user; step 1 done: travel crediting by service trip (calculations §9, `trips.service`), 35 % days in the timesheet. 285 core, 78 app tests green.
+- 2026-11-09, Claude Code: monthly reminder on the work PC to report the overtime balance (work-pc.md §4, core `monthReportDue`). 289 core, 81 app tests green.

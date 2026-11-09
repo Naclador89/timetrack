@@ -70,3 +70,19 @@ runner, channel `timetrack/window`):
 - The icon is removed when the window is destroyed (quit, update; the updater quits through the
   channel instead of `exit`) and added again when Explorer restarts (`TaskbarCreated`).
 
+
+## 4. Monthly balance reminder (Windows only)
+
+Requested by the user 2026-11-09: after a change of month, remind them on the work PC to enter the
+overtime balance in the employer's system.
+
+- **Setting**: Einstellungen → App → **Erinnerung: Überstunden melden**, Windows only, per device in
+  `local_values` `month_report_reminder` (default on; `false` switches it off).
+- **Due** (core `monthReportDue`): the month before today's month, unless `local_values`
+  `month_report_done` already holds it (`YYYY-MM`) or a later month, and only if that month ends on
+  or after the balance start (§8 of calculations.md; before it there is no balance to report).
+- **Card on Today** while due: "Überstundenkonto für Oktober melden", the balance at the end of that
+  month (`Ledger.balanceAtEndOf`, signed `+12:30`) and the actions **Kopieren** (the balance as
+  text) and **Erledigt** (stores the month in `month_report_done`; the card goes).
+- **Notification**: once per month, the first time the reminder check (§3) finds it due, a Windows
+  notification with the same text (`local_values` `month_report_notified` = `YYYY-MM`).

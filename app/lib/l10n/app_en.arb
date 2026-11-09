@@ -1305,5 +1305,28 @@
         "type": "String"
       }
     }
-  }
+  },
+  "copy": "Copy",
+  "copied": "Copied",
+  "monthReportTitle": "Report the overtime balance for {month}",
+  "@monthReportTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "monthReportText": "Balance on {date}: {balance}. Enter it in the company system.",
+  "@monthReportText": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "monthReportReminder": "Reminder: report overtime",
+  "monthReportReminderHint": "After a change of month, reminds you of last month's closing balance"
 }

@@ -1953,4 +1953,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String explainOtherTripWorkday(String cap) {
     return 'Business trip without service work: the real time counts, travel included, at most $cap.';
   }
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String monthReportTitle(String month) {
+    return 'Report the overtime balance for $month';
+  }
+
+  @override
+  String monthReportText(String date, String balance) {
+    return 'Balance on $date: $balance. Enter it in the company system.';
+  }
+
+  @override
+  String get monthReportReminder => 'Reminder: report overtime';
+
+  @override
+  String get monthReportReminderHint =>
+      'After a change of month, reminds you of last month\'s closing balance';
 }

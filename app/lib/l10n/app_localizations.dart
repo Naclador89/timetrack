@@ -3439,6 +3439,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Business trip without service work: the real time counts, travel included, at most {cap}.'**
   String explainOtherTripWorkday(String cap);
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @monthReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report the overtime balance for {month}'**
+  String monthReportTitle(String month);
+
+  /// No description provided for @monthReportText.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance on {date}: {balance}. Enter it in the company system.'**
+  String monthReportText(String date, String balance);
+
+  /// No description provided for @monthReportReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: report overtime'**
+  String get monthReportReminder;
+
+  /// No description provided for @monthReportReminderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After a change of month, reminds you of last month\'s closing balance'**
+  String get monthReportReminderHint;
 }
 
 class _AppLocalizationsDelegate

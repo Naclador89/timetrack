@@ -1960,4 +1960,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String explainOtherTripWorkday(String cap) {
     return 'Dienstreise ohne Serviceeinsatz: Es zählt die tatsächliche Zeit, Reise eingeschlossen, höchstens $cap.';
   }
+
+  @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get copied => 'Kopiert';
+
+  @override
+  String monthReportTitle(String month) {
+    return 'Überstundenkonto für $month melden';
+  }
+
+  @override
+  String monthReportText(String date, String balance) {
+    return 'Stand zum $date: $balance. Bitte im Firmensystem eintragen.';
+  }
+
+  @override
+  String get monthReportReminder => 'Erinnerung: Überstunden melden';
+
+  @override
+  String get monthReportReminderHint =>
+      'Erinnert nach dem Monatswechsel an den Kontostand zum Monatsende';
 }

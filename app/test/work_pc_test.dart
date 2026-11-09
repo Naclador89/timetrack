@@ -9,6 +9,7 @@ import 'package:timetrack/app/providers.dart';
 import 'package:timetrack/app/router.dart';
 import 'package:timetrack/main.dart';
 import 'package:timetrack/sync/sync_controller.dart';
+import 'package:timetrack/work_pc/month_report.dart';
 import 'package:timetrack/work_pc/work_pc.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
@@ -272,6 +273,11 @@ void main() {
     });
 
     testWidgets('due reminders become Windows notifications', (tester) async {
+      await tester.runAsync(
+        () => store.transaction(
+          (tx) => tx.setLocalValue(monthReportReminderKey, 'false'),
+        ),
+      );
       // Working since 02:00 Berlin without a break: 6 h at 08:00.
       await tester.runAsync(
         () => repo.write('work_sessions', 's', {
@@ -294,6 +300,72 @@ void main() {
       await tester.pump(const Duration(minutes: 1));
       await settle(tester);
       expect(workPc.notifications, hasLength(1));
+    });
+  });
+
+  group('§4 monthly balance reminder', () {
+    testWidgets('after a change of month: card, one notification, done', (
+      tester,
+    ) async {
+      await tester.runAsync(
+        () => saveSetting(repo, SettingKeys.balanceStartDate, '2026-10-01'),
+      );
+      await pump(tester, store, repo, workPc, autostarted: false);
+      expect(
+        find.text('Report the overtime balance for October'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Balance on 10/31/2026'), findsOneWidget);
+
+      await tester.pump(const Duration(minutes: 1));
+      await settle(tester);
+      await tester.pump(const Duration(minutes: 1));
+      await settle(tester);
+      expect(
+        workPc.notifications.where(
+          (n) => n.$1 == 'Report the overtime balance for October',
+        ),
+        hasLength(1),
+        reason: 'once a month',
+      );
+
+      await tester.tap(find.text('Done'));
+      await settle(tester);
+      expect(
+        find.text('Report the overtime balance for October'),
+        findsNothing,
+      );
+      final done = await tester.runAsync(
+        () => store.transaction((tx) => tx.localValue(monthReportDoneKey)),
+      );
+      expect(done, '2026-10');
+    });
+
+    testWidgets('switched off, or before the balance start: no card', (
+      tester,
+    ) async {
+      await tester.runAsync(
+        () => saveSetting(repo, SettingKeys.balanceStartDate, '2026-11-01'),
+      );
+      await pump(tester, store, repo, workPc, autostarted: false);
+      expect(find.textContaining('Report the overtime balance'), findsNothing);
+
+      await tester.runAsync(() async {
+        await saveSetting(repo, SettingKeys.balanceStartDate, '2026-10-01');
+        await store.transaction(
+          (tx) => tx.setLocalValue(monthReportReminderKey, 'false'),
+        );
+      });
+      await pump(tester, store, repo, workPc, autostarted: false);
+      expect(find.textContaining('Report the overtime balance'), findsNothing);
+    });
+
+    testWidgets('not on other platforms', (tester) async {
+      await pumpApp(
+        tester,
+        seed: (r) => saveSetting(r, SettingKeys.balanceStartDate, '2026-10-01'),
+      );
+      expect(find.textContaining('Report the overtime balance'), findsNothing);
     });
   });
 }
