@@ -196,7 +196,7 @@ void main() {
     await pumpWithUpdates(tester, fakeGitHub('v0.4.0'));
     expect(find.textContaining('is available'), findsNothing);
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/app');
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('Check for updates'),
@@ -217,7 +217,7 @@ void main() {
     await tester.tap(find.text('Later'));
     await tester.pumpAndSettle();
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/app');
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('Check for updates'),

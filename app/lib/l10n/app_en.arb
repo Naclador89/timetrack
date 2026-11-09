@@ -224,7 +224,6 @@
   "askStampTime": "Ask for the time when stamping",
   "askStampTimeHint": "When clocking in or out and at breaks; the current time is suggested",
   "stampTimeFuture": "That time is in the future.",
-  "general": "General",
   "vacationLeft": "Vacation {year}: {remaining} of {total} days left",
   "@vacationLeft": {
     "placeholders": {
@@ -708,14 +707,8 @@
   "stepEndOnSite": "Done at the customer",
   "stepStartInbound": "Start travelling back",
   "stepEndInbound": "Back – end travel",
-  "accountSectionHint": "What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.",
   "travelRulesHint": "Only for the overtime account. The travel record always shows the exact outbound, customer and return times.",
   "weekendRulesHint": "For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.",
-  "recordsSection": "Records",
-  "recordsSectionHint": "Recorded to the minute as it happened, independent of what the account credits.",
-  "travelRecordHint": "Outbound, at the customer and return with times, hours away and per-diem",
-  "projectTimesRecord": "Project times",
-  "projectTimesRecordHint": "In 15-minute steps per order; timesheet and order report",
   "backAgainToLeave": "Press back again to leave",
   "perDiemRates": "Per-diem rates",
   "perDiemRatesHint": "For the travel report. Each trip day uses the newest rate of the trip's country that is valid on that day. Meals provided reduce it: breakfast by 20 %, lunch and dinner by 40 % each of the full-day rate.",
@@ -873,7 +866,6 @@
   "updateRetry": "Try again",
   "updateNeedsPermission": "Allow TimeTrack to install unknown apps, then tap Update again.",
   "updateNoNotes": "No release notes.",
-  "appSection": "App",
   "checkForUpdates": "Check for updates",
   "installedVersion": "Installed: {version}",
   "@installedVersion": {
@@ -1403,5 +1395,28 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sectionAccount": "Working time & account",
+  "sectionClocking": "Clocking & breaks",
+  "sectionTravel": "Trips & weekends",
+  "sectionApp": "Appearance & updates",
+  "groupTarget": "Target hours",
+  "groupVacation": "Vacation",
+  "groupClocking": "Clocking",
+  "groupBreaks": "Breaks",
+  "groupExpenses": "Expenses",
+  "groupDisplay": "Display",
+  "groupUpdates": "Updates",
+  "noticesActive": "{on} of {all} on",
+  "@noticesActive": {
+    "placeholders": {
+      "on": {
+        "type": "String"
+      },
+      "all": {
+        "type": "String"
+      }
+    }
+  },
+  "workPcSummary": "Autostart, tray, monthly reminder, booking"
 }

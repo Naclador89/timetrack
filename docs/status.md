@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 295, app 86 tests; CI green on `main`.
+- **Tests**: core 295, app 89 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -579,3 +579,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: reviewed the employer's working-time and travel expense rules with the user; step 1 done: travel crediting by service trip (calculations §9, `trips.service`), 35 % days in the timesheet. 285 core, 78 app tests green.
 - 2026-11-09, Claude Code: monthly reminder on the work PC to report the overtime balance (work-pc.md §4, core `monthReportDue`). 289 core, 81 app tests green.
 - 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. The year-end balance carry-over card was removed again: only vacation has a deadline.
+- 2026-11-09, Claude Code: settings reorganised into an overview with category pages (navigation.md, "Settings structure"; `settings_sections.dart`); the links to Reports in settings are gone, the search covers all pages. 295 core, 89 app tests green.

@@ -107,10 +107,10 @@ void main() {
     // Settings open over the tabs from the gear icon.
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
-    expect(find.text('Federal state'), findsOneWidget);
+    expect(find.text('Clocking & breaks'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'saturday');
     await tester.pumpAndSettle();
-    expect(find.text('Federal state'), findsNothing);
+    expect(find.text('Clocking & breaks'), findsNothing);
     expect(find.textContaining('Saturday'), findsWidgets);
     await tester.pageBack();
     await tester.pumpAndSettle();

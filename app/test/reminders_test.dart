@@ -61,9 +61,9 @@ void main() {
       overrides: [remindersAvailableProvider.overrideWithValue(true)],
     );
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/clocking');
     await tester.pumpAndSettle();
-    final tile = find.text('Reminders: Break due');
+    final tile = find.text('Break due');
     await tester.scrollUntilVisible(
       tile,
       300,

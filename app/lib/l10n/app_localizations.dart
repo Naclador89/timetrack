@@ -812,12 +812,6 @@ abstract class AppLocalizations {
   /// **'That time is in the future.'**
   String get stampTimeFuture;
 
-  /// No description provided for @general.
-  ///
-  /// In en, this message translates to:
-  /// **'General'**
-  String get general;
-
   /// No description provided for @vacationLeft.
   ///
   /// In en, this message translates to:
@@ -2204,12 +2198,6 @@ abstract class AppLocalizations {
   /// **'Back – end travel'**
   String get stepEndInbound;
 
-  /// No description provided for @accountSectionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.'**
-  String get accountSectionHint;
-
   /// No description provided for @travelRulesHint.
   ///
   /// In en, this message translates to:
@@ -2221,36 +2209,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.'**
   String get weekendRulesHint;
-
-  /// No description provided for @recordsSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Records'**
-  String get recordsSection;
-
-  /// No description provided for @recordsSectionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Recorded to the minute as it happened, independent of what the account credits.'**
-  String get recordsSectionHint;
-
-  /// No description provided for @travelRecordHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Outbound, at the customer and return with times, hours away and per-diem'**
-  String get travelRecordHint;
-
-  /// No description provided for @projectTimesRecord.
-  ///
-  /// In en, this message translates to:
-  /// **'Project times'**
-  String get projectTimesRecord;
-
-  /// No description provided for @projectTimesRecordHint.
-  ///
-  /// In en, this message translates to:
-  /// **'In 15-minute steps per order; timesheet and order report'**
-  String get projectTimesRecordHint;
 
   /// No description provided for @backAgainToLeave.
   ///
@@ -2557,12 +2515,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No release notes.'**
   String get updateNoNotes;
-
-  /// No description provided for @appSection.
-  ///
-  /// In en, this message translates to:
-  /// **'App'**
-  String get appSection;
 
   /// No description provided for @checkForUpdates.
   ///
@@ -3613,6 +3565,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Vacation carried into {year}'**
   String vacationCarryOverInto(String year);
+
+  /// No description provided for @sectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Working time & account'**
+  String get sectionAccount;
+
+  /// No description provided for @sectionClocking.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocking & breaks'**
+  String get sectionClocking;
+
+  /// No description provided for @sectionTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips & weekends'**
+  String get sectionTravel;
+
+  /// No description provided for @sectionApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance & updates'**
+  String get sectionApp;
+
+  /// No description provided for @groupTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target hours'**
+  String get groupTarget;
+
+  /// No description provided for @groupVacation.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation'**
+  String get groupVacation;
+
+  /// No description provided for @groupClocking.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocking'**
+  String get groupClocking;
+
+  /// No description provided for @groupBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks'**
+  String get groupBreaks;
+
+  /// No description provided for @groupExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get groupExpenses;
+
+  /// No description provided for @groupDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Display'**
+  String get groupDisplay;
+
+  /// No description provided for @groupUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
+  String get groupUpdates;
+
+  /// No description provided for @noticesActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} of {all} on'**
+  String noticesActive(String on, String all);
+
+  /// No description provided for @workPcSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Autostart, tray, monthly reminder, booking'**
+  String get workPcSummary;
 }
 
 class _AppLocalizationsDelegate

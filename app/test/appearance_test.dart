@@ -15,7 +15,7 @@ void main() {
     expect(mode(), ThemeMode.system);
 
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/app');
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('Light'),

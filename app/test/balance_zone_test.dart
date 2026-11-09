@@ -118,7 +118,7 @@ void main() {
   testWidgets('§20 the limits are entered in hours', (tester) async {
     final (store, _) = await pumpApp(tester);
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/account');
     await tester.pumpAndSettle();
     final tile = find.text('Time account zones');
     await tester.scrollUntilVisible(

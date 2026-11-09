@@ -394,9 +394,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stampTimeFuture => 'That time is in the future.';
 
   @override
-  String get general => 'General';
-
-  @override
   String vacationLeft(String year, String remaining, String total) {
     return 'Vacation $year: $remaining of $total days left';
   }
@@ -1183,34 +1180,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepEndInbound => 'Back – end travel';
 
   @override
-  String get accountSectionHint =>
-      'What your overtime account is credited. The real times (project time, travel and time at the customer) are recorded separately and go into the reports.';
-
-  @override
   String get travelRulesHint =>
       'Only for the overtime account. The travel record always shows the exact outbound, customer and return times.';
 
   @override
   String get weekendRulesHint =>
       'For every Saturday, Sunday and holiday, on a trip or not. Only for the overtime account.';
-
-  @override
-  String get recordsSection => 'Records';
-
-  @override
-  String get recordsSectionHint =>
-      'Recorded to the minute as it happened, independent of what the account credits.';
-
-  @override
-  String get travelRecordHint =>
-      'Outbound, at the customer and return with times, hours away and per-diem';
-
-  @override
-  String get projectTimesRecord => 'Project times';
-
-  @override
-  String get projectTimesRecordHint =>
-      'In 15-minute steps per order; timesheet and order report';
 
   @override
   String get backAgainToLeave => 'Press back again to leave';
@@ -1397,9 +1372,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateNoNotes => 'No release notes.';
-
-  @override
-  String get appSection => 'App';
 
   @override
   String get checkForUpdates => 'Check for updates';
@@ -2062,4 +2034,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String vacationCarryOverInto(String year) {
     return 'Vacation carried into $year';
   }
+
+  @override
+  String get sectionAccount => 'Working time & account';
+
+  @override
+  String get sectionClocking => 'Clocking & breaks';
+
+  @override
+  String get sectionTravel => 'Trips & weekends';
+
+  @override
+  String get sectionApp => 'Appearance & updates';
+
+  @override
+  String get groupTarget => 'Target hours';
+
+  @override
+  String get groupVacation => 'Vacation';
+
+  @override
+  String get groupClocking => 'Clocking';
+
+  @override
+  String get groupBreaks => 'Breaks';
+
+  @override
+  String get groupExpenses => 'Expenses';
+
+  @override
+  String get groupDisplay => 'Display';
+
+  @override
+  String get groupUpdates => 'Updates';
+
+  @override
+  String noticesActive(String on, String all) {
+    return '$on of $all on';
+  }
+
+  @override
+  String get workPcSummary => 'Autostart, tray, monthly reminder, booking';
 }

@@ -394,9 +394,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stampTimeFuture => 'Die Uhrzeit liegt in der Zukunft.';
 
   @override
-  String get general => 'Allgemein';
-
-  @override
   String vacationLeft(String year, String remaining, String total) {
     return 'Urlaub $year: noch $remaining von $total Tagen';
   }
@@ -1189,34 +1186,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stepEndInbound => 'Rückfahrt beenden';
 
   @override
-  String get accountSectionHint =>
-      'Was deinem Arbeitszeitkonto gutgeschrieben wird. Die echten Zeiten (Projektzeiten, Anfahrt, beim Kunden, Rückfahrt) werden davon unabhängig erfasst und stehen in den Nachweisen.';
-
-  @override
   String get travelRulesHint =>
       'Nur fürs Arbeitszeitkonto. Im Reisenachweis stehen immer die genauen Zeiten von Anfahrt, beim Kunden und Rückfahrt.';
 
   @override
   String get weekendRulesHint =>
       'Für jeden Samstag, Sonntag und Feiertag, ob auf Reise oder nicht. Nur fürs Arbeitszeitkonto.';
-
-  @override
-  String get recordsSection => 'Nachweise';
-
-  @override
-  String get recordsSectionHint =>
-      'Minutengenau so erfasst, wie es war, unabhängig davon, was das Konto anrechnet.';
-
-  @override
-  String get travelRecordHint =>
-      'Anfahrt, beim Kunden und Rückfahrt mit Uhrzeit, Abwesenheit und Verpflegungspauschale';
-
-  @override
-  String get projectTimesRecord => 'Projektzeiten';
-
-  @override
-  String get projectTimesRecordHint =>
-      'In 15-Minuten-Schritten je Auftrag; Stundenzettel und Auftragsbericht';
 
   @override
   String get backAgainToLeave => 'Zum Verlassen nochmal zurück';
@@ -1404,9 +1379,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get updateNoNotes => 'Keine Versionshinweise.';
-
-  @override
-  String get appSection => 'App';
 
   @override
   String get checkForUpdates => 'Nach Updates suchen';
@@ -2069,4 +2041,46 @@ class AppLocalizationsDe extends AppLocalizations {
   String vacationCarryOverInto(String year) {
     return 'Resturlaub-Übertrag nach $year';
   }
+
+  @override
+  String get sectionAccount => 'Arbeitszeit & Konto';
+
+  @override
+  String get sectionClocking => 'Stempeln & Pausen';
+
+  @override
+  String get sectionTravel => 'Reisen & Wochenende';
+
+  @override
+  String get sectionApp => 'Darstellung & Updates';
+
+  @override
+  String get groupTarget => 'Sollzeit';
+
+  @override
+  String get groupVacation => 'Urlaub';
+
+  @override
+  String get groupClocking => 'Stempeln';
+
+  @override
+  String get groupBreaks => 'Pausen';
+
+  @override
+  String get groupExpenses => 'Spesen';
+
+  @override
+  String get groupDisplay => 'Darstellung';
+
+  @override
+  String get groupUpdates => 'Updates';
+
+  @override
+  String noticesActive(String on, String all) {
+    return '$on von $all aktiv';
+  }
+
+  @override
+  String get workPcSummary =>
+      'Autostart, Infobereich, Monatserinnerung, Buchung';
 }

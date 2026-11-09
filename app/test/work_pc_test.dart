@@ -180,14 +180,15 @@ void main() {
 
   Future<void> openSetting(WidgetTester tester, String title) async {
     final context = tester.element(find.byType(Scaffold).first);
-    GoRouterHelper(context).push('/settings');
+    GoRouterHelper(context).push('/settings/work-pc');
     await tester.pumpAndSettle();
+    // The last match: "Work PC" is also the page title.
     await tester.scrollUntilVisible(
-      find.text(title),
+      find.text(title).last,
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.text(title));
+    await tester.ensureVisible(find.text(title).last);
     await tester.pumpAndSettle();
   }
 
@@ -205,7 +206,7 @@ void main() {
   testWidgets('§1 "Work PC" turns the autostart on with it', (tester) async {
     await pump(tester, store, repo, workPc, autostarted: false);
     await openSetting(tester, 'Work PC');
-    await tester.tap(find.text('Work PC'));
+    await tester.tap(find.widgetWithText(SwitchListTile, 'Work PC'));
     await tester.pumpAndSettle();
     expect(workPc.enabled, isTrue);
     final asks = await tester.runAsync(

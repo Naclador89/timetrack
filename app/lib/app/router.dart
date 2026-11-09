@@ -13,6 +13,7 @@ import '../features/settings/home_office_rules_screen.dart';
 import '../features/settings/per_diem_rates_screen.dart';
 import '../features/settings/schedules_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/settings_sections.dart';
 import '../features/settings/setup_wizard.dart';
 import '../features/settings/sync_log_screen.dart';
 import '../features/settings/sync_screen.dart';
@@ -108,6 +109,8 @@ GoRouter buildRouter() => GoRouter(
       path: '/settings',
       builder: (_, _) => const UpdateBannerHost(child: SettingsScreen()),
       routes: [
+        for (final section in SettingsSection.values)
+          GoRoute(path: section.path, builder: (_, _) => SettingsPage(section)),
         GoRoute(path: 'schedules', builder: (_, _) => const SchedulesScreen()),
         GoRoute(
           path: 'sync',

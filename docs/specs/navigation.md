@@ -43,3 +43,24 @@ Plain keys (←, →, T, M, ?) do nothing while a text field has the focus, so t
 over. Today's button, the palette and the keys share one set of actions (`app/lib/app/actions.dart`).
 
 Code: `app/lib/widgets/shortcuts.dart` (`AppShortcuts` in the shell, `PageKeys` on the calendar pages).
+
+## Settings structure
+
+Requested by the user 2026-11-09 (the single list had grown to ~45 tiles). `/settings` is an
+overview; each category opens its own page (`SettingsSection` in
+`app/lib/features/settings/settings_sections.dart`):
+
+| Overview tile | Route | Groups |
+|---|---|---|
+| Synchronisation | `/settings/sync` | connection, log |
+| Arbeitszeit & Konto | `/settings/account` | Sollzeit (schedules, federal state), Arbeitszeitkonto (starting balance, balance start, traffic light), Urlaub (carry-over deadline) |
+| Stempeln & Pausen | `/settings/clocking` | Stempeln, Pausen (missing-break rule, default break), Erinnerungen (where available) |
+| Homeoffice-Regeln | `/settings/home-office` | |
+| Reisen & Wochenende | `/settings/travel` | crediting on trips, weekends and holidays, Spesen (per-diem rates) |
+| Hinweise | `/settings/notices` | threshold, one switch per category, restore dismissed |
+| Darstellung & Updates | `/settings/app` | Darstellung, Updates |
+| Arbeits-PC (Windows only) | `/settings/work-pc` | autostart, start prompt, tray, monthly reminder, booking URL |
+| Einrichtung | `/setup` | at the bottom |
+
+Each tile shows a one-line summary of its page. The search on the overview covers the tiles of
+every page, grouped as "Page › Group", and works in place. Back from a page returns to the overview.
