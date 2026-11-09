@@ -90,7 +90,12 @@ class _DashboardTileState extends State<DashboardTile> {
         closedBuilder: (context, open) => Semantics(
           button: true,
           child: InkWell(
-            onTap: open,
+            onTap: () {
+              // The detail screen covers the tile, so no exit event comes;
+              // without this it stays lifted after closing.
+              setState(() => _hovered = false);
+              open();
+            },
             onHover: (h) => setState(() => _hovered = h),
             borderRadius: _radius,
             child: Padding(

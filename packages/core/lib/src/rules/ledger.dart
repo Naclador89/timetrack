@@ -342,6 +342,28 @@ final class Ledger {
     return balance;
   }
 
+  /// The balance month by month from the balance start through [date],
+  /// oldest first, in one pass (§8): each month's change and its closing
+  /// balance. The month of the balance start opens with the starting
+  /// balance; the last month ends on [date].
+  List<MonthBalance> monthlyBalances(LocalDate date) {
+    final months = <MonthBalance>[];
+    var balance = settings.startingBalance, opening = balance;
+    LocalDate? month;
+    for (var d = settings.balanceStart; !d.isAfter(date); d = d.addDays(1)) {
+      if (month != null && d.startOfMonth != month) {
+        months.add(MonthBalance(month, balance - opening, balance));
+        opening = balance;
+      }
+      month = d.startOfMonth;
+      balance += day(d).delta;
+    }
+    if (month != null) {
+      months.add(MonthBalance(month, balance - opening, balance));
+    }
+    return months;
+  }
+
   DayWork _dayWork(LocalDate date) => _work.putIfAbsent(date, () {
     final window = zone.daySpan(date);
     bool touches(Span s) => s.start < window.end && s.end > window.start;
@@ -412,4 +434,19 @@ final class Ledger {
           trip,
     ]..sort((a, b) => a.depart.compareTo(b.depart));
   }
+}
+
+/// One month of the overtime balance (calculations.md §8).
+final class MonthBalance {
+  /// Creates a month's entry.
+  const MonthBalance(this.month, this.change, this.closing);
+
+  /// The first day of the month.
+  final LocalDate month;
+
+  /// Σ Δ over the month's counted days.
+  final int change;
+
+  /// The balance at the end of the month's last counted day.
+  final int closing;
 }

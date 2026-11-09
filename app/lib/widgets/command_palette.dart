@@ -107,7 +107,7 @@ class _PaletteState extends ConsumerState<_Palette> {
       (
         icon: Icons.today,
         label: l.navToday,
-        run: () async => go('/today'),
+        run: () async => goToday(widget.router),
         color: null,
         stay: false,
         keys: 'Ctrl+1',

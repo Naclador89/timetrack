@@ -95,16 +95,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noProjectRunning => 'No project running';
 
   @override
-  String homeOfficeWeek(String used, String allowed, String left) {
-    return 'Home office this week: $used of $allowed days, $left left';
-  }
-
-  @override
-  String homeOfficeMonth(String used, String allowed, String left) {
-    return 'Home office this month: $used of $allowed days, $left left';
-  }
-
-  @override
   String get setupHint =>
       'Set your federal state and work schedule in the settings, so targets and balances are right.';
 

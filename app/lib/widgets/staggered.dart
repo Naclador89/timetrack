@@ -6,12 +6,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 extension StaggerIn on List<Widget> {
   /// Wraps each widget in its entrance animation, [step] apart. It plays
   /// once, when a card first appears; rebuilds (the ticking clock, a sync)
-  /// keep it still. With reduced motion the cards simply are there.
+  /// keep it still. With reduced motion the cards simply are there; the
+  /// tree stays the same, so switching it doesn't rebuild the cards.
   List<Widget> staggered(
     BuildContext context, {
     Duration step = const Duration(milliseconds: 50),
   }) {
-    if (MediaQuery.disableAnimationsOf(context)) return this;
+    final still = MediaQuery.disableAnimationsOf(context);
     final seen = <Type, int>{};
     return [
       for (final (i, w) in indexed)
@@ -30,7 +31,9 @@ extension StaggerIn on List<Widget> {
                       ),
                     ),
               ),
-              delay: step * i.clamp(0, 8),
+              delay: still ? Duration.zero : step * i.clamp(0, 8),
+              autoPlay: !still,
+              value: still ? 1 : null,
             )
             .fadeIn(duration: 250.ms, curve: Curves.easeOutCubic)
             .slideY(

@@ -83,12 +83,13 @@ that comes in fades through (250 ms); every tab keeps its state.
 Requested by the user 2026-11-09. Below the hero card (stamping) and the project strip, Today shows
 overview tiles, two columns from 300 px content width (phones too) (`DashboardGrid`,
 `app/lib/features/today/dashboard.dart`). Each grows into its detail screen (container transform,
-`OpenContainer`), pushed in the Today tab; back closes it like any page.
+`OpenContainer`), pushed in the Today tab; back closes it like any page. Going to Today's start
+(tapping the Today tab again, "Today" in the command palette, clocking on a trip day) closes it too.
 
 | Tile | Figure | Opens |
 |---|---|---|
 | Zeitkonto | balance with traffic light dot, change this month, trend of the last month ends | month by month: change and closing balance (`BalanceDetailScreen`) |
-| Diese Woche | worked of target | the week's days; a day opens its day view (`WeekDetailScreen`) |
+| Diese Woche | credited of target (calculations §8: vacation and holidays count) | the week's days; a day opens its day view (`WeekDetailScreen`) |
 | Urlaub | days left of entitlement + carry-over (only with an entitlement) | the vacation planner |
 | Homeoffice (one per day quota) | days left, used of allowed | the home-office rules |
 
@@ -99,7 +100,8 @@ The balance is no longer a figure of the hero card; the tile shows it.
 - Cards on Today fade in and rise 8 % one after the other: 250 ms, `easeOutCubic`, 50 ms apart
   (`app/lib/widgets/staggered.dart`). It plays once per card, not on rebuilds.
 - With a mouse a tile lifts 2 px and gets a slightly stronger surface (180 ms).
-- With the system's reduced motion (`MediaQuery.disableAnimations`) nothing animates.
+- With the system's reduced motion (`MediaQuery.disableAnimations`) nothing animates; switching it
+  keeps the cards as they are.
 - The UI uses only `colorScheme` colours. Meaning colours (`positive`, `warning`, day types,
   projects) are extensions on `ColorScheme` in `app/lib/app/theme.dart`, harmonised with
   `primary`, so they follow the wallpaper (Android 12+) or accent colour (Windows, Linux). Without

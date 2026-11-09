@@ -5,10 +5,10 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.7.0`** (2026-11-09), `app/pubspec.yaml` `version: 0.7.0+13`. All planned
+- **Latest release: `v0.7.1`** (2026-11-10), `app/pubspec.yaml` `version: 0.7.1+14`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 320, app 103 tests; CI green on `main`.
+- **Tests**: core 321, app 106 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -178,6 +178,10 @@ _Last updated: 2026-11-09 by Claude Code._
 - `v0.7.0` (2026-11-09): modern UI: Today tiles (Zeitkonto, Diese Woche, Urlaub, Homeoffice) that
   grow into their detail screens, extended navigation rail on wide windows, fade-through between
   tabs, theme colours harmonised with the system accent; "+" instead of "Schnell erfassen".
+- `v0.7.1` (2026-11-10): review fixes for the Today tiles: "Diese Woche" counts credited time
+  (vacation and holidays no longer look missing); Today (tab again, palette, clocking on a trip
+  day) closes a tile's detail screen; a tile no longer stays lifted after closing; balance by
+  month in core, computed once.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -488,6 +492,13 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
       home-office rules); hover lift on desktop; cards stagger in (`flutter_animate`). The quota
       card is gone (now a tile), and so is the balance figure in the hero card.
 - [x] Month view cells shrink their figures instead of overflowing next to the extended rail.
+- [x] Review fixes (2026-11-10, v0.7.1): week tile and detail count credited time of the counted
+      days (§8); `goToday` and tapping the current tab close the tiles' detail screens (pageless
+      routes go_router doesn't see, `closeDetached` in `app/lib/app/actions.dart`); hover reset on
+      open; `Ledger.monthlyBalances` (§8) behind `monthlyBalancesProvider` replaces the widget's
+      own accumulation and the seven balance walks per rebuild; `vacationAccountProvider(year)`
+      shared with the vacation planner; `staggered` keeps its tree with reduced motion; unused
+      home-office strings removed.
 - [ ] On the devices: Windows accent colour, hover, the transitions' smoothness.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
@@ -625,3 +636,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: step 6 of the employer rules: weekly limits 60 h and Ø 48 h over 24 weeks (calculations §22); all six steps done. 320 core, 97 app tests green.
 - 2026-11-09, Claude Code: the quick entry buttons on Today and the day view became "+" (new working time). 320 core, 98 app tests green.
 - 2026-11-09, Claude Code: modern UI architecture: harmonised theme colours, `MainShell` with window classes and fade-through, Today tiles with container transform (navigation.md "Layout", "Today tiles"). 320 core, 103 app tests green.
+- 2026-11-10, Claude Code: fixed the nine `/code-review` findings on the Today tiles (see "Modern UI architecture"); release v0.7.1. 321 core, 106 app tests green.

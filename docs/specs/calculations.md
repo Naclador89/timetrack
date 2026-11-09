@@ -185,6 +185,9 @@ aren't supported.
 - **Daily difference** `Δ(D) = Cr(D) − T(D)`.
 - **Overtime balance** at the end of day D = `starting_balance` (setting, minutes, may be negative)
   + Σ Δ(d) for all d from `balance_start_date` (setting) through D.
+- **Balance by month** (Today's time account tile and its detail): per calendar month from the
+  balance start, the change `Σ Δ(d)` over its counted days and the balance at its end. The month
+  of `balance_start_date` opens with `starting_balance`; the current month ends today.
 - The UI shows "balance up to yesterday" and "today so far". Today counts `Cr(today)` so far
   against the full `T(today)`.
 - Days **before `balance_start_date`** are outside the balance: the calendar shows at most their

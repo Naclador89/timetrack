@@ -260,18 +260,6 @@ abstract class AppLocalizations {
   /// **'No project running'**
   String get noProjectRunning;
 
-  /// No description provided for @homeOfficeWeek.
-  ///
-  /// In en, this message translates to:
-  /// **'Home office this week: {used} of {allowed} days, {left} left'**
-  String homeOfficeWeek(String used, String allowed, String left);
-
-  /// No description provided for @homeOfficeMonth.
-  ///
-  /// In en, this message translates to:
-  /// **'Home office this month: {used} of {allowed} days, {left} left'**
-  String homeOfficeMonth(String used, String allowed, String left);
-
   /// No description provided for @setupHint.
   ///
   /// In en, this message translates to:

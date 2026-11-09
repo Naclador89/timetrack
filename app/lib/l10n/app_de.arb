@@ -27,8 +27,6 @@
   "chooseProject": "Projekt wählen",
   "stopProject": "Projekt stoppen",
   "noProjectRunning": "Kein Projekt aktiv",
-  "homeOfficeWeek": "Homeoffice diese Woche: {used} von {allowed} Tagen, noch {left}",
-  "homeOfficeMonth": "Homeoffice diesen Monat: {used} von {allowed} Tagen, noch {left}",
   "setupHint": "Lege in den Einstellungen Bundesland und Arbeitszeitmodell fest, damit Soll und Saldo stimmen.",
   "openSettings": "Einstellungen öffnen",
   "startTrip": "Reise beginnen",

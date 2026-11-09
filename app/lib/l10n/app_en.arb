@@ -41,34 +41,6 @@
   "chooseProject": "Choose project",
   "stopProject": "Stop project",
   "noProjectRunning": "No project running",
-  "homeOfficeWeek": "Home office this week: {used} of {allowed} days, {left} left",
-  "@homeOfficeWeek": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "allowed": {
-        "type": "String"
-      },
-      "left": {
-        "type": "String"
-      }
-    }
-  },
-  "homeOfficeMonth": "Home office this month: {used} of {allowed} days, {left} left",
-  "@homeOfficeMonth": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "allowed": {
-        "type": "String"
-      },
-      "left": {
-        "type": "String"
-      }
-    }
-  },
   "setupHint": "Set your federal state and work schedule in the settings, so targets and balances are right.",
   "openSettings": "Open settings",
   "startTrip": "Start trip",

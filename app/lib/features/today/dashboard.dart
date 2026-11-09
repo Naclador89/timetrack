@@ -13,25 +13,6 @@ import '../../widgets/sparkline.dart';
 import '../calendar/absences_screen.dart';
 import '../settings/home_office_rules_screen.dart';
 
-/// This year's vacation account (calculations §10).
-final vacationAccountProvider = Provider<VacationAccount>((ref) {
-  final today = ref.watch(todayProvider);
-  final ledger = ref.watch(ledgerProvider);
-  final data = ref.watch(ledgerDataProvider);
-  final settings = ref.watch(settingsProvider);
-  return vacationAccount(
-    year: today.year,
-    targets: ledger.targets,
-    schedules: data.schedules,
-    absences: data.absences,
-    today: today,
-    entitlementOverride: settings.number(
-      SettingKeys.vacationEntitlement(today.year),
-    ),
-    carryOver: settings.number(SettingKeys.vacationCarryOver(today.year)) ?? 0,
-  );
-});
-
 /// Today's overview tiles: time account, this week, vacation and the
 /// home-office quotas; two columns where there is room.
 class DashboardGrid extends ConsumerWidget {
@@ -45,24 +26,20 @@ class DashboardGrid extends ConsumerWidget {
     final today = ref.watch(todayProvider);
     final ledger = ref.watch(ledgerProvider);
 
-    final balance = ledger.balanceAtEndOf(today);
-    final monthStart = LocalDate(today.year, today.month, 1);
-    final monthDelta = ledger.inBalance(monthStart)
-        ? balance - ledger.balanceAtEndOf(monthStart.addDays(-1))
-        : balance - ledger.settings.startingBalance;
+    final months = ref.watch(monthlyBalancesProvider);
+    final balance =
+        months.lastOrNull?.closing ?? ledger.settings.startingBalance;
+    final monthDelta = months.lastOrNull?.change ?? 0;
+    // The last six month ends; the current one is today's balance.
     final trend = [
-      for (var i = 5; i >= 1; i--)
-        if (ledger.inBalance(_monthEnd(today, -i)))
-          ledger.balanceAtEndOf(_monthEnd(today, -i)),
-      balance,
+      for (final m in months.reversed.take(6).toList().reversed) m.closing,
     ];
 
-    final monday = today.startOfWeek;
-    final week = [for (var i = 0; i < 7; i++) ledger.day(monday.addDays(i))];
-    final worked = week.fold(0, (s, d) => s + d.work.worked);
+    final week = _week(ledger, today.startOfWeek);
+    final credited = week.fold(0, (s, d) => s + d.credited);
     final target = week.fold(0, (s, d) => s + d.target);
 
-    final vacation = ref.watch(vacationAccountProvider);
+    final vacation = ref.watch(vacationAccountProvider(today.year));
     final vacationTotal = vacation.entitlement + vacation.carryOver;
 
     final quotas = ref
@@ -85,10 +62,10 @@ class DashboardGrid extends ConsumerWidget {
       DashboardTile(
         icon: Icons.date_range_outlined,
         title: l.thisWeek,
-        value: formatMinutes(worked),
+        value: formatMinutes(credited),
         subtitle: l.dashOfTarget(formatMinutes(target)),
-        footer: TileProgress(value: target <= 0 ? 0 : worked / target),
-        openBuilder: (_) => WeekDetailScreen(monday: monday),
+        footer: TileProgress(value: target <= 0 ? 0 : credited / target),
+        openBuilder: (_) => WeekDetailScreen(monday: today.startOfWeek),
       ),
       if (vacationTotal > 0)
         DashboardTile(
@@ -149,11 +126,12 @@ class DashboardGrid extends ConsumerWidget {
   }
 }
 
-/// The last day of the month [offset] months from [today]'s.
-LocalDate _monthEnd(LocalDate today, int offset) {
-  final first = DateTime.utc(today.year, today.month + offset + 1);
-  return LocalDate(first.year, first.month, 1).addDays(-1);
-}
+/// The counted days of the week from [monday] (calculations §8: days
+/// before the balance start are left out of week totals).
+List<DayResult> _week(Ledger ledger, LocalDate monday) => [
+  for (var i = 0; i < 7; i++)
+    if (ledger.inBalance(monday.addDays(i))) ledger.day(monday.addDays(i)),
+];
 
 /// The time account month by month, newest first (calculations §8).
 class BalanceDetailScreen extends ConsumerWidget {
@@ -165,27 +143,14 @@ class BalanceDetailScreen extends ConsumerWidget {
     final l = context.l10n;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final today = ref.watch(todayProvider);
     final ledger = ref.watch(ledgerProvider);
     final start = ledger.settings.balanceStart;
-    final months = DateFormat.yMMMM(
+    final format = DateFormat.yMMMM(
       Localizations.localeOf(context).toLanguageTag(),
     );
-
-    // One pass from the start: each month's change and closing balance.
-    final rows = <(LocalDate, int, int)>[];
-    var balance = ledger.settings.startingBalance;
-    var month = LocalDate(start.year, start.month, 1);
-    var opening = balance;
-    for (var d = start; !d.isAfter(today); d = d.addDays(1)) {
-      if (d.month != month.month || d.year != month.year) {
-        rows.add((month, balance - opening, balance));
-        month = LocalDate(d.year, d.month, 1);
-        opening = balance;
-      }
-      balance += ledger.day(d).delta;
-    }
-    if (!start.isAfter(today)) rows.add((month, balance - opening, balance));
+    final months = ref.watch(monthlyBalancesProvider);
+    final balance =
+        months.lastOrNull?.closing ?? ledger.settings.startingBalance;
 
     return Scaffold(
       appBar: AppBar(title: Text(l.dashAccount)),
@@ -238,15 +203,17 @@ class BalanceDetailScreen extends ConsumerWidget {
               Card(
                 child: Column(
                   children: [
-                    for (final (m, delta, end) in rows.reversed)
+                    for (final m in months.reversed)
                       ListTile(
-                        title: Text(months.format(DateTime(m.year, m.month))),
+                        title: Text(
+                          format.format(DateTime(m.month.year, m.month.month)),
+                        ),
                         subtitle: Text(
-                          signedBalance(delta),
-                          style: TextStyle(color: scheme.deltaColor(delta)),
+                          signedBalance(m.change),
+                          style: TextStyle(color: scheme.deltaColor(m.change)),
                         ),
                         trailing: Text(
-                          signedBalance(end),
+                          signedBalance(m.closing),
                           style: theme.textTheme.titleMedium,
                         ),
                       ),
@@ -261,7 +228,8 @@ class BalanceDetailScreen extends ConsumerWidget {
   }
 }
 
-/// The days of the week from [monday]: worked, target and difference;
+/// The days of the week from [monday]: credited time, target and
+/// difference;
 /// a day opens its day view.
 class WeekDetailScreen extends ConsumerWidget {
   /// Creates the screen.
@@ -276,8 +244,8 @@ class WeekDetailScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final ledger = ref.watch(ledgerProvider);
-    final days = [for (var i = 0; i < 7; i++) ledger.day(monday.addDays(i))];
-    final worked = days.fold(0, (s, d) => s + d.work.worked);
+    final days = _week(ledger, monday);
+    final credited = days.fold(0, (s, d) => s + d.credited);
     final target = days.fold(0, (s, d) => s + d.target);
     final delta = days.fold(0, (s, d) => s + d.delta);
     return Scaffold(
@@ -292,7 +260,7 @@ class WeekDetailScreen extends ConsumerWidget {
               Card(
                 child: ListTile(
                   title: Text(
-                    formatMinutes(worked),
+                    formatMinutes(credited),
                     style: theme.textTheme.headlineSmall,
                   ),
                   subtitle: Text(l.dashOfTarget(formatMinutes(target))),

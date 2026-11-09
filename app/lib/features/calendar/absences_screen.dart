@@ -137,19 +137,7 @@ class _AbsencesScreenState extends ConsumerState<AbsencesScreen> {
     final key = SettingKeys.vacationCarryOver(_year);
     var initial = settings.number(key);
     if (initial == null) {
-      final data = ref.read(ledgerDataProvider);
-      final last = vacationAccount(
-        year: _year - 1,
-        targets: ref.read(ledgerProvider).targets,
-        schedules: data.schedules,
-        absences: data.absences,
-        today: ref.read(todayProvider),
-        entitlementOverride: settings.number(
-          SettingKeys.vacationEntitlement(_year - 1),
-        ),
-        carryOver:
-            settings.number(SettingKeys.vacationCarryOver(_year - 1)) ?? 0,
-      );
+      final last = ref.read(vacationAccountProvider(_year - 1));
       initial = last.remaining > 0 ? last.remaining : 0;
     }
     final text = await showTextPrompt(
@@ -173,18 +161,7 @@ class _AbsencesScreenState extends ConsumerState<AbsencesScreen> {
     final today = ref.watch(todayProvider);
     final ledger = ref.watch(ledgerProvider);
     final data = ref.watch(ledgerDataProvider);
-    final settings = ref.watch(settingsProvider);
-    final account = vacationAccount(
-      year: _year,
-      targets: ledger.targets,
-      schedules: data.schedules,
-      absences: data.absences,
-      today: today,
-      entitlementOverride: settings.number(
-        SettingKeys.vacationEntitlement(_year),
-      ),
-      carryOver: settings.number(SettingKeys.vacationCarryOver(_year)) ?? 0,
-    );
+    final account = ref.watch(vacationAccountProvider(_year));
     final bridges = bridgeDays(ledger, _year, today: today);
     final bridgeSet = {for (final b in bridges) ...b.vacationDays};
     final absences = data.absences.where((a) => a.date.year == _year).toList()

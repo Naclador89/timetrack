@@ -138,12 +138,35 @@ Future<void> clockOut(BuildContext context, WidgetRef ref) async {
   }
 }
 
+/// Opens Today's start screen, also from a detail screen a tile opened
+/// (command palette, clocking on a trip day).
+void goToday(GoRouter router) {
+  router.go('/today');
+  final shell = router.configuration.routes
+      .whereType<StatefulShellRoute>()
+      .first;
+  closeDetached(shell.branches.first);
+}
+
+/// Closes the screens [branch] opened outside the router (a tile's
+/// container transform): go_router doesn't know them, so going to the
+/// branch's start leaves them on top. Runs once the router has rebuilt the
+/// branch's pages.
+void closeDetached(StatefulShellBranch branch) {
+  WidgetsBinding.instance
+    ..addPostFrameCallback(
+      (_) =>
+          branch.navigatorKey.currentState?.popUntil((r) => r.settings is Page),
+    )
+    ..ensureVisualUpdate();
+}
+
 /// Clocks in or out. On a trip day the steps on Today decide what comes
 /// next (calculations §9.1), so this opens Today instead.
 Future<void> toggleClock(BuildContext context, WidgetRef ref) async {
   final today = ref.read(todayProvider);
   if (ref.read(ledgerProvider).day(today).type == DayType.businessTrip) {
-    GoRouter.of(context).go('/today');
+    goToday(GoRouter.of(context));
     return;
   }
   ref.read(trackerStateProvider).clockedIn

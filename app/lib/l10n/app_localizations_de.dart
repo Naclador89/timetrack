@@ -95,16 +95,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noProjectRunning => 'Kein Projekt aktiv';
 
   @override
-  String homeOfficeWeek(String used, String allowed, String left) {
-    return 'Homeoffice diese Woche: $used von $allowed Tagen, noch $left';
-  }
-
-  @override
-  String homeOfficeMonth(String used, String allowed, String left) {
-    return 'Homeoffice diesen Monat: $used von $allowed Tagen, noch $left';
-  }
-
-  @override
   String get setupHint =>
       'Lege in den Einstellungen Bundesland und Arbeitszeitmodell fest, damit Soll und Saldo stimmen.';
 

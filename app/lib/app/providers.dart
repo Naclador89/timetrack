@@ -152,6 +152,31 @@ final ledgerProvider = Provider<Ledger>((ref) {
   );
 });
 
+/// The overtime balance month by month through today (calculations §8),
+/// computed once per ledger for Today's tile and its detail screen.
+final monthlyBalancesProvider = Provider<List<MonthBalance>>(
+  (ref) => ref.watch(ledgerProvider).monthlyBalances(ref.watch(todayProvider)),
+);
+
+/// The vacation account of a year as of today (calculations §10), with the
+/// year's entitlement and carry-over settings.
+final vacationAccountProvider = Provider.family<VacationAccount, int>((
+  ref,
+  year,
+) {
+  final data = ref.watch(ledgerDataProvider);
+  final settings = ref.watch(settingsProvider);
+  return vacationAccount(
+    year: year,
+    targets: ref.watch(ledgerProvider).targets,
+    schedules: data.schedules,
+    absences: data.absences,
+    today: ref.watch(todayProvider),
+    entitlementOverride: settings.number(SettingKeys.vacationEntitlement(year)),
+    carryOver: settings.number(SettingKeys.vacationCarryOver(year)) ?? 0,
+  );
+});
+
 /// The home-office quotas that apply today (one per rule series).
 final homeOfficeQuotasProvider = Provider<List<HomeOfficeQuota>>((ref) {
   final ledger = ref.watch(ledgerProvider);

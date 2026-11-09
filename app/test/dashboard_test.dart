@@ -1,7 +1,10 @@
 // spec: navigation.md "Layout", "Today tiles", "Motion"
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:timetrack/app/actions.dart';
 import 'package:timetrack/app/theme.dart';
 import 'package:timetrack/features/today/dashboard.dart';
 import 'package:timetrack/widgets/dashboard_tile.dart';
@@ -101,12 +104,120 @@ void main() {
         ),
       ),
     );
+    double opacity(String text) => tester
+        .widget<FadeTransition>(
+          find
+              .ancestor(
+                of: find.text(text),
+                matching: find.byType(FadeTransition),
+              )
+              .first,
+        )
+        .opacity
+        .value;
+
     await tester.pumpWidget(cards(still: false));
-    expect(find.byType(Animate), findsNWidgets(2));
+    await tester.pump(const Duration(milliseconds: 20));
+    expect(opacity('b'), lessThan(1), reason: 'still fading in');
     await tester.pumpAndSettle();
+    final state = tester.state(find.byType(Animate).last);
+
     await tester.pumpWidget(cards(still: true));
-    expect(find.byType(Animate), findsNothing);
-    expect(find.text('b'), findsOneWidget);
+    expect(opacity('b'), 1);
+    expect(
+      tester.state(find.byType(Animate).last),
+      same(state),
+      reason: 'switching reduced motion keeps the cards',
+    );
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(cards(still: true));
+    expect(opacity('a'), 1, reason: 'with reduced motion there at once');
+    expect(opacity('b'), 1);
+    // flutter_animate starts on a zero-delay timer.
+    await tester.pump(const Duration(milliseconds: 1));
+  });
+
+  testWidgets('the week tile counts vacation as credited, not missing', (
+    tester,
+  ) async {
+    // spec: calculations.md §8 (absence credit)
+    await pumpApp(
+      tester,
+      seed: (repo) async {
+        await _week(repo);
+        await repo.write('absences', 'a', {
+          'date': '2026-11-03',
+          'kind': 'vacation',
+          'fraction': 1.0,
+        });
+      },
+    );
+    expect(
+      find.descendant(of: _tile('This week'), matching: find.text('12:00')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Today (tab again, palette) closes a tile detail screen', (
+    tester,
+  ) async {
+    await pumpApp(tester, seed: _week);
+    final todayTab = find.descendant(
+      of: find.byType(NavigationRail),
+      matching: find.text('Today'),
+    );
+    await tester.tap(_tile('This week'));
+    await tester.pumpAndSettle();
+    expect(find.byType(WeekDetailScreen), findsOneWidget);
+    await tester.tap(todayTab);
+    await tester.pumpAndSettle();
+    expect(find.byType(WeekDetailScreen), findsNothing);
+
+    // From a day opened inside the detail screen, too.
+    await tester.tap(_tile('This week'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Monday, November 2'));
+    await tester.pumpAndSettle();
+    goToday(
+      GoRouter.of(
+        tester.element(find.byType(DashboardGrid, skipOffstage: false)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(WeekDetailScreen), findsNothing);
+    expect(find.byType(DashboardGrid), findsOneWidget);
+  });
+
+  testWidgets('a tile no longer lifts after its detail screen closes', (
+    tester,
+  ) async {
+    await pumpApp(tester, seed: _week);
+    Color? colour() =>
+        (tester
+                    .widget<AnimatedContainer>(
+                      find
+                          .descendant(
+                            of: _tile('This week'),
+                            matching: find.byType(AnimatedContainer),
+                          )
+                          .first,
+                    )
+                    .decoration!
+                as BoxDecoration)
+            .color;
+    final low = colour();
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: tester.getCenter(_tile('This week')));
+    await tester.pumpAndSettle();
+    expect(colour(), isNot(low), reason: 'hovered');
+    await mouse.down(tester.getCenter(_tile('This week')));
+    await mouse.up();
+    await tester.pumpAndSettle();
+    await mouse.moveTo(Offset.zero);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(colour(), low);
   });
 
   test('semantic colours follow the scheme', () {

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../update/update_banner.dart';
 import '../widgets/command_palette.dart';
 import '../widgets/shortcuts.dart';
+import 'actions.dart';
 import 'back_navigation.dart';
 import 'format.dart';
 
@@ -36,8 +37,12 @@ class MainShell extends StatelessWidget {
       (Icons.work_outline, Icons.work, l.navProjects),
       (Icons.assessment_outlined, Icons.assessment, l.navReports),
     ];
-    void go(int i) =>
-        shell.goBranch(i, initialLocation: i == shell.currentIndex);
+    void go(int i) {
+      final again = i == shell.currentIndex;
+      shell.goBranch(i, initialLocation: again);
+      if (again) closeDetached(shell.route.branches[i]);
+    }
+
     return TabBackHandler(
       shell: shell,
       child: AppShortcuts(shell: shell, child: _layout(context, items, go)),

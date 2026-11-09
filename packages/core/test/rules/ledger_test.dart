@@ -86,6 +86,31 @@ void main() {
     );
   });
 
+  test('§8 balance by month: change and closing balance, one pass', () {
+    final l = ledger(
+      LedgerData(
+        schedules: [schedule],
+        sessions: [
+          work('2026-11-30', '08:00', '17:30'),
+          work('2026-12-01', '08:00', '12:00'), // 240 → −240
+        ],
+      ),
+      startingBalance: 120,
+    );
+    // November from the 2nd: 20 workdays without work, then the 30th.
+    final nov = 120 - 20 * 480 + l.day(d('2026-11-30')).delta;
+    final months = l.monthlyBalances(d('2026-12-01'));
+    expect(
+      [for (final m in months) m.month],
+      [d('2026-11-01'), d('2026-12-01')],
+    );
+    expect(months.first.change, nov - 120);
+    expect(months.first.closing, nov);
+    expect(months.last.change, -240);
+    expect(months.last.closing, l.balanceAtEndOf(d('2026-12-01')));
+    expect(l.monthlyBalances(d('2026-11-01')), isEmpty, reason: 'before start');
+  });
+
   test('§8 half a vacation day plus 4 h of work → no difference', () {
     final l = ledger(
       LedgerData(
