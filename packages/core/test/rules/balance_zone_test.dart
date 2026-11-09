@@ -65,7 +65,6 @@ void main() {
       final s = AppSettings.fromRows(store.allRows.values);
       expect(s.balanceLimits.yellowPlus, 18000);
       expect(s.balanceLimits.redMinus, isNull);
-      expect(s.balanceCarryDeadlineMonths, 0);
       expect(s.vacationCarryDeadlineMonths, 3);
     });
 
@@ -88,65 +87,6 @@ void main() {
         (LocalDate(2026, 11, 3), 'red', -111 * 60),
       ]);
       expect(NoticeCategory.of(items.first).wireName, 'balance_zone');
-    });
-  });
-
-  group('§20.2 year-end carry-over', () {
-    test('plus: open is the carry still above zero', () async {
-      // Only Mondays have a target, nothing is worked.
-      await schedule('2027-01-01', [480, 0, 0, 0, 0, 0, 0]);
-      await setting(SettingKeys.balanceStartDate, '2027-01-01');
-      await setting(SettingKeys.startingBalance, 60 * 60);
-      await setting(SettingKeys.balanceCarryDeadline, 3);
-      final l = ledger(DateTime.utc(2027, 2, 10, 12));
-      final c = balanceCarryOver(l, months: 3)!;
-      // Six Mondays by 9 Feb: 60 h − 48 h.
-      expect(c.carry, 60 * 60);
-      expect(c.open, 12 * 60);
-      expect(c.deadline, LocalDate(2027, 3, 31));
-      expect(c.expired, isFalse);
-      expect(balanceCarryOver(l, months: 0), isNull);
-    });
-
-    test('plus: reduced to zero → nothing open', () async {
-      await schedule('2027-01-01', [480, 0, 0, 0, 0, 0, 0]);
-      await setting(SettingKeys.balanceStartDate, '2027-01-01');
-      await setting(SettingKeys.startingBalance, 40 * 60);
-      expect(
-        balanceCarryOver(ledger(DateTime.utc(2027, 2, 10, 12)), months: 3),
-        isNull,
-      );
-    });
-
-    test('minus: worked off in part; after the deadline expired', () async {
-      await setting(SettingKeys.balanceStartDate, '2026-12-01');
-      await setting(SettingKeys.startingBalance, -20 * 60);
-      // A Saturday in January: 5 h credited (no target, no schedule).
-      await repo.write('work_sessions', 's', {
-        'start_utc': '2027-01-09T08:00:00Z',
-        'end_utc': '2027-01-09T13:00:00Z',
-        'location': 'office',
-      });
-      final jan = balanceCarryOver(
-        ledger(DateTime.utc(2027, 1, 20, 12)),
-        months: 3,
-      )!;
-      expect(jan.carry, -20 * 60);
-      expect(jan.open, -15 * 60);
-      final apr = balanceCarryOver(
-        ledger(DateTime.utc(2027, 4, 2, 12)),
-        months: 3,
-      )!;
-      expect(apr.expired, isTrue);
-    });
-
-    test('balance starting after 1 January: no carry-over', () async {
-      await setting(SettingKeys.balanceStartDate, '2027-01-04');
-      await setting(SettingKeys.startingBalance, 10 * 60);
-      expect(
-        balanceCarryOver(ledger(DateTime.utc(2027, 2, 10, 12)), months: 3),
-        isNull,
-      );
     });
   });
 

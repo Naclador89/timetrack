@@ -67,9 +67,6 @@ abstract final class SettingKeys {
   /// See [balanceYellowPlus].
   static const balanceMaxMinus = 'balance.max_minus_min';
 
-  /// Months to settle the year-end balance, 0 = off (§20.2).
-  static const balanceCarryDeadline = 'balance.carry_deadline_months';
-
   /// Months to take carried-over vacation, 0 = off (§10.2).
   static const vacationCarryDeadline = 'vacation.carry_deadline_months';
 
@@ -123,7 +120,6 @@ final class AppSettings {
     this.homeOfficeDayRule = HomeOfficeDayRule.majority,
     this.travel = const TravelRules(),
     this.balanceLimits = const BalanceLimits(),
-    this.balanceCarryDeadlineMonths = 0,
     this.vacationCarryDeadlineMonths = 3,
     this.openSessionLimitMinutes = 720,
     this.autoClockIn = true,
@@ -221,10 +217,6 @@ final class AppSettings {
         maxPlus: limit(SettingKeys.balanceMaxPlus),
         maxMinus: limit(SettingKeys.balanceMaxMinus),
       ),
-      balanceCarryDeadlineMonths: pick<num>(
-        SettingKeys.balanceCarryDeadline,
-        0,
-      ).toInt().clamp(0, 12),
       vacationCarryDeadlineMonths: pick<num>(
         SettingKeys.vacationCarryDeadline,
         3,
@@ -280,9 +272,6 @@ final class AppSettings {
 
   /// Limits of the overtime account (§20).
   final BalanceLimits balanceLimits;
-
-  /// Months to settle the year-end balance, 0 = off (§20.2).
-  final int balanceCarryDeadlineMonths;
 
   /// Months to take carried-over vacation, 0 = off (§10.2).
   final int vacationCarryDeadlineMonths;

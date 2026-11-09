@@ -2041,13 +2041,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ganze Stunden über (Plus) bzw. unter (Minus) dem Soll. Leer: keine Grenze.';
 
   @override
-  String get balanceCarryDeadline => 'Übertrag zum 31.12. ausgleichen bis';
-
-  @override
-  String get balanceCarryDeadlineHint =>
-      'Zeigt auf Heute, wie viel vom Übertrag noch offen ist';
-
-  @override
   String get vacationCarryDeadline => 'Resturlaub nehmen bis';
 
   @override
@@ -2060,26 +2053,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String deadlineEndOf(String month) {
     return 'Ende $month';
-  }
-
-  @override
-  String carryTitle(String year, String balance) {
-    return 'Übertrag aus $year: $balance';
-  }
-
-  @override
-  String carryReduce(String open, String date) {
-    return 'Noch $open bis $date abbauen.';
-  }
-
-  @override
-  String carryWorkOff(String open, String date) {
-    return 'Noch $open bis $date nacharbeiten.';
-  }
-
-  @override
-  String carryExpired(String date, String open) {
-    return 'Frist $date abgelaufen, noch $open offen.';
   }
 
   @override

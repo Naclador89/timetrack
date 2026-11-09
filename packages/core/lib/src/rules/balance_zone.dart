@@ -109,58 +109,6 @@ List<ReviewItem> balanceZoneItems(
   return items;
 }
 
-/// The overtime carried over from the last year and what of it is still open
-/// (calculations.md §20.2).
-final class BalanceCarryOver {
-  /// Creates the status.
-  const BalanceCarryOver({
-    required this.year,
-    required this.carry,
-    required this.open,
-    required this.deadline,
-    required this.expired,
-  });
-
-  /// The year the carry-over is to be settled in.
-  final int year;
-
-  /// The balance at the end of 31 December of the year before.
-  final int carry;
-
-  /// What is still to reduce (plus) or work off (minus), signed like [carry].
-  final int open;
-
-  /// The last day to settle it.
-  final LocalDate deadline;
-
-  /// Whether [deadline] has passed.
-  final bool expired;
-}
-
-/// The carry-over of today's year with [months] to settle it (§20.2);
-/// `null` if [months] is 0, the balance starts after 1 January or nothing is
-/// open.
-BalanceCarryOver? balanceCarryOver(Ledger ledger, {required int months}) {
-  if (months <= 0) return null;
-  final today = ledger.today;
-  final year = today.year;
-  if (ledger.settings.balanceStart.isAfter(LocalDate(year, 1, 1))) return null;
-  final carry = ledger.balanceAtEndOf(LocalDate(year - 1, 12, 31));
-  final current = ledger.balanceAtEndOf(today.addDays(-1));
-  final open = carry > 0
-      ? (current < 0 ? 0 : (current < carry ? current : carry))
-      : (current > 0 ? 0 : (current > carry ? current : carry));
-  if (open == 0) return null;
-  final deadline = _endOfMonth(year, months);
-  return BalanceCarryOver(
-    year: year,
-    carry: carry,
-    open: open,
-    deadline: deadline,
-    expired: today.isAfter(deadline),
-  );
-}
-
 /// Carried-over vacation not yet taken or planned before its deadline
 /// (calculations.md §10.2); `null` if [months] is 0, today is past the
 /// deadline or nothing is open.

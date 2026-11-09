@@ -1366,8 +1366,6 @@
   "balanceZones": "Time account zones",
   "balanceZonesHint": "Off · your employer's green/yellow/red limits",
   "balanceZonesDialogHint": "Whole hours above the target (plus) or below it (minus). Empty: no limit.",
-  "balanceCarryDeadline": "Settle the year-end balance by",
-  "balanceCarryDeadlineHint": "Shows on Today how much of the carry-over is still open",
   "vacationCarryDeadline": "Take carried-over vacation by",
   "vacationCarryDeadlineHint": "Shows on Today how many days of it are not planned yet",
   "deadlineOff": "Off",
@@ -1375,50 +1373,6 @@
   "@deadlineEndOf": {
     "placeholders": {
       "month": {
-        "type": "String"
-      }
-    }
-  },
-  "carryTitle": "Carried over from {year}: {balance}",
-  "@carryTitle": {
-    "placeholders": {
-      "year": {
-        "type": "String"
-      },
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
-  "carryReduce": "{open} left to reduce by {date}.",
-  "@carryReduce": {
-    "placeholders": {
-      "open": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "carryWorkOff": "{open} left to work off by {date}.",
-  "@carryWorkOff": {
-    "placeholders": {
-      "open": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "carryExpired": "Deadline {date} passed, {open} still open.",
-  "@carryExpired": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "open": {
         "type": "String"
       }
     }

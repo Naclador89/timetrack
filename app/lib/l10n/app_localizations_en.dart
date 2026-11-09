@@ -2034,13 +2034,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Whole hours above the target (plus) or below it (minus). Empty: no limit.';
 
   @override
-  String get balanceCarryDeadline => 'Settle the year-end balance by';
-
-  @override
-  String get balanceCarryDeadlineHint =>
-      'Shows on Today how much of the carry-over is still open';
-
-  @override
   String get vacationCarryDeadline => 'Take carried-over vacation by';
 
   @override
@@ -2053,26 +2046,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String deadlineEndOf(String month) {
     return 'End of $month';
-  }
-
-  @override
-  String carryTitle(String year, String balance) {
-    return 'Carried over from $year: $balance';
-  }
-
-  @override
-  String carryReduce(String open, String date) {
-    return '$open left to reduce by $date.';
-  }
-
-  @override
-  String carryWorkOff(String open, String date) {
-    return '$open left to work off by $date.';
-  }
-
-  @override
-  String carryExpired(String date, String open) {
-    return 'Deadline $date passed, $open still open.';
   }
 
   @override

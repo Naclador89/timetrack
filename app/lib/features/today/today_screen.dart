@@ -20,7 +20,7 @@ import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
-import 'carry_cards.dart';
+import 'vacation_carry_card.dart';
 
 /// The home screen. It answers "where do I stand right now?": one button
 /// that follows the state, a ring of today's time against the target, the
@@ -66,7 +66,6 @@ class TodayScreen extends ConsumerWidget {
         children: [
           if (!ref.watch(isSetUpProvider)) const _SetupCard(),
           const MonthReportCard(),
-          const BalanceCarryCard(),
           const VacationCarryCard(),
           AttentionCards(
             from: today.addDays(-1),

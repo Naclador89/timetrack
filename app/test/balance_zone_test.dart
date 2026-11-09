@@ -55,42 +55,6 @@ void main() {
     expect(find.byTooltip('Green zone'), findsOneWidget);
   });
 
-  // spec: calculations.md §20.2
-  testWidgets('§20.2 Today shows the carry-over still open', (tester) async {
-    await pumpApp(
-      tester,
-      clock: () => DateTime.utc(2027, 1, 13, 8),
-      seed: (repo) async {
-        await saveSetting(repo, SettingKeys.balanceStartDate, '2026-12-28');
-        await saveSetting(repo, SettingKeys.startingBalance, 30 * 60);
-        await saveSetting(repo, SettingKeys.balanceCarryDeadline, 3);
-      },
-    );
-    expect(find.text('Carried over from 2026: +30:00'), findsOneWidget);
-    expect(find.text('30:00 left to reduce by 3/31/2027.'), findsOneWidget);
-  });
-
-  testWidgets('§20.2 after the deadline the card can be dismissed', (
-    tester,
-  ) async {
-    await pumpApp(
-      tester,
-      clock: () => DateTime.utc(2027, 4, 7, 8),
-      seed: (repo) async {
-        await saveSetting(repo, SettingKeys.balanceStartDate, '2026-12-28');
-        await saveSetting(repo, SettingKeys.startingBalance, -10 * 60);
-        await saveSetting(repo, SettingKeys.balanceCarryDeadline, 3);
-      },
-    );
-    expect(
-      find.text('Deadline 3/31/2027 passed, 10:00 still open.'),
-      findsOneWidget,
-    );
-    await tester.tap(find.byTooltip('Hide'));
-    await settle(tester);
-    expect(find.textContaining('Deadline'), findsNothing);
-  });
-
   // spec: calculations.md §10.2
   testWidgets('§10.2 Today shows vacation left from last year', (tester) async {
     await pumpApp(

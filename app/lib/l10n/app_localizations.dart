@@ -3572,18 +3572,6 @@ abstract class AppLocalizations {
   /// **'Whole hours above the target (plus) or below it (minus). Empty: no limit.'**
   String get balanceZonesDialogHint;
 
-  /// No description provided for @balanceCarryDeadline.
-  ///
-  /// In en, this message translates to:
-  /// **'Settle the year-end balance by'**
-  String get balanceCarryDeadline;
-
-  /// No description provided for @balanceCarryDeadlineHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Shows on Today how much of the carry-over is still open'**
-  String get balanceCarryDeadlineHint;
-
   /// No description provided for @vacationCarryDeadline.
   ///
   /// In en, this message translates to:
@@ -3607,30 +3595,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End of {month}'**
   String deadlineEndOf(String month);
-
-  /// No description provided for @carryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Carried over from {year}: {balance}'**
-  String carryTitle(String year, String balance);
-
-  /// No description provided for @carryReduce.
-  ///
-  /// In en, this message translates to:
-  /// **'{open} left to reduce by {date}.'**
-  String carryReduce(String open, String date);
-
-  /// No description provided for @carryWorkOff.
-  ///
-  /// In en, this message translates to:
-  /// **'{open} left to work off by {date}.'**
-  String carryWorkOff(String open, String date);
-
-  /// No description provided for @carryExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'Deadline {date} passed, {open} still open.'**
-  String carryExpired(String date, String open);
 
   /// No description provided for @vacationCarryTitle.
   ///

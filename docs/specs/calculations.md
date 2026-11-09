@@ -297,7 +297,8 @@ year; setting `vacation.carry_deadline_months` (default **3**, the statutory 31 
 BUrlG; 0 = off). From 1 January until that deadline, **open carry-over** = carry-over − vacation
 days (taken and planned, workdays only, as above) from 1 January through the deadline. While it is
 above 0, Today shows "Resturlaub aus <Y−1>: noch n Tage bis <deadline> verplanen"
-(`vacationCarryLeft`). After the deadline nothing is shown.
+(`vacationCarryLeft`). After the deadline nothing is shown. Only vacation has such a deadline: the
+overtime balance is carried over without one (user 2026-11-09).
 
 ## §11 Home office
 
@@ -528,7 +529,7 @@ break start or clock-out, the session at a location change). A project resumed a
 the clock-out time. `TimeTracker` throws an `ArgumentError` for a time in the future or before the
 earliest instant (for clock-out: before the session start, reminders.md §1).
 
-## §20 Balance traffic light and year-end carry-over
+## §20 Balance traffic light
 
 Requested by the user 2026-11-09. Employers often set zones for the overtime account; every limit
 is a setting (minutes, positive; unset = no limit), none is built in:
@@ -552,19 +553,3 @@ applies: **over limit** if B > max⁺ or B < −max⁻, else **red** if B > red�
   balance is in a worse zone than the day before (green → yellow, yellow → red, red → over limit, or
   a jump), "Zeitkonto im gelben Bereich (+301:00)". Today is left out: its balance counts the full
   target against the time so far. Dismissed like any notice.
-
-### §20.2 Year-end carry-over
-
-The balance at the end of 31 December is carried into the new year and has to be reduced (plus) or
-worked off (minus) by the end of month N; setting `balance.carry_deadline_months` (unset or 0 = off).
-`balanceCarryOver`, for today's year Y, if the balance start is on or before 1 January of Y:
-
-- **carry** C = balance at the end of 31 December of Y−1 (the starting balance if the balance starts
-  on 1 January).
-- **current** B = balance at the end of yesterday (today's partial day would distort it).
-- **open**: for C > 0, `min(C, max(0, B))`; for C < 0, `max(C, min(0, B))`. Hours worked or
-  reduced beyond the carry don't count towards it.
-- From 1 January until the deadline, while open ≠ 0, Today shows a card "Übertrag 31.12.: +42:00 –
-  noch 30:00 bis 31.3. abbauen" (minus: "nacharbeiten"). After the deadline, while open ≠ 0, the
-  card says the deadline has passed and can be dismissed (key `<deadline>/balanceCarry` in
-  `dismissed_notices`). The deadline is not extended by sick or vacation days.

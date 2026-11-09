@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 299, app 88 tests; CI green on `main`.
+- **Tests**: core 295, app 86 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -409,17 +409,15 @@ against the app; the agreed order of steps:
        after a change of month to enter the overtime balance in the company system (work-pc.md §4):
        card on Today with the closing balance, Kopieren / Erledigt, one Windows notification per
        month, switch "Erinnerung: Überstunden melden" (device-local, default on).
-3. [x] **Traffic light and year-end carry-over** (calculations §20, §10.2; core
+3. [x] **Traffic light and vacation carry-over deadline** (calculations §20, §10.2; core
        `balance_zone.dart`): the running balance's zone (green/yellow/red/over limit) as a dot next
        to the balance on Today and in the week, a notice (category `balance_zone`) on the finished
        day it enters a worse zone. Six limit settings `balance.{yellow,red,max}_{plus,minus}_min`,
-       none built in; the user enters +300/+350/+400 and −100/−150/−200 h. Year-end carry-over:
-       card on Today from 1 January with what is still open until the end of month N
-       (`balance.carry_deadline_months`, default off; the user sets March), after the deadline a
-       dismissable warning. No extension by sick or vacation days (user's choice). Also carried-over
+       none built in; the user enters +300/+350/+400 and −100/−150/−200 h. The overtime balance has
+       no carry-over deadline (user 2026-11-09; a first version with one was removed). Carried-over
        vacation: card "Resturlaub aus <Y>: noch n Tage bis 31.3. nehmen oder verplanen"
-       (`vacation.carry_deadline_months`, default 3 = statutory 31 March). Cards in
-       `app/lib/features/today/carry_cards.dart`, dot in `app/lib/widgets/balance_zone.dart`.
+       (`vacation.carry_deadline_months`, default 3 = statutory 31 March), in
+       `app/lib/features/today/vacation_carry_card.dart`; dot in `app/lib/widgets/balance_zone.dart`.
        The vacation carry-over of a year is now editable on the planner's account card (before only
        in the setup), with last year's rest suggested.
 4. [ ] Supplements per month: Sunday/holiday hours, the four 150 % days, night hours 23–6 (≥ 2 h).
@@ -580,4 +578,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: Windows self-update no longer needs PowerShell (the script was most likely blocked on the company PC); files are swapped in by the app itself. 286 core, 77 app tests green.
 - 2026-11-09, Claude Code: reviewed the employer's working-time and travel expense rules with the user; step 1 done: travel crediting by service trip (calculations §9, `trips.service`), 35 % days in the timesheet. 285 core, 78 app tests green.
 - 2026-11-09, Claude Code: monthly reminder on the work PC to report the overtime balance (work-pc.md §4, core `monthReportDue`). 289 core, 81 app tests green.
-- 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light, year-end carry-over and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. 299 core, 88 app tests green.
+- 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. The year-end balance carry-over card was removed again: only vacation has a deadline.

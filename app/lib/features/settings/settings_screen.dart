@@ -254,14 +254,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       _deadlineTile(
         context,
-        icon: Icons.history_toggle_off,
-        title: l.balanceCarryDeadline,
-        hint: l.balanceCarryDeadlineHint,
-        months: s.balanceCarryDeadlineMonths,
-        onChanged: (v) => save(SettingKeys.balanceCarryDeadline, v),
-      ),
-      _deadlineTile(
-        context,
         icon: Icons.beach_access_outlined,
         title: l.vacationCarryDeadline,
         hint: l.vacationCarryDeadlineHint,
@@ -733,7 +725,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     ].join(' · ');
   }
 
-  /// A deadline as "end of month N" of the year, 0 = off (§10.2, §20.2).
+  /// A deadline as "end of month N" of the year, 0 = off (§10.2).
   static Widget _deadlineTile(
     BuildContext context, {
     required IconData icon,
