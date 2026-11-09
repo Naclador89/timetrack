@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 299, app 87 tests; CI green on `main`.
+- **Tests**: core 299, app 88 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -420,6 +420,8 @@ against the app; the agreed order of steps:
        vacation: card "Resturlaub aus <Y>: noch n Tage bis 31.3. nehmen oder verplanen"
        (`vacation.carry_deadline_months`, default 3 = statutory 31 March). Cards in
        `app/lib/features/today/carry_cards.dart`, dot in `app/lib/widgets/balance_zone.dart`.
+       The vacation carry-over of a year is now editable on the planner's account card (before only
+       in the setup), with last year's rest suggested.
 4. [ ] Supplements per month: Sunday/holiday hours, the four 150 % days, night hours 23–6 (≥ 2 h).
 5. [ ] Travel expenses: built-in BMF per-diem and lodging rates 2026 (with cities), site allowance
        per site day (≥ 2 consecutive; ask the user whether the policy's "Auslandzulagen" column is
@@ -578,4 +580,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: Windows self-update no longer needs PowerShell (the script was most likely blocked on the company PC); files are swapped in by the app itself. 286 core, 77 app tests green.
 - 2026-11-09, Claude Code: reviewed the employer's working-time and travel expense rules with the user; step 1 done: travel crediting by service trip (calculations §9, `trips.service`), 35 % days in the timesheet. 285 core, 78 app tests green.
 - 2026-11-09, Claude Code: monthly reminder on the work PC to report the overtime balance (work-pc.md §4, core `monthReportDue`). 289 core, 81 app tests green.
-- 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light, year-end carry-over and the vacation carry-over deadline (calculations §20, §10.2). 299 core, 87 app tests green.
+- 2026-11-09, Claude Code: step 3 of the employer rules: balance traffic light, year-end carry-over and the vacation carry-over deadline (calculations §20, §10.2); vacation carry-over editable in the planner. 299 core, 88 app tests green.

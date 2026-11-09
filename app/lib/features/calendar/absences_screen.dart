@@ -129,6 +129,43 @@ class AbsencesScreen extends ConsumerStatefulWidget {
 class _AbsencesScreenState extends ConsumerState<AbsencesScreen> {
   late int _year = ref.read(todayProvider).year;
 
+  /// Asks for the days carried into [_year]; unset, it suggests what was
+  /// left of the year before.
+  Future<void> _editCarryOver(VacationAccount account) async {
+    final l = context.l10n;
+    final settings = ref.read(settingsProvider);
+    final key = SettingKeys.vacationCarryOver(_year);
+    var initial = settings.number(key);
+    if (initial == null) {
+      final data = ref.read(ledgerDataProvider);
+      final last = vacationAccount(
+        year: _year - 1,
+        targets: ref.read(ledgerProvider).targets,
+        schedules: data.schedules,
+        absences: data.absences,
+        today: ref.read(todayProvider),
+        entitlementOverride: settings.number(
+          SettingKeys.vacationEntitlement(_year - 1),
+        ),
+        carryOver:
+            settings.number(SettingKeys.vacationCarryOver(_year - 1)) ?? 0,
+      );
+      initial = last.remaining > 0 ? last.remaining : 0;
+    }
+    final text = await showTextPrompt(
+      context,
+      title: l.vacationCarryOverInto('$_year'),
+      okLabel: l.save,
+      cancelLabel: l.cancel,
+      initial: context.days(initial),
+      label: l.vacationCarryOver,
+    );
+    if (text == null) return;
+    final days = double.tryParse(text.replaceAll(',', '.'));
+    if (days == null || days < 0) return;
+    await saveSetting(ref.read(repositoryProvider), key, days);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -202,6 +239,12 @@ class _AbsencesScreenState extends ConsumerState<AbsencesScreen> {
                       context.days(account.taken),
                       context.days(account.planned),
                     ),
+                  ),
+                  // calculations §10: the carry-over is a setting per year.
+                  trailing: IconButton(
+                    tooltip: l.vacationCarryOver,
+                    icon: const Icon(Icons.edit_calendar_outlined),
+                    onPressed: () => _editCarryOver(account),
                   ),
                 ),
               ),

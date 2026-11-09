@@ -3643,6 +3643,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{days} days still to take or plan by {date}.'**
   String vacationCarryText(String days, String date);
+
+  /// No description provided for @vacationCarryOverInto.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation carried into {year}'**
+  String vacationCarryOverInto(String year);
 }
 
 class _AppLocalizationsDelegate

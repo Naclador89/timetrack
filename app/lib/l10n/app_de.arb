@@ -590,5 +590,6 @@
   "carryWorkOff": "Noch {open} bis {date} nacharbeiten.",
   "carryExpired": "Frist {date} abgelaufen, noch {open} offen.",
   "vacationCarryTitle": "Resturlaub aus {year}",
-  "vacationCarryText": "Noch {days} Tage bis {date} nehmen oder verplanen."
+  "vacationCarryText": "Noch {days} Tage bis {date} nehmen oder verplanen.",
+  "vacationCarryOverInto": "Resturlaub-Übertrag nach {year}"
 }

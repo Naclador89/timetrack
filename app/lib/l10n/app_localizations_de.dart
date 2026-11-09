@@ -2091,4 +2091,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String vacationCarryText(String days, String date) {
     return 'Noch $days Tage bis $date nehmen oder verplanen.';
   }
+
+  @override
+  String vacationCarryOverInto(String year) {
+    return 'Resturlaub-Übertrag nach $year';
+  }
 }

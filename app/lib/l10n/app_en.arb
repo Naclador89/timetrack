@@ -1441,5 +1441,13 @@
         "type": "String"
       }
     }
+  },
+  "vacationCarryOverInto": "Vacation carried into {year}",
+  "@vacationCarryOverInto": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:timetrack/app/router.dart';
 import 'package:timetrack/widgets/balance_zone.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
@@ -10,7 +11,7 @@ Future<void> _schedule(SyncedRepository repo, String from) =>
     repo.write('work_schedules', 'w', {
       'valid_from': from,
       for (final d in ['mon', 'tue', 'wed', 'thu', 'fri']) 'minutes_$d': 480,
-      'annual_vacation_days': 30,
+      'vacation_days': 30,
     });
 
 void main() {
@@ -109,6 +110,44 @@ void main() {
     expect(
       find.text('3 days still to take or plan by 3/31/2027.'),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('§10.2 the carry-over is entered, last year\'s rest suggested', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(
+      tester,
+      router: router,
+      seed: (repo) async {
+        await _schedule(repo, '2026-01-01');
+        await repo.write('absences', 'a', {
+          'date': '2026-12-21',
+          'kind': 'vacation',
+          'fraction': 1,
+        });
+      },
+    );
+    router.go('/calendar/absences');
+    await settle(tester);
+    await tester.tap(find.byTooltip('2027'));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Vacation days carried over'));
+    await tester.pumpAndSettle();
+    expect(find.text('Vacation carried into 2027'), findsOneWidget);
+    // 30 days in 2026, one planned.
+    expect(
+      find.descendant(of: find.byType(AlertDialog), matching: find.text('29')),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    expect(
+      store
+          .rowsOf('settings')[SettingKeys.vacationCarryOver(2027)]!
+          .fields['value'],
+      29,
     );
   });
 
