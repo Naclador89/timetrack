@@ -1550,5 +1550,58 @@
       }
     }
   },
-  "cityOptional": "City (optional)"
+  "cityOptional": "City (optional)",
+  "noticeCatWeekLimit": "Weekly limits",
+  "warnWeekOverMax": "Week with {minutes} worked: above the weekly maximum",
+  "@warnWeekOverMax": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "warnWeekAverage": "Weekly average {minutes}: above the limit",
+  "@warnWeekAverage": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "weekWorkedOfMax": "Worked {worked} of max. {max}",
+  "@weekWorkedOfMax": {
+    "placeholders": {
+      "worked": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "weekAverageOf": "Average of {weeks} weeks {average} (limit {limit})",
+  "@weekAverageOf": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      },
+      "average": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "groupWeekLimits": "Weekly limits",
+  "weekMaxSetting": "Most per week",
+  "weekAverageSetting": "Average over {weeks} weeks at most",
+  "@weekAverageSetting": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      }
+    }
+  },
+  "weekLimitsHint": "All recorded work including travel, without breaks (§ 3 ArbZG). 0 switches it off."
 }

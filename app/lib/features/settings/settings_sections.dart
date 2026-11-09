@@ -220,6 +220,41 @@ class _Tiles {
           builder: (_) => _BalanceLimitsDialog(s.balanceLimits, save),
         ),
       ),
+      // calculations §22: § 3 ArbZG, 0 = off.
+      SettingsHeader(l.groupWeekLimits),
+      ListTile(
+        leading: const Icon(Icons.date_range_outlined),
+        title: Text(l.weekMaxSetting),
+        trailing: Text(
+          s.weekLimits.maxMinutes == 0
+              ? l.deadlineOff
+              : formatMinutes(s.weekLimits.maxMinutes),
+        ),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.weekLimits.maxMinutes),
+          );
+          if (v != null && v >= 0) await save(SettingKeys.weekMax, v);
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.stacked_line_chart),
+        title: Text(l.weekAverageSetting('${s.weekLimits.averageWeeks}')),
+        subtitle: Text(l.weekLimitsHint),
+        trailing: Text(
+          s.weekLimits.averageMinutes == 0
+              ? l.deadlineOff
+              : formatMinutes(s.weekLimits.averageMinutes),
+        ),
+        onTap: () async {
+          final v = await _askHours(
+            context,
+            formatMinutes(s.weekLimits.averageMinutes),
+          );
+          if (v != null && v >= 0) await save(SettingKeys.weekAverage, v);
+        },
+      ),
       SettingsHeader(l.groupVacation),
       _deadlineTile(
         icon: Icons.beach_access_outlined,

@@ -225,6 +225,7 @@ final noticesProvider =
         unassignedMinMinutes: settings.noticeUnassignedMinMinutes,
         projects: ref.watch(projectsProvider),
         balanceLimits: settings.balanceLimits,
+        weekLimits: settings.weekLimits,
       );
     });
 

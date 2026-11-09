@@ -32,6 +32,7 @@ export 'src/rules/review.dart';
 export 'src/rules/target.dart';
 export 'src/rules/trip_expenses.dart';
 export 'src/rules/vacation.dart';
+export 'src/rules/week_limits.dart';
 export 'src/search/project_search.dart';
 export 'src/sync/backup.dart';
 export 'src/sync/batch.dart';

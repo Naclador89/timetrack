@@ -2311,4 +2311,42 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cityOptional => 'Stadt (optional)';
+
+  @override
+  String get noticeCatWeekLimit => 'Wochengrenzen';
+
+  @override
+  String warnWeekOverMax(String minutes) {
+    return 'Woche mit $minutes Arbeit: über der Wochenhöchstgrenze';
+  }
+
+  @override
+  String warnWeekAverage(String minutes) {
+    return 'Wochenschnitt $minutes: über der Grenze';
+  }
+
+  @override
+  String weekWorkedOfMax(String worked, String max) {
+    return 'Gearbeitet $worked von max. $max';
+  }
+
+  @override
+  String weekAverageOf(String weeks, String average, String limit) {
+    return 'Schnitt $weeks Wochen $average (Grenze $limit)';
+  }
+
+  @override
+  String get groupWeekLimits => 'Wochengrenzen';
+
+  @override
+  String get weekMaxSetting => 'Höchstens pro Woche';
+
+  @override
+  String weekAverageSetting(String weeks) {
+    return 'Schnitt über $weeks Wochen höchstens';
+  }
+
+  @override
+  String get weekLimitsHint =>
+      'Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab.';
 }

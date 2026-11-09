@@ -289,8 +289,60 @@ class _WeekView extends ConsumerWidget {
             ),
           ),
         ),
+        // calculations §22: the Working Hours Act's weekly limits.
+        _WeekLimitsTile(monday: monday),
         if (!monday.isAfter(today)) BookingWeekTile(monday: monday),
       ],
+    );
+  }
+}
+
+/// Worked time of the week and the rolling average against their limits
+/// (calculations §22); nothing while both limits are off.
+class _WeekLimitsTile extends ConsumerWidget {
+  const _WeekLimitsTile({required this.monday});
+
+  final LocalDate monday;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final limits = ref.watch(settingsProvider).weekLimits;
+    if (limits.maxMinutes <= 0 && limits.averageMinutes <= 0) {
+      return const SizedBox.shrink();
+    }
+    final l = context.l10n;
+    final ledger = ref.watch(ledgerProvider);
+    final worked = weekWorked(ledger, monday);
+    final average = weekAverage(ledger, monday, limits);
+    final error = Theme.of(context).colorScheme.error;
+    Widget part(String text, bool over) => Text(
+      text,
+      style: over ? TextStyle(color: error, fontWeight: FontWeight.w600) : null,
+    );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Wrap(
+        spacing: 16,
+        children: [
+          if (limits.maxMinutes > 0)
+            part(
+              l.weekWorkedOfMax(
+                formatMinutes(worked),
+                formatMinutes(limits.maxMinutes),
+              ),
+              worked > limits.maxMinutes,
+            ),
+          if (limits.averageMinutes > 0 && average != null)
+            part(
+              l.weekAverageOf(
+                '${limits.averageWeeks}',
+                formatMinutes(average),
+                formatMinutes(limits.averageMinutes),
+              ),
+              average > limits.averageMinutes,
+            ),
+        ],
+      ),
     );
   }
 }

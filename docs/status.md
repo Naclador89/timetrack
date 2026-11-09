@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 317, app 95 tests; CI green on `main`.
+- **Tests**: core 320, app 97 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -438,7 +438,11 @@ against the app; the agreed order of steps:
        (trips list → receipt icon; screen and PDF) with laundry hint; claim deadline card on Today
        until "Abgerechnet". Settings on "Reisen & Zuschläge" → Spesen. The trip dialog has a place
        picker (country search, then city). Country names are the German BMF names in every locale.
-6. [ ] Weekly limits (60 h, 48 h average over 24 weeks), on-call duty (Rufbereitschaft) counts.
+6. [x] **Weekly limits** (calculations §22; core `week_limits.dart`): worked time per week (all
+       recorded work incl. travel, no breaks) against 60 h and the rolling 24-week average
+       against 48 h (§ 3 ArbZG, public defaults, settings on "Arbeitszeit & Konto"); notices
+       (category `week_limit`) on the Sunday of a finished week; a line under the week total in
+       the week view. On-call duty (§9 of the rules) is not needed (user 2026-11-09).
 Later if needed: a switch for when the flat supplement is suspended (the rules allow that).
 
 ### Windows self-update without a script (bug reported by the user 2026-11-09; updates.md §5)
@@ -595,3 +599,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: settings reorganised into an overview with category pages (navigation.md, "Settings structure"; `settings_sections.dart`); the links to Reports in settings are gone, the search covers all pages. 295 core, 89 app tests green.
 - 2026-11-09, Claude Code: step 4 of the employer rules: special holiday hours and night hours (calculations §21), night hours optionally off the account; timesheet, day views and the monthly reminder show them. 304 core, 91 app tests green.
 - 2026-11-09, Claude Code: step 5 of the employer rules: travel expenses (calculations §13.0–§13.5): BMF 2026 rates built in, places per trip day, lodging, mileage, site allowance, expense report per trip, claim deadline card. 317 core, 95 app tests green.
+- 2026-11-09, Claude Code: step 6 of the employer rules: weekly limits 60 h and Ø 48 h over 24 weeks (calculations §22); all six steps done. 320 core, 97 app tests green.

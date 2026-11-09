@@ -363,13 +363,14 @@ Computed, never stored:
 - Home-office quota warnings (§11.4).
 - `project_budget_near`, `project_budget_over`: a project's budget reached 80 % / 100 % (§3.1).
 - `balance_zone`: the overtime balance entered a worse zone (§20.1).
+- `week_over_max`, `week_average_over`: weekly limits (§22).
 - `unassigned` (only when asked for): worked time without a project on a day that is done (not
   today while clocked in) and not a trip day (§3). `suggestBreak` places a missing break in the
   middle of the day's longest working stretch, on a 5-minute grid.
 
 **Which items become cards** (user request 2026-11-08): items fall into categories
 (`NoticeCategory`: unassigned, breaks, long day, rest, Sunday work, open session, overlaps, project
-time, home-office quota, open trip, project budget, balance zone), each switched on or off by the setting `notices.show.<category>`
+time, home-office quota, open trip, project budget, balance zone, week limit), each switched on or off by the setting `notices.show.<category>`
 (default on). Unassigned time is an item only from `notices.unassigned_min` minutes on (default 30).
 A card closed with × is dismissed for good: its key (`noticeKey` = date/kind[/arbzg][/ref]) is written
 to `dismissed_notices` (data-model §14), so it stays hidden on every device. Switched-off and
@@ -660,3 +661,27 @@ are above 0. The day explanation (§16) lists them, and for `exclude` it says th
 not on the account. The timesheet (screen and PDF) has a column and a total for each. The monthly
 reminder on the work PC (work-pc.md §4) names the month's Sunday/holiday, special holiday and night
 hours next to the balance.
+
+## §22 Weekly limits
+
+Requested by the user 2026-11-09 (step 6 of the employer rules). The Working Hours Act allows
+8 h per workday (Monday–Saturday), up to 10 h if the average stays at 8 h over 6 months or 24 weeks
+(§ 3 ArbZG); per week that is at most 60 h and 48 h on average. Both are public defaults and
+settings (0 = off):
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `limits.week_max_min` | 3600 | most worked time in one week |
+| `limits.week_avg_min` | 2880 | most average worked time per week |
+| `limits.avg_weeks` | 24 | weeks of the rolling average |
+
+- **Worked time of a week** `W_week` = Σ `W(D)` Monday–Sunday: all recorded work including travel,
+  minus breaks (§2), whatever the account credits (user decision).
+- **Rolling average** of the week starting Monday M = Σ `W_week` of the last N weeks up to and
+  including M's, divided by their number; weeks before the week of the balance start (§8) are left
+  out, so early on fewer weeks count.
+- **Notices** (`week_limit`, category `week_limit`, dated the week's Sunday, only finished weeks):
+  `week_over_max` for a week with `W_week` above the maximum; `week_average_over` for the first week
+  whose average is above the limit after a week at or below it.
+- The week view shows the week's worked time and the average next to the week total, in the error
+  colour when above the limit.

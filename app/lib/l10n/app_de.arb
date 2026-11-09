@@ -656,5 +656,14 @@
   "claimTotal": "Erstattung gesamt",
   "nightsCount": "{count} Nächte",
   "daysCount": "{count} Tage",
-  "cityOptional": "Stadt (optional)"
+  "cityOptional": "Stadt (optional)",
+  "noticeCatWeekLimit": "Wochengrenzen",
+  "warnWeekOverMax": "Woche mit {minutes} Arbeit: über der Wochenhöchstgrenze",
+  "warnWeekAverage": "Wochenschnitt {minutes}: über der Grenze",
+  "weekWorkedOfMax": "Gearbeitet {worked} von max. {max}",
+  "weekAverageOf": "Schnitt {weeks} Wochen {average} (Grenze {limit})",
+  "groupWeekLimits": "Wochengrenzen",
+  "weekMaxSetting": "Höchstens pro Woche",
+  "weekAverageSetting": "Schnitt über {weeks} Wochen höchstens",
+  "weekLimitsHint": "Alle erfasste Arbeit inklusive Reisezeit, ohne Pausen (§ 3 ArbZG). 0 schaltet ab."
 }

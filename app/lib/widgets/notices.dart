@@ -30,6 +30,8 @@ String noticeText(BuildContext context, ReviewItem item) {
       'red' => l.warnBalanceRed(signedBalance(item.minutes)),
       _ => l.warnBalanceYellow(signedBalance(item.minutes)),
     },
+    ReviewKind.weekOverMax => l.warnWeekOverMax(m),
+    ReviewKind.weekAverageOver => l.warnWeekAverage(m),
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing => l.warnBreakMissing(m),
       ArbzgWarningKind.workOver6hWithoutBreak => l.warnOver6h,

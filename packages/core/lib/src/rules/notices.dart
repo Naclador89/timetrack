@@ -40,7 +40,10 @@ enum NoticeCategory {
   projectBudget,
 
   /// The overtime balance entered a worse zone (§20.1).
-  balanceZone;
+  balanceZone,
+
+  /// A week above the weekly limits (§22).
+  weekLimit;
 
   /// The name in the settings key (`notices.show.<wireName>`).
   String get wireName => switch (this) {
@@ -52,6 +55,7 @@ enum NoticeCategory {
     openTrip => 'open_trip',
     projectBudget => 'project_budget',
     balanceZone => 'balance_zone',
+    weekLimit => 'week_limit',
     _ => name,
   };
 
@@ -67,6 +71,7 @@ enum NoticeCategory {
     ReviewKind.projectBudgetNear ||
     ReviewKind.projectBudgetOver => projectBudget,
     ReviewKind.balanceZone => balanceZone,
+    ReviewKind.weekOverMax || ReviewKind.weekAverageOver => weekLimit,
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing ||
       ArbzgWarningKind.workOver6hWithoutBreak => breaks,

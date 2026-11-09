@@ -4039,6 +4039,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'City (optional)'**
   String get cityOptional;
+
+  /// No description provided for @noticeCatWeekLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly limits'**
+  String get noticeCatWeekLimit;
+
+  /// No description provided for @warnWeekOverMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Week with {minutes} worked: above the weekly maximum'**
+  String warnWeekOverMax(String minutes);
+
+  /// No description provided for @warnWeekAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly average {minutes}: above the limit'**
+  String warnWeekAverage(String minutes);
+
+  /// No description provided for @weekWorkedOfMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked {worked} of max. {max}'**
+  String weekWorkedOfMax(String worked, String max);
+
+  /// No description provided for @weekAverageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Average of {weeks} weeks {average} (limit {limit})'**
+  String weekAverageOf(String weeks, String average, String limit);
+
+  /// No description provided for @groupWeekLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly limits'**
+  String get groupWeekLimits;
+
+  /// No description provided for @weekMaxSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Most per week'**
+  String get weekMaxSetting;
+
+  /// No description provided for @weekAverageSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Average over {weeks} weeks at most'**
+  String weekAverageSetting(String weeks);
+
+  /// No description provided for @weekLimitsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'All recorded work including travel, without breaks (§ 3 ArbZG). 0 switches it off.'**
+  String get weekLimitsHint;
 }
 
 class _AppLocalizationsDelegate

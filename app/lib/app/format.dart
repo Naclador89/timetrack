@@ -122,6 +122,7 @@ IconData noticeCategoryIcon(NoticeCategory c) => switch (c) {
   NoticeCategory.openTrip => Icons.luggage_outlined,
   NoticeCategory.projectBudget => Icons.savings_outlined,
   NoticeCategory.balanceZone => Icons.traffic_outlined,
+  NoticeCategory.weekLimit => Icons.date_range_outlined,
 };
 
 /// Name of a notice category (settings).
@@ -138,6 +139,7 @@ String noticeCategoryLabel(AppLocalizations l, NoticeCategory c) => switch (c) {
   NoticeCategory.openTrip => l.noticeCatOpenTrip,
   NoticeCategory.projectBudget => l.noticeCatBudget,
   NoticeCategory.balanceZone => l.noticeCatBalanceZone,
+  NoticeCategory.weekLimit => l.noticeCatWeekLimit,
 };
 
 /// The balance with its sign, e.g. `+12:30` or `−3:15`.

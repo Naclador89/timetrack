@@ -4,6 +4,7 @@ import '../rules/credit.dart';
 import '../rules/holidays.dart';
 import '../rules/home_office.dart';
 import '../rules/trip_expenses.dart';
+import '../rules/week_limits.dart';
 import '../sync/change.dart';
 import '../sync/repository.dart';
 import '../time/local_date.dart';
@@ -68,6 +69,15 @@ abstract final class SettingKeys {
 
   /// Months to submit an expense claim, 0 = off (§13.5).
   static const claimDeadlineMonths = 'travel.claim_deadline_months';
+
+  /// Most worked minutes in one week, 0 = off (§22).
+  static const weekMax = 'limits.week_max_min';
+
+  /// Most average worked minutes per week, 0 = off (§22).
+  static const weekAverage = 'limits.week_avg_min';
+
+  /// Weeks of the rolling average (§22).
+  static const averageWeeks = 'limits.avg_weeks';
 
   /// Balance zone limits in minutes, unset = none (§20).
   static const balanceYellowPlus = 'balance.yellow_plus_min';
@@ -140,6 +150,7 @@ final class AppSettings {
     this.homeOfficeDayRule = HomeOfficeDayRule.majority,
     this.travel = const TravelRules(),
     this.expenses = const ExpenseRules(),
+    this.weekLimits = const WeekLimits(),
     this.balanceLimits = const BalanceLimits(),
     this.vacationCarryDeadlineMonths = 3,
     this.openSessionLimitMinutes = 720,
@@ -256,6 +267,20 @@ final class AppSettings {
           0,
         ).toInt().clamp(0, 24),
       ),
+      weekLimits: WeekLimits(
+        maxMinutes: pick<num>(
+          SettingKeys.weekMax,
+          3600,
+        ).toInt().clamp(0, 10080),
+        averageMinutes: pick<num>(
+          SettingKeys.weekAverage,
+          2880,
+        ).toInt().clamp(0, 10080),
+        averageWeeks: pick<num>(
+          SettingKeys.averageWeeks,
+          24,
+        ).toInt().clamp(1, 52),
+      ),
       balanceLimits: BalanceLimits(
         yellowPlus: limit(SettingKeys.balanceYellowPlus),
         yellowMinus: limit(SettingKeys.balanceYellowMinus),
@@ -319,6 +344,9 @@ final class AppSettings {
 
   /// The employer's expense rules (§13.2–§13.5).
   final ExpenseRules expenses;
+
+  /// Weekly limits of worked time (§22).
+  final WeekLimits weekLimits;
 
   /// Limits of the overtime account (§20).
   final BalanceLimits balanceLimits;

@@ -6,6 +6,7 @@ import 'balance_zone.dart';
 import 'home_office.dart';
 import 'ledger.dart';
 import 'project_history.dart';
+import 'week_limits.dart';
 
 /// Kinds of entries in the Review list (spec: calculations.md §12).
 enum ReviewKind {
@@ -43,6 +44,14 @@ enum ReviewKind {
   /// The overtime balance entered a worse zone (§20.1); [ReviewItem.refId]
   /// is the zone's name.
   balanceZone,
+
+  /// A week above the weekly maximum (§22); [ReviewItem.minutes] is its
+  /// worked time.
+  weekOverMax,
+
+  /// The rolling weekly average went above its limit (§22);
+  /// [ReviewItem.minutes] is the average.
+  weekAverageOver,
 }
 
 /// One entry of the Review list. Computed, never stored.
@@ -82,7 +91,7 @@ final class ReviewItem {
 /// [openSessionLimitMinutes] is the setting for "open session over 12 h";
 /// [quotas] are the evaluated home-office quotas to check (§11.4);
 /// [projects] with a budget add the budget notices (§3.1), [balanceLimits]
-/// the zone notices (§20.1).
+/// the zone notices (§20.1), [weekLimits] the weekly limits (§22).
 List<ReviewItem> reviewItems(
   Ledger ledger, {
   required LocalDate from,
@@ -93,10 +102,12 @@ List<ReviewItem> reviewItems(
   int unassignedMinMinutes = 1,
   Iterable<Project> projects = const [],
   BalanceLimits balanceLimits = const BalanceLimits(),
+  WeekLimits weekLimits = const WeekLimits(),
 }) {
   final items = <ReviewItem>[
     ...budgetItems(ledger, projects, from: from, to: to),
     ...balanceZoneItems(ledger, balanceLimits, from: from, to: to),
+    ...weekLimitItems(ledger, weekLimits, from: from, to: to),
   ];
   final running = ledger.data.sessions.any((s) => s.isOpen);
   for (final s in ledger.data.sessions) {
