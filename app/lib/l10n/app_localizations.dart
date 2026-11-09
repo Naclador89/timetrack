@@ -3475,6 +3475,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'After a change of month, reminds you of last month\'s closing balance'**
   String get monthReportReminderHint;
+
+  /// No description provided for @noticeCatBalanceZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account zone'**
+  String get noticeCatBalanceZone;
+
+  /// No description provided for @warnBalanceYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account in the yellow zone ({balance})'**
+  String warnBalanceYellow(String balance);
+
+  /// No description provided for @warnBalanceRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account in the red zone ({balance})'**
+  String warnBalanceRed(String balance);
+
+  /// No description provided for @warnBalanceOverLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account over its limit ({balance})'**
+  String warnBalanceOverLimit(String balance);
+
+  /// No description provided for @zoneGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green zone'**
+  String get zoneGreen;
+
+  /// No description provided for @zoneYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow zone'**
+  String get zoneYellow;
+
+  /// No description provided for @zoneRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Red zone'**
+  String get zoneRed;
+
+  /// No description provided for @zoneOverLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Over the limit'**
+  String get zoneOverLimit;
+
+  /// No description provided for @zoneYellowFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow above'**
+  String get zoneYellowFrom;
+
+  /// No description provided for @zoneRedFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Red above'**
+  String get zoneRedFrom;
+
+  /// No description provided for @zoneMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit'**
+  String get zoneMax;
+
+  /// No description provided for @zonePlus.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus'**
+  String get zonePlus;
+
+  /// No description provided for @zoneMinus.
+  ///
+  /// In en, this message translates to:
+  /// **'Minus'**
+  String get zoneMinus;
+
+  /// No description provided for @balanceZones.
+  ///
+  /// In en, this message translates to:
+  /// **'Time account zones'**
+  String get balanceZones;
+
+  /// No description provided for @balanceZonesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Off · your employer\'s green/yellow/red limits'**
+  String get balanceZonesHint;
+
+  /// No description provided for @balanceZonesDialogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole hours above the target (plus) or below it (minus). Empty: no limit.'**
+  String get balanceZonesDialogHint;
+
+  /// No description provided for @balanceCarryDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle the year-end balance by'**
+  String get balanceCarryDeadline;
+
+  /// No description provided for @balanceCarryDeadlineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows on Today how much of the carry-over is still open'**
+  String get balanceCarryDeadlineHint;
+
+  /// No description provided for @vacationCarryDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Take carried-over vacation by'**
+  String get vacationCarryDeadline;
+
+  /// No description provided for @vacationCarryDeadlineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows on Today how many days of it are not planned yet'**
+  String get vacationCarryDeadlineHint;
+
+  /// No description provided for @deadlineOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get deadlineOff;
+
+  /// No description provided for @deadlineEndOf.
+  ///
+  /// In en, this message translates to:
+  /// **'End of {month}'**
+  String deadlineEndOf(String month);
+
+  /// No description provided for @carryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Carried over from {year}: {balance}'**
+  String carryTitle(String year, String balance);
+
+  /// No description provided for @carryReduce.
+  ///
+  /// In en, this message translates to:
+  /// **'{open} left to reduce by {date}.'**
+  String carryReduce(String open, String date);
+
+  /// No description provided for @carryWorkOff.
+  ///
+  /// In en, this message translates to:
+  /// **'{open} left to work off by {date}.'**
+  String carryWorkOff(String open, String date);
+
+  /// No description provided for @carryExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline {date} passed, {open} still open.'**
+  String carryExpired(String date, String open);
+
+  /// No description provided for @vacationCarryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation left from {year}'**
+  String vacationCarryTitle(String year);
+
+  /// No description provided for @vacationCarryText.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days still to take or plan by {date}.'**
+  String vacationCarryText(String days, String date);
 }
 
 class _AppLocalizationsDelegate

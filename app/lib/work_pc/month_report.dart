@@ -50,10 +50,6 @@ final monthReportProvider = Provider<({LocalDate month, int balance})?>((ref) {
   return (month: month, balance: ledger.balanceAtEndOf(end));
 });
 
-/// The balance with its sign, e.g. `+12:30` or `−3:15`.
-String signedBalance(int minutes) =>
-    minutes > 0 ? '+${formatMinutes(minutes)}' : formatMinutes(minutes);
-
 /// The reminder's title and text for [month] (also the notification).
 ({String title, String text}) monthReportTexts(
   BuildContext context,

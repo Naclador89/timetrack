@@ -37,7 +37,10 @@ enum NoticeCategory {
   openTrip,
 
   /// A project's budget almost or fully used (§3.1).
-  projectBudget;
+  projectBudget,
+
+  /// The overtime balance entered a worse zone (§20.1).
+  balanceZone;
 
   /// The name in the settings key (`notices.show.<wireName>`).
   String get wireName => switch (this) {
@@ -48,6 +51,7 @@ enum NoticeCategory {
     homeOfficeQuota => 'home_office_quota',
     openTrip => 'open_trip',
     projectBudget => 'project_budget',
+    balanceZone => 'balance_zone',
     _ => name,
   };
 
@@ -62,6 +66,7 @@ enum NoticeCategory {
     ReviewKind.homeOfficeQuota => homeOfficeQuota,
     ReviewKind.projectBudgetNear ||
     ReviewKind.projectBudgetOver => projectBudget,
+    ReviewKind.balanceZone => balanceZone,
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing ||
       ArbzgWarningKind.workOver6hWithoutBreak => breaks,

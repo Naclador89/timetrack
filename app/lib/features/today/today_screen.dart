@@ -10,15 +10,17 @@ import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
+import '../../widgets/balance_zone.dart';
 import '../../widgets/day_timeline.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/motion.dart';
 import '../../widgets/quick_entry_sheet.dart';
+import '../../work_pc/month_report.dart';
 import '../calendar/day_type_picker.dart';
 import '../calendar/trip_booking_card.dart';
 import '../projects/project_picker.dart';
 import '../projects/project_time_dialog.dart';
-import '../../work_pc/month_report.dart';
+import 'carry_cards.dart';
 
 /// The home screen. It answers "where do I stand right now?": one button
 /// that follows the state, a ring of today's time against the target, the
@@ -64,6 +66,8 @@ class TodayScreen extends ConsumerWidget {
         children: [
           if (!ref.watch(isSetUpProvider)) const _SetupCard(),
           const MonthReportCard(),
+          const BalanceCarryCard(),
+          const VacationCarryCard(),
           AttentionCards(
             from: today.addDays(-1),
             to: today,
@@ -232,14 +236,25 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
         ? scheme.primary
         : scheme.primary.withValues(alpha: 0.6);
 
-    Widget figure(String label, int minutes, {bool signed = false}) => InkWell(
+    Widget figure(
+      String label,
+      int minutes, {
+      bool signed = false,
+      Widget? badge,
+    }) => InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => showDayExplanation(context, ref, today),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Column(
           children: [
-            Text(label, style: theme.textTheme.labelMedium),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(label, style: theme.textTheme.labelMedium),
+                if (badge != null) ...[const SizedBox(width: 6), badge],
+              ],
+            ),
             AnimatedMinutes(
               minutes,
               style: theme.textTheme.titleLarge?.copyWith(
@@ -429,7 +444,12 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
                 if (day.credited != day.work.worked)
                   figure(l.credited, day.credited),
                 figure(l.difference, day.delta, signed: true),
-                figure(l.balance, balance, signed: true),
+                figure(
+                  l.balance,
+                  balance,
+                  signed: true,
+                  badge: BalanceZoneDot(balance),
+                ),
                 if (day.sundayHours > 0) figure(l.sundayHours, day.sundayHours),
               ],
             ),

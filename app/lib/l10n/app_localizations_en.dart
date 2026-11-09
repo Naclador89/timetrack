@@ -1976,4 +1976,112 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get monthReportReminderHint =>
       'After a change of month, reminds you of last month\'s closing balance';
+
+  @override
+  String get noticeCatBalanceZone => 'Time account zone';
+
+  @override
+  String warnBalanceYellow(String balance) {
+    return 'Time account in the yellow zone ($balance)';
+  }
+
+  @override
+  String warnBalanceRed(String balance) {
+    return 'Time account in the red zone ($balance)';
+  }
+
+  @override
+  String warnBalanceOverLimit(String balance) {
+    return 'Time account over its limit ($balance)';
+  }
+
+  @override
+  String get zoneGreen => 'Green zone';
+
+  @override
+  String get zoneYellow => 'Yellow zone';
+
+  @override
+  String get zoneRed => 'Red zone';
+
+  @override
+  String get zoneOverLimit => 'Over the limit';
+
+  @override
+  String get zoneYellowFrom => 'Yellow above';
+
+  @override
+  String get zoneRedFrom => 'Red above';
+
+  @override
+  String get zoneMax => 'Limit';
+
+  @override
+  String get zonePlus => 'Plus';
+
+  @override
+  String get zoneMinus => 'Minus';
+
+  @override
+  String get balanceZones => 'Time account zones';
+
+  @override
+  String get balanceZonesHint =>
+      'Off · your employer\'s green/yellow/red limits';
+
+  @override
+  String get balanceZonesDialogHint =>
+      'Whole hours above the target (plus) or below it (minus). Empty: no limit.';
+
+  @override
+  String get balanceCarryDeadline => 'Settle the year-end balance by';
+
+  @override
+  String get balanceCarryDeadlineHint =>
+      'Shows on Today how much of the carry-over is still open';
+
+  @override
+  String get vacationCarryDeadline => 'Take carried-over vacation by';
+
+  @override
+  String get vacationCarryDeadlineHint =>
+      'Shows on Today how many days of it are not planned yet';
+
+  @override
+  String get deadlineOff => 'Off';
+
+  @override
+  String deadlineEndOf(String month) {
+    return 'End of $month';
+  }
+
+  @override
+  String carryTitle(String year, String balance) {
+    return 'Carried over from $year: $balance';
+  }
+
+  @override
+  String carryReduce(String open, String date) {
+    return '$open left to reduce by $date.';
+  }
+
+  @override
+  String carryWorkOff(String open, String date) {
+    return '$open left to work off by $date.';
+  }
+
+  @override
+  String carryExpired(String date, String open) {
+    return 'Deadline $date passed, $open still open.';
+  }
+
+  @override
+  String vacationCarryTitle(String year) {
+    return 'Vacation left from $year';
+  }
+
+  @override
+  String vacationCarryText(String days, String date) {
+    return '$days days still to take or plan by $date.';
+  }
 }

@@ -2,6 +2,7 @@ import '../model/project.dart';
 import '../time/local_date.dart';
 import '../time/span.dart';
 import 'arbzg.dart';
+import 'balance_zone.dart';
 import 'home_office.dart';
 import 'ledger.dart';
 import 'project_history.dart';
@@ -38,6 +39,10 @@ enum ReviewKind {
 
   /// A project's booked time exceeded its budget (§3.1).
   projectBudgetOver,
+
+  /// The overtime balance entered a worse zone (§20.1); [ReviewItem.refId]
+  /// is the zone's name.
+  balanceZone,
 }
 
 /// One entry of the Review list. Computed, never stored.
@@ -76,7 +81,8 @@ final class ReviewItem {
 ///
 /// [openSessionLimitMinutes] is the setting for "open session over 12 h";
 /// [quotas] are the evaluated home-office quotas to check (§11.4);
-/// [projects] with a budget add the budget notices (§3.1).
+/// [projects] with a budget add the budget notices (§3.1), [balanceLimits]
+/// the zone notices (§20.1).
 List<ReviewItem> reviewItems(
   Ledger ledger, {
   required LocalDate from,
@@ -86,9 +92,11 @@ List<ReviewItem> reviewItems(
   bool includeUnassigned = false,
   int unassignedMinMinutes = 1,
   Iterable<Project> projects = const [],
+  BalanceLimits balanceLimits = const BalanceLimits(),
 }) {
   final items = <ReviewItem>[
     ...budgetItems(ledger, projects, from: from, to: to),
+    ...balanceZoneItems(ledger, balanceLimits, from: from, to: to),
   ];
   final running = ledger.data.sessions.any((s) => s.isOpen);
   for (final s in ledger.data.sessions) {

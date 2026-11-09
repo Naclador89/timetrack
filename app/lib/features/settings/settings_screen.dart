@@ -14,8 +14,8 @@ import '../../sync/sync_controller.dart';
 import '../../update/update_banner.dart';
 import '../../update/update_controller.dart';
 import '../../widgets/dialogs.dart';
-import '../../work_pc/work_pc.dart';
 import '../../work_pc/month_report.dart';
+import '../../work_pc/work_pc.dart';
 
 /// Official names of the federal states (proper names, not translated).
 const stateNames = {
@@ -237,6 +237,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         label: l.balanceStart,
         value: ref.watch(ledgerProvider).settings.balanceStart,
         onChanged: (d) => save(SettingKeys.balanceStartDate, '$d'),
+      ),
+      // calculations §20: the employer's limits, none built in.
+      ListTile(
+        leading: const Icon(Icons.traffic_outlined),
+        title: Text(l.balanceZones),
+        subtitle: Text(
+          s.balanceLimits.isSet
+              ? _limitsSummary(context, s.balanceLimits)
+              : l.balanceZonesHint,
+        ),
+        onTap: () => showDialog<void>(
+          context: context,
+          builder: (_) => _BalanceLimitsDialog(s.balanceLimits, save),
+        ),
+      ),
+      _deadlineTile(
+        context,
+        icon: Icons.history_toggle_off,
+        title: l.balanceCarryDeadline,
+        hint: l.balanceCarryDeadlineHint,
+        months: s.balanceCarryDeadlineMonths,
+        onChanged: (v) => save(SettingKeys.balanceCarryDeadline, v),
+      ),
+      _deadlineTile(
+        context,
+        icon: Icons.beach_access_outlined,
+        title: l.vacationCarryDeadline,
+        hint: l.vacationCarryDeadlineHint,
+        months: s.vacationCarryDeadlineMonths,
+        onChanged: (v) => save(SettingKeys.vacationCarryDeadline, v),
       ),
       ListTile(
         leading: const Icon(Icons.coffee_outlined),
@@ -686,6 +716,57 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  /// "Gelb +300 / −100 · Rot +350 / −150 · Grenze +400 / −200" (§20).
+  static String _limitsSummary(BuildContext context, BalanceLimits b) {
+    final l = context.l10n;
+    String side(int? plus, int? minus) => [
+      if (plus != null) '+${plus ~/ 60}',
+      if (minus != null) '−${minus ~/ 60}',
+    ].join(' / ');
+    return [
+      if (b.yellowPlus != null || b.yellowMinus != null)
+        '${l.zoneYellowFrom} ${side(b.yellowPlus, b.yellowMinus)}',
+      if (b.redPlus != null || b.redMinus != null)
+        '${l.zoneRedFrom} ${side(b.redPlus, b.redMinus)}',
+      if (b.maxPlus != null || b.maxMinus != null)
+        '${l.zoneMax} ${side(b.maxPlus, b.maxMinus)}',
+    ].join(' · ');
+  }
+
+  /// A deadline as "end of month N" of the year, 0 = off (§10.2, §20.2).
+  static Widget _deadlineTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String hint,
+    required int months,
+    required ValueChanged<int> onChanged,
+  }) {
+    final l = context.l10n;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(hint),
+      trailing: DropdownButton<int>(
+        value: months,
+        onChanged: (v) => v == null ? null : onChanged(v),
+        items: [
+          DropdownMenuItem(value: 0, child: Text(l.deadlineOff)),
+          for (var m = 1; m <= 12; m++)
+            DropdownMenuItem(
+              value: m,
+              child: Text(
+                l.deadlineEndOf(
+                  DateFormat.MMMM(locale).format(DateTime(2000, m)),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   /// Asks for a duration in h:mm (or decimal hours); `null` if cancelled.
   static Future<int?> _askHours(BuildContext context, String initial) {
     final controller = TextEditingController(
@@ -741,4 +822,113 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
+/// The six limits of the overtime account in whole hours; an empty field
+/// is no limit (calculations §20).
+class _BalanceLimitsDialog extends StatefulWidget {
+  const _BalanceLimitsDialog(this.limits, this.save);
+
+  final BalanceLimits limits;
+  final Future<void> Function(String key, Object? value) save;
+
+  @override
+  State<_BalanceLimitsDialog> createState() => _BalanceLimitsDialogState();
+}
+
+class _BalanceLimitsDialogState extends State<_BalanceLimitsDialog> {
+  late final _fields =
+      {
+        SettingKeys.balanceYellowPlus: widget.limits.yellowPlus,
+        SettingKeys.balanceYellowMinus: widget.limits.yellowMinus,
+        SettingKeys.balanceRedPlus: widget.limits.redPlus,
+        SettingKeys.balanceRedMinus: widget.limits.redMinus,
+        SettingKeys.balanceMaxPlus: widget.limits.maxPlus,
+        SettingKeys.balanceMaxMinus: widget.limits.maxMinus,
+      }.map(
+        (k, v) => MapEntry(
+          k,
+          TextEditingController(text: v == null ? '' : '${v ~/ 60}'),
+        ),
+      );
+
+  @override
+  void dispose() {
+    for (final c in _fields.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    Widget field(String key, String label) => Expanded(
+      child: TextField(
+        controller: _fields[key],
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(labelText: label, suffixText: 'h'),
+      ),
+    );
+    Widget row(String label, String plus, String minus) => Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          SizedBox(width: 110, child: Text(label)),
+          field(plus, l.zonePlus),
+          const SizedBox(width: 12),
+          field(minus, l.zoneMinus),
+        ],
+      ),
+    );
+    return AlertDialog(
+      title: Text(l.balanceZones),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.balanceZonesDialogHint),
+            const SizedBox(height: 16),
+            row(
+              l.zoneYellowFrom,
+              SettingKeys.balanceYellowPlus,
+              SettingKeys.balanceYellowMinus,
+            ),
+            row(
+              l.zoneRedFrom,
+              SettingKeys.balanceRedPlus,
+              SettingKeys.balanceRedMinus,
+            ),
+            row(
+              l.zoneMax,
+              SettingKeys.balanceMaxPlus,
+              SettingKeys.balanceMaxMinus,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+        FilledButton(
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            for (final MapEntry(:key, value: c) in _fields.entries) {
+              final hours = int.tryParse(c.text.trim().replaceAll('-', ''));
+              await widget.save(
+                key,
+                hours == null || hours <= 0 ? null : hours * 60,
+              );
+            }
+            navigator.pop();
+          },
+          child: Text(l.save),
+        ),
+      ],
+    );
+  }
 }

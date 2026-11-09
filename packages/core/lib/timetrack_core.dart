@@ -15,6 +15,7 @@ export 'src/model/project.dart';
 export 'src/reports/reports.dart';
 export 'src/reports/week_booking.dart';
 export 'src/rules/arbzg.dart';
+export 'src/rules/balance_zone.dart';
 export 'src/rules/bridge_days.dart';
 export 'src/rules/credit.dart';
 export 'src/rules/day_work.dart';

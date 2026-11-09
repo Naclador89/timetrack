@@ -117,6 +117,7 @@ IconData noticeCategoryIcon(NoticeCategory c) => switch (c) {
   NoticeCategory.homeOfficeQuota => Icons.home_outlined,
   NoticeCategory.openTrip => Icons.luggage_outlined,
   NoticeCategory.projectBudget => Icons.savings_outlined,
+  NoticeCategory.balanceZone => Icons.traffic_outlined,
 };
 
 /// Name of a notice category (settings).
@@ -132,4 +133,9 @@ String noticeCategoryLabel(AppLocalizations l, NoticeCategory c) => switch (c) {
   NoticeCategory.homeOfficeQuota => l.noticeCatQuota,
   NoticeCategory.openTrip => l.noticeCatOpenTrip,
   NoticeCategory.projectBudget => l.noticeCatBudget,
+  NoticeCategory.balanceZone => l.noticeCatBalanceZone,
 };
+
+/// The balance with its sign, e.g. `+12:30` or `−3:15`.
+String signedBalance(int minutes) =>
+    minutes > 0 ? '+${formatMinutes(minutes)}' : formatMinutes(minutes);

@@ -10,8 +10,8 @@ import '../app/providers.dart';
 import '../features/projects/project_picker.dart';
 import '../features/projects/project_time_dialog.dart';
 import '../reminders/reminders.dart';
-import 'work_pc.dart';
 import 'month_report.dart';
+import 'work_pc.dart';
 
 /// The Windows tray icon (docs/specs/work-pc.md §3): mirrors the tracker in
 /// its tooltip, colour and menu, runs the menu's actions, keeps the window

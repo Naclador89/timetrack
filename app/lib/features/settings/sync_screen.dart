@@ -2,16 +2,14 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-
-import 'sync_log_screen.dart';
-
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/format.dart';
 import '../../sync/sync_controller.dart';
+import 'sync_log_screen.dart';
 
 /// Connects to Nextcloud (Login Flow v2 or app password) and shows the sync
 /// status (sync-format.md §7, §10).

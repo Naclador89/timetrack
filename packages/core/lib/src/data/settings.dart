@@ -1,4 +1,5 @@
 import '../rules/arbzg.dart';
+import '../rules/balance_zone.dart';
 import '../rules/credit.dart';
 import '../rules/holidays.dart';
 import '../rules/home_office.dart';
@@ -47,6 +48,30 @@ abstract final class SettingKeys {
 
   /// `like_saturday` or `like_sunday` (§9).
   static const travelDayOff = 'travel.day_off';
+
+  /// Balance zone limits in minutes, unset = none (§20).
+  static const balanceYellowPlus = 'balance.yellow_plus_min';
+
+  /// See [balanceYellowPlus].
+  static const balanceYellowMinus = 'balance.yellow_minus_min';
+
+  /// See [balanceYellowPlus].
+  static const balanceRedPlus = 'balance.red_plus_min';
+
+  /// See [balanceYellowPlus].
+  static const balanceRedMinus = 'balance.red_minus_min';
+
+  /// See [balanceYellowPlus].
+  static const balanceMaxPlus = 'balance.max_plus_min';
+
+  /// See [balanceYellowPlus].
+  static const balanceMaxMinus = 'balance.max_minus_min';
+
+  /// Months to settle the year-end balance, 0 = off (§20.2).
+  static const balanceCarryDeadline = 'balance.carry_deadline_months';
+
+  /// Months to take carried-over vacation, 0 = off (§10.2).
+  static const vacationCarryDeadline = 'vacation.carry_deadline_months';
 
   /// Minutes after which an open session is flagged (§12).
   static const openSessionLimit = 'open_session_limit_min';
@@ -97,6 +122,9 @@ final class AppSettings {
     this.balanceStart,
     this.homeOfficeDayRule = HomeOfficeDayRule.majority,
     this.travel = const TravelRules(),
+    this.balanceLimits = const BalanceLimits(),
+    this.balanceCarryDeadlineMonths = 0,
+    this.vacationCarryDeadlineMonths = 3,
     this.openSessionLimitMinutes = 720,
     this.autoClockIn = true,
     this.resumeAfterBreak = true,
@@ -140,6 +168,10 @@ final class AppSettings {
       start = null;
     }
     const d = TravelRules();
+    int? limit(String key) => switch (v[key]) {
+      final num n when n > 0 => n.toInt(),
+      _ => null,
+    };
     return AppSettings(
       federalState: state,
       bavariaAssumptionDay: pick(SettingKeys.bavariaAssumptionDay, true),
@@ -181,6 +213,22 @@ final class AppSettings {
         ),
         dayOff: enumOf(TripDayRule.values, SettingKeys.travelDayOff, d.dayOff),
       ),
+      balanceLimits: BalanceLimits(
+        yellowPlus: limit(SettingKeys.balanceYellowPlus),
+        yellowMinus: limit(SettingKeys.balanceYellowMinus),
+        redPlus: limit(SettingKeys.balanceRedPlus),
+        redMinus: limit(SettingKeys.balanceRedMinus),
+        maxPlus: limit(SettingKeys.balanceMaxPlus),
+        maxMinus: limit(SettingKeys.balanceMaxMinus),
+      ),
+      balanceCarryDeadlineMonths: pick<num>(
+        SettingKeys.balanceCarryDeadline,
+        0,
+      ).toInt().clamp(0, 12),
+      vacationCarryDeadlineMonths: pick<num>(
+        SettingKeys.vacationCarryDeadline,
+        3,
+      ).toInt().clamp(0, 12),
       openSessionLimitMinutes: pick<num>(
         SettingKeys.openSessionLimit,
         720,
@@ -229,6 +277,15 @@ final class AppSettings {
 
   /// The employer's travel rules.
   final TravelRules travel;
+
+  /// Limits of the overtime account (§20).
+  final BalanceLimits balanceLimits;
+
+  /// Months to settle the year-end balance, 0 = off (§20.2).
+  final int balanceCarryDeadlineMonths;
+
+  /// Months to take carried-over vacation, 0 = off (§10.2).
+  final int vacationCarryDeadlineMonths;
 
   /// Minutes after which an open session is flagged.
   final int openSessionLimitMinutes;

@@ -12,6 +12,7 @@ import '../../booking/booking_transfer.dart';
 import '../../sync/sync_controller.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
+import '../../widgets/balance_zone.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/motion.dart';
 import '../../widgets/shortcuts.dart';
@@ -270,12 +271,19 @@ class _WeekView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(l.balance, style: Theme.of(context).textTheme.labelSmall),
-                Text(
-                  formatMinutes(balance),
-                  style: TextStyle(
-                    color: scheme.deltaColor(balance),
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BalanceZoneDot(balance, size: 8),
+                    const SizedBox(width: 6),
+                    Text(
+                      formatMinutes(balance),
+                      style: TextStyle(
+                        color: scheme.deltaColor(balance),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

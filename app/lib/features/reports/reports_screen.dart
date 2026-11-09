@@ -9,15 +9,15 @@ import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/app_bar_actions.dart';
-import '../../widgets/charts.dart';
 import '../../widgets/attention.dart';
+import '../../widgets/charts.dart';
 import '../../widgets/export.dart';
 import '../../widgets/motion.dart';
 import '../../widgets/sparkline.dart';
 import '../calendar/week_screen.dart' show isoWeekNumber;
 import 'report_documents.dart';
-import 'restore_backup.dart';
 import 'report_preview.dart';
+import 'restore_backup.dart';
 
 /// Monthly reports: timesheet, order report, travel expenses, statistics and
 /// the JSON backup (concept §5, item 5).

@@ -25,6 +25,11 @@ String noticeText(BuildContext context, ReviewItem item) {
       _project(context, item),
       m,
     ),
+    ReviewKind.balanceZone => switch (item.refId) {
+      'overLimit' => l.warnBalanceOverLimit(signedBalance(item.minutes)),
+      'red' => l.warnBalanceRed(signedBalance(item.minutes)),
+      _ => l.warnBalanceYellow(signedBalance(item.minutes)),
+    },
     ReviewKind.arbzg => switch (item.arbzg!) {
       ArbzgWarningKind.breakMissing => l.warnBreakMissing(m),
       ArbzgWarningKind.workOver6hWithoutBreak => l.warnOver6h,

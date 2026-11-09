@@ -1983,4 +1983,112 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get monthReportReminderHint =>
       'Erinnert nach dem Monatswechsel an den Kontostand zum Monatsende';
+
+  @override
+  String get noticeCatBalanceZone => 'Zeitkonto-Ampel';
+
+  @override
+  String warnBalanceYellow(String balance) {
+    return 'Zeitkonto im gelben Bereich ($balance)';
+  }
+
+  @override
+  String warnBalanceRed(String balance) {
+    return 'Zeitkonto im roten Bereich ($balance)';
+  }
+
+  @override
+  String warnBalanceOverLimit(String balance) {
+    return 'Zeitkonto über der Höchstgrenze ($balance)';
+  }
+
+  @override
+  String get zoneGreen => 'Grüner Bereich';
+
+  @override
+  String get zoneYellow => 'Gelber Bereich';
+
+  @override
+  String get zoneRed => 'Roter Bereich';
+
+  @override
+  String get zoneOverLimit => 'Über der Höchstgrenze';
+
+  @override
+  String get zoneYellowFrom => 'Gelb ab';
+
+  @override
+  String get zoneRedFrom => 'Rot ab';
+
+  @override
+  String get zoneMax => 'Grenze';
+
+  @override
+  String get zonePlus => 'Plus';
+
+  @override
+  String get zoneMinus => 'Minus';
+
+  @override
+  String get balanceZones => 'Zeitkonto-Ampel';
+
+  @override
+  String get balanceZonesHint =>
+      'Aus · Grenzen deines Arbeitgebers für Grün/Gelb/Rot';
+
+  @override
+  String get balanceZonesDialogHint =>
+      'Ganze Stunden über (Plus) bzw. unter (Minus) dem Soll. Leer: keine Grenze.';
+
+  @override
+  String get balanceCarryDeadline => 'Übertrag zum 31.12. ausgleichen bis';
+
+  @override
+  String get balanceCarryDeadlineHint =>
+      'Zeigt auf Heute, wie viel vom Übertrag noch offen ist';
+
+  @override
+  String get vacationCarryDeadline => 'Resturlaub nehmen bis';
+
+  @override
+  String get vacationCarryDeadlineHint =>
+      'Zeigt auf Heute, wie viele Tage davon noch nicht verplant sind';
+
+  @override
+  String get deadlineOff => 'Aus';
+
+  @override
+  String deadlineEndOf(String month) {
+    return 'Ende $month';
+  }
+
+  @override
+  String carryTitle(String year, String balance) {
+    return 'Übertrag aus $year: $balance';
+  }
+
+  @override
+  String carryReduce(String open, String date) {
+    return 'Noch $open bis $date abbauen.';
+  }
+
+  @override
+  String carryWorkOff(String open, String date) {
+    return 'Noch $open bis $date nacharbeiten.';
+  }
+
+  @override
+  String carryExpired(String date, String open) {
+    return 'Frist $date abgelaufen, noch $open offen.';
+  }
+
+  @override
+  String vacationCarryTitle(String year) {
+    return 'Resturlaub aus $year';
+  }
+
+  @override
+  String vacationCarryText(String days, String date) {
+    return 'Noch $days Tage bis $date nehmen oder verplanen.';
+  }
 }

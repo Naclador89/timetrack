@@ -289,6 +289,15 @@ right block. Only bridges whose working days all lie in the year and not before 
 suggested, sorted by free days per vacation day (descending), then by date. `bridgeDays` implements
 this; the vacation planner marks the days and offers to book them as vacation.
 
+### §10.2 Carry-over deadline
+
+Requested by the user 2026-11-09. Carried-over vacation must be taken by the end of month N of the
+year; setting `vacation.carry_deadline_months` (default **3**, the statutory 31 March of § 7 (3)
+BUrlG; 0 = off). From 1 January until that deadline, **open carry-over** = carry-over − vacation
+days (taken and planned, workdays only, as above) from 1 January through the deadline. While it is
+above 0, Today shows "Resturlaub aus <Y−1>: noch n Tage bis <deadline> verplanen"
+(`vacationCarryLeft`). After the deadline nothing is shown.
+
 ## §11 Home office
 
 ### §11.1 Home-office value of a day
@@ -351,13 +360,14 @@ Computed, never stored:
 - ArbZG warnings (§4, §5).
 - Home-office quota warnings (§11.4).
 - `project_budget_near`, `project_budget_over`: a project's budget reached 80 % / 100 % (§3.1).
+- `balance_zone`: the overtime balance entered a worse zone (§20.1).
 - `unassigned` (only when asked for): worked time without a project on a day that is done (not
   today while clocked in) and not a trip day (§3). `suggestBreak` places a missing break in the
   middle of the day's longest working stretch, on a 5-minute grid.
 
 **Which items become cards** (user request 2026-11-08): items fall into categories
 (`NoticeCategory`: unassigned, breaks, long day, rest, Sunday work, open session, overlaps, project
-time, home-office quota, open trip, project budget), each switched on or off by the setting `notices.show.<category>`
+time, home-office quota, open trip, project budget, balance zone), each switched on or off by the setting `notices.show.<category>`
 (default on). Unassigned time is an item only from `notices.unassigned_min` minutes on (default 30).
 A card closed with × is dismissed for good: its key (`noticeKey` = date/kind[/arbzg][/ref]) is written
 to `dismissed_notices` (data-model §14), so it stays hidden on every device. Switched-off and
@@ -516,3 +526,44 @@ break start or clock-out, the session at a location change). A project resumed a
 (`resume_after_break`) starts when the break ends. Ending the trip after the last trip step uses
 the clock-out time. `TimeTracker` throws an `ArgumentError` for a time in the future or before the
 earliest instant (for clock-out: before the session start, reminders.md §1).
+
+## §20 Balance traffic light and year-end carry-over
+
+Requested by the user 2026-11-09. Employers often set zones for the overtime account; every limit
+is a setting (minutes, positive; unset = no limit), none is built in:
+
+| Setting | Meaning |
+|---|---|
+| `balance.yellow_plus_min`, `balance.yellow_minus_min` | yellow above +x / below −x |
+| `balance.red_plus_min`, `balance.red_minus_min` | red above +x / below −x |
+| `balance.max_plus_min`, `balance.max_minus_min` | the account's hard limit: above +x / below −x |
+
+### §20.1 Zone
+
+The zone of a balance B (§8, the running balance including the starting balance) is the worst that
+applies: **over limit** if B > max⁺ or B < −max⁻, else **red** if B > red⁺ or B < −red⁻, else
+**yellow** if B > yellow⁺ or B < −yellow⁻, else **green**. Without any limit set there is no zone
+(`balanceZone` returns `null`) and nothing is shown.
+
+- Today and the week view mark the balance with a dot in the zone's colour (green, amber, red;
+  over limit red with an outline).
+- **Notice** (`balance_zone`, §12, category `balance_zone`): on the first finished day whose closing
+  balance is in a worse zone than the day before (green → yellow, yellow → red, red → over limit, or
+  a jump), "Zeitkonto im gelben Bereich (+301:00)". Today is left out: its balance counts the full
+  target against the time so far. Dismissed like any notice.
+
+### §20.2 Year-end carry-over
+
+The balance at the end of 31 December is carried into the new year and has to be reduced (plus) or
+worked off (minus) by the end of month N; setting `balance.carry_deadline_months` (unset or 0 = off).
+`balanceCarryOver`, for today's year Y, if the balance start is on or before 1 January of Y:
+
+- **carry** C = balance at the end of 31 December of Y−1 (the starting balance if the balance starts
+  on 1 January).
+- **current** B = balance at the end of yesterday (today's partial day would distort it).
+- **open**: for C > 0, `min(C, max(0, B))`; for C < 0, `max(C, min(0, B))`. Hours worked or
+  reduced beyond the carry don't count towards it.
+- From 1 January until the deadline, while open ≠ 0, Today shows a card "Übertrag 31.12.: +42:00 –
+  noch 30:00 bis 31.3. abbauen" (minus: "nacharbeiten"). After the deadline, while open ≠ 0, the
+  card says the deadline has passed and can be dismissed (key `<deadline>/balanceCarry` in
+  `dismissed_notices`). The deadline is not extended by sick or vacation days.
