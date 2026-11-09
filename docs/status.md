@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.6.1`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.1+10`. All planned
+- **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 286, app 74 widget tests; CI green on `main`.
@@ -165,6 +165,8 @@ _Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
 - `v0.6.0` (2026-11-09): Windows: transfer a week's project hours to the booking system (APplus).
 - `v0.6.1` (2026-11-09): stamping asks for the time (now preselected, switchable); the updater
   started from Einstellungen shows its progress and "Neu starten" there.
+- `v0.6.2` (2026-11-09): a clock-in time ahead of now is refused instead of landing on the day
+  before; the time question stays on by default (user, 2026-11-09).
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -396,7 +398,7 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - [x] Fix (review): a clock-in time ahead of now moved to *yesterday* whenever an earlier session
       existed (Monday 07:58, picked 08:00 → Sunday 08:00, open for a day). Yesterday is now only
       possible while clocked in; a future time is refused with "Diese Uhrzeit liegt in der Zukunft"
-      (the snack bar said "nicht vor <last session end>" before). Not released yet.
+      (the snack bar said "nicht vor <last session end>" before). Released in v0.6.2.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
