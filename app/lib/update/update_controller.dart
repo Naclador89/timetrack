@@ -232,7 +232,17 @@ class UpdateController extends Notifier<UpdateStatus> {
   }
 
   /// Desktop: starts the new version and quits.
-  Future<void> restart() => ref.read(updateInstallerProvider).restart();
+  Future<void> restart() async {
+    try {
+      await ref.read(updateInstallerProvider).restart();
+    } on Object catch (e) {
+      state = UpdateStatus(
+        UpdatePhase.failed,
+        release: state.release,
+        error: e,
+      );
+    }
+  }
 }
 
 /// The updater and its status.

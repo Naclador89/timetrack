@@ -1,6 +1,6 @@
 # Status / handoff log
 
-_Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
+_Last updated: 2026-11-09 by Claude Code._
 **Read this first, update it last** (see `AGENTS.md`).
 
 ## Where things stand (read this first)
@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
 - **Latest release: `v0.6.2`** (2026-11-09), `app/pubspec.yaml` `version: 0.6.2+11`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 286, app 74 widget tests; CI green on `main`.
+- **Tests**: core 286, app 77 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -21,6 +21,7 @@ _Last updated: 2026-11-09 by Claude Code (review of the Copilot work)._
   - Windows: "An Buchungssystem übertragen" in the installed app (address in Einstellungen → App),
     picker popups for Kostengruppe/Position, booking detection after "Buchen", the marker.
   - Both: the time question when stamping (calculations §19), also from the tray and at sign-in.
+  - Windows: the self-update without a script (updates.md §5), from the release after the fixed one.
 - **Not wanted** (don't propose again unless the user asks): Garmin glance, auto clock-in by
   Wi-Fi/geofence, VPN sync testing, lock/sleep detection on Windows.
 - **How a change usually goes**: user reports a problem or wish → update the spec in `docs/specs/`
@@ -390,6 +391,18 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
       without a prompt, KW 45/2026 set, project name and order filled, Mo 1:30 / Di 1:00, sums
       right, unknown project reported. Nothing booked.
 
+### Windows self-update without a script (bug reported by the user 2026-11-09; updates.md §5)
+- [x] After "Neu starten" the app quit, didn't come back, and a manual start opened the old version:
+      the PowerShell script that copied the files is most likely blocked on the company PC
+      (execution policy / AppLocker for scripts in `%TEMP%`; not verified on the PC). Now the app
+      unpacks the ZIP into `<install>\.update-new` and swaps the files itself right after the
+      download (running files are renamed to `*.update-old`, rollback on failure), so any next
+      start runs the new version; "Neu starten" only starts the new exe and quits. Dart `archive`
+      package; `swapInFolder`, tests in `app/test/windows_update_test.dart`.
+- [ ] **User**: v0.6.2 still updates through the old script, so install the fixed version once by
+      hand (unzip over the folder); from then on the updater should work. Check it with the next
+      release.
+
 ### Stamping at another time (requested by the user 2026-11-09; calculations §19)
 - [x] Core: `at` for clock in/out, breaks, location change and trip end; `earliestAt`
       (no overlaps), `stampInstant` (yesterday across midnight); setting `ask_stamp_time`.
@@ -523,3 +536,4 @@ Not wanted: lock/sleep detection on Windows, copying hours for the company booki
 - 2026-11-09, GitHub Copilot: fix: an update started from Einstellungen → Nach Updates suchen ran hidden (banner only above the tabs) and the dialog's ref died when the banner appeared (`UpdateBannerHost` swapped the tree). Banner now also above Settings, tree stable; widget test.
 - 2026-11-09, GitHub Copilot: stamping asks for the time (calculations §19, setting `ask_stamp_time`). 286 core tests, 73 widget tests. Release v0.6.1 with the updater fix.
 - 2026-11-09, Claude Code: reviewed the Copilot work (booking transfer, stamp time, updater fix): docs and tests in order; fixed the clock-in that moved a future time to yesterday, and the wrong snack bar for it. 286 core, 74 widget tests green.
+- 2026-11-09, Claude Code: Windows self-update no longer needs PowerShell (the script was most likely blocked on the company PC); files are swapped in by the app itself. 286 core, 77 app tests green.

@@ -88,13 +88,17 @@ install folder, so no update touches it.
   3. Offer *Neu starten*: start the new executable detached, then quit. The next start deletes
      `<name>.old` and `<name>.new`.
 - **Windows**: the install folder is the folder of `timetrack.exe`. If it isn't writable (e.g.
-  under `Program Files`), only the release page is opened. The running exe and its DLLs are locked,
-  so the app writes `update.ps1` next to the download and starts it detached with
-  `powershell -NoProfile -ExecutionPolicy Bypass -File`, then quits. The script:
-  1. waits until the app's process id has ended (at most 60 s);
-  2. unpacks the ZIP (`Expand-Archive`) into a temporary folder;
-  3. copies it over the install folder (3 attempts, 2 s apart);
-  4. starts `timetrack.exe` again and deletes the temporary files.
+  under `Program Files`), only the release page is opened. No script is involved (until v0.6.2 a
+  PowerShell script in the temp folder did the copying; company PCs block such scripts, so the
+  app quit and the old version came back, user 2026-11-09):
+  1. Unpack the ZIP into `<install>\.update-new\`; it must contain `timetrack.exe` at the top.
+  2. Move each file into the install folder. A file already there is first renamed to
+     `<name>.update-old`: Windows lets a running exe, its DLLs and mapped data files be renamed,
+     but not overwritten. If a step fails, everything moved goes back and the error shows; the old
+     version stays whole.
+  3. The new version is now in place, so any next start runs it. *Neu starten* starts the new
+     `timetrack.exe` detached, then quits (window channel `quit`, so the tray icon goes too).
+  4. Each start deletes `.update-new` and the `*.update-old` files that are no longer in use.
   No administrator rights are needed.
 
 ## 6. Integrity, known limits

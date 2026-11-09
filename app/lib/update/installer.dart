@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -222,49 +223,129 @@ final class LinuxUpdateInstaller extends UpdateInstaller {
   }
 }
 
-/// Replaces the portable folder through a PowerShell script that runs after
-/// the app quit (its exe and DLLs are locked while it runs).
+/// Suffix of the files a Windows update moved aside (spec: updates.md §5).
+const replacedSuffix = '.update-old';
+
+/// Moves every file of [staged] into [install] (same relative path). A file
+/// that is already there is renamed to `<name>$replacedSuffix` first: Windows
+/// lets a running exe, its DLLs and mapped data files be renamed, but not
+/// overwritten. If any step fails, everything moved so far goes back and
+/// the error is rethrown, so the old version stays whole.
+Future<void> swapInFolder(Directory staged, Directory install) async {
+  final sep = Platform.pathSeparator;
+  final moved = <(String target, String? aside)>[];
+  try {
+    await for (final entry in staged.list(recursive: true)) {
+      if (entry is! File) continue;
+      final rel = entry.path.substring(staged.path.length + 1);
+      final target = '${install.path}$sep$rel';
+      await File(target).parent.create(recursive: true);
+      String? aside;
+      if (await File(target).exists()) {
+        aside = '$target$replacedSuffix';
+        if (await File(aside).exists()) await File(aside).delete();
+        await File(target).rename(aside);
+      }
+      moved.add((target, aside));
+      await entry.rename(target);
+    }
+  } on Object {
+    for (final (target, aside) in moved.reversed) {
+      try {
+        if (aside != null) {
+          if (await File(target).exists()) await File(target).delete();
+          await File(aside).rename(target);
+        } else if (await File(target).exists()) {
+          await File(target).delete();
+        }
+      } on Object {
+        // Best effort; the files moved aside keep their suffix.
+      }
+    }
+    rethrow;
+  }
+}
+
+/// Replaces the portable folder from inside the app: unpacks the ZIP next
+/// to it and swaps the files in right away, so any next start (the restart
+/// button, the tray's quit, the next sign-in) runs the new version. No
+/// script: company PCs often block PowerShell scripts from the temp folder,
+/// and then the old version just came back.
 final class WindowsUpdateInstaller extends UpdateInstaller {
-  /// Creates the installer.
-  WindowsUpdateInstaller() : super._();
+  /// Creates the installer for the app at [executable] (default: the
+  /// running one); [launch] starts the new version and [quit] ends this one
+  /// (replaced in tests).
+  WindowsUpdateInstaller({
+    String? executable,
+    Future<void> Function(String exe)? launch,
+    Future<Never> Function()? quit,
+  }) : executable = executable ?? Platform.resolvedExecutable,
+       _launch = launch ?? _launchDetached,
+       _quit = quit ?? _quitApp,
+       super._();
 
-  final String _exe = Platform.resolvedExecutable;
-  File? _zip;
+  /// The app's exe.
+  final String executable;
+  final Future<void> Function(String exe) _launch;
+  final Future<Never> Function() _quit;
 
-  Directory get _install => File(_exe).parent;
+  Directory get _install => File(executable).parent;
+  Directory get _staged =>
+      Directory('${_install.path}${Platform.pathSeparator}.update-new');
 
   @override
   Future<bool> canSelfInstall() => _writable(_install);
 
   @override
   Future<bool> install(File file) async {
-    _zip = file;
+    await cleanUp();
+    await extractFileToDisk(file.path, _staged.path);
+    final name = executable.split(Platform.pathSeparator).last;
+    if (!await File('${_staged.path}${Platform.pathSeparator}$name').exists()) {
+      await _staged.delete(recursive: true);
+      throw UpdateException('Archive has no $name');
+    }
+    try {
+      await swapInFolder(_staged, _install);
+    } finally {
+      await _staged.delete(recursive: true);
+    }
+    await file.delete();
     return true;
   }
 
   @override
   Future<void> restart() async {
-    final zip = _zip;
-    if (zip == null) return;
-    final script = File('${zip.parent.path}\\update.ps1');
-    await script.writeAsString(windowsUpdateScript);
-    await Process.start('powershell', [
-      '-NoProfile',
-      '-ExecutionPolicy',
-      'Bypass',
-      '-WindowStyle',
-      'Hidden',
-      '-File',
-      script.path,
-      '-AppPid',
-      '$pid',
-      '-Zip',
-      zip.path,
-      '-Target',
-      _install.path,
-      '-Exe',
-      _exe,
-    ], mode: ProcessStartMode.detached);
+    await _launch(executable);
+    await _quit();
+  }
+
+  /// Deletes the unpacked folder and the files moved aside; the ones the
+  /// old process still held go on the next start.
+  @override
+  Future<void> cleanUp() async {
+    if (await _staged.exists()) await _staged.delete(recursive: true);
+    await for (final entry in _install.list(recursive: true)) {
+      if (entry is File && entry.path.endsWith(replacedSuffix)) {
+        try {
+          await entry.delete();
+        } on FileSystemException {
+          // Still in use by the process that is just quitting.
+        }
+      }
+    }
+  }
+
+  static Future<void> _launchDetached(String exe) async {
+    await Process.start(
+      exe,
+      const [],
+      mode: ProcessStartMode.detached,
+      workingDirectory: File(exe).parent.path,
+    );
+  }
+
+  static Future<Never> _quitApp() async {
     // Closing the window ends the process and takes the tray icon with it
     // (work-pc.md §3); exit is the fallback.
     try {
@@ -276,28 +357,3 @@ final class WindowsUpdateInstaller extends UpdateInstaller {
     exit(0);
   }
 }
-
-/// The script behind [WindowsUpdateInstaller] (spec: updates.md §5). The old
-/// version starts again if copying fails, so the app never disappears.
-const windowsUpdateScript = r'''
-param([int]$AppPid, [string]$Zip, [string]$Target, [string]$Exe)
-$ErrorActionPreference = 'Stop'
-try { Wait-Process -Id $AppPid -Timeout 60 -ErrorAction SilentlyContinue } catch {}
-$tmp = Join-Path ([IO.Path]::GetTempPath()) ('timetrack-update-' + [guid]::NewGuid())
-try {
-  Expand-Archive -LiteralPath $Zip -DestinationPath $tmp -Force
-  for ($i = 1; $i -le 3; $i++) {
-    try {
-      Copy-Item -Path (Join-Path $tmp '*') -Destination $Target -Recurse -Force
-      break
-    } catch {
-      if ($i -eq 3) { throw }
-      Start-Sleep -Seconds 2
-    }
-  }
-  Remove-Item -LiteralPath $Zip -Force -ErrorAction SilentlyContinue
-} finally {
-  Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
-  Start-Process -FilePath $Exe
-}
-''';
