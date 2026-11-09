@@ -9,7 +9,15 @@ _Last updated: 2026-11-09 by Claude Code (handoff to GitHub Copilot)._
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 275, app 66 widget tests, all green; CI green on `main`.
-- **Nothing is in progress.** No open task, no half-done branch.
+- **Nothing is in progress.** No half-done branch.
+- **To do** (requested by the user, not started):
+  - [ ] Clock in at an earlier time from Today (user, 2026-11-09: "Beim Einstempeln über die
+        Startseite kann ich keine abweichende Zeit eingeben, falls ich eigentlich früher da war.").
+        Today the button always uses now: `TimeTracker.clockIn` (`core/lib/src/tracking/time_tracker.dart`)
+        has no `at`, unlike `clockOut({DateTime? at})`. Idea: `clockIn({at})` (not in the future,
+        not overlapping an earlier session of the day), plus a way on Today to pick the time
+        (e.g. long-press or a small "Zeit ändern" next to the button, a time picker); spec it in
+        calculations.md or concept §2, with tests.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
   - Windows: tray icon and menu, "Im Infobereich weiterlaufen" (close hides), "Mit Windows starten"
     and "Arbeits-PC" (question after sign-in), Windows notifications for reminders, the updater
