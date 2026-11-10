@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +42,13 @@ class WeekScreen extends ConsumerStatefulWidget {
 class _WeekScreenState extends ConsumerState<WeekScreen> {
   int _offset = 0; // weeks or months from the current one
   late bool _month = widget.month;
+
+  // What the switcher showed last, for the direction of the next change:
+  // -1 back, 1 forward, 0 week/month toggle. Kept until the page changes,
+  // so other rebuilds don't flip a running transition.
+  late bool _shownMonth = _month;
+  int _shownOffset = 0;
+  int _step = 0;
 
   @override
   void initState() {
@@ -86,6 +94,11 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
               .formatMonthYear(DateTime(month.year, month.month))
         : l.weekNumber('${isoWeekNumber(monday)}');
     final syncing = ref.watch(syncControllerProvider).phase;
+    if (_month != _shownMonth || _offset != _shownOffset) {
+      _step = _month != _shownMonth ? 0 : (_offset - _shownOffset).sign;
+      _shownMonth = _month;
+      _shownOffset = _offset;
+    }
     return PageKeys(
       onPrevious: () => _shift(-1),
       onNext: () => _shift(1),
@@ -187,8 +200,23 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
                     ),
                   ],
                 ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                // Weeks and months slide along the axis they move on; the
+                // toggle zooms (navigation.md "Motion and colours").
+                PageTransitionSwitcher(
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 300),
+                  reverse: _step < 0,
+                  transitionBuilder: (child, primary, secondary) =>
+                      SharedAxisTransition(
+                        animation: primary,
+                        secondaryAnimation: secondary,
+                        transitionType: _step == 0
+                            ? SharedAxisTransitionType.scaled
+                            : SharedAxisTransitionType.horizontal,
+                        fillColor: Colors.transparent,
+                        child: child,
+                      ),
                   child: _month
                       ? _MonthView(
                           key: ValueKey('m$_offset'),

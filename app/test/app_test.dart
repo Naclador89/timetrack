@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -203,6 +204,34 @@ void main() {
     await tester.tap(find.byTooltip('Go to today'));
     await tester.pumpAndSettle();
     expect(find.text('Week 45'), findsOneWidget);
+  });
+
+  testWidgets('calendar pages slide sideways; the week/month toggle zooms', (
+    tester,
+  ) async {
+    // spec: navigation.md "Motion and colours"
+    await pumpApp(tester);
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    List<SharedAxisTransitionType> running() => [
+      for (final t in tester.widgetList<SharedAxisTransition>(
+        find.byType(SharedAxisTransition),
+      ))
+        t.transitionType,
+    ];
+    PageTransitionSwitcher switcher() =>
+        tester.widget(find.byType(PageTransitionSwitcher));
+
+    await tester.tap(find.byTooltip('Previous week'));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(running(), everyElement(SharedAxisTransitionType.horizontal));
+    expect(switcher().reverse, isTrue);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Month'));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(running(), everyElement(SharedAxisTransitionType.scaled));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('day view: "+" opens a new working time for that day', (

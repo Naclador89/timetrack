@@ -519,6 +519,8 @@ mini window, balance planner, year heatmap, week comparison.
 - [x] Day arc and target moment (navigation.md "Day arc"): `DayArc` replaces the ring once
       something is worked (first clock-in → 10 h limit, breaks thin, target tick, now dot, times at
       the ends); a one-off pulse and haptic when the target is reached on screen.
+- [x] Predictive back on Android (theme + manifest) and shared-axis paging in the calendar
+      (sideways for weeks/months, zoom for the toggle). The day view's ±1 day stays a route change.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 

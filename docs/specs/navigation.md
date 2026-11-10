@@ -113,6 +113,12 @@ The balance is no longer a figure of the hero card; the tile shows it.
 
 - Cards on Today fade in and rise 8 % one after the other: 250 ms, `easeOutCubic`, 50 ms apart
   (`app/lib/widgets/staggered.dart`). It plays once per card, not on rebuilds.
+- Calendar weeks and months slide sideways in the direction they move (shared axis, 300 ms); the
+  week/month toggle zooms (`PageTransitionSwitcher` in `week_screen.dart`). The day view keeps its
+  page transition.
+- On Android the back gesture previews the page below (`PredictiveBackPageTransitionsBuilder`,
+  `enableOnBackInvokedCallback`, Android 14+, user 2026-11-10). On the tab roots the back steps
+  above keep handling back, so there is no preview there.
 - With a mouse a tile lifts 2 px and gets a slightly stronger surface (180 ms).
 - With the system's reduced motion (`MediaQuery.disableAnimations`) nothing animates; switching it
   keeps the cards as they are.
