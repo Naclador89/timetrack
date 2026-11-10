@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.7.2`** (2026-11-10), `app/pubspec.yaml` `version: 0.7.2+15`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 321, app 106 tests; CI green on `main`.
+- **Tests**: core 331, app 114 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -525,6 +525,12 @@ mini window, balance planner, year heatmap, week comparison.
       system palette, launcher corner radius): progress bar to today's target (`qa_target_min`,
       `QuickStatus.targetMinutes`; Kotlin computes it at render, 30-min `updatePeriodMillis`),
       "Soll erreicht um …" line, stadium buttons. Debug APK builds; **look only checked on the phone**.
+- [x] Pattern hints (calculations §23, core `monthPatterns`): card "Auffälligkeiten" in Berichte
+      (missing breaks ≥ 2 days, over 10 h, rest < 11 h, Sunday/holiday work, finish after 20:00 on
+      ≥ 3 days, positive "Alle Pausen eingehalten" from 10 workdays); a hint opens its first day in
+      the new route `/reports/day/:date`.
+- [ ] On the devices: widget look (light/dark, Android 12+ and older), predictive back (Android 14+),
+      the "Soll erreicht" notification (Android) and balloon (Windows), the arc's pulse.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 

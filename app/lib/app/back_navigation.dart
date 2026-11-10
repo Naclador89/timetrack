@@ -36,7 +36,10 @@ abstract final class BackSteps {
 /// to where the user came from (Today or the calendar).
 String dayLocation(BuildContext context, Object date) {
   final path = GoRouterState.of(context).uri.path;
-  return path.startsWith('/today') ? '/today/day/$date' : '/calendar/day/$date';
+  for (final tab in ['/today', '/reports']) {
+    if (path.startsWith(tab)) return '$tab/day/$date';
+  }
+  return '/calendar/day/$date';
 }
 
 /// Handles back once nothing can be popped any more: the tab's own step,

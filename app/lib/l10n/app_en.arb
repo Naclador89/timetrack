@@ -1661,5 +1661,47 @@
   "remindTarget": "Target reached",
   "remindTargetHint": "When today's target time is done",
   "reminderTargetTitle": "Target reached",
-  "reminderTargetText": "You can call it a day – today's target is done."
+  "reminderTargetText": "You can call it a day – today's target is done.",
+  "patternsTitle": "Worth a look",
+  "patternMissingBreak": "{count}× too little break – step out more often?",
+  "@patternMissingBreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "patternLongDays": "{count, plural, =1{1 day} other{{count} days}} over 10 h – the Working Hours Act doesn't allow that",
+  "@patternLongDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "patternShortRest": "{count}× less than 11 h rest between two working days",
+  "@patternShortRest": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "patternSundayWork": "Worked on {count, plural, =1{1 Sunday or holiday} other{{count} Sundays and holidays}}",
+  "@patternSundayWork": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "patternLateFinish": "Finished after 8 pm {count} times – treat yourself to an early evening",
+  "@patternLateFinish": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "patternAllBreaksKept": "Every break kept – well done!"
 }

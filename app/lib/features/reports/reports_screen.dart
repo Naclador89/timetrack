@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/back_navigation.dart';
@@ -135,7 +136,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               ),
             ],
           ),
-          _Dashboard(sheet: sheet, ledger: ledger, projects: projects),
+          _Dashboard(
+            sheet: sheet,
+            ledger: ledger,
+            projects: projects,
+            patterns: monthPatterns(ledger, month),
+          ),
           _section(context, l.timesheet, [
             Wrap(
               spacing: 24,
@@ -424,11 +430,13 @@ class _Dashboard extends ConsumerWidget {
     required this.sheet,
     required this.ledger,
     required this.projects,
+    required this.patterns,
   });
 
   final Timesheet sheet;
   final Ledger ledger;
   final Map<String, Project> projects;
+  final List<MonthPattern> patterns;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -569,11 +577,27 @@ class _Dashboard extends ConsumerWidget {
       ),
     );
 
+    // Friendly hints about the month (calculations §23).
+    final patternTile = patterns.isEmpty
+        ? null
+        : tile(
+            l.patternsTitle,
+            Column(
+              children: [for (final p in patterns) _PatternLine(pattern: p)],
+            ),
+          );
+
     return LayoutBuilder(
       builder: (context, c) {
         if (c.maxWidth < 700) {
           return Column(
-            children: [balanceTile, projectTile, weekTile, homeTile],
+            children: [
+              balanceTile,
+              projectTile,
+              weekTile,
+              homeTile,
+              ?patternTile,
+            ],
           );
         }
         Widget pair(Widget a, Widget b) => IntrinsicHeight(
@@ -587,9 +611,48 @@ class _Dashboard extends ConsumerWidget {
           ),
         );
         return Column(
-          children: [pair(balanceTile, projectTile), pair(weekTile, homeTile)],
+          children: [
+            pair(balanceTile, projectTile),
+            pair(weekTile, homeTile),
+            ?patternTile,
+          ],
         );
       },
+    );
+  }
+}
+
+/// One pattern hint; tapping opens the first day it counts.
+class _PatternLine extends StatelessWidget {
+  const _PatternLine({required this.pattern});
+
+  final MonthPattern pattern;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final n = pattern.days.length;
+    final good = pattern.kind == PatternKind.allBreaksKept;
+    final text = switch (pattern.kind) {
+      PatternKind.missingBreak => l.patternMissingBreak(n),
+      PatternKind.longDays => l.patternLongDays(n),
+      PatternKind.shortRest => l.patternShortRest(n),
+      PatternKind.sundayWork => l.patternSundayWork(n),
+      PatternKind.lateFinish => l.patternLateFinish(n),
+      PatternKind.allBreaksKept => l.patternAllBreaksKept,
+    };
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(
+        good ? Icons.check_circle_outline : Icons.lightbulb_outline,
+        color: good ? scheme.positive : scheme.warning,
+      ),
+      title: Text(text),
+      trailing: good ? null : const Icon(Icons.chevron_right),
+      onTap: good
+          ? null
+          : () => context.go(dayLocation(context, pattern.days.first)),
     );
   }
 }

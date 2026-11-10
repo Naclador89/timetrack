@@ -97,7 +97,19 @@ GoRouter buildRouter() => GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/reports', builder: (_, _) => const ReportsScreen()),
+            GoRoute(
+              path: '/reports',
+              builder: (_, _) => const ReportsScreen(),
+              routes: [
+                // A day opened from a pattern hint (calculations §23).
+                GoRoute(
+                  path: 'day/:date',
+                  builder: (_, s) => DayScreen(
+                    date: LocalDate.parse(s.pathParameters['date']!),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ],

@@ -697,3 +697,21 @@ settings (0 = off):
   whose average is above the limit after a week at or below it.
 - The week view shows the week's worked time and the average next to the week total, in the error
   colour when above the limit.
+
+## §23 Pattern hints
+
+Requested by the user 2026-11-10. The month report (Berichte) shows a card with friendly hints about
+the month shown, up to today (`monthPatterns`). They come only from the day results and their
+Working Hours Act findings (§4, §5); none is a new rule or a notice:
+
+| Kind | Days counted | Shown from |
+|---|---|---|
+| `missingBreak` | a §4 finding: break missing or over 6 h without a break | 2 days |
+| `longDays` | a §3 finding: over 10 h worked | 1 day |
+| `shortRest` | a §5 finding: under 11 h rest before the day | 1 day |
+| `sundayWork` | work on a Sunday or public holiday | 1 day |
+| `lateFinish` | the last worked span ends after 20:00 (today only once finished) | 3 days |
+| `allBreaksKept` | positive: at least 10 days with work and no `missingBreak` day | — |
+
+A hint opens the first day it counts (in the Berichte tab); the positive one opens nothing. The card
+is hidden when no hint applies.

@@ -678,5 +678,12 @@
   "remindTarget": "Soll erreicht",
   "remindTargetHint": "Wenn die Sollzeit des Tages geschafft ist",
   "reminderTargetTitle": "Soll erreicht",
-  "reminderTargetText": "Feierabend möglich – dein Tagessoll ist geschafft."
+  "reminderTargetText": "Feierabend möglich – dein Tagessoll ist geschafft.",
+  "patternsTitle": "Auffälligkeiten",
+  "patternMissingBreak": "{count}× zu wenig Pause – öfter mal kurz raus?",
+  "patternLongDays": "{count, plural, =1{1 Tag} other{{count} Tage}} über 10 Std. – das erlaubt das Arbeitszeitgesetz nicht",
+  "patternShortRest": "{count}× weniger als 11 Std. Ruhe zwischen zwei Arbeitstagen",
+  "patternSundayWork": "{count, plural, =1{1 Sonn- oder Feiertag} other{{count} Sonn- und Feiertage}} gearbeitet",
+  "patternLateFinish": "{count}× Feierabend nach 20 Uhr – gönn dir auch mal einen frühen Abend",
+  "patternAllBreaksKept": "Alle Pausen eingehalten – weiter so!"
 }

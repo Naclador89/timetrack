@@ -2402,4 +2402,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reminderTargetText =>
       'You can call it a day – today\'s target is done.';
+
+  @override
+  String get patternsTitle => 'Worth a look';
+
+  @override
+  String patternMissingBreak(int count) {
+    return '$count× too little break – step out more often?';
+  }
+
+  @override
+  String patternLongDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0 over 10 h – the Working Hours Act doesn\'t allow that';
+  }
+
+  @override
+  String patternShortRest(int count) {
+    return '$count× less than 11 h rest between two working days';
+  }
+
+  @override
+  String patternSundayWork(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Sundays and holidays',
+      one: '1 Sunday or holiday',
+    );
+    return 'Worked on $_temp0';
+  }
+
+  @override
+  String patternLateFinish(int count) {
+    return 'Finished after 8 pm $count times – treat yourself to an early evening';
+  }
+
+  @override
+  String get patternAllBreaksKept => 'Every break kept – well done!';
 }

@@ -26,6 +26,7 @@ export 'src/rules/holidays.dart';
 export 'src/rules/home_office.dart';
 export 'src/rules/ledger.dart';
 export 'src/rules/notices.dart';
+export 'src/rules/patterns.dart';
 export 'src/rules/per_diem.dart';
 export 'src/rules/project_history.dart';
 export 'src/rules/review.dart';

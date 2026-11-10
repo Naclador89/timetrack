@@ -2413,4 +2413,47 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reminderTargetText =>
       'Feierabend möglich – dein Tagessoll ist geschafft.';
+
+  @override
+  String get patternsTitle => 'Auffälligkeiten';
+
+  @override
+  String patternMissingBreak(int count) {
+    return '$count× zu wenig Pause – öfter mal kurz raus?';
+  }
+
+  @override
+  String patternLongDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0 über 10 Std. – das erlaubt das Arbeitszeitgesetz nicht';
+  }
+
+  @override
+  String patternShortRest(int count) {
+    return '$count× weniger als 11 Std. Ruhe zwischen zwei Arbeitstagen';
+  }
+
+  @override
+  String patternSundayWork(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Sonn- und Feiertage',
+      one: '1 Sonn- oder Feiertag',
+    );
+    return '$_temp0 gearbeitet';
+  }
+
+  @override
+  String patternLateFinish(int count) {
+    return '$count× Feierabend nach 20 Uhr – gönn dir auch mal einen frühen Abend';
+  }
+
+  @override
+  String get patternAllBreaksKept => 'Alle Pausen eingehalten – weiter so!';
 }

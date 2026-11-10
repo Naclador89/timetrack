@@ -4171,6 +4171,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can call it a day – today\'s target is done.'**
   String get reminderTargetText;
+
+  /// No description provided for @patternsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth a look'**
+  String get patternsTitle;
+
+  /// No description provided for @patternMissingBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× too little break – step out more often?'**
+  String patternMissingBreak(int count);
+
+  /// No description provided for @patternLongDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}} over 10 h – the Working Hours Act doesn\'t allow that'**
+  String patternLongDays(int count);
+
+  /// No description provided for @patternShortRest.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× less than 11 h rest between two working days'**
+  String patternShortRest(int count);
+
+  /// No description provided for @patternSundayWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked on {count, plural, =1{1 Sunday or holiday} other{{count} Sundays and holidays}}'**
+  String patternSundayWork(int count);
+
+  /// No description provided for @patternLateFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished after 8 pm {count} times – treat yourself to an early evening'**
+  String patternLateFinish(int count);
+
+  /// No description provided for @patternAllBreaksKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Every break kept – well done!'**
+  String get patternAllBreaksKept;
 }
 
 class _AppLocalizationsDelegate
