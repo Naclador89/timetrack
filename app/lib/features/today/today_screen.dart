@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
@@ -10,6 +11,7 @@ import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/app_bar_actions.dart';
 import '../../widgets/attention.dart';
+import '../../widgets/day_arc.dart';
 import '../../widgets/day_timeline.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/interval_dialog.dart';
@@ -155,6 +157,13 @@ class _HeroCard extends ConsumerStatefulWidget {
 }
 
 class _HeroCardState extends ConsumerState<_HeroCard> {
+  /// Today's credited time at the last build, to notice the target being
+  /// reached while the card is on screen.
+  int? _lastWorked;
+
+  /// How often the target was reached on screen; keys the pulse.
+  int _pulses = 0;
+
   Future<void> _clockIn() => clockIn(context, ref);
 
   Future<void> _clockOut() => clockOut(context, ref);
@@ -272,6 +281,70 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
         ),
       ),
     );
+
+    // The moment the target is reached (not when opening after it was: the
+    // first build with data comes after one with nothing worked).
+    final worked = day.breaks.effectiveWorked;
+    if (_lastWorked case final before?
+        when day.target > 0 &&
+            before > 0 &&
+            before < day.target &&
+            worked >= day.target) {
+      _pulses++;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => tapFeedback(strong: true),
+      );
+    }
+    _lastWorked = worked;
+    final centre = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(l.worked, style: theme.textTheme.labelMedium),
+        AnimatedMinutes(day.work.worked, style: theme.textTheme.displayMedium),
+        Text(
+          l.ofTarget(formatMinutes(day.target)),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+    final breakStart = state.breakRow?.fields['start_utc'] as String?;
+    final scale = dayArcScale(
+      day,
+      nowMinute: ledger.nowMinute,
+      clockedIn: state.clockedIn,
+      runningBreak: breakStart == null
+          ? 0
+          : ledger.nowMinute - epochMinute(DateTime.parse(breakStart)),
+    );
+    Widget gauge = scale == null
+        ? ProgressRing(
+            value: worked,
+            total: day.target,
+            color: ringColor,
+            overColor: scheme.deltaColor(1),
+            child: centre,
+          )
+        : DayArc(
+            working: day.work.working.spans,
+            start: scale.start,
+            end: scale.end,
+            targetAt: scale.targetAt,
+            now: scale.now,
+            color: dayArcColor(scheme, day, ringColor),
+            startLabel: context.time(instantOfEpochMinute(scale.start), zone),
+            endLabel: context.time(instantOfEpochMinute(scale.end), zone),
+            child: centre,
+          );
+    if (_pulses > 0 && !MediaQuery.disableAnimationsOf(context)) {
+      gauge = gauge
+          .animate(key: ValueKey('target-pulse-$_pulses'))
+          .scaleXY(end: 1.04, duration: 180.ms, curve: Curves.easeOut)
+          .then()
+          .scaleXY(end: 1 / 1.04, duration: 320.ms, curve: Curves.easeInOut)
+          .shimmer(duration: 700.ms, color: scheme.positive);
+    }
 
     final big = theme.textTheme.titleMedium;
     final Widget actions;
@@ -416,28 +489,7 @@ class _HeroCardState extends ConsumerState<_HeroCard> {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () => showDayExplanation(context, ref, today),
-              child: ProgressRing(
-                value: day.breaks.effectiveWorked,
-                total: day.target,
-                color: ringColor,
-                overColor: scheme.deltaColor(1),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(l.worked, style: theme.textTheme.labelMedium),
-                    AnimatedMinutes(
-                      day.work.worked,
-                      style: theme.textTheme.displayMedium,
-                    ),
-                    Text(
-                      l.ofTarget(formatMinutes(day.target)),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: gauge,
             ),
             const SizedBox(height: 12),
             Wrap(

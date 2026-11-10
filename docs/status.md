@@ -516,6 +516,9 @@ mini window, balance planner, year heatmap, week comparison.
 - [x] "Soll erreicht" reminder (reminders.md §2, `ReminderKind.targetReached`, setting
       `reminders.target`, default on): Android notification and Windows tray balloon with
       Ausstempeln at the forecast target time; a third switch under Erinnerungen.
+- [x] Day arc and target moment (navigation.md "Day arc"): `DayArc` replaces the ring once
+      something is worked (first clock-in → 10 h limit, breaks thin, target tick, now dot, times at
+      the ends); a one-off pulse and haptic when the target is reached on screen.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 

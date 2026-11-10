@@ -78,6 +78,20 @@ The shell (`MainShell`, `app/lib/app/main_shell.dart`) follows the Material 3 wi
 The four tabs stay (Heute, Kalender, Projekte, Berichte); Einstellungen open from the gear. The tab
 that comes in fades through (250 ms); every tab keeps its state.
 
+## Day arc (hero card)
+
+Requested by the user 2026-11-10 (`app/lib/widgets/day_arc.dart`). Once something is worked today,
+the hero card shows an open 240° arc instead of the ring: from the first clock-in (label left) to
+the 10-hour limit (label right; while clocked in `limitAt` of calculations §18, otherwise first
+start + 10 h + the gaps so far). Worked spans are thick in `primary`, breaks and gaps between them a
+thin `tertiary` line, a tick marks where the target is reached (§18 `targetAt`, or the minute it
+was reached), a dot marks now while clocked in. Before any work, on absence days without work, the
+ring stays. Worked time turns `positive` once the target is reached.
+
+**Target moment**: when the credited time crosses the target while Today is on screen, the arc
+pulses once (scale 1 → 1.04 → 1, a `positive` shimmer, ~0.7 s) with a haptic tick. Opening Today
+after the target was reached plays nothing. With reduced motion only the colour changes.
+
 ## Today tiles
 
 Requested by the user 2026-11-09. Below the hero card (stamping) and the project strip, Today shows
@@ -90,7 +104,7 @@ overview tiles, two columns from 300 px content width (phones too) (`DashboardGr
 |---|---|---|
 | Zeitkonto | balance with traffic light dot, change this month, trend of the last month ends | month by month: change and closing balance (`BalanceDetailScreen`) |
 | Diese Woche | credited of target (calculations §8: vacation and holidays count) | the week's days; a day opens its day view (`WeekDetailScreen`) |
-| Urlaub | days left of entitlement + carry-over (only with an entitlement) | the vacation planner |
+| Urlaub | days left of entitlement + carry-over (with an entitlement or a planned vacation); below it the countdown to the next vacation (calculations §10.3) | the vacation planner |
 | Homeoffice (one per day quota) | days left, used of allowed | the home-office rules |
 
 The balance is no longer a figure of the hero card; the tile shows it.
