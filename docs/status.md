@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.7.1`** (2026-11-10), `app/pubspec.yaml` `version: 0.7.1+14`. All planned
+- **Latest release: `v0.7.2`** (2026-11-10), `app/pubspec.yaml` `version: 0.7.2+15`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 321, app 106 tests; CI green on `main`.
@@ -182,6 +182,8 @@ _Last updated: 2026-11-09 by Claude Code._
   (vacation and holidays no longer look missing); Today (tab again, palette, clocking on a trip
   day) closes a tile's detail screen; a tile no longer stays lifted after closing; balance by
   month in core, computed once.
+- `v0.7.2` (2026-11-10): app icon: on Android 12+ the background follows the wallpaper colours;
+  bold hourglass in the Windows taskbar (32–64 px).
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -642,4 +644,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: the quick entry buttons on Today and the day view became "+" (new working time). 320 core, 98 app tests green.
 - 2026-11-09, Claude Code: modern UI architecture: harmonised theme colours, `MainShell` with window classes and fade-through, Today tiles with container transform (navigation.md "Layout", "Today tiles"). 320 core, 103 app tests green.
 - 2026-11-10, Claude Code: fixed the nine `/code-review` findings on the Today tiles (see "Modern UI architecture"); release v0.7.1. 321 core, 106 app tests green.
-- 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone; bold Windows taskbar icon at 32–64 px (branding/README.md). Not released yet.
+- 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone; bold Windows taskbar icon at 32–64 px (branding/README.md); release v0.7.2.
