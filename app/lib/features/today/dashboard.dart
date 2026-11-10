@@ -41,6 +41,7 @@ class DashboardGrid extends ConsumerWidget {
 
     final vacation = ref.watch(vacationAccountProvider(today.year));
     final vacationTotal = vacation.entitlement + vacation.carryOver;
+    final next = ref.watch(nextVacationProvider);
 
     final quotas = ref
         .watch(homeOfficeQuotasProvider)
@@ -67,14 +68,22 @@ class DashboardGrid extends ConsumerWidget {
         footer: TileProgress(value: target <= 0 ? 0 : credited / target),
         openBuilder: (_) => WeekDetailScreen(monday: today.startOfWeek),
       ),
-      if (vacationTotal > 0)
+      if (vacationTotal > 0 || next != null)
         DashboardTile(
           icon: dayTypeIcon(DayType.vacation),
           title: l.absenceVacation,
           value: context.days(vacation.remaining),
-          subtitle: l.dashDaysOf(context.days(vacationTotal)),
+          subtitle: next == null
+              ? l.dashDaysOf(context.days(vacationTotal))
+              : l.nextVacationIn(
+                  today.daysUntil(next.start),
+                  next.days,
+                  context.days(next.days),
+                ),
           footer: TileProgress(
-            value: (vacation.taken + vacation.planned) / vacationTotal,
+            value: vacationTotal <= 0
+                ? 1
+                : (vacation.taken + vacation.planned) / vacationTotal,
             color: scheme.dayTypeColor(DayType.vacation),
           ),
           openBuilder: (_) => const AbsencesScreen(),

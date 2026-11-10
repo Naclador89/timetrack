@@ -4141,6 +4141,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time account'**
   String get dashAccount;
+
+  /// No description provided for @nextVacationIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Vacation from tomorrow} other{Vacation in {count} days}} · {days, plural, =1{1 day} other{{length} days}}'**
+  String nextVacationIn(int count, num days, String length);
 }
 
 class _AppLocalizationsDelegate

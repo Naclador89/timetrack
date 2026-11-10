@@ -159,6 +159,32 @@ void main() {
     );
   });
 
+  testWidgets('the vacation tile counts down to the next vacation', (
+    tester,
+  ) async {
+    // spec: calculations.md §10.3
+    await pumpApp(
+      tester,
+      seed: (repo) async {
+        await _week(repo);
+        for (final (id, date) in [('a', '2026-11-12'), ('b', '2026-11-13')]) {
+          await repo.write('absences', id, {
+            'date': date,
+            'kind': 'vacation',
+            'fraction': 1.0,
+          });
+        }
+      },
+    );
+    expect(
+      find.descendant(
+        of: _tile('Vacation'),
+        matching: find.text('Vacation in 8 days · 2 days'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('Today (tab again, palette) closes a tile detail screen', (
     tester,
   ) async {

@@ -2383,4 +2383,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dashAccount => 'Zeitkonto';
+
+  @override
+  String nextVacationIn(int count, num days, String length) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Urlaub in $count Tagen',
+      one: 'Urlaub ab morgen',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$length Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0 · $_temp1';
+  }
 }

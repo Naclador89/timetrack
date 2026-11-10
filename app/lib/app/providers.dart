@@ -177,6 +177,16 @@ final vacationAccountProvider = Provider.family<VacationAccount, int>((
   );
 });
 
+/// The next vacation block after today (calculations §10.3), for the
+/// countdown on Today's vacation tile.
+final nextVacationProvider = Provider<NextVacation?>(
+  (ref) => nextVacation(
+    targets: ref.watch(ledgerProvider).targets,
+    absences: ref.watch(ledgerDataProvider).absences,
+    today: ref.watch(todayProvider),
+  ),
+);
+
 /// The home-office quotas that apply today (one per rule series).
 final homeOfficeQuotasProvider = Provider<List<HomeOfficeQuota>>((ref) {
   final ledger = ref.watch(ledgerProvider);

@@ -673,5 +673,6 @@
   "dashDaysLeft": "noch {days}",
   "balanceHistory": "Saldo nach Monaten",
   "balanceCountedSince": "Gezählt seit {date}, Übertrag {balance}",
-  "dashAccount": "Zeitkonto"
+  "dashAccount": "Zeitkonto",
+  "nextVacationIn": "{count, plural, =1{Urlaub ab morgen} other{Urlaub in {count} Tagen}} · {days, plural, =1{1 Tag} other{{length} Tage}}"
 }

@@ -303,6 +303,15 @@ above 0, Today shows "Resturlaub aus <Y−1>: noch n Tage bis <deadline> verplan
 (`vacationCarryLeft`). After the deadline nothing is shown. Only vacation has such a deadline: the
 overtime balance is carried over without one (user 2026-11-09).
 
+### §10.3 Next vacation
+
+Requested by the user 2026-11-10. Vacation days (workdays only, as in §10) joined only by free days
+(target 0: weekend, holiday) form a **block**; a workday without vacation ends it. The **next
+vacation** is the first block whose first vacation day lies after today. The block today belongs to
+is skipped, also on its weekend (the last workday before a free today is a vacation day): that
+vacation is already running. Its **days** are the vacation fractions in the block. Today's vacation
+tile shows "Nächster Urlaub in n Tagen · d Tage" ("morgen" for tomorrow; `nextVacation`).
+
 ## §11 Home office
 
 ### §11.1 Home-office value of a day

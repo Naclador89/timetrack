@@ -508,6 +508,12 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
       home-office strings removed.
 - [ ] On the devices: Windows accent colour, hover, the transitions' smoothness.
 
+### Picked ideas (user, 2026-11-10; 6 of 12 pitched, one commit each)
+Not picked (don't pitch again unless asked): month review, project suggestion on clock-in, desktop
+mini window, balance planner, year heatmap, week comparison.
+- [x] Vacation countdown (calculations §10.3, core `nextVacation`): the Urlaub tile reads "Urlaub in
+      8 Tagen · 2 Tage" / "Urlaub ab morgen"; the running vacation (also its weekend) is skipped.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a

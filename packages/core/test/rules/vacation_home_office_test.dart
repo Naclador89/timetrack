@@ -125,6 +125,51 @@ void main() {
     );
   });
 
+  group('§10.3 next vacation', () {
+    final targets = TargetCalendar(
+      schedules: [schedule],
+      holidays: HolidayCalendar(FederalState.nw),
+    );
+    NextVacation? next(List<Absence> absences, String today) =>
+        nextVacation(targets: targets, absences: absences, today: d(today));
+
+    test('§10.3 one block across the weekend; skips past and other kinds', () {
+      final n = next([
+        off('2026-11-02', AbsenceKind.vacation), // past
+        off('2026-11-16', AbsenceKind.sick), // not vacation
+        off('2026-11-19', AbsenceKind.vacation),
+        off('2026-11-20', AbsenceKind.vacation, 0.5),
+        off('2026-11-21', AbsenceKind.vacation), // Saturday: free, no day
+        off('2026-11-23', AbsenceKind.vacation),
+        off('2026-11-25', AbsenceKind.vacation), // after a workday: next block
+      ], '2026-11-10')!;
+      expect((n.start, n.end, n.days), (d('2026-11-19'), d('2026-11-23'), 2.5));
+    });
+
+    test('§10.3 holidays join a block and count no day', () {
+      final n = next([
+        off('2026-12-23', AbsenceKind.vacation),
+        off('2026-12-24', AbsenceKind.vacation),
+        off('2026-12-28', AbsenceKind.vacation),
+      ], '2026-12-01')!;
+      // 25/26 Dec are holidays, 27 Dec a Sunday.
+      expect((n.start, n.end, n.days), (d('2026-12-23'), d('2026-12-28'), 3.0));
+    });
+
+    test('§10.3 the running vacation is skipped, also on its weekend', () {
+      final absences = [
+        off('2026-11-13', AbsenceKind.vacation), // Friday
+        off('2026-11-16', AbsenceKind.vacation), // Monday
+        off('2026-11-30', AbsenceKind.vacation),
+      ];
+      expect(next(absences, '2026-11-13')!.start, d('2026-11-30'));
+      expect(next(absences, '2026-11-14')!.start, d('2026-11-30'));
+      expect(next(absences, '2026-11-12')!.start, d('2026-11-13'));
+      expect(next(absences.sublist(0, 2), '2026-11-14'), isNull);
+      expect(next(const [], '2026-11-14'), isNull);
+    });
+  });
+
   group('§11.1 home-office value of a day', () {
     DayResult dayWith(
       List<WorkSession> sessions, {
