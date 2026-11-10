@@ -16,7 +16,8 @@ results are committed. Run it again after changing anything here:
 
 | Platform | Icon | Colours |
 |---|---|---|
-| Android 8+ | adaptive icon: background `#24242A`, foreground = the recoloured hourglass cut out softly | Aurora |
+| Android 12+ | adaptive icon: background = a dark tone of the wallpaper colours (`system_accent1_800`, `values-v31`), foreground = the recoloured hourglass with its glow on transparency (colour-to-alpha against the dark square) | Aurora on the system colour |
+| Android 8–11 | the same foreground on `#24242A` | Aurora |
 | Android 13+ with "Designsymbole" | monochrome layer from `hourglass.svg` | tinted by the system (wallpaper colours) |
 | Android < 8 | the rounded square | Aurora |
 | Notification, Quick Settings tile, update notice | `ic_quick.xml` from `hourglass-small.svg` | tinted by the system |
@@ -29,5 +30,5 @@ the gradient, highlights go towards white. A plain hue shift can't do this (oran
 become green → red). To try another palette, change `GRADIENT` and run the script.
 
 `tool/make_icons.py --preview DIR` writes `icon-preview.png`: Android masks (circle, squircle,
-square), the themed icon in a light and a dark palette, the desktop icon at 256/48/24/16 px and the
-small icon in a status bar.
+square), the icon on four sample wallpaper tones, the themed icon in a light and a dark palette,
+the desktop icon at 256/48/24/16 px and the small icon in a status bar.
