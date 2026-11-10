@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.7.2`** (2026-11-10), `app/pubspec.yaml` `version: 0.7.2+15`. All planned
+- **Latest release: `v0.8.0`** (2026-11-10), `app/pubspec.yaml` `version: 0.8.0+16`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 331, app 114 tests; CI green on `main`.
@@ -184,6 +184,9 @@ _Last updated: 2026-11-09 by Claude Code._
   month in core, computed once.
 - `v0.7.2` (2026-11-10): app icon: on Android 12+ the background follows the wallpaper colours;
   bold hourglass in the Windows taskbar (32–64 px).
+- `v0.8.0` (2026-11-10): day arc in the hero card with a target-reached moment, "Soll erreicht"
+  reminder, predictive back and shared-axis calendar paging, Material You widget with progress,
+  vacation countdown, pattern hints in the month report.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -669,3 +672,5 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-09, Claude Code: modern UI architecture: harmonised theme colours, `MainShell` with window classes and fade-through, Today tiles with container transform (navigation.md "Layout", "Today tiles"). 320 core, 103 app tests green.
 - 2026-11-10, Claude Code: fixed the nine `/code-review` findings on the Today tiles (see "Modern UI architecture"); release v0.7.1. 321 core, 106 app tests green.
 - 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone; bold Windows taskbar icon at 32–64 px (branding/README.md); release v0.7.2.
+- 2026-11-10, Claude Code: six picked ideas (vacation countdown, target reminder, day arc and target
+  moment, predictive back and shared axis, Material You widget, pattern hints); release v0.8.0.
