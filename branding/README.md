@@ -22,7 +22,7 @@ results are committed. Run it again after changing anything here:
 | Android < 8 | the rounded square | Aurora |
 | Notification, Quick Settings tile, update notice | `ic_quick.xml` from `hourglass-small.svg` | tinted by the system |
 | Linux (window, launcher) | `app/linux/runner/resources/app_icon.png`, copied to `bundle/data/` | Aurora |
-| Windows (exe, taskbar) | `app/windows/runner/resources/app_icon.ico`, 16–256 px; 16/24 from `hourglass-small.svg` | Aurora; 16/24 px in `#22D3EE` |
+| Windows (exe, taskbar) | `app/windows/runner/resources/app_icon.ico`, 16–256 px; 32–64 px the bold `hourglass-small.svg` with a soft glow (the detailed one blurred in the taskbar, user 2026-11-10), 16/24 px the same without glow | Aurora; 32–64 px Aurora gradient, 16/24 px in `#22D3EE` |
 
 **Recolouring** (`recoloured_source` in the script): brightness comes from the original (glow,
 grains, glass), colour from a diagonal gradient; the dark background stays neutral, midtones take

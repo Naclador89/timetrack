@@ -315,7 +315,9 @@ _Last updated: 2026-11-09 by Claude Code._
 - [x] v0.4.1 released (2026-11-08): Aurora icon colours; the updater's real test release.
 - [x] Android 12+ icon background follows the wallpaper colours (user 2026-11-10): dark accent tone
       `system_accent1_800` in `values-v31`, foreground cut out with colour-to-alpha
-      (`tool/make_icons.py`). Desktop icons stay as they are (Windows and Linux don't tint icons).
+      (`tool/make_icons.py`). Windows and Linux don't tint icons.
+- [x] Windows icon at 32–64 px (taskbar): the bold small hourglass in the Aurora gradient with a
+      soft glow instead of the detailed one, which was hard to make out (user 2026-11-10).
 - [ ] With v0.4.1, test the updater for real: Android (unknown-apps permission, confirm,
       data kept), Linux (`~/.local/opt/timetrack` swap + restart), Windows (script replaces the
       folder, app restarts). The Windows script has not run on a real PC yet.
@@ -640,4 +642,4 @@ Later if needed: a switch for when the flat supplement is suspended (the rules a
 - 2026-11-09, Claude Code: the quick entry buttons on Today and the day view became "+" (new working time). 320 core, 98 app tests green.
 - 2026-11-09, Claude Code: modern UI architecture: harmonised theme colours, `MainShell` with window classes and fade-through, Today tiles with container transform (navigation.md "Layout", "Today tiles"). 320 core, 103 app tests green.
 - 2026-11-10, Claude Code: fixed the nine `/code-review` findings on the Today tiles (see "Modern UI architecture"); release v0.7.1. 321 core, 106 app tests green.
-- 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone (branding/README.md). Not released yet.
+- 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone; bold Windows taskbar icon at 32–64 px (branding/README.md). Not released yet.

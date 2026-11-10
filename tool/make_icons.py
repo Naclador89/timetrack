@@ -158,6 +158,32 @@ def small_desktop(tmp, px):
     return out
 
 
+def medium_desktop(tmp, px):
+    """Desktop icon for 32–64 px (taskbar, tray at higher scaling): the detailed hourglass blurs
+    into the dark square there (user 2026-11-10), so the bold small hourglass in GRADIENT with a
+    soft glow, on the dark rounded square."""
+    out = tmp / f'medium-{px}.png'
+    big = 256
+    radius = big * SQUARE_RADIUS // SQUARE[2]
+    shape, gradient, hourglass = (tmp / f'medium-{n}.png' for n in ('shape', 'gradient', 'fill'))
+    magick(
+        '-background', 'none', '-density', 96, BRANDING / 'hourglass-small.svg',
+        '-alpha', 'extract', '-resize', f'x{int(big * 0.86)}',
+        '-gravity', 'center', '-background', 'black', '-extent', f'{big}x{big}', shape,
+    )
+    magick('-size', '1x1', *['xc:' + c for c in GRADIENT], '+append', '-filter', 'Triangle',
+           '-resize', f'{big}x{big}!', '-distort', 'SRT', '45', gradient)
+    magick(gradient, shape, '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', hourglass)
+    magick(
+        '-size', f'{big}x{big}', 'xc:none', '-fill', BACKGROUND,
+        '-draw', f'roundrectangle 0,0 {big - 1},{big - 1} {radius},{radius}',
+        '(', hourglass, '-channel', 'A', '-blur', '0x10', '-evaluate', 'multiply', '0.8',
+        '+channel', ')', '-compose', 'Screen', '-composite',
+        hourglass, '-compose', 'Over', '-composite', '-resize', f'{px}x{px}', out,
+    )
+    return out
+
+
 def foreground(tmp, source):
     """The adaptive icon's foreground at 432 px (xxxhdpi): the hourglass with its glow on a
     transparent background, so any background colour shows through (Android 12+ uses the
@@ -229,11 +255,9 @@ def write_desktop(tmp, square):
     linux = ROOT / 'app/linux/runner/resources'
     linux.mkdir(parents=True, exist_ok=True)
     magick(big, '-resize', '512x512', linux / 'app_icon.png')
-    sizes = []
-    for px in (256, 64, 48, 32):
-        out = tmp / f'win-{px}.png'
-        magick(big, '-resize', f'{px}x{px}', out)
-        sizes.append(out)
+    win256 = tmp / 'win-256.png'
+    magick(big, '-resize', '256x256', win256)
+    sizes = [win256, *(medium_desktop(tmp, px) for px in (64, 48, 32))]
     sizes += [small_desktop(tmp, 24), small_desktop(tmp, 16)]
     magick(*sizes, ROOT / 'app/windows/runner/resources/app_icon.ico')
     # The tray icon while clocked out (docs/specs/work-pc.md §3): grey and a little faded.
@@ -285,10 +309,9 @@ def preview(tmp, fg, square, big, out_dir):
     row1 = tmp / 'row1.png'
     magick('montage', *tiles, '-tile', 'x1', '-geometry', '+8+8', '-background', '#E8EAED', row1)
     sizes = []
-    for px in (256, 48):
-        t = tmp / f'p-{px}.png'
-        magick(big, '-resize', f'{px}x{px}', t)
-        sizes.append(t)
+    t = tmp / 'p-256.png'
+    magick(big, '-resize', '256x256', t)
+    sizes += [t, medium_desktop(tmp, 48), medium_desktop(tmp, 32)]
     for px in (24, 16):
         sizes.append(small_desktop(tmp, px))
     orig = tmp / 'orig-256.png'
