@@ -167,6 +167,7 @@ final class QuickStatus {
     this.projectId,
     this.location,
     this.targetAt,
+    this.targetMinutes = 0,
   });
 
   /// Derives the status at [nowMinute] (epoch minutes) for [today].
@@ -207,6 +208,7 @@ final class QuickStatus {
       projectId: state.projectId,
       location: state.location,
       targetAt: targetAt == null ? null : epochMinute(targetAt),
+      targetMinutes: day.target,
     );
   }
 
@@ -233,6 +235,9 @@ final class QuickStatus {
   /// calculations §18), if it isn't yet.
   final int? targetAt;
 
+  /// Today's target in minutes, for the widget's progress bar (0 = none).
+  final int targetMinutes;
+
   @override
   bool operator ==(Object other) =>
       other is QuickStatus &&
@@ -242,6 +247,7 @@ final class QuickStatus {
       other.projectId == projectId &&
       other.location == location &&
       other.targetAt == targetAt &&
+      other.targetMinutes == targetMinutes &&
       // Only meaningful while the stopwatch isn't running.
       (phase == QuickPhase.working || other.todayMinutes == todayMinutes);
 
@@ -253,5 +259,6 @@ final class QuickStatus {
     projectId,
     location,
     targetAt,
+    targetMinutes,
   );
 }

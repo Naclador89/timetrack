@@ -40,6 +40,11 @@ object QuickAccess {
         val runningSinceMs get() = number("qa_running_since_ms")
         val breakSinceMs get() = number("qa_break_since_ms")
         val project get() = text("qa_project")
+        val targetMinutes get() = number("qa_target_min")
+
+        /** Minutes worked today at [nowMs]; while working the stopwatch start gives it. */
+        fun workedMinutes(nowMs: Long) =
+            if (working) (nowMs - runningSinceMs) / 60_000 else number("qa_today_min")
 
         /** Status line: "Bei der Arbeit · Büro" etc. */
         val title: String
@@ -172,7 +177,19 @@ object QuickAccess {
         )
         views.setViewVisibility(R.id.pause, if (s.clockedIn) View.VISIBLE else View.GONE)
         views.setOnClickPendingIntent(R.id.pause, action(context, "toggleBreak"))
-        views.setOnClickPendingIntent(R.id.root, openApp(context))
+        // Progress towards today's target, computed now so the periodic widget update moves it.
+        val target = s.targetMinutes
+        if (target > 0) {
+            val worked = s.workedMinutes(System.currentTimeMillis()).coerceIn(0, target)
+            views.setProgressBar(R.id.progress, 1000, (worked * 1000 / target).toInt(), false)
+            views.setViewVisibility(R.id.progress, View.VISIBLE)
+        } else {
+            views.setViewVisibility(R.id.progress, View.GONE)
+        }
+        val finish = if (s.working) s.text("qa_finish_text") else ""
+        views.setTextViewText(R.id.finish, finish)
+        views.setViewVisibility(R.id.finish, if (finish.isEmpty()) View.GONE else View.VISIBLE)
+        views.setOnClickPendingIntent(android.R.id.background, openApp(context))
         manager.updateAppWidget(ids, views)
     }
 }

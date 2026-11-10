@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- No periodic updates: the chronometer ticks by itself, Dart pushes state changes. -->
+<!-- The chronometer ticks by itself and Dart pushes state changes; the 30-minute update (the
+     system minimum) only moves the progress bar. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/quick_widget_description"
     android:initialLayout="@layout/quick_widget"
@@ -8,5 +9,5 @@
     android:targetCellWidth="3"
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />

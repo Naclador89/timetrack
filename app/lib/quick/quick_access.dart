@@ -78,6 +78,7 @@ Future<void> publishQuickStatus(
   final values = <String, Object>{
     'qa_phase': status.phase.name,
     'qa_today_min': status.todayMinutes,
+    'qa_target_min': status.targetMinutes,
     'qa_running_since_ms': (status.runningSince ?? 0) * minute,
     'qa_break_since_ms': (status.breakSince ?? 0) * minute,
     'qa_project': projectName,

@@ -74,6 +74,10 @@ void main() {
   });
 
   test('QuickStatus: the stopwatch start stays fixed while working', () async {
+    await repo.write('work_schedules', 'w', {
+      'valid_from': '2026-01-01',
+      for (final d in ['mon', 'tue', 'wed', 'thu', 'fri']) 'minutes_$d': 480,
+    });
     await run(QuickAction.clockIn);
     QuickStatus status() {
       final rows = store.allRows.values.toList();
@@ -94,6 +98,8 @@ void main() {
     expect((a.todayMinutes, b.todayMinutes), (90, 130));
     expect(a.runningSince, epochMinute(DateTime.utc(2026, 11, 4, 7)));
     expect(a, b);
+    // The widget's progress bar needs today's target.
+    expect(a.targetMinutes, 480);
     await run(QuickAction.toggleBreak);
     final c = status();
     expect(c.phase, QuickPhase.onBreak);

@@ -521,6 +521,10 @@ mini window, balance planner, year heatmap, week comparison.
       the ends); a one-off pulse and haptic when the target is reached on screen.
 - [x] Predictive back on Android (theme + manifest) and shared-axis paging in the calendar
       (sideways for weeks/months, zoom for the toggle). The day view's ±1 day stays a route change.
+- [x] Android widget in Material You (`quick_widget.xml`, `widget_colors.xml` with v31/night-v31
+      system palette, launcher corner radius): progress bar to today's target (`qa_target_min`,
+      `QuickStatus.targetMinutes`; Kotlin computes it at render, 30-min `updatePeriodMillis`),
+      "Soll erreicht um …" line, stadium buttons. Debug APK builds; **look only checked on the phone**.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 

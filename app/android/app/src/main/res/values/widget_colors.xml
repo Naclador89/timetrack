@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home-screen widget colours. Before Android 12: dark with the icon's cyan. -->
+<resources>
+    <color name="widget_surface">#F2263238</color>
+    <color name="widget_on_surface">#FFFFFFFF</color>
+    <color name="widget_on_surface_variant">#CCFFFFFF</color>
+    <color name="widget_accent">#FF22D3EE</color>
+    <color name="widget_on_accent">#FF0B1A1F</color>
+    <color name="widget_track">#33FFFFFF</color>
+</resources>

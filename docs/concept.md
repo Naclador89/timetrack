@@ -165,7 +165,7 @@ Applying a change is **idempotent and order-independent**: a field is updated on
 **E1: Android quick access**
 - An ongoing notification while clocked in, with a live timer (`usesChronometer`, no foreground service needed) and actions *Break/Resume*, *Clock out* and *Switch project*.
 - A **Quick Settings tile** (Kotlin `TileService`) to clock in or out.
-- A **home-screen widget** showing status, today's total and buttons; a native `Chronometer` keeps it ticking without updates.
+- A **home-screen widget** showing status, today's total and buttons; a native `Chronometer` keeps it ticking without updates. Since 2026-11-10 it has a progress bar towards today's target (computed by Kotlin from the snapshot at each render, plus the system's 30-minute widget update), "Soll erreicht um …" while working, and Material You colours on Android 12+ (`values-v31/widget_colors.xml`, light and dark).
 - Tile, widget and notification all hand off to **one background Dart callback**, so all the logic stays in Dart. The database is opened in shared-isolate WAL mode so the UI, background handlers and WorkManager can all write safely.
 
 ## 7. Repo layout, tooling, CI

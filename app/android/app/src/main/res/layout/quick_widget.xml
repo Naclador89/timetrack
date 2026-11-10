@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Home-screen widget, filled by QuickAccess.renderWidgets. -->
+<!-- Home-screen widget, filled by QuickAccess.renderWidgets. Colours follow the wallpaper on
+     Android 12+ (values-v31/widget_colors.xml); @android:id/background lets the launcher clip
+     the corners. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
+    android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/quick_widget_background"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="14dp">
 
     <TextView
         android:id="@+id/status"
@@ -15,7 +17,7 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:text="@string/app_name"
-        android:textColor="#FFFFFFFF"
+        android:textColor="@color/widget_on_surface"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -25,7 +27,7 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textColor="#CCFFFFFF"
+        android:textColor="@color/widget_on_surface_variant"
         android:textSize="13sp"
         android:visibility="gone" />
 
@@ -41,38 +43,63 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:textColor="#CCFFFFFF"
+            android:textColor="@color/widget_on_surface_variant"
             android:textSize="13sp" />
 
         <Chronometer
             android:id="@+id/timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF"
-            android:textSize="22sp" />
+            android:textColor="@color/widget_on_surface"
+            android:textSize="24sp" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="6dp"
+        android:max="1000"
+        android:progressDrawable="@drawable/quick_widget_progress"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/finish"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/widget_on_surface_variant"
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/clock"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:minHeight="40dp"
+            android:background="@drawable/quick_widget_button"
+            android:textAllCaps="false"
+            android:textColor="@color/widget_on_accent"
             android:textSize="13sp" />
 
         <Button
             android:id="@+id/pause"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:minHeight="40dp"
+            android:background="@drawable/quick_widget_button_tonal"
+            android:textAllCaps="false"
+            android:textColor="@color/widget_on_surface"
             android:textSize="13sp"
             android:visibility="gone" />
     </LinearLayout>
