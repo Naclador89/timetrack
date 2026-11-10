@@ -513,6 +513,9 @@ Not picked (don't pitch again unless asked): month review, project suggestion on
 mini window, balance planner, year heatmap, week comparison.
 - [x] Vacation countdown (calculations §10.3, core `nextVacation`): the Urlaub tile reads "Urlaub in
       8 Tagen · 2 Tage" / "Urlaub ab morgen"; the running vacation (also its weekend) is skipped.
+- [x] "Soll erreicht" reminder (reminders.md §2, `ReminderKind.targetReached`, setting
+      `reminders.target`, default on): Android notification and Windows tray balloon with
+      Ausstempeln at the forecast target time; a third switch under Erinnerungen.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 

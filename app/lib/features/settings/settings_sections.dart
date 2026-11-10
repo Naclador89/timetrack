@@ -348,6 +348,13 @@ class _Tiles {
       ),
       SwitchListTile(
         secondary: const Icon(Icons.notifications_active_outlined),
+        title: Text(l.remindTarget),
+        subtitle: Text(l.remindTargetHint),
+        value: s.remindTarget,
+        onChanged: (v) => save(SettingKeys.remindTarget, v),
+      ),
+      SwitchListTile(
+        secondary: const Icon(Icons.notifications_active_outlined),
         title: Text(l.remindLongDay),
         subtitle: Text(l.remindLongDayHint),
         value: s.remindLongDay,

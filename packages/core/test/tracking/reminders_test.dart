@@ -142,6 +142,7 @@ void main() {
       final r = reminders('2026-11-04T09:00:00');
       expect(r.map((x) => (x.kind, x.at)), [
         (ReminderKind.breakDue, t('2026-11-04T12:45:00')),
+        (ReminderKind.targetReached, t('2026-11-04T15:30:00')),
         (ReminderKind.longDay, t('2026-11-04T16:45:00')),
       ]);
     });
@@ -166,11 +167,37 @@ void main() {
       await row('work_sessions', 's', '2026-11-04T07:00:00', null);
       await repo.write('settings', SettingKeys.remindBreak, {'value': false});
       expect(reminders('2026-11-04T09:00:00').map((r) => r.kind), [
+        ReminderKind.targetReached,
         ReminderKind.longDay,
       ]);
       await row('breaks', 'b', '2026-11-04T09:00:00', null);
       expect(reminders('2026-11-04T09:30:00'), isEmpty);
     });
+
+    test(
+      '§2 target reached: due at the forecast target time; off by setting',
+      () async {
+        await repo.write('work_schedules', 'w', {
+          'valid_from': '2026-01-01',
+          for (final d in ['mon', 'tue', 'wed', 'thu', 'fri'])
+            'minutes_$d': 480,
+        });
+        await row('work_sessions', 's', '2026-11-04T07:00:00', null);
+        Reminder? target(String now) =>
+            reminders(now)
+                .where((r) => r.kind == ReminderKind.targetReached)
+                .firstOrNull;
+        // 8 h plus the 30 min break ArbZG requires.
+        expect(target('2026-11-04T09:00:00')!.at, t('2026-11-04T15:30:00'));
+        expect(target('2026-11-04T09:00:00')!.key, '2026-11-04/target_reached');
+        // Reached already (e.g. when the task runs late): due now.
+        expect(target('2026-11-04T16:00:00')!.at, t('2026-11-04T16:00:00'));
+        await repo.write('settings', SettingKeys.remindTarget, {
+          'value': false,
+        });
+        expect(target('2026-11-04T09:00:00'), isNull);
+      },
+    );
 
     test('overdue reminders are due now', () async {
       await row('work_sessions', 's', '2026-11-04T05:00:00', null);

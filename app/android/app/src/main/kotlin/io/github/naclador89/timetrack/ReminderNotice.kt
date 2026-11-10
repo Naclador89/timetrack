@@ -7,7 +7,7 @@ import android.content.Context
 import android.os.Build
 
 /**
- * Reminders while working (docs/specs/reminders.md §2): "break due" and "almost 10 hours". Dart
+ * Reminders while working (docs/specs/reminders.md §2): "break due", "target reached", "almost 10 hours". Dart
  * decides what is due and writes `rm_*` keys (one reminder at a time, each key once), then
  * triggers [QuickAccessReceiver]; [QuickAccess.render] calls [render]. The action button sends
  * the same quick action URI as the ongoing notification. A break or clocking out removes it.

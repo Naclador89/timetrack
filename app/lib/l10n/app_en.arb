@@ -1657,5 +1657,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "remindTarget": "Target reached",
+  "remindTargetHint": "When today's target time is done",
+  "reminderTargetTitle": "Target reached",
+  "reminderTargetText": "You can call it a day – today's target is done."
 }

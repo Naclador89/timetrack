@@ -674,5 +674,9 @@
   "balanceHistory": "Saldo nach Monaten",
   "balanceCountedSince": "Gezählt seit {date}, Übertrag {balance}",
   "dashAccount": "Zeitkonto",
-  "nextVacationIn": "{count, plural, =1{Urlaub ab morgen} other{Urlaub in {count} Tagen}} · {days, plural, =1{1 Tag} other{{length} Tage}}"
+  "nextVacationIn": "{count, plural, =1{Urlaub ab morgen} other{Urlaub in {count} Tagen}} · {days, plural, =1{1 Tag} other{{length} Tage}}",
+  "remindTarget": "Soll erreicht",
+  "remindTargetHint": "Wenn die Sollzeit des Tages geschafft ist",
+  "reminderTargetTitle": "Soll erreicht",
+  "reminderTargetText": "Feierabend möglich – dein Tagessoll ist geschafft."
 }

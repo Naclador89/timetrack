@@ -28,18 +28,20 @@ running break or project entry ends at `t` too; one that only started after `t` 
 
 ## §2 Reminders
 
-While working (clocked in, not on a break), two reminders, each switchable (synced settings,
+While working (clocked in, not on a break), three reminders, each switchable (synced settings,
 default on):
 
 | Kind | Setting | Due when | Key (shown once) |
 |---|---|---|---|
 | `break_due` | `reminders.break` | the current stretch without a countable break (§4: gaps ≥ 15 min) reaches 5:45 h | `<date>/break_due/<stretch start minute>` |
+| `target_reached` | `reminders.target` | today's target is reached (`targetAt` of §18 calculations; due now once reached). Not on days without a target or on trip days | `<date>/target_reached` |
 | `long_day` | `reminders.long_day` | today's worked time `W` reaches 9:45 h | `<date>/long_day` |
 
-`nextReminders` returns both with their due instant (now or later). A reminder whose key was shown
+`nextReminders` returns them with their due instant (now or later). A reminder whose key was shown
 already is skipped (`local_values` `reminders_shown`, the last 20 keys). Texts: "Seit 5:45 Std. ohne
 Pause – Pause starten?" with the action **Pause starten**; "Gleich 10 Std. – noch eingestempelt?"
-with the action **Ausstempeln**.
+with the action **Ausstempeln**; "Soll erreicht – Feierabend möglich – dein Tagessoll ist geschafft."
+with the action **Ausstempeln** (user, 2026-11-10).
 
 **Android**: after every published status the app schedules a one-off WorkManager task `reminder` at
 the earliest due time (policy replace); the task re-reads the state, shows what is due as a

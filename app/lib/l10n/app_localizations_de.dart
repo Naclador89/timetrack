@@ -2400,4 +2400,17 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0 · $_temp1';
   }
+
+  @override
+  String get remindTarget => 'Soll erreicht';
+
+  @override
+  String get remindTargetHint => 'Wenn die Sollzeit des Tages geschafft ist';
+
+  @override
+  String get reminderTargetTitle => 'Soll erreicht';
+
+  @override
+  String get reminderTargetText =>
+      'Feierabend möglich – dein Tagessoll ist geschafft.';
 }

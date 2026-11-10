@@ -67,6 +67,11 @@ Future<void> markRemindersShown(SyncStore store, Iterable<String> keys) async {
     text: l.reminderBreakText,
     action: l.startBreak,
   ),
+  ReminderKind.targetReached => (
+    title: l.reminderTargetTitle,
+    text: l.reminderTargetText,
+    action: l.clockOut,
+  ),
   ReminderKind.longDay => (
     title: l.reminderLongDayTitle,
     text: l.reminderLongDayText,
@@ -119,7 +124,7 @@ Future<void> showDueReminders(SyncStore store, {DateTime? now}) async {
     'rm_action_label': texts.action,
     'rm_action': switch (reminder.kind) {
       ReminderKind.breakDue => 'toggleBreak',
-      ReminderKind.longDay => 'clockOut',
+      ReminderKind.longDay || ReminderKind.targetReached => 'clockOut',
     },
     'rm_channel': quickLocalizations().reminders,
   };

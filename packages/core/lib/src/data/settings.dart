@@ -127,6 +127,9 @@ abstract final class SettingKeys {
   /// Remind before 10 hours of work (reminders.md §2).
   static const remindLongDay = 'reminders.long_day';
 
+  /// Remind when today's target is reached (reminders.md §2).
+  static const remindTarget = 'reminders.target';
+
   /// Whether notices of [category] are shown as cards (§12).
   static String noticeShow(String category) => 'notices.show.$category';
 
@@ -162,6 +165,7 @@ final class AppSettings {
     this.defaultBreakMinutes = 30,
     this.remindBreak = true,
     this.remindLongDay = true,
+    this.remindTarget = true,
     this.raw = const {},
   });
 
@@ -314,6 +318,7 @@ final class AppSettings {
       ).toInt().clamp(5, 240),
       remindBreak: pick(SettingKeys.remindBreak, true),
       remindLongDay: pick(SettingKeys.remindLongDay, true),
+      remindTarget: pick(SettingKeys.remindTarget, true),
       raw: v,
     );
   }
@@ -380,6 +385,9 @@ final class AppSettings {
 
   /// Remind before 10 hours of work (reminders.md §2).
   final bool remindLongDay;
+
+  /// Remind when today's target is reached (reminders.md §2).
+  final bool remindTarget;
 
   /// Whether notices of the category with this wire name are shown as
   /// cards (default yes).

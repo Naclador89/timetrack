@@ -4147,6 +4147,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{Vacation from tomorrow} other{Vacation in {count} days}} · {days, plural, =1{1 day} other{{length} days}}'**
   String nextVacationIn(int count, num days, String length);
+
+  /// No description provided for @remindTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target reached'**
+  String get remindTarget;
+
+  /// No description provided for @remindTargetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When today\'s target time is done'**
+  String get remindTargetHint;
+
+  /// No description provided for @reminderTargetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Target reached'**
+  String get reminderTargetTitle;
+
+  /// No description provided for @reminderTargetText.
+  ///
+  /// In en, this message translates to:
+  /// **'You can call it a day – today\'s target is done.'**
+  String get reminderTargetText;
 }
 
 class _AppLocalizationsDelegate

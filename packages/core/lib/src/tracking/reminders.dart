@@ -123,12 +123,16 @@ enum ReminderKind {
   breakDue,
 
   /// 9:45 h of work today.
-  longDay;
+  longDay,
+
+  /// Today's target is reached: time to go home.
+  targetReached;
 
   /// The wire name used in keys.
   String get wire => switch (this) {
     breakDue => 'break_due',
     longDay => 'long_day',
+    targetReached => 'target_reached',
   };
 }
 
@@ -164,6 +168,19 @@ List<Reminder> nextReminders(
       at: due(345 - stretch),
       key: '$today/${ReminderKind.breakDue.wire}/$stretchStart',
     ));
+  }
+  if (settings.remindTarget) {
+    final day = ledger.day(today);
+    if (day.target > 0 && !day.isTripDay) {
+      // Once reached, the forecast has no instant left: due now. The key
+      // keeps it to once a day.
+      final at = dayForecast(day, now: instantOfEpochMinute(now)).targetAt;
+      result.add((
+        kind: ReminderKind.targetReached,
+        at: at ?? instantOfEpochMinute(now),
+        key: '$today/${ReminderKind.targetReached.wire}',
+      ));
+    }
   }
   if (settings.remindLongDay) {
     result.add((

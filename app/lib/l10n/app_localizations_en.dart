@@ -2389,4 +2389,17 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0 · $_temp1';
   }
+
+  @override
+  String get remindTarget => 'Target reached';
+
+  @override
+  String get remindTargetHint => 'When today\'s target time is done';
+
+  @override
+  String get reminderTargetTitle => 'Target reached';
+
+  @override
+  String get reminderTargetText =>
+      'You can call it a day – today\'s target is done.';
 }
