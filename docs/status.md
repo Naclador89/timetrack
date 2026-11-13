@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.8.0`** (2026-11-10), `app/pubspec.yaml` `version: 0.8.0+16`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 332, app 115 tests; CI green on `main`.
+- **Tests**: core 332, app 116 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -536,9 +536,12 @@ mini window, balance planner, year heatmap, week comparison.
       the "Soll erreicht" notification (Android) and balloon (Windows), the arc's pulse.
 
 ### Trip dialog: order, notes, clearer dates (requested by the user 2026-11-13)
-- [x] Departure and return are one heading each ("Abreise", "Rückkehr") with a date and a time
-      field side by side (`_WhenFields` in `trips_screen.dart`), right after the place; the cross
-      at "Rückkehr" leaves the trip open. Before, "Abreise" labelled two look-alike rows.
+- [x] Dates in one calendar (`app/lib/widgets/date_range_dialog.dart` `pickDateRange`, wish
+      2026-11-13): field "Reisezeitraum" right after the place; the first tap is one end, the
+      second the other (either order, same day twice = day trip) and the calendar closes without
+      an OK. While the trip is open it picks only the departure ("ab Di, 10.11."). Below it the
+      times "Abreise" and "Rückkehr" side by side; the cross at "Rückkehr" leaves the trip open.
+      Before, "Abreise" labelled a date row and a time row that looked the same.
 - [x] Order the trip is billed through (data-model §9 `order_kind` `mo`/`ga`/`sa`, `order_number`;
       core `TripOrderKind`, `Trip.orderLabel` = `GA 4711`): section "Auftrag" with MO/GA/SA and the
       number. Shown in the trip list, the travel report's destination column, the expense report
@@ -687,3 +690,5 @@ mini window, balance planner, year heatmap, week comparison.
   moment, predictive back and shared axis, Material You widget, pattern hints); release v0.8.0.
 - 2026-11-13, Claude Code: trip dialog with date/time pairs per end, order (MO/GA/SA + number,
   in list and reports) and notes. 332 core, 115 app tests green.
+- 2026-11-13, Claude Code: trip dates in one calendar that closes on the second tap; times side by
+  side. 332 core, 116 app tests green.

@@ -686,8 +686,6 @@
   "patternSundayWork": "{count, plural, =1{1 Sonn- oder Feiertag} other{{count} Sonn- und Feiertage}} gearbeitet",
   "patternLateFinish": "{count}× Feierabend nach 20 Uhr – gönn dir auch mal einen frühen Abend",
   "patternAllBreaksKept": "Alle Pausen eingehalten – weiter so!",
-  "dateLabel": "Datum",
-  "timeLabel": "Uhrzeit",
   "returnOpen": "Noch unterwegs: Rückkehr offen lassen",
   "tripOrder": "Auftrag",
   "tripOrderHint": "Über diesen Auftrag wird die Reise abgerechnet",
@@ -695,5 +693,9 @@
   "tripOrderWarranty": "Gewährleistungsauftrag",
   "tripOrderService": "Serviceauftrag",
   "tripNote": "Notizen",
-  "tripNoteHint": "Zusatzinfos zur Reise"
+  "tripNoteHint": "Zusatzinfos zur Reise",
+  "tripDates": "Reisezeitraum",
+  "tripDatesFrom": "ab {date}",
+  "pickTripStart": "Abreisetag antippen",
+  "pickTripEnd": "Rückkehrtag antippen"
 }

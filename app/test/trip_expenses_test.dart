@@ -101,11 +101,6 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('New trip'));
     await tester.pumpAndSettle();
-    // Each end of the trip is one heading with a date and a time field.
-    expect(find.text('Departure'), findsOneWidget);
-    expect(find.text('Return'), findsOneWidget);
-    expect(find.text('Date'), findsNWidgets(2));
-    expect(find.text('Time'), findsNWidgets(2));
     await tester.tap(find.text('GA'));
     await tester.enterText(
       find.widgetWithText(TextField, 'Order number'),
@@ -132,6 +127,53 @@ void main() {
     await tester.tap(find.text('Save'));
     await settle(tester);
     expect(store.rowsOf('trips').values.single.fields['order_kind'], isNull);
+  });
+
+  testWidgets('trip dates: one calendar, closed by the second tap', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router);
+    router.go('/calendar/trips');
+    await settle(tester);
+    await tester.tap(find.text('New trip'));
+    await tester.pumpAndSettle();
+    Finder day(String d) =>
+        find.descendant(of: find.byType(PageView), matching: find.text(d));
+
+    // The taps may come in either order; no OK needed.
+    await tester.tap(find.byIcon(Icons.date_range));
+    await tester.pumpAndSettle();
+    expect(find.text('Tap the departure day'), findsOneWidget);
+    await tester.tap(day('12'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tap the return day'), findsOneWidget);
+    await tester.tap(day('10'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PageView), findsNothing);
+    expect(find.text('Tue, 11/10 – Thu, 11/12'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    final trip = store.rowsOf('trips').values.single.fields;
+    expect(
+      (trip['depart_utc'], trip['return_utc']),
+      ('2026-11-10T06:00:00Z', '2026-11-12T18:00:00Z'),
+    );
+
+    // While the trip is open, one tap picks the departure.
+    await tester.tap(find.byIcon(Icons.luggage_outlined));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Still travelling: leave the return open'));
+    await tester.pumpAndSettle();
+    expect(find.text('from Tue, 11/10'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.date_range));
+    await tester.pumpAndSettle();
+    await tester.tap(day('9'));
+    await tester.pumpAndSettle();
+    expect(find.text('from Mon, 11/9'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    expect(store.rowsOf('trips').values.single.fields['return_utc'], isNull);
   });
 
   testWidgets('§13.4 site allowance rates are entered per country', (

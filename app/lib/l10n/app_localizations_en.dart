@@ -2447,12 +2447,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patternAllBreaksKept => 'Every break kept – well done!';
 
   @override
-  String get dateLabel => 'Date';
-
-  @override
-  String get timeLabel => 'Time';
-
-  @override
   String get returnOpen => 'Still travelling: leave the return open';
 
   @override
@@ -2475,4 +2469,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripNoteHint => 'Anything else about the trip';
+
+  @override
+  String get tripDates => 'Trip dates';
+
+  @override
+  String tripDatesFrom(String date) {
+    return 'from $date';
+  }
+
+  @override
+  String get pickTripStart => 'Tap the departure day';
+
+  @override
+  String get pickTripEnd => 'Tap the return day';
 }

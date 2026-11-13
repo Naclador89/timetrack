@@ -2458,12 +2458,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get patternAllBreaksKept => 'Alle Pausen eingehalten – weiter so!';
 
   @override
-  String get dateLabel => 'Datum';
-
-  @override
-  String get timeLabel => 'Uhrzeit';
-
-  @override
   String get returnOpen => 'Noch unterwegs: Rückkehr offen lassen';
 
   @override
@@ -2486,4 +2480,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tripNoteHint => 'Zusatzinfos zur Reise';
+
+  @override
+  String get tripDates => 'Reisezeitraum';
+
+  @override
+  String tripDatesFrom(String date) {
+    return 'ab $date';
+  }
+
+  @override
+  String get pickTripStart => 'Abreisetag antippen';
+
+  @override
+  String get pickTripEnd => 'Rückkehrtag antippen';
 }

@@ -4,6 +4,7 @@ import 'package:timetrack_core/timetrack_core.dart';
 
 import '../../app/format.dart';
 import '../../app/providers.dart';
+import '../../widgets/date_range_dialog.dart';
 import '../../widgets/dialogs.dart';
 import '../../widgets/place_picker.dart';
 import '../projects/project_picker.dart';
@@ -308,6 +309,92 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     );
   }
 
+  /// Both dates in one calendar that closes on the second tap (only the
+  /// departure while the trip is open), then the two times.
+  Widget _datesFields(BuildContext context) {
+    final l = context.l10n;
+    final today = ref.watch(todayProvider);
+    String day(LocalDate d) =>
+        d.year == today.year ? context.shortDate(d) : context.date(d);
+    String clock(int m) =>
+        '${(m ~/ 60).toString().padLeft(2, '0')}:'
+        '${(m % 60).toString().padLeft(2, '0')}';
+    final back = _returnDate;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _PickerField(
+            label: l.tripDates,
+            value: back == null
+                ? l.tripDatesFrom(day(_departDate))
+                : back == _departDate
+                ? day(back)
+                : '${day(_departDate)} – ${day(back)}',
+            icon: Icons.date_range,
+            onTap: () async {
+              final picked = await pickDateRange(
+                context,
+                start: _departDate,
+                end: back,
+                today: today,
+                title: l.pickTripStart,
+                secondTitle: l.pickTripEnd,
+                single: back == null,
+              );
+              if (picked == null) return;
+              setState(() {
+                _departDate = picked.$1;
+                if (picked.$2 case final end?) _returnDate = end;
+              });
+            },
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _PickerField(
+                  label: l.depart,
+                  value: clock(_departTime),
+                  icon: Icons.schedule,
+                  onTap: () async {
+                    final m = await pickTime(context, _departTime);
+                    if (m != null) setState(() => _departTime = m);
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _PickerField(
+                  label: l.returnTime,
+                  value: back == null ? l.running : clock(_returnTime!),
+                  icon: Icons.schedule,
+                  onTap: () async {
+                    final m = await pickTime(context, _returnTime ?? 19 * 60);
+                    if (m == null) return;
+                    setState(() {
+                      _returnTime = m;
+                      _returnDate ??= _departDate;
+                    });
+                  },
+                  // Still travelling: no return yet.
+                  onClear: back == null
+                      ? null
+                      : () => setState(() {
+                          _returnDate = null;
+                          _returnTime = null;
+                        }),
+                  clearTooltip: l.returnOpen,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   /// The order the trip is billed through: MO, GA or SA and its number.
   Widget _orderFields(BuildContext context) {
     final l = context.l10n;
@@ -381,34 +468,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                   if (p != null) setState(() => _place = p);
                 },
               ),
-              _WhenFields(
-                label: l.depart,
-                icon: Icons.flight_takeoff,
-                date: _departDate,
-                minutes: _departTime,
-                onDate: (d) => setState(() => _departDate = d),
-                onTime: (m) => setState(() => _departTime = m),
-              ),
-              _WhenFields(
-                label: l.returnTime,
-                icon: Icons.flight_land,
-                date: _returnDate,
-                minutes: _returnTime,
-                defaultMinutes: 19 * 60,
-                fallbackDate: _departDate,
-                onDate: (d) => setState(() {
-                  _returnDate = d;
-                  _returnTime ??= 19 * 60;
-                }),
-                onTime: (m) => setState(() {
-                  _returnTime = m;
-                  _returnDate ??= _departDate;
-                }),
-                onClear: () => setState(() {
-                  _returnDate = null;
-                  _returnTime = null;
-                }),
-              ),
+              _datesFields(context),
               _projectTile(context),
               _orderFields(context),
               SwitchListTile(
@@ -612,106 +672,6 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   }
 }
 
-/// One end of the trip: a heading with its date and time side by side, so
-/// "Abreise" names the pair instead of two look-alike rows.
-class _WhenFields extends StatelessWidget {
-  const _WhenFields({
-    required this.label,
-    required this.icon,
-    required this.date,
-    required this.minutes,
-    required this.onDate,
-    required this.onTime,
-    this.defaultMinutes = 8 * 60,
-    this.fallbackDate,
-    this.onClear,
-  });
-
-  final String label;
-  final IconData icon;
-
-  /// `null` with [minutes] = still travelling.
-  final LocalDate? date;
-  final int? minutes;
-  final int defaultMinutes;
-
-  /// Where the date picker starts while [date] is `null`.
-  final LocalDate? fallbackDate;
-  final ValueChanged<LocalDate> onDate;
-  final ValueChanged<int> onTime;
-
-  /// If given, offers to leave this end open.
-  final VoidCallback? onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final d = date;
-    final m = minutes;
-    final open = d == null || m == null;
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 18),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              if (onClear != null && !open)
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.close, size: 18),
-                  tooltip: l.returnOpen,
-                  onPressed: onClear,
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: _PickerField(
-                  label: l.dateLabel,
-                  value: open ? l.running : context.date(d),
-                  icon: Icons.calendar_today_outlined,
-                  onTap: () async {
-                    final picked = await pickDate(context, d ?? fallbackDate!);
-                    if (picked != null) onDate(picked);
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: _PickerField(
-                  label: l.timeLabel,
-                  value: open
-                      ? '–'
-                      : '${(m ~/ 60).toString().padLeft(2, '0')}:'
-                            '${(m % 60).toString().padLeft(2, '0')}',
-                  icon: Icons.schedule,
-                  onTap: () async {
-                    final picked = await pickTime(context, m ?? defaultMinutes);
-                    if (picked != null) onTime(picked);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Looks like a form field, opens a picker on tap.
 class _PickerField extends StatelessWidget {
   const _PickerField({
@@ -719,12 +679,18 @@ class _PickerField extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.onTap,
+    this.onClear,
+    this.clearTooltip,
   });
 
   final String label;
   final String value;
   final IconData icon;
   final VoidCallback onTap;
+
+  /// If given, a cross replaces [icon] and calls it.
+  final VoidCallback? onClear;
+  final String? clearTooltip;
 
   @override
   Widget build(BuildContext context) => InkWell(
@@ -734,7 +700,13 @@ class _PickerField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
-        suffixIcon: Icon(icon, size: 18),
+        suffixIcon: onClear == null
+            ? Icon(icon, size: 18)
+            : IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                tooltip: clearTooltip,
+                onPressed: onClear,
+              ),
       ),
       child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
     ),

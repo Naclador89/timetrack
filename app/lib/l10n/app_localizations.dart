@@ -4214,18 +4214,6 @@ abstract class AppLocalizations {
   /// **'Every break kept – well done!'**
   String get patternAllBreaksKept;
 
-  /// No description provided for @dateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Date'**
-  String get dateLabel;
-
-  /// No description provided for @timeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Time'**
-  String get timeLabel;
-
   /// No description provided for @returnOpen.
   ///
   /// In en, this message translates to:
@@ -4273,6 +4261,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anything else about the trip'**
   String get tripNoteHint;
+
+  /// No description provided for @tripDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip dates'**
+  String get tripDates;
+
+  /// No description provided for @tripDatesFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'from {date}'**
+  String tripDatesFrom(String date);
+
+  /// No description provided for @pickTripStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the departure day'**
+  String get pickTripStart;
+
+  /// No description provided for @pickTripEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the return day'**
+  String get pickTripEnd;
 }
 
 class _AppLocalizationsDelegate
