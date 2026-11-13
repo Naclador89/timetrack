@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.8.0`** (2026-11-10), `app/pubspec.yaml` `version: 0.8.0+16`. All planned
+- **Latest release: `v0.8.1`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.1+17`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 332, app 116 tests; CI green on `main`.
@@ -187,6 +187,8 @@ _Last updated: 2026-11-09 by Claude Code._
 - `v0.8.0` (2026-11-10): day arc in the hero card with a target-reached moment, "Soll erreicht"
   reminder, predictive back and shared-axis calendar paging, Material You widget with progress,
   vacation countdown, pattern hints in the month report.
+- `v0.8.1` (2026-11-13): trip dialog: both dates in one calendar that closes on the second tap,
+  times side by side, the order (MO/GA/SA + number) in list and reports, notes.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -692,3 +694,4 @@ mini window, balance planner, year heatmap, week comparison.
   in list and reports) and notes. 332 core, 115 app tests green.
 - 2026-11-13, Claude Code: trip dates in one calendar that closes on the second tap; times side by
   side. 332 core, 116 app tests green.
+- 2026-11-13, Claude Code: release v0.8.1.
