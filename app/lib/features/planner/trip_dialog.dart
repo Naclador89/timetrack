@@ -10,63 +10,6 @@ import '../../widgets/place_picker.dart';
 import '../projects/project_picker.dart';
 import '../reports/report_documents.dart' show projectLabel;
 import '../settings/per_diem_rates_screen.dart' show parseCents;
-import 'trip_expenses.dart';
-
-/// All business trips; tap to edit, + to add one afterwards.
-class TripsScreen extends ConsumerWidget {
-  /// Creates the screen.
-  const TripsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = context.l10n;
-    final zone = ref.watch(zoneProvider);
-    final projects = ref.watch(projectByIdProvider);
-    final trips = [...ref.watch(ledgerDataProvider).trips]
-      ..sort((a, b) => b.depart.compareTo(a.depart));
-    String when(DateTime t) =>
-        '${context.date(zone.dateOf(t))} ${context.time(t, zone)}';
-    return Scaffold(
-      appBar: AppBar(title: Text(l.trips)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showTripDialog(context),
-        icon: const Icon(Icons.add),
-        label: Text(l.newTrip),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 88),
-        children: [
-          for (final t in trips)
-            ListTile(
-              leading: const Icon(Icons.luggage_outlined),
-              title: Text(
-                t.destination.isEmpty
-                    ? l.tripDay
-                    : '${t.destination} (${placeLabel(TripPlace(t.country, t.city))})',
-              ),
-              subtitle: Text(
-                [
-                  '${when(t.depart)} – ${t.returnAt == null ? l.running : when(t.returnAt!)}',
-                  if (projects[t.projectId] case final p?) projectLabel(p),
-                  if (t.orderLabel.isNotEmpty) '${l.tripOrder} ${t.orderLabel}',
-                  if (t.note.isNotEmpty) t.note.split('\n').first,
-                  if (t.claimedOn case final c?) l.claimedOn(context.date(c)),
-                ].join('\n'),
-              ),
-              trailing: t.returnAt == null
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      tooltip: l.tripExpenses,
-                      onPressed: () => openTripExpenses(context, ref, t),
-                    ),
-              onTap: () => showTripDialog(context, trip: t),
-            ),
-        ],
-      ),
-    );
-  }
-}
 
 /// Opens the trip dialog for [trip], or for a new trip. A new trip departs
 /// on [date] (default today) at [departMinutes] and returns the same day at

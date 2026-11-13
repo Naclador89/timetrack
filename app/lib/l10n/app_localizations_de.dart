@@ -1449,7 +1449,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get keysBreak => 'Pause starten oder beenden';
 
   @override
-  String get keysTabs => 'Heute, Kalender, Projekte, Berichte';
+  String get keysTabs => 'Heute, Kalender, Planer, Projekte, Berichte';
 
   @override
   String get keysPrevNext => 'Vorherige oder nächste Woche, Monat oder Tag';
@@ -2516,4 +2516,99 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get restoreAccepted => 'Akzeptierte Hinweise wieder melden';
+
+  @override
+  String get navPlanner => 'Planer';
+
+  @override
+  String get plannerTitle => 'Reisen & Abwesenheiten';
+
+  @override
+  String get plannerAll => 'Alle';
+
+  @override
+  String get plannerUpcoming => 'Demnächst';
+
+  @override
+  String get plannerPast => 'Vergangen';
+
+  @override
+  String get plannerNew => 'Neu';
+
+  @override
+  String plannerEmpty(int year) {
+    final intl.NumberFormat yearNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String yearString = yearNumberFormat.format(year);
+
+    return 'Nichts eingetragen für $yearString';
+  }
+
+  @override
+  String tripsInYear(int count, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Dienstreisen',
+      one: 'Dienstreise',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0 · $_temp1 unterwegs';
+  }
+
+  @override
+  String claimsOpen(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Reisen noch abzurechnen',
+      one: '1 Reise noch abzurechnen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get claimsAllDone => 'Alles abgerechnet';
+
+  @override
+  String get notClaimed => 'Noch nicht abgerechnet';
+
+  @override
+  String daysUnit(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tage',
+      one: 'Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String startsIn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'in $count Tagen',
+      one: 'morgen',
+      zero: 'heute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String awaySince(String date) {
+    return 'unterwegs seit $date';
+  }
+
+  @override
+  String plannerMore(int count) {
+    return '$count weitere anzeigen';
+  }
 }

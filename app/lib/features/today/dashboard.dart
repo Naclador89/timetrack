@@ -10,7 +10,7 @@ import '../../app/theme.dart';
 import '../../widgets/balance_zone.dart';
 import '../../widgets/dashboard_tile.dart';
 import '../../widgets/sparkline.dart';
-import '../calendar/absences_screen.dart';
+import '../planner/planner_screen.dart';
 import '../settings/home_office_rules_screen.dart';
 
 /// Today's overview tiles: time account, this week, vacation and the
@@ -86,7 +86,8 @@ class DashboardGrid extends ConsumerWidget {
                 : (vacation.taken + vacation.planned) / vacationTotal,
             color: scheme.dayTypeColor(DayType.vacation),
           ),
-          openBuilder: (_) => const AbsencesScreen(),
+          openBuilder: (_) =>
+              const PlannerScreen(filter: PlannerFilter.absences),
         ),
       for (final q in quotas)
         DashboardTile(

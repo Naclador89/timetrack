@@ -121,26 +121,6 @@ class _WeekScreenState extends ConsumerState<WeekScreen> {
                   ? null
                   : () => setState(() => _offset = 0),
             ),
-            PopupMenuButton<String>(
-              tooltip: l.more,
-              onSelected: (route) => context.go(route),
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: '/calendar/absences',
-                  child: ListTile(
-                    leading: const Icon(Icons.beach_access_outlined),
-                    title: Text(l.absences),
-                  ),
-                ),
-                PopupMenuItem(
-                  value: '/calendar/trips',
-                  child: ListTile(
-                    leading: const Icon(Icons.luggage_outlined),
-                    title: Text(l.trips),
-                  ),
-                ),
-              ],
-            ),
             ...commonActions(),
           ],
         ),

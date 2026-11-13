@@ -31,7 +31,7 @@ are open); F1 or `?` lists them, and the command palette shows each action's key
 | Ctrl+P | start or end a break (while clocked in; asks for the time first, calculations §19) |
 | Ctrl+B | book project time for today |
 | Ctrl+J | quick entry for today |
-| Ctrl+1 … 4 | Today, Calendar, Projects, Reports |
+| Ctrl+1 … 5 | Today, Calendar, Planner, Projects, Reports |
 | Ctrl+, | settings |
 | F5 | sync now (if connected) |
 | ← / → | previous / next week, month or day (calendar and day view) |
@@ -75,8 +75,31 @@ The shell (`MainShell`, `app/lib/app/main_shell.dart`) follows the Material 3 wi
 | 600–1199 px | `NavigationRail`, labels below the icons, palette button |
 | ≥ 1200 px | extended `NavigationRail`, labels beside the icons, palette button with its name |
 
-The four tabs stay (Heute, Kalender, Projekte, Berichte); Einstellungen open from the gear. The tab
-that comes in fades through (250 ms); every tab keeps its state.
+Five tabs (Heute, Kalender, Planer, Projekte, Berichte; the Planer since 2026-11-13); Einstellungen
+open from the gear. The tab that comes in fades through (250 ms); every tab keeps its state.
+
+## Planer (trips and absences)
+
+Requested by the user 2026-11-13: business trips and absences were only in the calendar's ⋮ menu,
+where nobody found them. They now have their own tab (`/planner`, `?show=trips|absences` preselects
+the filter; `app/lib/features/planner/planner_screen.dart`). From top to bottom, per year:
+
+1. **The year in numbers**: vacation left of the entitlement with a bar of taken and planned days
+   (carry-over edited here, calculations §10), the trips and days away with how many are still to
+   claim (§13.5), and other absences per kind. Side by side from 640 px.
+2. **One list** with the chips Alle / Reisen / Abwesenheiten: "Demnächst" (running or ahead, soonest
+   first, "in n Tagen" or "läuft" beside the name) and "Vergangen" (newest first, five, then "n
+   weitere anzeigen"). A trip shows its dates, order and project, the first line of its notes and
+   the claim status, with the expense report on the right; tap edits it. Absences are blocks
+   (calculations §10.4): a vacation week is one entry with its days; tap opens its first day, the
+   bin deletes the whole block (undo).
+3. **The year at a glance**: twelve mini months with holidays, absences and trip days in their day
+   type's colour and bridge days ringed; tapping a trip day opens the trip, another day adds a trip
+   or an absence from there. Below it the bridge days (§10.1).
+
+From 900 px the list and the year sit side by side. "Neu" adds a trip or an absence (asks which
+while both are shown). The Urlaub tile on Today opens the planner with absences preselected; the
+command palette has Planer, Abwesenheiten and Reisen.
 
 ## Day arc (hero card)
 

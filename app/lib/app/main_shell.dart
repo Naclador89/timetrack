@@ -34,6 +34,7 @@ class MainShell extends StatelessWidget {
     final items = [
       (Icons.today_outlined, Icons.today, l.navToday),
       (Icons.calendar_month_outlined, Icons.calendar_month, l.navCalendar),
+      (Icons.luggage_outlined, Icons.luggage, l.navPlanner),
       (Icons.work_outline, Icons.work, l.navProjects),
       (Icons.assessment_outlined, Icons.assessment, l.navReports),
     ];

@@ -15,7 +15,7 @@ import '../../widgets/motion.dart';
 import '../../widgets/shortcuts.dart';
 import '../../widgets/undo.dart';
 import '../projects/project_time_dialog.dart';
-import 'absences_screen.dart';
+import '../planner/absences.dart';
 import 'day_type_picker.dart';
 import 'trip_booking_card.dart';
 

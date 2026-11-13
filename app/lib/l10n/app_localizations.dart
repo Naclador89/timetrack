@@ -2651,7 +2651,7 @@ abstract class AppLocalizations {
   /// No description provided for @keysTabs.
   ///
   /// In en, this message translates to:
-  /// **'Today, Calendar, Projects, Reports'**
+  /// **'Today, Calendar, Planner, Projects, Reports'**
   String get keysTabs;
 
   /// No description provided for @keysPrevNext.
@@ -4321,6 +4321,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report accepted notices again'**
   String get restoreAccepted;
+
+  /// No description provided for @navPlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Planner'**
+  String get navPlanner;
+
+  /// No description provided for @plannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips & absences'**
+  String get plannerTitle;
+
+  /// No description provided for @plannerAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get plannerAll;
+
+  /// No description provided for @plannerUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get plannerUpcoming;
+
+  /// No description provided for @plannerPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get plannerPast;
+
+  /// No description provided for @plannerNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get plannerNew;
+
+  /// No description provided for @plannerEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing entered for {year}'**
+  String plannerEmpty(int year);
+
+  /// No description provided for @tripsInYear.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{trip} other{trips}} · {days, plural, =1{1 day} other{{days} days}} away'**
+  String tripsInYear(int count, int days);
+
+  /// No description provided for @claimsOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 trip still to claim} other{{count} trips still to claim}}'**
+  String claimsOpen(int count);
+
+  /// No description provided for @claimsAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All claimed'**
+  String get claimsAllDone;
+
+  /// No description provided for @notClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not claimed yet'**
+  String get notClaimed;
+
+  /// No description provided for @daysUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{day} other{days}}'**
+  String daysUnit(num count);
+
+  /// No description provided for @startsIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{today} =1{tomorrow} other{in {count} days}}'**
+  String startsIn(int count);
+
+  /// No description provided for @awaySince.
+  ///
+  /// In en, this message translates to:
+  /// **'away since {date}'**
+  String awaySince(String date);
+
+  /// No description provided for @plannerMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {count} more'**
+  String plannerMore(int count);
 }
 
 class _AppLocalizationsDelegate

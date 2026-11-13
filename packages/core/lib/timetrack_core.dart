@@ -14,6 +14,7 @@ export 'src/model/planning.dart';
 export 'src/model/project.dart';
 export 'src/reports/reports.dart';
 export 'src/reports/week_booking.dart';
+export 'src/rules/absence_blocks.dart';
 export 'src/rules/arbzg.dart';
 export 'src/rules/balance_zone.dart';
 export 'src/rules/bmf_rates.dart';

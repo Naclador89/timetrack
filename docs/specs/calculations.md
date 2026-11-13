@@ -312,6 +312,14 @@ is skipped, also on its weekend (the last workday before a free today is a vacat
 vacation is already running. Its **days** are the vacation fractions in the block. Today's vacation
 tile shows "Nächster Urlaub in n Tagen · d Tage" ("morgen" for tomorrow; `nextVacation`).
 
+### §10.4 Absence blocks (planner)
+
+Requested by the user 2026-11-13 (the "Planer" tab lists absences as blocks, not day by day).
+Absences of the same kind and the same share of the day (full or half) form a **block** while every
+date between two of them is free (target 0, §7: weekend, holiday); a workday without such an absence
+ends it. Its **days** are the fractions on workdays; for `extra_holiday` and `short_time`, which
+reduce the target themselves, every date counts. `absenceBlocks` implements this.
+
 ## §11 Home office
 
 ### §11.1 Home-office value of a day

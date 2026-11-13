@@ -72,7 +72,7 @@ void main() {
     await openCalendar(tester);
     expect(find.text('Week complete'), findsOneWidget);
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
-    await tester.sendKeyEvent(LogicalKeyboardKey.digit4);
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     await settle(tester);
     await tester.scrollUntilVisible(

@@ -1,10 +1,9 @@
 import 'package:go_router/go_router.dart';
 import 'package:timetrack_core/timetrack_core.dart';
 
-import '../features/calendar/absences_screen.dart';
 import '../features/calendar/day_screen.dart';
-import '../features/calendar/trips_screen.dart';
 import '../features/calendar/week_screen.dart';
+import '../features/planner/planner_screen.dart';
 import '../features/projects/project_screen.dart';
 import '../features/projects/projects_screen.dart';
 import '../features/reports/reports_screen.dart';
@@ -71,12 +70,17 @@ GoRouter buildRouter() => GoRouter(
                     date: LocalDate.parse(s.pathParameters['date']!),
                   ),
                 ),
-                GoRoute(
-                  path: 'absences',
-                  builder: (_, _) => const AbsencesScreen(),
-                ),
-                GoRoute(path: 'trips', builder: (_, _) => const TripsScreen()),
               ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/planner',
+              builder: (_, state) => PlannerScreen(
+                filter: PlannerFilter.parse(state.uri.queryParameters['show']),
+              ),
             ),
           ],
         ),

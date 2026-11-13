@@ -17,7 +17,7 @@ class AppShortcuts extends ConsumerWidget {
   /// Wraps the tab [shell]'s [child].
   const AppShortcuts({super.key, required this.shell, required this.child});
 
-  /// The tabs, for Ctrl+1…4.
+  /// The tabs, for Ctrl+1…5.
   final StatefulNavigationShell shell;
 
   /// The app content.
@@ -48,6 +48,8 @@ class AppShortcuts extends ConsumerWidget {
           tab(2),
       const SingleActivator(LogicalKeyboardKey.digit4, control: true): () =>
           tab(3),
+      const SingleActivator(LogicalKeyboardKey.digit5, control: true): () =>
+          tab(4),
       const SingleActivator(LogicalKeyboardKey.comma, control: true): () =>
           GoRouter.of(context).push('/settings'),
       const SingleActivator(LogicalKeyboardKey.f5): () {
@@ -183,7 +185,7 @@ Future<void> showShortcutHelp(BuildContext context) => showDialog<void>(
       ('Ctrl+P', l.keysBreak),
       ('Ctrl+B', l.bookProjectTime),
       ('Ctrl+J', l.quickEntry),
-      ('Ctrl+1…4', l.keysTabs),
+      ('Ctrl+1…5', l.keysTabs),
       ('Ctrl+,', l.navSettings),
       ('F5', l.syncNow),
       ('← →', l.keysPrevNext),

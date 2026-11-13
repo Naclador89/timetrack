@@ -34,7 +34,7 @@ void main() {
   ) async {
     await pumpApp(tester, seed: project);
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
-    await tester.sendKeyEvent(LogicalKeyboardKey.digit3);
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit4);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     await settle(tester);
     expect(find.text('8:00 of 10:00 (80 %)'), findsOneWidget, reason: 'list');

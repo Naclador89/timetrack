@@ -95,7 +95,7 @@ Windows builds run only on GitHub Actions (`.github/workflows/ci.yml`, on a `v*`
 | Clocking, breaks, projects, day types, quick entry | `packages/core/lib/src/tracking/` (`time_tracker.dart`, `day_types.dart`, `quick_entry.dart`) |
 | A new synced field or setting | `docs/specs/data-model.md`, `core/lib/src/data/settings.dart` (`SettingKeys`, `AppSettings`), `mapping.dart` |
 | Device-local values (theme, Windows switches) | `local_values` via the store, e.g. `app/lib/app/appearance.dart`, `app/lib/work_pc/work_pc.dart` |
-| A screen | `app/lib/features/<today\|calendar\|projects\|reports\|settings>/`, routes in `app/lib/app/router.dart` |
+| A screen | `app/lib/features/<today\|calendar\|planner\|projects\|reports\|settings>/`, routes in `app/lib/app/router.dart` |
 | Actions shared by Today, command palette, shortcuts and tray | `app/lib/app/actions.dart` |
 | Snack bars with undo | `app/lib/widgets/undo.dart` (always `persist: false`) |
 | UI texts | `app/lib/l10n/app_en.arb` + `app_de.arb`, then `flutter gen-l10n` |

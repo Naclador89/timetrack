@@ -1442,7 +1442,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keysBreak => 'Start or end a break';
 
   @override
-  String get keysTabs => 'Today, Calendar, Projects, Reports';
+  String get keysTabs => 'Today, Calendar, Planner, Projects, Reports';
 
   @override
   String get keysPrevNext => 'Previous or next week, month or day';
@@ -2504,4 +2504,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreAccepted => 'Report accepted notices again';
+
+  @override
+  String get navPlanner => 'Planner';
+
+  @override
+  String get plannerTitle => 'Trips & absences';
+
+  @override
+  String get plannerAll => 'All';
+
+  @override
+  String get plannerUpcoming => 'Coming up';
+
+  @override
+  String get plannerPast => 'Past';
+
+  @override
+  String get plannerNew => 'New';
+
+  @override
+  String plannerEmpty(int year) {
+    final intl.NumberFormat yearNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String yearString = yearNumberFormat.format(year);
+
+    return 'Nothing entered for $yearString';
+  }
+
+  @override
+  String tripsInYear(int count, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'trips',
+      one: 'trip',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$_temp0 · $_temp1 away';
+  }
+
+  @override
+  String claimsOpen(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count trips still to claim',
+      one: '1 trip still to claim',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get claimsAllDone => 'All claimed';
+
+  @override
+  String get notClaimed => 'Not claimed yet';
+
+  @override
+  String daysUnit(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'days',
+      one: 'day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String startsIn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'in $count days',
+      one: 'tomorrow',
+      zero: 'today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String awaySince(String date) {
+    return 'away since $date';
+  }
+
+  @override
+  String plannerMore(int count) {
+    return 'Show $count more';
+  }
 }

@@ -34,7 +34,7 @@ void main() {
         'order_number': '4711',
       }),
     );
-    router.go('/calendar/trips');
+    router.go('/planner?show=trips');
     await settle(tester);
     await tester.tap(find.byTooltip('Expense report'));
     await tester.pumpAndSettle();
@@ -69,7 +69,7 @@ void main() {
   testWidgets('§13.0 the trip dialog picks country and city', (tester) async {
     final router = buildRouter();
     final (store, _) = await pumpApp(tester, router: router);
-    router.go('/calendar/trips');
+    router.go('/planner?show=trips');
     await settle(tester);
     await tester.tap(find.text('New trip'));
     await tester.pumpAndSettle();
@@ -97,7 +97,7 @@ void main() {
   ) async {
     final router = buildRouter();
     final (store, _) = await pumpApp(tester, router: router);
-    router.go('/calendar/trips');
+    router.go('/planner?show=trips');
     await settle(tester);
     await tester.tap(find.text('New trip'));
     await tester.pumpAndSettle();
@@ -117,11 +117,11 @@ void main() {
       (trip['order_kind'], trip['order_number'], trip['note']),
       ('ga', '4711', 'Bring the spare part\nCall ahead'),
     );
-    expect(find.textContaining('Order GA 4711'), findsOneWidget);
+    expect(find.textContaining('GA 4711'), findsOneWidget);
     expect(find.textContaining('Bring the spare part'), findsOneWidget);
 
     // Picking the kind again clears it.
-    await tester.tap(find.byIcon(Icons.luggage_outlined));
+    await tester.tap(find.textContaining('GA 4711'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('GA'));
     await tester.tap(find.text('Save'));
@@ -134,7 +134,7 @@ void main() {
   ) async {
     final router = buildRouter();
     final (store, _) = await pumpApp(tester, router: router);
-    router.go('/calendar/trips');
+    router.go('/planner?show=trips');
     await settle(tester);
     await tester.tap(find.text('New trip'));
     await tester.pumpAndSettle();
@@ -161,7 +161,7 @@ void main() {
     );
 
     // While the trip is open, one tap picks the departure.
-    await tester.tap(find.byIcon(Icons.luggage_outlined));
+    await tester.tap(find.textContaining('Tue, 11/10 – Thu, 11/12'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Still travelling: leave the return open'));
     await tester.pumpAndSettle();

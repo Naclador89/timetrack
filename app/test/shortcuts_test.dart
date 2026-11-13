@@ -64,7 +64,7 @@ void main() {
     await tester.tap(find.text('Close'));
     await tester.pumpAndSettle();
 
-    await ctrl(tester, LogicalKeyboardKey.digit3);
+    await ctrl(tester, LogicalKeyboardKey.digit4);
     await tester.tap(find.byType(TextField).first);
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.keyT);

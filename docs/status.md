@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.8.1`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.1+17`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 334, app 117 tests; CI green on `main`.
+- **Tests**: core 337, app 118 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -561,6 +561,15 @@ mini window, balance planner, year heatmap, week comparison.
       Snack bar undo restores the previous state. Einstellungen → Hinweise: counts, "Ausgeblendete
       Hinweise akzeptieren" (all at once) and "Akzeptierte Hinweise wieder melden".
 
+### Planer tab for trips and absences (requested by the user 2026-11-13; navigation.md "Planer")
+- [x] Trips and absences left the calendar's ⋮ menu for a fifth tab "Planer" (index 2, Ctrl+3;
+      Projects/Reports moved to 4/5, `BackSteps` of Reports now 4). `features/planner/`:
+      `planner_screen.dart` (summary cards, list with chips and Demnächst/Vergangen, year overview,
+      bridge days; two columns from 900 px), `absences.dart` (absence dialog, `MiniMonth` now with
+      trip days, `BridgeCard`, `PlannerLegend`), `trip_dialog.dart` (the trip dialog, moved).
+- [x] Absences are listed as blocks (calculations §10.4, core `absenceBlocks`).
+- [ ] On the devices: the five-tab bar on the phone, the planner on the work PC.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -707,3 +716,5 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-13, Claude Code: release v0.8.1.
 - 2026-11-13, Claude Code: "Akzeptieren" for notices (no card, marker or hidden entry, not in the
   pattern hints). 334 core, 117 app tests green.
+- 2026-11-13, Claude Code: "Planer" tab for trips and absences (summary, one list, year overview,
+  absence blocks §10.4). 337 core, 118 app tests green.

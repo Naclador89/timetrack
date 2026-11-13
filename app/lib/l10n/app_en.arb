@@ -876,7 +876,7 @@
   "keyboardShortcuts": "Keyboard shortcuts",
   "keysClock": "Clock in or out",
   "keysBreak": "Start or end a break",
-  "keysTabs": "Today, Calendar, Projects, Reports",
+  "keysTabs": "Today, Calendar, Planner, Projects, Reports",
   "keysPrevNext": "Previous or next week, month or day",
   "keysWeekMonth": "Switch between week and month",
   "keysHelp": "This overview",
@@ -1735,5 +1735,73 @@
   },
   "acceptAllHidden": "Accept hidden notices",
   "acceptAllHiddenHint": "They also leave the calendar and the day view",
-  "restoreAccepted": "Report accepted notices again"
+  "restoreAccepted": "Report accepted notices again",
+  "navPlanner": "Planner",
+  "plannerTitle": "Trips & absences",
+  "plannerAll": "All",
+  "plannerUpcoming": "Coming up",
+  "plannerPast": "Past",
+  "plannerNew": "New",
+  "plannerEmpty": "Nothing entered for {year}",
+  "@plannerEmpty": {
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "tripsInYear": "{count, plural, =1{trip} other{trips}} · {days, plural, =1{1 day} other{{days} days}} away",
+  "@tripsInYear": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "claimsOpen": "{count, plural, =1{1 trip still to claim} other{{count} trips still to claim}}",
+  "@claimsOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "claimsAllDone": "All claimed",
+  "notClaimed": "Not claimed yet",
+  "daysUnit": "{count, plural, =1{day} other{days}}",
+  "@daysUnit": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "startsIn": "{count, plural, =0{today} =1{tomorrow} other{in {count} days}}",
+  "@startsIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "awaySince": "away since {date}",
+  "@awaySince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerMore": "Show {count} more",
+  "@plannerMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

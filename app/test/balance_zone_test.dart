@@ -93,7 +93,7 @@ void main() {
         });
       },
     );
-    router.go('/calendar/absences');
+    router.go('/planner?show=absences');
     await settle(tester);
     await tester.tap(find.byTooltip('2027'));
     await settle(tester);

@@ -7,7 +7,7 @@ import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/explain_sheet.dart';
 import '../../widgets/interval_dialog.dart';
-import 'trips_screen.dart';
+import '../planner/trip_dialog.dart';
 
 /// Icon of a trip leg.
 IconData tripLegIcon(TripLegKind kind) => switch (kind) {

@@ -6,7 +6,7 @@ import '../../app/format.dart';
 import '../../app/providers.dart';
 import '../../app/theme.dart';
 import '../../widgets/undo.dart';
-import 'trips_screen.dart';
+import '../planner/trip_dialog.dart';
 
 /// The day's type as one chip ("🏠 Homeoffice ▾"); tap to pick another
 /// from a sheet (calculations.md §15). Used in the day editor and on Today.

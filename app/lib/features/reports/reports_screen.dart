@@ -36,12 +36,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   @override
   void initState() {
     super.initState();
-    BackSteps.register(3, _back);
+    BackSteps.register(4, _back);
   }
 
   @override
   void dispose() {
-    BackSteps.unregister(3, _back);
+    BackSteps.unregister(4, _back);
     super.dispose();
   }
 

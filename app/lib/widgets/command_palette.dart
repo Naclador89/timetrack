@@ -129,9 +129,17 @@ class _PaletteState extends ConsumerState<_Palette> {
         keys: 'Ctrl+2',
       ),
       (
+        icon: Icons.luggage,
+        label: l.navPlanner,
+        run: () async => go('/planner'),
+        color: null,
+        stay: false,
+        keys: 'Ctrl+3',
+      ),
+      (
         icon: Icons.beach_access_outlined,
         label: l.absences,
-        run: () async => go('/calendar/absences'),
+        run: () async => go('/planner?show=absences'),
         color: null,
         stay: false,
         keys: null,
@@ -139,7 +147,7 @@ class _PaletteState extends ConsumerState<_Palette> {
       (
         icon: Icons.luggage_outlined,
         label: l.trips,
-        run: () async => go('/calendar/trips'),
+        run: () async => go('/planner?show=trips'),
         color: null,
         stay: false,
         keys: null,
@@ -150,7 +158,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/projects'),
         color: null,
         stay: false,
-        keys: 'Ctrl+3',
+        keys: 'Ctrl+4',
       ),
       (
         icon: Icons.assessment,
@@ -158,7 +166,7 @@ class _PaletteState extends ConsumerState<_Palette> {
         run: () async => go('/reports'),
         color: null,
         stay: false,
-        keys: 'Ctrl+4',
+        keys: 'Ctrl+5',
       ),
       (
         icon: Icons.settings_outlined,
