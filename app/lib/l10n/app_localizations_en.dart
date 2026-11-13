@@ -2599,4 +2599,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String plannerMore(int count) {
     return 'Show $count more';
   }
+
+  @override
+  String get halfDayEves => 'Christmas Eve and New Year\'s Eve are half days';
+
+  @override
+  String get halfDayEvesHint =>
+      'Half the target; vacation there counts at most ½ day';
+
+  @override
+  String explainTargetHalfDay(String name) {
+    return '$name: half a day.';
+  }
+
+  @override
+  String get absenceDates => 'Period';
+
+  @override
+  String get pickAbsenceStart => 'Tap the first day';
+
+  @override
+  String get pickAbsenceEnd => 'Tap the last day';
+
+  @override
+  String absenceDaysUsed(String days) {
+    return 'Vacation days: $days';
+  }
+
+  @override
+  String get schoolHolidays => 'School holidays';
+
+  @override
+  String schoolHolidaysNone(int year) {
+    return 'No school holidays known for $year yet.';
+  }
+
+  @override
+  String get schoolHolidaysSource => 'Source: OpenHolidays API (ODbL)';
+
+  @override
+  String get planVacation => 'Enter vacation';
 }

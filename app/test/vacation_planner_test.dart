@@ -1,4 +1,4 @@
-// spec: calculations.md §10.1, §10.4; navigation.md "Planer"
+// spec: calculations.md §6.1, §10, §10.1, §10.4, §10.5; navigation.md "Planer"
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timetrack/app/router.dart';
@@ -74,6 +74,95 @@ void main() {
     await tester.tap(november20);
     await settle(tester);
     expect(find.widgetWithText(AlertDialog, 'Add absence'), findsOneWidget);
+  });
+
+  testWidgets('§10 §6.1 a vacation range in one control marks every date; '
+      'only workdays count, Heiligabend and Silvester half', (tester) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router, seed: fullTime);
+    router.go('/planner?show=absences');
+    await settle(tester);
+    await tester.tap(find.text('Add absence'));
+    await settle(tester);
+    await tester.tap(find.byIcon(Icons.date_range));
+    await settle(tester);
+    final picker = find.byType(AlertDialog).last;
+    expect(
+      find.descendant(of: picker, matching: find.text('Tap the first day')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip('Next month'));
+    await settle(tester);
+    await tester.tap(find.descendant(of: picker, matching: find.text('24')));
+    await settle(tester);
+    await tester.tap(find.descendant(of: picker, matching: find.text('31')));
+    await settle(tester);
+    // Closed after the second tap, without OK.
+    expect(find.text('Tap the last day'), findsNothing);
+    expect(find.text('Thu, 12/24 – Thu, 12/31'), findsOneWidget);
+    // 24 ½ + 28, 29, 30 + 31 ½; 25/26 are holidays, 27 a Sunday.
+    expect(find.text('Vacation days: 4'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    final dates = [
+      for (final r in store.rowsOf('absences').values) r.fields['date'],
+    ]..sort();
+    expect(dates, [for (var d = 24; d <= 31; d++) '2026-12-$d']);
+    expect(find.text('Thu, 12/24 – Thu, 12/31\n4 days'), findsOneWidget);
+  });
+
+  testWidgets('§10.5 the planner shows the state\'s school holidays', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router, seed: fullTime);
+    router.go('/planner?show=absences');
+    await settle(tester);
+    expect(find.text('School holidays'), findsWidgets, reason: 'legend');
+    final christmas = find.ancestor(
+      of: find.text('Weihnachtsferien').last,
+      matching: find.byType(ListTile),
+    );
+    await tester.scrollUntilVisible(
+      christmas,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Nordrhein-Westfalen'), findsOneWidget);
+    expect(find.text('Source: OpenHolidays API (ODbL)'), findsOneWidget);
+    // Past holidays offer nothing; the coming ones a vacation.
+    final summer = find.ancestor(
+      of: find.text('Sommerferien'),
+      matching: find.byType(ListTile),
+    );
+    expect(
+      find.descendant(of: summer, matching: find.byTooltip('Enter vacation')),
+      findsNothing,
+    );
+    final plan = find.descendant(
+      of: christmas,
+      matching: find.byTooltip('Enter vacation'),
+    );
+    await tester.ensureVisible(plan);
+    await tester.pumpAndSettle();
+    await tester.tap(plan);
+    await settle(tester);
+    expect(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Wed, 12/23 – 1/6/2027'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    final dates = [
+      for (final r in store.rowsOf('absences').values) r.fields['date'],
+    ]..sort();
+    expect(
+      (dates.first, dates.last, dates.length),
+      ('2026-12-23', '2027-01-06', 15),
+    );
   });
 
   testWidgets('§10.4 planner tab: trips and absence blocks in one list', (

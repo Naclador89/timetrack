@@ -268,7 +268,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _PickerField(
+          PickerField(
             label: l.tripDates,
             value: back == null
                 ? l.tripDatesFrom(day(_departDate))
@@ -297,7 +297,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
           Row(
             children: [
               Expanded(
-                child: _PickerField(
+                child: PickerField(
                   label: l.depart,
                   value: clock(_departTime),
                   icon: Icons.schedule,
@@ -309,7 +309,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _PickerField(
+                child: PickerField(
                   label: l.returnTime,
                   value: back == null ? l.running : clock(_returnTime!),
                   icon: Icons.schedule,
@@ -616,42 +616,3 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
 }
 
 /// Looks like a form field, opens a picker on tap.
-class _PickerField extends StatelessWidget {
-  const _PickerField({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.onTap,
-    this.onClear,
-    this.clearTooltip,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  /// If given, a cross replaces [icon] and calls it.
-  final VoidCallback? onClear;
-  final String? clearTooltip;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(4),
-    child: InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        isDense: true,
-        suffixIcon: onClear == null
-            ? Icon(icon, size: 18)
-            : IconButton(
-                icon: const Icon(Icons.close, size: 18),
-                tooltip: clearTooltip,
-                onPressed: onClear,
-              ),
-      ),
-      child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
-    ),
-  );
-}

@@ -86,12 +86,20 @@ final class PublicHoliday {
 /// Options for holidays that exist only in parts of a state.
 final class HolidayOptions {
   /// Creates holiday options.
-  const HolidayOptions({this.bavariaAssumptionDay = true});
+  const HolidayOptions({
+    this.bavariaAssumptionDay = true,
+    this.halfDayEves = true,
+  });
 
   /// Whether Mariä Himmelfahrt (15 August) counts in Bavaria. It is a holiday
   /// only in the (mostly Catholic) municipalities, which are the large majority,
   /// hence the default `true`. Setting: `by_assumption_day`.
   final bool bavariaAssumptionDay;
+
+  /// Whether Heiligabend (24 December) and Silvester (31 December) are half
+  /// days: not public holidays, but many employers give the second half off
+  /// (calculations.md §6.1). Setting: `half_day_eves`.
+  final bool halfDayEves;
 }
 
 /// The earliest year the holiday rules are valid for (spec: calculations.md §6).
@@ -233,6 +241,22 @@ final class HolidayCalendar {
 
   /// Whether [date] is a public holiday.
   bool isHoliday(LocalDate date) => holidayOn(date) != null;
+
+  /// Heiligabend or Silvester on [date] when they are half days
+  /// ([HolidayOptions.halfDayEves], calculations.md §6.1), else `null`.
+  PublicHoliday? halfDayOn(LocalDate date) {
+    if (!options.halfDayEves || date.month != 12 || isHoliday(date)) {
+      return null;
+    }
+    return switch (date.day) {
+      24 => PublicHoliday(date, 'Heiligabend'),
+      31 => PublicHoliday(date, 'Silvester'),
+      _ => null,
+    };
+  }
+
+  /// Whether [date] is a half day (calculations.md §6.1).
+  bool isHalfDay(LocalDate date) => halfDayOn(date) != null;
 
   Map<LocalDate, PublicHoliday> _year(int year) => _byYear.putIfAbsent(
     year,

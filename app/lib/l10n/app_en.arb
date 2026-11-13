@@ -1803,5 +1803,37 @@
         "type": "int"
       }
     }
-  }
+  },
+  "halfDayEves": "Christmas Eve and New Year's Eve are half days",
+  "halfDayEvesHint": "Half the target; vacation there counts at most ½ day",
+  "explainTargetHalfDay": "{name}: half a day.",
+  "@explainTargetHalfDay": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "absenceDates": "Period",
+  "pickAbsenceStart": "Tap the first day",
+  "pickAbsenceEnd": "Tap the last day",
+  "absenceDaysUsed": "Vacation days: {days}",
+  "@absenceDaysUsed": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolHolidays": "School holidays",
+  "schoolHolidaysNone": "No school holidays known for {year} yet.",
+  "@schoolHolidaysNone": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolHolidaysSource": "Source: OpenHolidays API (ODbL)",
+  "planVacation": "Enter vacation"
 }

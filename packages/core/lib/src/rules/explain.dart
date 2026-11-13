@@ -13,6 +13,9 @@ enum TargetReason {
   /// Lowered by an extra day off or short-time work.
   reduced,
 
+  /// Halved on Heiligabend or Silvester (§6.1).
+  halfDay,
+
   /// No scheduled work on this weekday.
   dayOff,
 }
@@ -92,14 +95,16 @@ final class DayExplanation {
 }
 
 /// Explains [day] (calculations.md §16). [isHoliday] tells a holiday's
-/// target of 0 apart from a free weekday.
+/// target of 0 apart from a free weekday, [isHalfDay] a halved target (§6.1)
+/// from the schedule's.
 DayExplanation explainDay(
   DayResult day, {
   required bool isHoliday,
+  bool isHalfDay = false,
   NightWorkCredit night = NightWorkCredit.count,
 }) {
   // The ledger adds absence credit last (§8), so the rest is the rule's.
-  final absence = absenceCredit(day.absences, day.target);
+  final absence = day.absenceCredit;
   return DayExplanation(
     worked: day.work.worked,
     breakDeduction: day.breaks.deduction,
@@ -116,6 +121,8 @@ DayExplanation explainDay(
         ? TargetReason.holiday
         : day.absences.any((a) => a.kind.reducesTarget)
         ? TargetReason.reduced
+        : isHalfDay
+        ? TargetReason.halfDay
         : day.target == 0
         ? TargetReason.dayOff
         : TargetReason.schedule,

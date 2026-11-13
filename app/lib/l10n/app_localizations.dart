@@ -4411,6 +4411,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show {count} more'**
   String plannerMore(int count);
+
+  /// No description provided for @halfDayEves.
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Eve and New Year\'s Eve are half days'**
+  String get halfDayEves;
+
+  /// No description provided for @halfDayEvesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Half the target; vacation there counts at most ½ day'**
+  String get halfDayEvesHint;
+
+  /// No description provided for @explainTargetHalfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: half a day.'**
+  String explainTargetHalfDay(String name);
+
+  /// No description provided for @absenceDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get absenceDates;
+
+  /// No description provided for @pickAbsenceStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the first day'**
+  String get pickAbsenceStart;
+
+  /// No description provided for @pickAbsenceEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the last day'**
+  String get pickAbsenceEnd;
+
+  /// No description provided for @absenceDaysUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation days: {days}'**
+  String absenceDaysUsed(String days);
+
+  /// No description provided for @schoolHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'School holidays'**
+  String get schoolHolidays;
+
+  /// No description provided for @schoolHolidaysNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No school holidays known for {year} yet.'**
+  String schoolHolidaysNone(int year);
+
+  /// No description provided for @schoolHolidaysSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: OpenHolidays API (ODbL)'**
+  String get schoolHolidaysSource;
+
+  /// No description provided for @planVacation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter vacation'**
+  String get planVacation;
 }
 
 class _AppLocalizationsDelegate

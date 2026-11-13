@@ -49,7 +49,8 @@ void main() {
         calendar.targetMinutes(d('2027-01-01')),
         0,
       ); // Neujahr (Friday → 0 anyway)
-      expect(calendar.targetMinutes(d('2026-12-31')), 360);
+      // Silvester is no holiday, but a half day by default (§6.1).
+      expect(calendar.targetMinutes(d('2026-12-31')), 180);
       expect(
         TargetCalendar(
           schedules: [fullTime],
@@ -62,6 +63,61 @@ void main() {
     test('extra_holiday reduces the target; vacation does not', () {
       expect(calendar.targetMinutes(d('2026-12-24')), 180);
       expect(calendar.targetMinutes(d('2026-12-28')), 360);
+    });
+
+    test('§6.1 Heiligabend and Silvester are half days; off by setting', () {
+      TargetCalendar targets({
+        bool half = true,
+        List<Absence> off = const [],
+      }) => TargetCalendar(
+        schedules: [fullTime],
+        holidays: HolidayCalendar(
+          FederalState.nw,
+          options: HolidayOptions(halfDayEves: half),
+        ),
+        absences: off,
+      );
+      // Thu 24 and Thu 31 Dec 2026.
+      for (final eve in [d('2026-12-24'), d('2026-12-31')]) {
+        expect(targets().targetMinutes(eve), 240);
+        expect(targets().workShare(eve), 0.5);
+        expect(targets(half: false).targetMinutes(eve), 480);
+      }
+      expect(
+        targets().holidays.halfDayOn(d('2026-12-24'))?.name,
+        'Heiligabend',
+      );
+      expect(targets().holidays.halfDayOn(d('2026-12-23')), isNull);
+      // A day off on top takes the rest; half a day off is that very half.
+      Absence extra(double f) => Absence(
+        id: 'x$f',
+        date: d('2026-12-24'),
+        kind: AbsenceKind.extraHoliday,
+        fraction: f,
+      );
+      expect(targets(off: [extra(1)]).targetMinutes(d('2026-12-24')), 0);
+      expect(targets(off: [extra(0.5)]).targetMinutes(d('2026-12-24')), 240);
+    });
+
+    test('§10 a day uses at most what is left to work', () {
+      final targets = TargetCalendar(
+        schedules: [fullTime],
+        holidays: HolidayCalendar(FederalState.nw),
+        absences: [
+          Absence(
+            id: 'x',
+            date: d('2026-11-04'),
+            kind: AbsenceKind.extraHoliday,
+            fraction: 0.5,
+          ),
+        ],
+      );
+      expect(targets.usedDays(d('2026-11-03'), 1), 1);
+      expect(targets.usedDays(d('2026-11-04'), 1), 0.5);
+      expect(targets.usedDays(d('2026-12-24'), 1), 0.5);
+      expect(targets.usedDays(d('2026-12-24'), 0.5), 0.5);
+      expect(targets.usedDays(d('2026-12-25'), 1), 0); // holiday
+      expect(targets.usedDays(d('2026-11-08'), 1), 0); // Sunday
     });
 
     test('weekend and days without schedule minutes are not workdays', () {
@@ -79,6 +135,22 @@ void main() {
       expect(absenceCredit([a(AbsenceKind.vacation)], 480), 480);
       expect(absenceCredit([a(AbsenceKind.sick, 0.5)], 480), 240);
       expect(absenceCredit([a(AbsenceKind.specialLeave)], 480), 480);
+    });
+
+    test('a fraction is a share of the scheduled day, at most T(D)', () {
+      // Heiligabend: T = 240 of 480. Half a day of vacation covers it.
+      expect(
+        absenceCredit([a(AbsenceKind.vacation, 0.5)], 240, scheduled: 480),
+        240,
+      );
+      expect(
+        absenceCredit([a(AbsenceKind.vacation)], 240, scheduled: 480),
+        240,
+      );
+      expect(
+        absenceCredit([a(AbsenceKind.sick, 0.25)], 240, scheduled: 480),
+        120,
+      );
     });
 
     test('comp time gives no credit', () {

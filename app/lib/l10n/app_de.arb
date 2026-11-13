@@ -718,5 +718,16 @@
   "daysUnit": "{count, plural, =1{Tag} other{Tage}}",
   "startsIn": "{count, plural, =0{heute} =1{morgen} other{in {count} Tagen}}",
   "awaySince": "unterwegs seit {date}",
-  "plannerMore": "{count} weitere anzeigen"
+  "plannerMore": "{count} weitere anzeigen",
+  "halfDayEves": "Heiligabend und Silvester sind halbe Tage",
+  "halfDayEvesHint": "Halbes Soll; Urlaub zählt dort höchstens ½ Tag",
+  "explainTargetHalfDay": "{name}: halber Tag.",
+  "absenceDates": "Zeitraum",
+  "pickAbsenceStart": "Ersten Tag antippen",
+  "pickAbsenceEnd": "Letzten Tag antippen",
+  "absenceDaysUsed": "Urlaubstage: {days}",
+  "schoolHolidays": "Schulferien",
+  "schoolHolidaysNone": "Für {year} sind noch keine Schulferien bekannt.",
+  "schoolHolidaysSource": "Quelle: OpenHolidays API (ODbL)",
+  "planVacation": "Urlaub eintragen"
 }

@@ -291,3 +291,56 @@ class _MonthGrid extends StatelessWidget {
     );
   }
 }
+
+/// A read-only field that looks like a text field and opens a picker on tap,
+/// e.g. [pickDateRange].
+class PickerField extends StatelessWidget {
+  /// Creates the field showing [value] under [label].
+  const PickerField({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.onTap,
+    this.onClear,
+    this.clearTooltip,
+  });
+
+  /// The label above the value.
+  final String label;
+
+  /// What is picked, as text.
+  final String value;
+
+  /// Shown on the right.
+  final IconData icon;
+
+  /// Opens the picker.
+  final VoidCallback onTap;
+
+  /// If given, a cross replaces [icon] and calls it.
+  final VoidCallback? onClear;
+
+  /// The cross's tooltip.
+  final String? clearTooltip;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(4),
+    child: InputDecorator(
+      decoration: InputDecoration(
+        labelText: label,
+        isDense: true,
+        suffixIcon: onClear == null
+            ? Icon(icon, size: 18)
+            : IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                tooltip: clearTooltip,
+                onPressed: onClear,
+              ),
+      ),
+      child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
+    ),
+  );
+}

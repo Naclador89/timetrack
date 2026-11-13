@@ -94,8 +94,16 @@ the filter; `app/lib/features/planner/planner_screen.dart`). From top to bottom,
    (calculations §10.4): a vacation week is one entry with its days; tap opens its first day, the
    bin deletes the whole block (undo).
 3. **The year at a glance**: twelve mini months with holidays, absences and trip days in their day
-   type's colour and bridge days ringed; tapping a trip day opens the trip, another day adds a trip
-   or an absence from there. Below it the bridge days (§10.1).
+   type's colour, bridge days ringed and the state's school holidays as a band behind the days
+   (§10.5); tapping a trip day opens the trip, another day adds a trip or an absence from there.
+   Below it the bridge days (§10.1) and the school holidays of the year with the state's name, each
+   still ahead with "+" to enter it as vacation (the absence dialog with that range), and the
+   source (OpenHolidays API, ODbL).
+
+**Absence dialog** (since 2026-11-13, like the trip dialog): the period is one field that opens one
+calendar; the first tap sets one end, the second the other, and it closes right away
+(`pickDateRange`). From the day screen it picks one day. A range marks every date in it, weekends
+and holidays too; for vacation the dialog shows how many days the account will count (§10, §6.1).
 
 From 900 px the list and the year sit side by side. "Neu" adds a trip or an absence (asks which
 while both are shown). The Urlaub tile on Today opens the planner with absences preselected; the

@@ -17,6 +17,9 @@ abstract final class SettingKeys {
   /// Mariä Himmelfahrt in Bavaria (calculations.md §6).
   static const bavariaAssumptionDay = 'by_assumption_day';
 
+  /// Heiligabend and Silvester as half days (calculations.md §6.1).
+  static const halfDayEves = 'half_day_eves';
+
   /// IANA home time zone (calculations.md §1).
   static const homeTimeZone = 'home_time_zone';
 
@@ -146,6 +149,7 @@ final class AppSettings {
   const AppSettings({
     this.federalState,
     this.bavariaAssumptionDay = true,
+    this.halfDayEves = true,
     this.homeTimeZone = 'Europe/Berlin',
     this.breakMode = BreakRuleMode.warn,
     this.startingBalance = 0,
@@ -207,6 +211,7 @@ final class AppSettings {
     return AppSettings(
       federalState: state,
       bavariaAssumptionDay: pick(SettingKeys.bavariaAssumptionDay, true),
+      halfDayEves: pick(SettingKeys.halfDayEves, true),
       homeTimeZone: pick(SettingKeys.homeTimeZone, 'Europe/Berlin'),
       breakMode: enumOf(
         BreakRuleMode.values,
@@ -329,6 +334,9 @@ final class AppSettings {
   /// Mariä Himmelfahrt in Bavaria.
   final bool bavariaAssumptionDay;
 
+  /// Heiligabend and Silvester as half days.
+  final bool halfDayEves;
+
   /// IANA home time zone.
   final String homeTimeZone;
 
@@ -401,8 +409,10 @@ final class AppSettings {
   double? number(String key) => (raw[key] as num?)?.toDouble();
 
   /// Holiday options derived from these settings.
-  HolidayOptions get holidayOptions =>
-      HolidayOptions(bavariaAssumptionDay: bavariaAssumptionDay);
+  HolidayOptions get holidayOptions => HolidayOptions(
+    bavariaAssumptionDay: bavariaAssumptionDay,
+    halfDayEves: halfDayEves,
+  );
 }
 
 /// The wire form of an enum value name, e.g. `likeSunday` → `like_sunday`.

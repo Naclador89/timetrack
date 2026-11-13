@@ -3,6 +3,7 @@ import '../time/local_date.dart';
 import 'ledger.dart';
 import 'review.dart';
 import 'target.dart';
+import 'vacation.dart';
 
 /// Zones of the overtime account (spec: calculations.md §20.1), from good to
 /// bad.
@@ -123,12 +124,10 @@ List<ReviewItem> balanceZoneItems(
   final deadline = _endOfMonth(today.year, months);
   if (today.isAfter(deadline)) return null;
   final start = LocalDate(today.year, 1, 1);
-  var used = 0.0;
-  for (final a in absences) {
-    if (a.kind != AbsenceKind.vacation) continue;
-    if (a.date.isBefore(start) || a.date.isAfter(deadline)) continue;
-    if (targets.isWorkday(a.date)) used += a.fraction;
-  }
+  final used = vacationDaysByDate(
+    absences.where((a) => !a.date.isBefore(start) && !a.date.isAfter(deadline)),
+    targets,
+  ).values.fold(0.0, (a, b) => a + b);
   final open = carryOver - used;
   return open > 0 ? (open: open, deadline: deadline) : null;
 }

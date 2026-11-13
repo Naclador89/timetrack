@@ -157,11 +157,19 @@ Easter Sunday is computed with the anonymous Gregorian algorithm (Meeus/Jones/Bu
 | Tag der Befreiung | 05-08 | BE, **2020 and 2025 only** (one-off) |
 
 Not covered (enter as `extra_holiday` absences): purely local holidays (Augsburger Friedensfest,
-Fronleichnam in parts of SN/TH), future one-off holidays, company days off (e.g. 24.12/31.12).
+Fronleichnam in parts of SN/TH), future one-off holidays, company days off. For 24.12/31.12 see §6.1.
 Rules are applied from 1995 onwards (Buß- und Bettag stopped being nationwide in 1995); earlier years
 aren't supported.
 
 **Checks**: Easter 2026-04-05, 2027-03-28; Buß- und Bettag 2026-11-18, 2027-11-17.
+
+### §6.1 Heiligabend and Silvester (half days)
+
+Requested by the user 2026-11-13 ("Heiligabend und Silvester sind jeweils max. ein halber
+Urlaubstag"). With setting `half_day_eves` (default **true**, Einstellungen → Feiertage), 24 and 31
+December are **half days**: no public holidays, but the second half is off, as with many employers.
+On a half day the target loses at least half the scheduled day (§7), so a vacation there uses at most
+half a day (§10) and half a day of vacation covers it (§8). On a weekend the day is free anyway.
 
 ## §7 Target time
 
@@ -170,8 +178,11 @@ aren't supported.
 - `T_sched(D)` = the schedule's minutes for weekday(D).
 - `T(D)` = 0 if D is a public holiday (§6); otherwise `T_sched(D)`.
 - An `extra_holiday` or `short_time` (Kurzarbeit) absence with fraction f reduces the target:
-  `T(D) = T(D) × (1 − f)`, rounded to the minute.
+  `T(D) = T(D) × (1 − f)`, rounded to the minute. On a half day (§6.1) f is at least 0.5; the two
+  don't add up, since an `extra_holiday` of 0.5 entered there is usually that very half.
 - A **workday** is a day with `T(D) > 0`.
+- The **work share** of D is `1 − f` (0 on a holiday or without scheduled minutes): what is left of
+  the scheduled day, without the rounding of `T(D)`.
 
 ## §8 Credited time and overtime balance
 
@@ -180,7 +191,10 @@ aren't supported.
   - on **trip days, Saturdays, Sundays and public holidays**, replaced by §9.
 - **Absence credit**: each `vacation`, `sick`, `child_sick` or `special_leave` absence on D with
   fraction f adds
-  `f × T(D)` to `Cr(D)`, rounded to the minute. Several absences on D add up to at most `T(D)`.
+  `f × T_sched(D)` to `Cr(D)`, rounded to the minute. Several absences on D add up to at most
+  `T(D)`. A fraction is a share of the scheduled day, so half a day of vacation covers a day whose
+  other half is off anyway (half day §6.1, `extra_holiday` 0.5); before 2026-11-13 it was
+  `f × T(D)`. On a day without a reduction both are the same.
 - `comp_time` (Überstundenabbau / Gleittag) gives **no** credit, so the day's target lowers the balance.
 - **Daily difference** `Δ(D) = Cr(D) − T(D)`.
 - **Overtime balance** at the end of day D = `starting_balance` (setting, minutes, may be negative)
@@ -276,7 +290,11 @@ For calendar year Y:
   `vacation.entitlement.<Y>` overrides both, for example for a pro-rata first year.
 - **Carry-over** = setting `vacation.carry_over.<Y>` (default 0). Entered in the setup and on the
   vacation planner's account card; unset, the dialog suggests the remaining days of Y−1.
-- **Taken** = Σ fraction of `vacation` absences on **workdays** (§7) in Y up to today.
+- **Days used** on D = the `vacation` fractions on D added up, at most the work share of D (§7):
+  nothing on a weekend or a holiday, at most 0.5 on a half day (§6.1) or next to an `extra_holiday`
+  of 0.5. A vacation entered for a range marks every date in it, weekends and holidays included, so
+  the calendar shows the whole range as vacation (user 2026-11-13); only the workdays use days.
+- **Taken** = Σ days used in Y up to today.
 - **Planned** = the same for days after today.
 - **Remaining** = entitlement + carry-over − taken − planned.
 
@@ -298,7 +316,7 @@ this; the vacation planner marks the days and offers to book them as vacation.
 Requested by the user 2026-11-09. Carried-over vacation must be taken by the end of month N of the
 year; setting `vacation.carry_deadline_months` (default **3**, the statutory 31 March of § 7 (3)
 BUrlG; 0 = off). From 1 January until that deadline, **open carry-over** = carry-over − vacation
-days (taken and planned, workdays only, as above) from 1 January through the deadline. While it is
+days used (taken and planned, as above) from 1 January through the deadline. While it is
 above 0, Today shows "Resturlaub aus <Y−1>: noch n Tage bis <deadline> verplanen"
 (`vacationCarryLeft`). After the deadline nothing is shown. Only vacation has such a deadline: the
 overtime balance is carried over without one (user 2026-11-09).
@@ -309,7 +327,7 @@ Requested by the user 2026-11-10. Vacation days (workdays only, as in §10) join
 (target 0: weekend, holiday) form a **block**; a workday without vacation ends it. The **next
 vacation** is the first block whose first vacation day lies after today. The block today belongs to
 is skipped, also on its weekend (the last workday before a free today is a vacation day): that
-vacation is already running. Its **days** are the vacation fractions in the block. Today's vacation
+vacation is already running. Its **days** are the days used in the block (§10). Today's vacation
 tile shows "Nächster Urlaub in n Tagen · d Tage" ("morgen" for tomorrow; `nextVacation`).
 
 ### §10.4 Absence blocks (planner)
@@ -317,8 +335,21 @@ tile shows "Nächster Urlaub in n Tagen · d Tage" ("morgen" for tomorrow; `next
 Requested by the user 2026-11-13 (the "Planer" tab lists absences as blocks, not day by day).
 Absences of the same kind and the same share of the day (full or half) form a **block** while every
 date between two of them is free (target 0, §7: weekend, holiday); a workday without such an absence
-ends it. Its **days** are the fractions on workdays; for `extra_holiday` and `short_time`, which
-reduce the target themselves, every date counts. `absenceBlocks` implements this.
+ends it. Its **days** are the days used (as in §10, for every kind); for `extra_holiday` and
+`short_time`, which reduce the target themselves, every fraction counts. `absenceBlocks` implements
+this.
+
+### §10.5 School holidays (planner)
+
+Requested by the user 2026-11-13: the planner shows the school holidays of the configured state, to
+plan vacation around them. They change nothing in any calculation. The dates are built in
+(`school_holidays_data.dart`, generated by `packages/core/tool/fetch_school_holidays.dart` from the
+OpenHolidays API, data under the ODbL; regenerate when states publish new years), so the app makes
+no request for them. Per state, a list of periods with first and last day (inclusive) and German
+name, also single days ("Beweglicher Ferientag", "Buß- und Bettag" in BY). Where the source lists
+vocational schools separately (MV), the general schools' dates count; regional exceptions (the SH
+islands) are left out. `schoolHolidays(state, year)` returns the periods touching the year, by start;
+a year without data gives an empty list and the planner says so.
 
 ## §11 Home office
 

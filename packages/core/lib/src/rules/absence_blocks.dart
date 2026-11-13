@@ -12,8 +12,9 @@ final class AbsenceBlock {
   /// The absences, oldest first.
   final List<Absence> absences;
 
-  /// The days it counts: the fractions on workdays, or on every date for a
-  /// kind that reduces the target itself (`extra_holiday`, `short_time`).
+  /// The days it counts: the fractions, at most what is left to work each
+  /// day ([TargetCalendar.usedDays]), or on every date for a kind that
+  /// reduces the target itself (`extra_holiday`, `short_time`).
   final double days;
 
   /// What kind of absence it is.
@@ -55,9 +56,11 @@ List<AbsenceBlock> absenceBlocks(
         absences: b,
         days: b.fold(
           0.0,
-          (sum, a) => a.kind.reducesTarget || targets.isWorkday(a.date)
-              ? sum + a.fraction
-              : sum,
+          (sum, a) =>
+              sum +
+              (a.kind.reducesTarget
+                  ? a.fraction
+                  : targets.usedDays(a.date, a.fraction)),
         ),
       ),
   ];

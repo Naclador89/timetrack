@@ -2611,4 +2611,44 @@ class AppLocalizationsDe extends AppLocalizations {
   String plannerMore(int count) {
     return '$count weitere anzeigen';
   }
+
+  @override
+  String get halfDayEves => 'Heiligabend und Silvester sind halbe Tage';
+
+  @override
+  String get halfDayEvesHint =>
+      'Halbes Soll; Urlaub zählt dort höchstens ½ Tag';
+
+  @override
+  String explainTargetHalfDay(String name) {
+    return '$name: halber Tag.';
+  }
+
+  @override
+  String get absenceDates => 'Zeitraum';
+
+  @override
+  String get pickAbsenceStart => 'Ersten Tag antippen';
+
+  @override
+  String get pickAbsenceEnd => 'Letzten Tag antippen';
+
+  @override
+  String absenceDaysUsed(String days) {
+    return 'Urlaubstage: $days';
+  }
+
+  @override
+  String get schoolHolidays => 'Schulferien';
+
+  @override
+  String schoolHolidaysNone(int year) {
+    return 'Für $year sind noch keine Schulferien bekannt.';
+  }
+
+  @override
+  String get schoolHolidaysSource => 'Quelle: OpenHolidays API (ODbL)';
+
+  @override
+  String get planVacation => 'Urlaub eintragen';
 }

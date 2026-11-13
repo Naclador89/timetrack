@@ -195,6 +195,14 @@ class _Tiles {
           value: s.bavariaAssumptionDay,
           onChanged: (v) => save(SettingKeys.bavariaAssumptionDay, v),
         ),
+      // calculations §6.1
+      SwitchListTile(
+        secondary: const Icon(Icons.celebration_outlined),
+        title: Text(l.halfDayEves),
+        subtitle: Text(l.halfDayEvesHint),
+        value: s.halfDayEves,
+        onChanged: (v) => save(SettingKeys.halfDayEves, v),
+      ),
       SettingsHeader(l.accountSection),
       ListTile(
         leading: const Icon(Icons.functions),

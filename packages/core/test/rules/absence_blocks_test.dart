@@ -66,7 +66,8 @@ void main() {
         absence('2026-12-24', AbsenceKind.vacation),
         absence('2026-12-28', AbsenceKind.vacation),
       ]),
-      [(d('2026-12-24'), d('2026-12-28'), 2.0)],
+      // Heiligabend is a half day (§6.1).
+      [(d('2026-12-24'), d('2026-12-28'), 1.5)],
     );
     expect(
       blocks([

@@ -32,7 +32,8 @@ enum PlannerFilter {
 
 /// Business trips and absences in their own tab (navigation.md "Planer"):
 /// the vacation account and the year's trips at a glance, the year as mini
-/// months, bridge days, and one list of everything, coming up first.
+/// months, bridge days, school holidays, and one list of everything, coming
+/// up first.
 class PlannerScreen extends ConsumerStatefulWidget {
   /// Creates the screen showing [filter].
   const PlannerScreen({super.key, this.filter = PlannerFilter.all});
@@ -138,6 +139,7 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
     final zone = ref.watch(zoneProvider);
     final data = ref.watch(ledgerDataProvider);
     final bridges = bridgeDays(ledger, _year, today: today);
+    final school = ref.watch(schoolHolidaysProvider(_year));
     bool inYear(_Entry e) => e.start.year <= _year && e.end.year >= _year;
 
     // An open trip runs until today (or starts in the future).
@@ -267,6 +269,7 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
                           first: LocalDate(_year, m, 1),
                           bridges: {for (final b in bridges) ...b.vacationDays},
                           tripDays: tripByDate.keys.toSet(),
+                          schoolHolidays: school,
                           // A trip day opens its trip.
                           onTap: (d) {
                             if (tripByDate[d] case final t?) {
@@ -348,6 +351,7 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
                         bridges: bridges,
                         onNextYear: () => setState(() => _year++),
                       ),
+                    SchoolHolidayCard(year: _year),
                   ];
                   if (box.maxWidth < 900) {
                     return Column(children: [listCard, ...year]);

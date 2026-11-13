@@ -107,6 +107,7 @@ final class DayResult {
     this.type,
     this.creditRule,
     this.serviceTrip = false,
+    this.absenceCredit = 0,
   });
 
   /// Whether a service trip touches this day (§9).
@@ -141,6 +142,10 @@ final class DayResult {
 
   /// Credited time `Cr(D)` including absence credit (§8, §9).
   final int credited;
+
+  /// The part of [credited] from vacation, sick and special-leave absences
+  /// (§8).
+  final int absenceCredit;
 
   /// Sunday and holiday hours for HR (§9): reported separately, not part of
   /// [credited] or the balance.
@@ -280,12 +285,18 @@ final class Ledger {
             service: service,
             rules: settings.travel,
           );
+    final absence = absenceCredit(
+      absences,
+      target,
+      scheduled: targets.scheduledMinutes(date),
+    );
     return DayResult(
       date: date,
       work: work,
       breaks: breaks,
       target: target,
-      credited: base + absenceCredit(absences, target),
+      credited: base + absence,
+      absenceCredit: absence,
       tripDayType: tripType,
       creditRule: ruleType,
       serviceTrip: service,

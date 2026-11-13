@@ -29,9 +29,11 @@ class _ExplainSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final holidays = ref.watch(holidaysProvider);
     final day = ref.watch(ledgerProvider).day(date);
+    final halfDay = holidays.halfDayOn(date)?.name;
     final e = explainDay(
       day,
       isHoliday: holidays.isHoliday(date),
+      isHalfDay: halfDay != null,
       night: ref.watch(settingsProvider).travel.night,
     );
     final holiday = holidays.holidayOn(date)?.name;
@@ -58,6 +60,7 @@ class _ExplainSheet extends ConsumerWidget {
       TargetReason.schedule => l.explainTargetSchedule,
       TargetReason.holiday => l.explainTargetHoliday(holiday ?? ''),
       TargetReason.reduced => l.explainTargetReduced,
+      TargetReason.halfDay => l.explainTargetHalfDay(halfDay ?? ''),
       TargetReason.dayOff => l.explainTargetDayOff,
     };
 

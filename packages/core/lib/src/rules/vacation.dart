@@ -36,9 +36,11 @@ final class VacationAccount {
 /// Computes the vacation account of [year] as of [today]
 /// (spec: calculations.md §10).
 ///
-/// Only vacation on workdays counts, so a vacation entry on a weekend or a
-/// public holiday doesn't use up a day. [entitlementOverride] is the setting
-/// `vacation.entitlement.<year>`; [carryOver] is `vacation.carry_over.<year>`.
+/// A day uses at most what is left to work on it
+/// ([TargetCalendar.usedDays]), so a vacation entry on a weekend or a public
+/// holiday doesn't use up a day and one on Heiligabend at most half.
+/// [entitlementOverride] is the setting `vacation.entitlement.<year>`;
+/// [carryOver] is `vacation.carry_over.<year>`.
 VacationAccount vacationAccount({
   required int year,
   required TargetCalendar targets,
@@ -49,13 +51,14 @@ VacationAccount vacationAccount({
   double carryOver = 0,
 }) {
   var taken = 0.0, planned = 0.0;
-  for (final a in absences) {
-    if (a.kind != AbsenceKind.vacation || a.date.year != year) continue;
-    if (!targets.isWorkday(a.date)) continue;
-    if (a.date.isAfter(today)) {
-      planned += a.fraction;
+  for (final MapEntry(key: date, value: days) in vacationDaysByDate(
+    absences.where((a) => a.date.year == year),
+    targets,
+  ).entries) {
+    if (date.isAfter(today)) {
+      planned += days;
     } else {
-      taken += a.fraction;
+      taken += days;
     }
   }
   return VacationAccount(
@@ -111,12 +114,10 @@ NextVacation? nextVacation({
   required List<Absence> absences,
   required LocalDate today,
 }) {
-  final vacation = <LocalDate, double>{};
-  for (final a in absences) {
-    if (a.kind != AbsenceKind.vacation || a.date.isBefore(today)) continue;
-    if (!targets.isWorkday(a.date)) continue;
-    vacation[a.date] = (vacation[a.date] ?? 0) + a.fraction;
-  }
+  final vacation = vacationDaysByDate(
+    absences.where((a) => !a.date.isBefore(today)),
+    targets,
+  );
   if (vacation.isEmpty) return null;
   // Free days are endless without a schedule, so every walk is bounded.
   const horizon = 366;
@@ -144,6 +145,24 @@ NextVacation? nextVacation({
     d = d.addDays(1);
   }
   return NextVacation(start: start, end: end, days: days);
+}
+
+/// The vacation days used per date (§10): the `vacation` fractions of a
+/// date added up, at most what is left to work that day. Free days are left
+/// out.
+Map<LocalDate, double> vacationDaysByDate(
+  Iterable<Absence> absences,
+  TargetCalendar targets,
+) {
+  final fractions = <LocalDate, double>{};
+  for (final a in absences) {
+    if (a.kind != AbsenceKind.vacation) continue;
+    fractions[a.date] = (fractions[a.date] ?? 0) + a.fraction;
+  }
+  return {
+    for (final MapEntry(key: date, value: f) in fractions.entries)
+      if (targets.usedDays(date, f) case final days when days > 0) date: days,
+  };
 }
 
 /// Whether the last workday before [date] (across free days) is a vacation

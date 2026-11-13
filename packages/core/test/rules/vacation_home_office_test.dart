@@ -100,6 +100,21 @@ void main() {
       expect(a.remaining, 29.5);
     });
 
+    test('a vacation over Christmas counts workdays, Heiligabend and '
+        'Silvester half', () {
+      // Thu 24 to Thu 31 Dec 2026, every date entered (§10, §6.1).
+      final a = account([
+        for (
+          var x = d('2026-12-24');
+          !x.isAfter(d('2026-12-31'));
+          x = x.addDays(1)
+        )
+          off('$x', AbsenceKind.vacation),
+      ]);
+      // 24 ½ + 28, 29, 30 + 31 ½; 25/26 holidays, 27 Sunday.
+      expect(a.planned, 4.0);
+    });
+
     test(
       'entitlement: override wins; first schedule of the year if none on 1 Jan',
       () {
@@ -152,8 +167,8 @@ void main() {
         off('2026-12-24', AbsenceKind.vacation),
         off('2026-12-28', AbsenceKind.vacation),
       ], '2026-12-01')!;
-      // 25/26 Dec are holidays, 27 Dec a Sunday.
-      expect((n.start, n.end, n.days), (d('2026-12-23'), d('2026-12-28'), 3.0));
+      // 25/26 Dec are holidays, 27 Dec a Sunday, 24 Dec a half day.
+      expect((n.start, n.end, n.days), (d('2026-12-23'), d('2026-12-28'), 2.5));
     });
 
     test('§10.3 the running vacation is skipped, also on its weekend', () {

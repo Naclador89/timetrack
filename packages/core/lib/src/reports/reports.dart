@@ -1,9 +1,9 @@
 import '../model/attendance.dart';
-import '../model/planning.dart';
 import '../model/project.dart';
 import '../rules/home_office.dart';
 import '../rules/ledger.dart';
 import '../rules/trip_expenses.dart';
+import '../rules/vacation.dart';
 import '../time/local_date.dart';
 
 /// One day of the monthly timesheet (concept §5, "Monthly timesheet PDF").
@@ -54,6 +54,7 @@ final class Timesheet {
     required this.workedDays,
     this.siteAllowanceDays = 0,
     this.siteAllowanceCents = 0,
+    this.vacationDays = 0,
   });
 
   /// Site allowance days of finished trips in this month (§13.4).
@@ -113,12 +114,9 @@ final class Timesheet {
   /// Total difference; equals `balanceAfter − balanceBefore`.
   int get delta => _sum((d) => d.delta);
 
-  /// Vacation days taken in this month (workdays only, §10).
-  double get vacationDays => rows
-      .where((r) => r.day.target > 0)
-      .expand((r) => r.day.absences)
-      .where((a) => a.kind == AbsenceKind.vacation)
-      .fold(0, (sum, a) => sum + a.fraction);
+  /// Vacation days taken in this month, as the vacation account counts
+  /// them (§10).
+  final double vacationDays;
 }
 
 /// Builds the timesheet of [month]/[year] from [ledger]. Days after the
@@ -172,6 +170,12 @@ Timesheet buildTimesheet(Ledger ledger, int year, int month) {
     balanceAfter: ledger.balanceAtEndOf(lastDay),
     homeOfficeDays: homeOffice,
     workedDays: worked,
+    vacationDays: vacationDaysByDate(
+      ledger.data.absences.where(
+        (a) => !a.date.isBefore(first) && !a.date.isAfter(lastDay),
+      ),
+      ledger.targets,
+    ).values.fold(0.0, (a, b) => a + b),
   );
 }
 

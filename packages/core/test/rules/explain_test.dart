@@ -85,4 +85,26 @@ void main() {
     expect((xmas.target, xmas.targetReason), (0, TargetReason.holiday));
     expect(explain(LocalDate(2026, 11, 8)).targetReason, TargetReason.dayOff);
   });
+
+  test(
+    '§16 §6.1 Heiligabend: half the target; half a day off covers it',
+    () async {
+      // spec: calculations.md §6.1, §8
+      await repo.write('absences', 'v', {
+        'date': '2026-12-24',
+        'kind': 'vacation',
+        'fraction': 0.5,
+      });
+      final eve = LocalDate(2026, 12, 24);
+      final e = explainDay(
+        appLedger(store.allRows.values, now).day(eve),
+        isHoliday: false,
+        isHalfDay: holidays.isHalfDay(eve),
+      );
+      expect(
+        (e.target, e.targetReason, e.absenceCredit, e.delta),
+        (240, TargetReason.halfDay, 240, 0),
+      );
+    },
+  );
 }

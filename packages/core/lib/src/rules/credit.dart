@@ -225,11 +225,18 @@ int tripSundayHours({
 }
 
 /// Credit from vacation, sick and special-leave absences on one day:
-/// `Σ fraction × T(D)`, at most `T(D)` (spec: calculations.md §8).
-int absenceCredit(Iterable<Absence> absencesOnDay, int target) {
+/// `Σ fraction × T_sched(D)`, at most `T(D)` (spec: calculations.md §8).
+/// A fraction is a share of the scheduled day, so half a day of vacation
+/// covers a day whose other half is off anyway. [scheduled] defaults to
+/// [target].
+int absenceCredit(
+  Iterable<Absence> absencesOnDay,
+  int target, {
+  int? scheduled,
+}) {
   final share = absencesOnDay
       .where((a) => a.kind.creditsTarget)
       .fold(0.0, (sum, a) => sum + a.fraction);
-  final credit = (share.clamp(0, 1) * target).round();
-  return credit;
+  final credit = (share.clamp(0, 1) * (scheduled ?? target)).round();
+  return credit < target ? credit : target;
 }
