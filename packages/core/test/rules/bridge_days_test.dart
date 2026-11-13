@@ -42,6 +42,17 @@ void main() {
     ]);
   });
 
+  test('§10.1 §6.1 Heiligabend and Silvester use half a day', () async {
+    await schedule(weekdays);
+    final all = bridges(2029);
+    // Mon 24 Dec 2029 joins the weekend and Christmas: 5 days for ½ day.
+    final eve = all.singleWhere(
+      (s) => s.vacationDays.first == LocalDate(2029, 12, 24),
+    );
+    expect((eve.daysUsed, eve.freeDays), (0.5, 5));
+    expect(all.first, eve);
+  });
+
   test('§10.1 NRW 2028: a Tuesday and a Wednesday holiday', () async {
     await schedule(weekdays);
     final all = bridges(2028).map(show).toList();

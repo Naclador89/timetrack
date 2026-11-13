@@ -43,6 +43,15 @@ void main() {
     expect(schoolHolidays(FederalState.nw, 2040), isEmpty);
   });
 
+  test('§10.5 the edges of the data hold only part of a year: empty', () {
+    // 2024 only has the Weihnachtsferien over New Year, 2031 a few days
+    // SH published early.
+    for (final state in FederalState.values) {
+      expect(schoolHolidays(state, 2024), isEmpty, reason: state.code);
+      expect(schoolHolidays(state, 2031), isEmpty, reason: state.code);
+    }
+  });
+
   test('§10.5 MV: the general schools\' dates; SH: no island exceptions', () {
     final mv = schoolHolidays(FederalState.mv, 2026);
     expect(

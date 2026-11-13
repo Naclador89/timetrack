@@ -95,12 +95,10 @@ final class DayExplanation {
 }
 
 /// Explains [day] (calculations.md §16). [isHoliday] tells a holiday's
-/// target of 0 apart from a free weekday, [isHalfDay] a halved target (§6.1)
-/// from the schedule's.
+/// target of 0 apart from a free weekday.
 DayExplanation explainDay(
   DayResult day, {
   required bool isHoliday,
-  bool isHalfDay = false,
   NightWorkCredit night = NightWorkCredit.count,
 }) {
   // The ledger adds absence credit last (§8), so the rest is the rule's.
@@ -117,11 +115,15 @@ DayExplanation explainDay(
         if (a.kind.creditsTarget) a.kind,
     ],
     target: day.target,
+    // A day without scheduled work is a day off, even when it is
+    // Heiligabend or lies in a short-time range (§6.1, §7).
     targetReason: isHoliday
         ? TargetReason.holiday
+        : day.scheduled == 0
+        ? TargetReason.dayOff
         : day.absences.any((a) => a.kind.reducesTarget)
         ? TargetReason.reduced
-        : isHalfDay
+        : day.halfDay
         ? TargetReason.halfDay
         : day.target == 0
         ? TargetReason.dayOff

@@ -95,16 +95,24 @@ void main() {
         'kind': 'vacation',
         'fraction': 0.5,
       });
-      final eve = LocalDate(2026, 12, 24);
-      final e = explainDay(
-        appLedger(store.allRows.values, now).day(eve),
-        isHoliday: false,
-        isHalfDay: holidays.isHalfDay(eve),
-      );
+      final e = explain(LocalDate(2026, 12, 24));
       expect(
         (e.target, e.targetReason, e.absenceCredit, e.delta),
         (240, TargetReason.halfDay, 240, 0),
       );
     },
   );
+
+  test('§16 a day without scheduled work stays a day off', () async {
+    // spec: calculations.md §6.1, §7
+    // Heiligabend 2028 is a Sunday; Kurzarbeit entered as a range writes
+    // its Saturday too.
+    await repo.write('absences', 'k', {
+      'date': '2026-11-07',
+      'kind': 'short_time',
+      'fraction': 1,
+    });
+    expect(explain(LocalDate(2028, 12, 24)).targetReason, TargetReason.dayOff);
+    expect(explain(LocalDate(2026, 11, 7)).targetReason, TargetReason.dayOff);
+  });
 }

@@ -127,10 +127,15 @@ final holidaysProvider = Provider<HolidayCalendar>((ref) {
 });
 
 /// The school holidays of the configured state touching a year
-/// (calculations §10.5).
-final schoolHolidaysProvider = Provider.family<List<SchoolHoliday>, int>(
-  (ref, year) => schoolHolidays(ref.watch(holidaysProvider).state, year),
-);
+/// (calculations §10.5); none until a state is chosen, unlike the public
+/// holidays there is no fallback.
+final schoolHolidaysProvider = Provider.family<List<SchoolHoliday>, int>((
+  ref,
+  year,
+) {
+  final state = ref.watch(settingsProvider).federalState;
+  return state == null ? const [] : schoolHolidays(state, year);
+});
 
 /// Evaluates days and the balance. Rebuilt when data, settings or "now" change.
 final ledgerProvider = Provider<Ledger>((ref) {

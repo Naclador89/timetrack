@@ -257,8 +257,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   Widget _datesFields(BuildContext context) {
     final l = context.l10n;
     final today = ref.watch(todayProvider);
-    String day(LocalDate d) =>
-        d.year == today.year ? context.shortDate(d) : context.date(d);
+    String day(LocalDate d) => context.dateIn(d, today.year);
     String clock(int m) =>
         '${(m ~/ 60).toString().padLeft(2, '0')}:'
         '${(m % 60).toString().padLeft(2, '0')}';
@@ -614,5 +613,3 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     );
   }
 }
-
-/// Looks like a form field, opens a picker on tap.

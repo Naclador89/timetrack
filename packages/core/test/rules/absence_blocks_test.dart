@@ -77,4 +77,32 @@ void main() {
       [(d('2026-11-09'), d('2026-11-10'), 2.0)],
     );
   });
+
+  test('§10.4 rows of one date count once', () {
+    const v = AbsenceKind.vacation;
+    // The same days booked twice (an overlapping range).
+    const week = ['2026-11-16', '2026-11-17', '2026-11-18'];
+    expect(
+      blocks([
+        for (final x in week) absence(x, v),
+        for (final x in week) absence(x, v),
+      ]),
+      [(d('2026-11-16'), d('2026-11-18'), 3.0)],
+    );
+  });
+
+  test('§10.4 short-time work counts scheduled days only', () {
+    // Mon 2 to Sun 15 Nov, every date entered: 10 workdays.
+    expect(
+      blocks([
+        for (
+          var x = d('2026-11-02');
+          !x.isAfter(d('2026-11-15'));
+          x = x.addDays(1)
+        )
+          absence('$x', AbsenceKind.shortTime),
+      ]),
+      [(d('2026-11-02'), d('2026-11-15'), 10.0)],
+    );
+  });
 }

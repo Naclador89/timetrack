@@ -165,6 +165,10 @@ Map<LocalDate, double> vacationDaysByDate(
   };
 }
 
+/// The vacation days [absences] use in all (§10), each date counted once.
+double vacationDaysUsed(Iterable<Absence> absences, TargetCalendar targets) =>
+    vacationDaysByDate(absences, targets).values.fold(0.0, (a, b) => a + b);
+
 /// Whether the last workday before [date] (across free days) is a vacation
 /// day, so that a free [date] lies inside a running vacation.
 bool _previousWorkdayIsVacation(

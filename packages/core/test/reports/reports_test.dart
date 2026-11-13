@@ -93,6 +93,27 @@ void main() {
     },
   );
 
+  test('§10 timesheet notes: no absences on weekends and holidays', () {
+    // A vacation range marks every date; only the workdays count.
+    final t = buildTimesheet(
+      ledger(
+        LedgerData(
+          schedules: [schedule],
+          absences: [
+            for (final x in ['2026-10-02', '2026-10-03', '2026-10-04'])
+              Absence(id: x, date: d(x), kind: AbsenceKind.vacation),
+          ],
+        ),
+      ),
+      2026,
+      10,
+    );
+    List<Absence> on(int day) => t.rows[day - 1].absences;
+    // Fri 2 Oct; Sat 3 Oct is a holiday, Sun 4 Oct a weekend.
+    expect([on(2).length, on(3).length, on(4).length], [1, 0, 0]);
+    expect(t.vacationDays, 1.0);
+  });
+
   test(
     'order report: minutes per day and order number, merged across projects',
     () {

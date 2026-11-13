@@ -52,7 +52,7 @@ final class ReportFormat {
 
 String _notes(ReportFormat f, TimesheetRow r) => [
   ?r.holiday,
-  for (final a in r.day.absences)
+  for (final a in r.absences)
     a.fraction < 1
         ? '${absenceLabel(f.l, a.kind)} ½'
         : absenceLabel(f.l, a.kind),

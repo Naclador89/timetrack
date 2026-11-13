@@ -48,6 +48,7 @@ class _AbsenceDialogState extends ConsumerState<_AbsenceDialog> {
       : widget.end ?? widget.initial;
   AbsenceKind _kind = AbsenceKind.vacation;
   bool _half = false;
+  bool _saving = false;
 
   Iterable<LocalDate> get _dates sync* {
     for (var d = _from; !d.isAfter(_to); d = d.addDays(1)) {
@@ -55,13 +56,30 @@ class _AbsenceDialogState extends ConsumerState<_AbsenceDialog> {
     }
   }
 
+  double get _fraction => _half ? 0.5 : 1;
+
+  /// The absences of [all] in the range.
+  List<Absence> _inRange(List<Absence> all) => [
+    for (final a in all)
+      if (!a.date.isBefore(_from) && !a.date.isAfter(_to)) a,
+  ];
+
   Future<void> _save() async {
+    setState(() => _saving = true);
     final repo = ref.read(repositoryProvider);
+    // A date that already has this kind keeps its row (a half day becomes
+    // a full one), so booking over a booked part adds nothing twice.
+    final same = {
+      for (final a in _inRange(ref.read(ledgerDataProvider).absences))
+        if (a.kind == _kind) a.date: a,
+    };
     for (final d in _dates) {
-      await repo.write('absences', repo.newId(), {
+      final old = same[d];
+      if (old != null && old.fraction >= _fraction) continue;
+      await repo.write('absences', old?.id ?? repo.newId(), {
         'date': '$d',
         'kind': _kind.wireName,
-        'fraction': _half ? 0.5 : 1,
+        'fraction': _fraction,
       });
     }
     if (mounted) Navigator.pop(context);
@@ -89,14 +107,22 @@ class _AbsenceDialogState extends ConsumerState<_AbsenceDialog> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final today = ref.watch(todayProvider);
-    String day(LocalDate d) =>
-        d.year == today.year ? context.shortDate(d) : context.date(d);
-    // What the vacation account will count (calculations §10, §6.1).
+    // What the vacation account will count more (calculations §10, §6.1):
+    // nothing for days already booked.
     final targets = ref.watch(ledgerProvider).targets;
-    final used = _dates.fold(
-      0.0,
-      (sum, d) => sum + targets.usedDays(d, _half ? 0.5 : 1),
-    );
+    final existing = _inRange(ref.watch(ledgerDataProvider).absences);
+    final used =
+        vacationDaysUsed([
+          ...existing,
+          for (final d in _dates)
+            Absence(
+              id: '',
+              date: d,
+              kind: AbsenceKind.vacation,
+              fraction: _fraction,
+            ),
+        ], targets) -
+        vacationDaysUsed(existing, targets);
     return AlertDialog(
       title: Text(l.addAbsence),
       content: SizedBox(
@@ -122,7 +148,7 @@ class _AbsenceDialogState extends ConsumerState<_AbsenceDialog> {
             const SizedBox(height: 16),
             PickerField(
               label: widget.singleDay ? l.colDate : l.absenceDates,
-              value: _from == _to ? day(_from) : '${day(_from)} – ${day(_to)}',
+              value: context.dateRange(_from, _to, today.year),
               icon: Icons.date_range,
               onTap: _pick,
             ),
@@ -150,7 +176,7 @@ class _AbsenceDialogState extends ConsumerState<_AbsenceDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l.cancel),
         ),
-        FilledButton(onPressed: _save, child: Text(l.save)),
+        FilledButton(onPressed: _saving ? null : _save, child: Text(l.save)),
       ],
     );
   }
@@ -207,7 +233,7 @@ class BridgeCard extends ConsumerWidget {
             ),
           for (final b in bridges.take(8))
             ListTile(
-              title: Text(l.bridgeTitle(b.vacationDays.length, b.freeDays)),
+              title: Text(l.bridgeTitle(b.daysUsed, b.freeDays)),
               subtitle: Text(
                 '${b.vacationDays.map(context.shortDate).join(', ')} · '
                 '${range(b.freeFrom, b.freeTo)}',
@@ -258,10 +284,8 @@ class SchoolHolidayCard extends ConsumerWidget {
     final l = context.l10n;
     final theme = Theme.of(context);
     final today = ref.watch(todayProvider);
-    final state = ref.watch(holidaysProvider).state;
+    final state = ref.watch(settingsProvider).federalState;
     final periods = ref.watch(schoolHolidaysProvider(year));
-    String day(LocalDate d) =>
-        d.year == year ? context.shortDate(d) : context.date(d);
     final muted = theme.colorScheme.onSurfaceVariant;
     return Card(
       child: Column(
@@ -279,25 +303,24 @@ class SchoolHolidayCard extends ConsumerWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
-                Text(
-                  stateNames[state] ?? state.code,
-                  style: theme.textTheme.labelMedium?.copyWith(color: muted),
-                ),
+                if (state != null)
+                  Text(
+                    stateNames[state] ?? state.code,
+                    style: theme.textTheme.labelMedium?.copyWith(color: muted),
+                  ),
               ],
             ),
           ),
-          if (periods.isEmpty)
+          if (state == null)
+            ListTile(title: Text(l.schoolHolidaysNoState))
+          else if (periods.isEmpty)
             ListTile(title: Text(l.schoolHolidaysNone(year))),
           for (final h in periods)
             ListTile(
               dense: true,
               enabled: !h.end.isBefore(today),
               title: Text(h.name),
-              subtitle: Text(
-                h.start == h.end
-                    ? day(h.start)
-                    : '${day(h.start)} – ${day(h.end)}',
-              ),
+              subtitle: Text(context.dateRange(h.start, h.end, year)),
               trailing: h.end.isBefore(today)
                   ? null
                   : IconButton(
@@ -429,7 +452,7 @@ class MiniMonth extends ConsumerWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     bool school(LocalDate d) => schoolHolidays.any((h) => h.contains(d));
-    // Rounded where a period or a week row starts or ends.
+    // Rounded where a period, a week row or the month starts or ends.
     const cap = Radius.circular(99);
     final band = school(date)
         ? Positioned.fill(
@@ -440,11 +463,13 @@ class MiniMonth extends ConsumerWidget {
                 borderRadius: BorderRadius.horizontal(
                   left:
                       date.weekday == DateTime.monday ||
+                          date.day == 1 ||
                           !school(date.addDays(-1))
                       ? cap
                       : Radius.zero,
                   right:
                       date.weekday == DateTime.sunday ||
+                          date.addDays(1).month != date.month ||
                           !school(date.addDays(1))
                       ? cap
                       : Radius.zero,

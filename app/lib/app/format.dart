@@ -26,6 +26,15 @@ extension Formatting on BuildContext {
   /// Numeric date, e.g. `04.11.2026`.
   String date(LocalDate d) => DateFormat.yMd(_locale).format(_dt(d));
 
+  /// [d] as [shortDate] when it lies in [year], else as [date].
+  String dateIn(LocalDate d, int year) =>
+      d.year == year ? shortDate(d) : date(d);
+
+  /// One day, or `first – last`, each as [dateIn].
+  String dateRange(LocalDate first, LocalDate last, int year) => first == last
+      ? dateIn(first, year)
+      : '${dateIn(first, year)} – ${dateIn(last, year)}';
+
   /// Money from cents, `14,00 €`.
   String euro(int cents) =>
       NumberFormat.currency(locale: _locale, symbol: '€').format(cents / 100);

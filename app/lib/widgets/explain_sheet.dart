@@ -33,7 +33,6 @@ class _ExplainSheet extends ConsumerWidget {
     final e = explainDay(
       day,
       isHoliday: holidays.isHoliday(date),
-      isHalfDay: halfDay != null,
       night: ref.watch(settingsProvider).travel.night,
     );
     final holiday = holidays.holidayOn(date)?.name;

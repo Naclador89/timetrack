@@ -115,7 +115,14 @@ void main() {
     tester,
   ) async {
     final router = buildRouter();
-    final (store, _) = await pumpApp(tester, router: router, seed: fullTime);
+    final (store, _) = await pumpApp(
+      tester,
+      router: router,
+      seed: (repo) async {
+        await fullTime(repo);
+        await repo.write('settings', SettingKeys.federalState, {'value': 'nw'});
+      },
+    );
     router.go('/planner?show=absences');
     await settle(tester);
     expect(find.text('School holidays'), findsWidgets, reason: 'legend');
@@ -163,6 +170,33 @@ void main() {
       (dates.first, dates.last, dates.length),
       ('2026-12-23', '2027-01-06', 15),
     );
+
+    // Booked again: nothing more to count and nothing written twice.
+    await tester.tap(plan);
+    await settle(tester);
+    expect(find.text('Vacation days: 0'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    expect(store.rowsOf('absences'), hasLength(15));
+  });
+
+  testWidgets('§10.5 without a state the card asks for one', (tester) async {
+    final router = buildRouter();
+    await pumpApp(tester, router: router, seed: fullTime);
+    router.go('/planner?show=absences');
+    await settle(tester);
+    final hint = find.text(
+      'Choose your federal state in the settings to see its school '
+      'holidays here.',
+    );
+    await tester.scrollUntilVisible(
+      hint,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(hint, findsOneWidget);
+    expect(find.text('Nordrhein-Westfalen'), findsNothing);
+    expect(find.text('Weihnachtsferien'), findsNothing);
   });
 
   testWidgets('§10.4 planner tab: trips and absence blocks in one list', (

@@ -108,6 +108,8 @@ final class DayResult {
     this.creditRule,
     this.serviceTrip = false,
     this.absenceCredit = 0,
+    this.scheduled = 0,
+    this.halfDay = false,
   });
 
   /// Whether a service trip touches this day (§9).
@@ -139,6 +141,13 @@ final class DayResult {
 
   /// Target `T(D)` (§7).
   final int target;
+
+  /// `T_sched(D)`: the schedule's minutes for the weekday, before holidays,
+  /// half days and absences (§7).
+  final int scheduled;
+
+  /// Whether D is Heiligabend or Silvester counted as a half day (§6.1).
+  final bool halfDay;
 
   /// Credited time `Cr(D)` including absence credit (§8, §9).
   final int credited;
@@ -285,16 +294,15 @@ final class Ledger {
             service: service,
             rules: settings.travel,
           );
-    final absence = absenceCredit(
-      absences,
-      target,
-      scheduled: targets.scheduledMinutes(date),
-    );
+    final scheduled = targets.scheduledMinutes(date);
+    final absence = absenceCredit(absences, target, scheduled: scheduled);
     return DayResult(
       date: date,
       work: work,
       breaks: breaks,
       target: target,
+      scheduled: scheduled,
+      halfDay: holidays.isHalfDay(date),
       credited: base + absence,
       absenceCredit: absence,
       tripDayType: tripType,

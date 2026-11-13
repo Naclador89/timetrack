@@ -121,10 +121,13 @@ HomeOfficeQuota evaluateQuota(
   for (var d = start; !d.isAfter(end); d = d.addDays(1)) {
     final day = ledger.day(d);
     final past = !d.isAfter(today);
-    final absent = day.absences
+    // A fraction is a share of the scheduled day (§8): half a day off on
+    // a half day leaves nothing to work.
+    final share = ledger.targets.workShare(d);
+    final off = day.absences
         .where((a) => !a.kind.reducesTarget)
-        .fold(0.0, (sum, a) => sum + a.fraction)
-        .clamp(0.0, 1.0);
+        .fold(0.0, (sum, a) => sum + a.fraction);
+    final absent = share == 0 ? 0.0 : (off / share).clamp(0.0, 1.0);
     final workday = day.target > 0;
     if (rule.unit == QuotaUnit.hours) {
       if (past) {

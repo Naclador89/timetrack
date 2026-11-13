@@ -38,7 +38,8 @@ final Map<FederalState, List<SchoolHoliday>> _parsed = {};
 
 /// The school holidays of [state] that touch [year], by start date
 /// (spec: calculations.md §10.5). Empty for a year the built-in data doesn't
-/// cover yet.
+/// cover yet: one without its Sommerferien, like the edges of the data that
+/// only hold the Weihnachtsferien over New Year.
 List<SchoolHoliday> schoolHolidays(FederalState state, int year) {
   final all = _parsed.putIfAbsent(state, () {
     return [
@@ -51,6 +52,9 @@ List<SchoolHoliday> schoolHolidays(FederalState state, int year) {
           ),
     ]..sort((a, b) => a.start.compareTo(b.start));
   });
+  if (!all.any((h) => h.start.year == year && h.name == 'Sommerferien')) {
+    return const [];
+  }
   return [
     for (final h in all)
       if (h.start.year <= year && h.end.year >= year) h,

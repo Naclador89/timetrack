@@ -8,12 +8,17 @@ final class BridgeSuggestion {
   /// Creates a suggestion.
   const BridgeSuggestion({
     required this.vacationDays,
+    required this.daysUsed,
     required this.freeFrom,
     required this.freeTo,
   });
 
   /// The working days to take off.
   final List<LocalDate> vacationDays;
+
+  /// The vacation days they use: half on Heiligabend and Silvester (§6.1,
+  /// §10).
+  final double daysUsed;
 
   /// First free day of the joined block.
   final LocalDate freeFrom;
@@ -68,17 +73,22 @@ List<BridgeSuggestion> bridgeDays(
     if (!before.holiday && !after.holiday) continue;
     if (gap.from.year != year || gap.to.year != year) continue;
     if (gap.from.isBefore(today)) continue;
+    final days = [
+      for (var d = gap.from; !d.isAfter(gap.to); d = d.addDays(1)) d,
+    ];
     result.add(
       BridgeSuggestion(
-        vacationDays: [
-          for (var d = gap.from; !d.isAfter(gap.to); d = d.addDays(1)) d,
-        ],
+        vacationDays: days,
+        daysUsed: days.fold(
+          0.0,
+          (sum, d) => sum + ledger.targets.usedDays(d, 1),
+        ),
         freeFrom: before.from,
         freeTo: after.to,
       ),
     );
   }
-  double ratio(BridgeSuggestion s) => s.freeDays / s.vacationDays.length;
+  double ratio(BridgeSuggestion s) => s.freeDays / s.daysUsed;
   return result..sort((a, b) {
     final r = ratio(b).compareTo(ratio(a));
     return r != 0 ? r : a.vacationDays.first.compareTo(b.vacationDays.first);

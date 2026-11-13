@@ -3006,7 +3006,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 day off} other{{count} days off}} → {free} days free'**
-  String bridgeTitle(int count, int free);
+  String bridgeTitle(num count, int free);
 
   /// No description provided for @bridgeBook.
   ///
@@ -4477,6 +4477,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter vacation'**
   String get planVacation;
+
+  /// No description provided for @schoolHolidaysNoState.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your federal state in the settings to see its school holidays here.'**
+  String get schoolHolidaysNoState;
 }
 
 class _AppLocalizationsDelegate

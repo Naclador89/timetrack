@@ -1073,7 +1073,8 @@
   "@bridgeTitle": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "num",
+        "format": "decimalPattern"
       },
       "free": {
         "type": "int"
@@ -1835,5 +1836,6 @@
     }
   },
   "schoolHolidaysSource": "Source: OpenHolidays API (ODbL)",
-  "planVacation": "Enter vacation"
+  "planVacation": "Enter vacation",
+  "schoolHolidaysNoState": "Choose your federal state in the settings to see its school holidays here."
 }

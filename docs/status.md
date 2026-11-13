@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.8.2`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.2+18`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 345, app 120 tests; CI green on `main`.
+- **Tests**: core 352, app 121 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -589,6 +589,26 @@ mini window, balance planner, year heatmap, week comparison.
       the file and on the card). Rerun the tool when states publish new years.
 - [x] Absence dialog with the one-calendar range picker of the trip dialog (`PickerField` and
       `pickDateRange` in `widgets/date_range_dialog.dart`); for vacation it shows the days counted.
+- [x] Review fixes (code review of 61922f1):
+  - The day explanation checks "no scheduled work" before "short-time work" and "half day" (§16). A
+    Sunday Heiligabend or a Saturday inside a short-time range now reads "day off". The reason comes
+    from `DayResult.scheduled` and `DayResult.halfDay`, and `explainDay` no longer takes
+    `isHalfDay`.
+  - Absence blocks count each date once (§10.4). Short-time work counts scheduled days only.
+  - The absence dialog keeps dates that already have the same kind (a half day becomes a full one).
+    Save is disabled while writing. The "Urlaubstage" hint counts only what is added
+    (`vacationDaysUsed`).
+  - Home-office quota, basis `scheduled`: the absence is a share of what is left to work (§11.2),
+    so half a day off on Heiligabend counts as a full day.
+  - Bridge days: `BridgeSuggestion.daysUsed`, so a Heiligabend or Silvester costs ½ day in the title
+    and in the ranking (§10.1).
+  - Timesheet notes skip absences on days without scheduled work and on holidays
+    (`TimesheetRow.absences`).
+  - School holidays (§10.5):
+    - A year without its Sommerferien is empty (2024, 2031).
+    - Without a configured state there is no NW fallback; the card asks for the state.
+    - The band is rounded at month edges.
+  - `context.dateIn` and `context.dateRange` (`app/lib/app/format.dart`) replace three copies.
 - [ ] On the devices: the absence dialog on the phone, the school holiday band in light and dark.
 
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
@@ -743,3 +763,6 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-13, Claude Code: vacation ranges mark weekends and holidays but count only workdays;
   Heiligabend/Silvester half days; school holidays in the planner; range picker in the absence
   dialog. 345 core, 120 app tests green.
+- 2026-11-13, Claude Code: fixes from the code review (day reason order, block counting, duplicate
+  bookings, quota and bridge days on half days, timesheet notes, school holiday years and state).
+  352 core, 121 app tests green.

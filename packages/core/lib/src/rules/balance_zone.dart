@@ -124,10 +124,10 @@ List<ReviewItem> balanceZoneItems(
   final deadline = _endOfMonth(today.year, months);
   if (today.isAfter(deadline)) return null;
   final start = LocalDate(today.year, 1, 1);
-  final used = vacationDaysByDate(
+  final used = vacationDaysUsed(
     absences.where((a) => !a.date.isBefore(start) && !a.date.isAfter(deadline)),
     targets,
-  ).values.fold(0.0, (a, b) => a + b);
+  );
   final open = carryOver - used;
   return open > 0 ? (open: open, deadline: deadline) : null;
 }

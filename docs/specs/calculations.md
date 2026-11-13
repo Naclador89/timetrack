@@ -308,7 +308,8 @@ A **bridge** is a run of 1–3 working days between two free blocks where at lea
 blocks has a holiday (so the plain week between two weekends is never one). Taking those days off
 joins both blocks: **free days** = from the first day of the left block to the last day of the
 right block. Only bridges whose working days all lie in the year and not before today are
-suggested, sorted by free days per vacation day (descending), then by date. `bridgeDays` implements
+suggested, sorted by free days per vacation day used (§10: half on Heiligabend and Silvester, §6.1;
+descending), then by date. The planner shows the days used. `bridgeDays` implements
 this; the vacation planner marks the days and offers to book them as vacation.
 
 ### §10.2 Carry-over deadline
@@ -335,9 +336,10 @@ tile shows "Nächster Urlaub in n Tagen · d Tage" ("morgen" for tomorrow; `next
 Requested by the user 2026-11-13 (the "Planer" tab lists absences as blocks, not day by day).
 Absences of the same kind and the same share of the day (full or half) form a **block** while every
 date between two of them is free (target 0, §7: weekend, holiday); a workday without such an absence
-ends it. Its **days** are the days used (as in §10, for every kind); for `extra_holiday` and
-`short_time`, which reduce the target themselves, every fraction counts. `absenceBlocks` implements
-this.
+ends it. Its **days** are the days used (as in §10, for every kind), each date once: rows of one
+date (a range booked twice) are added up first. For `extra_holiday` and `short_time`, which reduce
+the target themselves, the fraction counts on every day with scheduled minutes that isn't a holiday,
+so a short-time range over weekends counts its workdays. `absenceBlocks` implements this.
 
 ### §10.5 School holidays (planner)
 
@@ -348,8 +350,12 @@ OpenHolidays API, data under the ODbL; regenerate when states publish new years)
 no request for them. Per state, a list of periods with first and last day (inclusive) and German
 name, also single days ("Beweglicher Ferientag", "Buß- und Bettag" in BY). Where the source lists
 vocational schools separately (MV), the general schools' dates count; regional exceptions (the SH
-islands) are left out. `schoolHolidays(state, year)` returns the periods touching the year, by start;
-a year without data gives an empty list and the planner says so.
+islands) are left out. `schoolHolidays(state, year)` returns the periods touching the year, by start.
+A year counts as known once its Sommerferien are in the data; otherwise the list is empty and the
+planner says so (the data's edges hold only the Weihnachtsferien over New Year or a few dates
+published early). The last known year may still lack its autumn periods until the states publish
+them. Without a configured state there are no school holidays (no NW fallback as for public
+holidays); the planner asks for the state.
 
 ## §11 Home office
 
@@ -376,8 +382,11 @@ For a period P, evaluated on day `today`, with `P≤` = the days of P up to and 
 - unit `days`:
   - `used = Σ H(D)` over `P≤`.
   - basis `worked`: `base = #{D ∈ P≤ : W(D) > 0}`.
-  - basis `scheduled`: `base = Σ (1 − absence fraction) over workdays D ∈ P`. This is the **whole**
+  - basis `scheduled`: `base = Σ (1 − absent share) over workdays D ∈ P`. This is the **whole**
     period, including future days. Absences here are vacation, sick, special leave and comp time.
+    The **absent share** is their fractions added up, divided by the work share of D (§7), at most
+    1: a fraction is a share of the scheduled day (§8), so half a day off on Heiligabend leaves
+    nothing to work. A workday counts as having a full-day absence (§11.3) when the share is 1.
   - `percent = used / base` (0 if base = 0).
 - unit `hours`: `used = Σ W_loc(D, home)` over `P≤`, `base = Σ W(D)` over `P≤`.
 
@@ -578,8 +587,9 @@ day inside a trip stays a business trip; the app points to the trip instead.
 `explainDay` breaks `Cr(D)` and `T(D)` into the steps above, so the app can show *why* a figure is
 what it is (tap on a number): `W(D)` → break deduction (§4) → `W_eff(D)` → the §9 rule that applied
 (`creditRule`: trip workday = target, Saturday cap, Sunday rule, holiday, day off; `null` = counts as
-is) → absence credit (§8) → `Cr(D)`; the target with its reason (schedule, holiday, lowered by
-`extra_holiday`/`short_time`, no scheduled work); Sunday hours. `notCounted = W_eff − rule credit` is
+is) → absence credit (§8) → `Cr(D)`; the target with its reason, checked in this order: holiday, no
+scheduled work (also a Heiligabend on a weekend or a weekend inside a short-time range), lowered by
+`extra_holiday`/`short_time`, half day (§6.1), schedule; Sunday hours. `notCounted = W_eff − rule credit` is
 the time a rule didn't count (negative: credited more than worked, e.g. a short trip workday).
 
 ## §17 Quick entry and day templates

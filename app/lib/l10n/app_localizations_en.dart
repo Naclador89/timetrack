@@ -1667,11 +1667,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bridgeDays => 'Bridge days';
 
   @override
-  String bridgeTitle(int count, int free) {
+  String bridgeTitle(num count, int free) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count days off',
+      other: '$countString days off',
       one: '1 day off',
     );
     return '$_temp0 → $free days free';
@@ -2639,4 +2643,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get planVacation => 'Enter vacation';
+
+  @override
+  String get schoolHolidaysNoState =>
+      'Choose your federal state in the settings to see its school holidays here.';
 }

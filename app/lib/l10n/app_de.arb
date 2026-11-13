@@ -729,5 +729,6 @@
   "schoolHolidays": "Schulferien",
   "schoolHolidaysNone": "Für {year} sind noch keine Schulferien bekannt.",
   "schoolHolidaysSource": "Quelle: OpenHolidays API (ODbL)",
-  "planVacation": "Urlaub eintragen"
+  "planVacation": "Urlaub eintragen",
+  "schoolHolidaysNoState": "Wähle in den Einstellungen dein Bundesland, dann stehen hier seine Schulferien."
 }

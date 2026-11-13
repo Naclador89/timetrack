@@ -1,4 +1,5 @@
 import '../model/attendance.dart';
+import '../model/planning.dart';
 import '../model/project.dart';
 import '../rules/home_office.dart';
 import '../rules/ledger.dart';
@@ -33,6 +34,12 @@ final class TimesheetRow {
   /// end − start − break = the actual worked time. A missing break deducted
   /// automatically (§4) is in `day.breaks.deduction`, not here.
   final int breakMinutes;
+
+  /// The absences to note: none on a day without scheduled work or on a
+  /// public holiday, where a range of absences leaves nothing to account
+  /// for (calculations.md §10).
+  List<Absence> get absences =>
+      day.scheduled == 0 || holiday != null ? const [] : day.absences;
 
   /// Locations worked at, in a stable order.
   List<WorkLocation> get locations => [
@@ -170,12 +177,12 @@ Timesheet buildTimesheet(Ledger ledger, int year, int month) {
     balanceAfter: ledger.balanceAtEndOf(lastDay),
     homeOfficeDays: homeOffice,
     workedDays: worked,
-    vacationDays: vacationDaysByDate(
+    vacationDays: vacationDaysUsed(
       ledger.data.absences.where(
         (a) => !a.date.isBefore(first) && !a.date.isAfter(lastDay),
       ),
       ledger.targets,
-    ).values.fold(0.0, (a, b) => a + b),
+    ),
   );
 }
 

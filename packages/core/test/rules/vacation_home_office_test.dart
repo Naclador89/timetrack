@@ -259,6 +259,29 @@ void main() {
       expect(q.share, 0.25);
     });
 
+    test('basis scheduled: half a day off on Heiligabend is a day off', () {
+      // spec: calculations.md §6.1, §8
+      final rule = HomeOfficeRule(
+        id: 's',
+        validFrom: _jan1,
+        period: QuotaPeriod.month,
+        maxPercent: 40,
+        basis: QuotaBasis.scheduled,
+      );
+      final q = evaluateQuota(
+        ledgerFor(
+          LedgerData(
+            schedules: [schedule],
+            absences: [off('2026-12-24', AbsenceKind.vacation, 0.5)],
+          ),
+          '2026-12-01',
+        ),
+        rule,
+      );
+      // 22 workdays in December 2026 (NW), Heiligabend without work left.
+      expect(q.base, 21.0);
+    });
+
     test('weekly rule: week of 9–15 Nov, 2 of 4 days at home, limit 50 %', () {
       final weekly = HomeOfficeRule(
         id: 'w',

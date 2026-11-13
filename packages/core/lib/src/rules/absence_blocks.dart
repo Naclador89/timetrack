@@ -12,9 +12,10 @@ final class AbsenceBlock {
   /// The absences, oldest first.
   final List<Absence> absences;
 
-  /// The days it counts: the fractions, at most what is left to work each
-  /// day ([TargetCalendar.usedDays]), or on every date for a kind that
-  /// reduces the target itself (`extra_holiday`, `short_time`).
+  /// The days it counts, each date once: the fractions, at most what is
+  /// left to work that day ([TargetCalendar.usedDays]); for a kind that
+  /// reduces the target itself (`extra_holiday`, `short_time`), the
+  /// fractions on scheduled days that aren't holidays.
   final double days;
 
   /// What kind of absence it is.
@@ -51,19 +52,28 @@ List<AbsenceBlock> absenceBlocks(
     }
   }
   return [
-    for (final b in blocks)
-      AbsenceBlock(
-        absences: b,
-        days: b.fold(
-          0.0,
-          (sum, a) =>
-              sum +
-              (a.kind.reducesTarget
-                  ? a.fraction
-                  : targets.usedDays(a.date, a.fraction)),
-        ),
-      ),
+    for (final b in blocks) AbsenceBlock(absences: b, days: _days(b, targets)),
   ];
+}
+
+/// The days a block uses: rows of one date count once, as in the vacation
+/// account (§10). Kinds that reduce the target count on scheduled days only.
+double _days(List<Absence> block, TargetCalendar targets) {
+  final byDate = <LocalDate, double>{};
+  for (final a in block) {
+    byDate[a.date] = (byDate[a.date] ?? 0) + a.fraction;
+  }
+  var days = 0.0;
+  for (final MapEntry(key: date, value: sum) in byDate.entries) {
+    final fraction = sum.clamp(0.0, 1.0);
+    if (!block.first.kind.reducesTarget) {
+      days += targets.usedDays(date, fraction);
+    } else if (targets.scheduledMinutes(date) > 0 &&
+        !targets.holidays.isHoliday(date)) {
+      days += fraction;
+    }
+  }
+  return days;
 }
 
 bool _freeBetween(LocalDate a, LocalDate b, TargetCalendar targets) {
