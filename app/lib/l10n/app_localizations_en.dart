@@ -2445,4 +2445,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patternAllBreaksKept => 'Every break kept – well done!';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get returnOpen => 'Still travelling: leave the return open';
+
+  @override
+  String get tripOrder => 'Order';
+
+  @override
+  String get tripOrderHint => 'The trip is billed through this order';
+
+  @override
+  String get tripOrderInstallation => 'Installation order';
+
+  @override
+  String get tripOrderWarranty => 'Warranty order';
+
+  @override
+  String get tripOrderService => 'Service order';
+
+  @override
+  String get tripNote => 'Notes';
+
+  @override
+  String get tripNoteHint => 'Anything else about the trip';
 }

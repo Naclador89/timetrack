@@ -4213,6 +4213,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every break kept – well done!'**
   String get patternAllBreaksKept;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get timeLabel;
+
+  /// No description provided for @returnOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Still travelling: leave the return open'**
+  String get returnOpen;
+
+  /// No description provided for @tripOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get tripOrder;
+
+  /// No description provided for @tripOrderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The trip is billed through this order'**
+  String get tripOrderHint;
+
+  /// No description provided for @tripOrderInstallation.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation order'**
+  String get tripOrderInstallation;
+
+  /// No description provided for @tripOrderWarranty.
+  ///
+  /// In en, this message translates to:
+  /// **'Warranty order'**
+  String get tripOrderWarranty;
+
+  /// No description provided for @tripOrderService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service order'**
+  String get tripOrderService;
+
+  /// No description provided for @tripNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get tripNote;
+
+  /// No description provided for @tripNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything else about the trip'**
+  String get tripNoteHint;
 }
 
 class _AppLocalizationsDelegate

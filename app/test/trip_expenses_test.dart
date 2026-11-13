@@ -27,7 +27,12 @@ void main() {
     await pumpApp(
       tester,
       router: router,
-      seed: (repo) => _paris(repo, {'lodging': 'flat', 'car_km': 100}),
+      seed: (repo) => _paris(repo, {
+        'lodging': 'flat',
+        'car_km': 100,
+        'order_kind': 'mo',
+        'order_number': '4711',
+      }),
     );
     router.go('/calendar/trips');
     await settle(tester);
@@ -37,6 +42,8 @@ void main() {
     expect(find.textContaining('Frankreich · Paris'), findsNWidgets(2));
     expect(find.textContaining('267.00'), findsOneWidget);
     expect(find.textContaining('159.00'), findsOneWidget);
+    // Billed through the trip's order (data-model.md §9).
+    expect(find.textContaining('MO 4711'), findsOneWidget);
   });
 
   testWidgets('§13.5 Today reminds to claim until marked as claimed', (
@@ -83,6 +90,48 @@ void main() {
       (trip['country'], trip['city'], trip['car_km']),
       ('FR', 'Paris', 120),
     );
+  });
+
+  testWidgets('data-model.md §9 the trip dialog takes order and notes', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, _) = await pumpApp(tester, router: router);
+    router.go('/calendar/trips');
+    await settle(tester);
+    await tester.tap(find.text('New trip'));
+    await tester.pumpAndSettle();
+    // Each end of the trip is one heading with a date and a time field.
+    expect(find.text('Departure'), findsOneWidget);
+    expect(find.text('Return'), findsOneWidget);
+    expect(find.text('Date'), findsNWidgets(2));
+    expect(find.text('Time'), findsNWidgets(2));
+    await tester.tap(find.text('GA'));
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Order number'),
+      ' 4711 ',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Notes'),
+      'Bring the spare part\nCall ahead',
+    );
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    final trip = store.rowsOf('trips').values.single.fields;
+    expect(
+      (trip['order_kind'], trip['order_number'], trip['note']),
+      ('ga', '4711', 'Bring the spare part\nCall ahead'),
+    );
+    expect(find.textContaining('Order GA 4711'), findsOneWidget);
+    expect(find.textContaining('Bring the spare part'), findsOneWidget);
+
+    // Picking the kind again clears it.
+    await tester.tap(find.byIcon(Icons.luggage_outlined));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('GA'));
+    await tester.tap(find.text('Save'));
+    await settle(tester);
+    expect(store.rowsOf('trips').values.single.fields['order_kind'], isNull);
   });
 
   testWidgets('§13.4 site allowance rates are entered per country', (

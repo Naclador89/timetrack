@@ -219,6 +219,7 @@ List<List<String>> travelTable(List<TripReport> trips, ReportFormat f) {
           [
             '${t.trip.destination} (${placeLabel(d.place)})',
             if (t.project != null) projectLabel(t.project),
+            if (t.trip.orderLabel.isNotEmpty) t.trip.orderLabel,
           ].join(' · '),
           times(t.legs[d.date], TripLegKind.outbound),
           times(t.legs[d.date], TripLegKind.onSite),
@@ -479,6 +480,8 @@ List<(String, String)> tripExpensesFigures(TripExpenses e, ReportFormat f) {
   final l = f.l;
   final trip = e.trip;
   return [
+    // The trip is billed through its order (data-model.md §9).
+    if (trip.orderLabel.isNotEmpty) (l.tripOrder, trip.orderLabel),
     (l.perDiem, f.money(e.perDiemCents)),
     if (trip.overnight)
       (

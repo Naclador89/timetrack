@@ -23,7 +23,7 @@ Every row also has the field `deleted` (`bool`, default `false`); deleted rows a
 | location | enum `office` `home` `on_site` `travel` | | `office` |
 | tz | string (IANA) | | home time zone |
 | source | enum `app` `manual` `auto` `watch` | | `app` |
-| note | string | | `''` |
+| note | string | | `''`: free-text notes, shown in the trip list (since 2026-11-13) |
 
 ## §2 breaks
 `start_utc` instant ✓, `end_utc` instant (null = running), `note` string.
@@ -93,6 +93,8 @@ the rules they configure are in `calculations.md`. Enum values are stored in sna
 | lodging_cents | int | | `0`: receipts total for `receipt` |
 | car_km | int | | `0`: kilometres with the own car (§13.3) |
 | claimed_on | date | | none: the expense claim is not submitted yet (§13.5) |
+| order_kind | enum `mo` `ga` `sa` | | none: Montage-, Gewährleistungs- or Serviceauftrag; an unknown value reads as none. Since 2026-11-13 |
+| order_number | string | | `''`: the order the trip is billed through, shown as `MO 4711` in the trip list and the reports. Since 2026-11-13 |
 
 ## §9.1 trip_stops
 `trip_id` string ✓, `date` date ✓, `country` string ✓, `city` string (none = general rate). The place

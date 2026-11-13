@@ -158,6 +158,12 @@ Trip? tripFromRow(StoredRow r) => _use(
     lodgingCents: f.number('lodging_cents')?.toInt() ?? 0,
     carKm: f.number('car_km')?.toInt() ?? 0,
     claimedOn: f.date('claimed_on'),
+    // An unknown kind from a newer app: keep the number, drop the kind.
+    orderKind: TripOrderKind.values
+        .where((k) => k.wire == f.string('order_kind'))
+        .firstOrNull,
+    orderNumber: f.string('order_number')?.trim() ?? '',
+    note: f.string('note') ?? '',
   ),
 );
 

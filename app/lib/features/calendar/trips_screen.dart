@@ -47,6 +47,8 @@ class TripsScreen extends ConsumerWidget {
                 [
                   '${when(t.depart)} – ${t.returnAt == null ? l.running : when(t.returnAt!)}',
                   if (projects[t.projectId] case final p?) projectLabel(p),
+                  if (t.orderLabel.isNotEmpty) '${l.tripOrder} ${t.orderLabel}',
+                  if (t.note.isNotEmpty) t.note.split('\n').first,
                   if (t.claimedOn case final c?) l.claimedOn(context.date(c)),
                 ].join('\n'),
               ),
@@ -112,6 +114,11 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   late final _destination = TextEditingController(
     text: widget.trip?.destination,
   );
+  late TripOrderKind? _orderKind = widget.trip?.orderKind;
+  late final _orderNumber = TextEditingController(
+    text: widget.trip?.orderNumber,
+  );
+  late final _note = TextEditingController(text: widget.trip?.note);
   late TripPlace _place = TripPlace(
     widget.trip?.country ?? 'DE',
     widget.trip?.city,
@@ -189,6 +196,8 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
   @override
   void dispose() {
     _destination.dispose();
+    _orderNumber.dispose();
+    _note.dispose();
     _lodgingAmount.dispose();
     _carKm.dispose();
     super.dispose();
@@ -224,6 +233,9 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
           : 0,
       'car_km': int.tryParse(_carKm.text.trim()) ?? 0,
       'claimed_on': _claimedOn?.toString(),
+      'order_kind': _orderKind?.wire,
+      'order_number': _orderNumber.text.trim(),
+      'note': _note.text.trim(),
     });
     // One row per trip and date, like the meals.
     for (final MapEntry(key: d, value: place) in _stops.entries) {
@@ -296,6 +308,53 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
     );
   }
 
+  /// The order the trip is billed through: MO, GA or SA and its number.
+  Widget _orderFields(BuildContext context) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.receipt_outlined, size: 18),
+              const SizedBox(width: 8),
+              Text(l.tripOrder, style: Theme.of(context).textTheme.labelLarge),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SegmentedButton<TripOrderKind>(
+            showSelectedIcon: false,
+            emptySelectionAllowed: true,
+            segments: [
+              for (final (kind, name) in [
+                (TripOrderKind.installation, l.tripOrderInstallation),
+                (TripOrderKind.warranty, l.tripOrderWarranty),
+                (TripOrderKind.service, l.tripOrderService),
+              ])
+                ButtonSegment(
+                  value: kind,
+                  label: Text(kind.code),
+                  tooltip: name,
+                ),
+            ],
+            selected: {?_orderKind},
+            onSelectionChanged: (v) =>
+                setState(() => _orderKind = v.isEmpty ? null : v.single),
+          ),
+          TextField(
+            controller: _orderNumber,
+            decoration: InputDecoration(
+              labelText: l.orderNumber,
+              helperText: l.tripOrderHint,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -322,7 +381,36 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                   if (p != null) setState(() => _place = p);
                 },
               ),
+              _WhenFields(
+                label: l.depart,
+                icon: Icons.flight_takeoff,
+                date: _departDate,
+                minutes: _departTime,
+                onDate: (d) => setState(() => _departDate = d),
+                onTime: (m) => setState(() => _departTime = m),
+              ),
+              _WhenFields(
+                label: l.returnTime,
+                icon: Icons.flight_land,
+                date: _returnDate,
+                minutes: _returnTime,
+                defaultMinutes: 19 * 60,
+                fallbackDate: _departDate,
+                onDate: (d) => setState(() {
+                  _returnDate = d;
+                  _returnTime ??= 19 * 60;
+                }),
+                onTime: (m) => setState(() {
+                  _returnTime = m;
+                  _returnDate ??= _departDate;
+                }),
+                onClear: () => setState(() {
+                  _returnDate = null;
+                  _returnTime = null;
+                }),
+              ),
               _projectTile(context),
+              _orderFields(context),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(l.overnight),
@@ -336,36 +424,6 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                 subtitle: Text(l.serviceTripHint),
                 value: _service,
                 onChanged: (v) => setState(() => _service = v),
-              ),
-              DateTile(
-                label: l.depart,
-                value: _departDate,
-                onChanged: (d) => setState(() => _departDate = d),
-              ),
-              TimeTile(
-                label: l.depart,
-                minutes: _departTime,
-                onChanged: (m) => setState(() => _departTime = m),
-              ),
-              DateTile(
-                label: l.returnTime,
-                value: _returnDate ?? _departDate,
-                onChanged: (d) => setState(() {
-                  _returnDate = d;
-                  _returnTime ??= 19 * 60;
-                }),
-              ),
-              TimeTile(
-                label: l.returnTime,
-                minutes: _returnDate == null ? null : _returnTime,
-                onChanged: (m) => setState(() {
-                  _returnTime = m;
-                  _returnDate ??= _departDate;
-                }),
-                onClear: () => setState(() {
-                  _returnDate = null;
-                  _returnTime = null;
-                }),
               ),
               if (_tripDays.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -457,6 +515,7 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                 ),
                 const SizedBox(height: 4),
                 SegmentedButton<LodgingMode>(
+                  showSelectedIcon: false,
                   segments: [
                     ButtonSegment(
                       value: LodgingMode.company,
@@ -510,6 +569,17 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
                         : null,
                   ),
                 ),
+              TextField(
+                controller: _note,
+                minLines: 2,
+                maxLines: 6,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  labelText: l.tripNote,
+                  hintText: l.tripNoteHint,
+                  alignLabelWithHint: true,
+                ),
+              ),
               if (_error != null)
                 Text(
                   _error!,
@@ -540,4 +610,133 @@ class _TripDialogState extends ConsumerState<_TripDialog> {
       ],
     );
   }
+}
+
+/// One end of the trip: a heading with its date and time side by side, so
+/// "Abreise" names the pair instead of two look-alike rows.
+class _WhenFields extends StatelessWidget {
+  const _WhenFields({
+    required this.label,
+    required this.icon,
+    required this.date,
+    required this.minutes,
+    required this.onDate,
+    required this.onTime,
+    this.defaultMinutes = 8 * 60,
+    this.fallbackDate,
+    this.onClear,
+  });
+
+  final String label;
+  final IconData icon;
+
+  /// `null` with [minutes] = still travelling.
+  final LocalDate? date;
+  final int? minutes;
+  final int defaultMinutes;
+
+  /// Where the date picker starts while [date] is `null`.
+  final LocalDate? fallbackDate;
+  final ValueChanged<LocalDate> onDate;
+  final ValueChanged<int> onTime;
+
+  /// If given, offers to leave this end open.
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final d = date;
+    final m = minutes;
+    final open = d == null || m == null;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+              if (onClear != null && !open)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close, size: 18),
+                  tooltip: l.returnOpen,
+                  onPressed: onClear,
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: _PickerField(
+                  label: l.dateLabel,
+                  value: open ? l.running : context.date(d),
+                  icon: Icons.calendar_today_outlined,
+                  onTap: () async {
+                    final picked = await pickDate(context, d ?? fallbackDate!);
+                    if (picked != null) onDate(picked);
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 2,
+                child: _PickerField(
+                  label: l.timeLabel,
+                  value: open
+                      ? '–'
+                      : '${(m ~/ 60).toString().padLeft(2, '0')}:'
+                            '${(m % 60).toString().padLeft(2, '0')}',
+                  icon: Icons.schedule,
+                  onTap: () async {
+                    final picked = await pickTime(context, m ?? defaultMinutes);
+                    if (picked != null) onTime(picked);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Looks like a form field, opens a picker on tap.
+class _PickerField extends StatelessWidget {
+  const _PickerField({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(4),
+    child: InputDecorator(
+      decoration: InputDecoration(
+        labelText: label,
+        isDense: true,
+        suffixIcon: Icon(icon, size: 18),
+      ),
+      child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
+    ),
+  );
 }

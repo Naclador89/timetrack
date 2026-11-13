@@ -133,6 +133,24 @@ void main() {
       );
     });
 
+    test('data-model.md §9: a trip keeps its order and notes', () {
+      Trip trip(Map<String, Object?> fields) => ledgerDataFromRows([
+        row('trips', 't', {'depart_utc': '2026-11-10T05:00:00Z', ...fields}),
+      ]).trips.single;
+      final t = trip({
+        'order_kind': 'ga',
+        'order_number': ' 4711 ',
+        'note': 'Ersatzteil mitnehmen',
+      });
+      expect(
+        (t.orderKind, t.orderNumber, t.orderLabel, t.note),
+        (TripOrderKind.warranty, '4711', 'GA 4711', 'Ersatzteil mitnehmen'),
+      );
+      // A kind from a newer app keeps the number; no number, no label.
+      expect(trip({'order_kind': 'xx', 'order_number': '12'}).orderLabel, '12');
+      expect(trip({'order_kind': 'mo'}).orderLabel, '');
+    });
+
     test(
       'deleted, incomplete and malformed rows are skipped (sync-format.md §6)',
       () {

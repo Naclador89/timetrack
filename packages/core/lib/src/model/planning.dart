@@ -126,10 +126,27 @@ final class Trip {
     this.lodgingCents = 0,
     this.carKm = 0,
     this.claimedOn,
+    this.orderKind,
+    this.orderNumber = '',
+    this.note = '',
   });
 
   /// Row id (UUIDv7).
   final String id;
+
+  /// What kind of order the trip is billed through, or `null`.
+  final TripOrderKind? orderKind;
+
+  /// The order number the trip is billed through, e.g. `4711`. Empty if none.
+  final String orderNumber;
+
+  /// Free-text notes on the trip.
+  final String note;
+
+  /// The order as shown in lists and reports, e.g. `MO 4711`; empty without
+  /// an order number.
+  String get orderLabel =>
+      orderNumber.isEmpty ? '' : [?orderKind?.code, orderNumber].join(' ');
 
   /// City of the destination for a city rate (calculations.md §13.0), or
   /// `null` for the country's general rate.
@@ -168,6 +185,26 @@ final class Trip {
 
   /// Whether the trip includes an overnight stay (§13 "Mitternachtsregel").
   final bool overnight;
+}
+
+/// The kind of order a trip is billed through (data-model.md §9).
+enum TripOrderKind {
+  /// Montageauftrag (MO): installation.
+  installation('mo'),
+
+  /// Gewährleistungsauftrag (GA): warranty work.
+  warranty('ga'),
+
+  /// Serviceauftrag (SA): service.
+  service('sa');
+
+  const TripOrderKind(this.wire);
+
+  /// The stored value.
+  final String wire;
+
+  /// The short code on the order, e.g. `MO`.
+  String get code => wire.toUpperCase();
 }
 
 /// How the nights of a trip are claimed (spec: calculations.md §13.2).

@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.8.0`** (2026-11-10), `app/pubspec.yaml` `version: 0.8.0+16`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 331, app 114 tests; CI green on `main`.
+- **Tests**: core 332, app 115 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -535,6 +535,17 @@ mini window, balance planner, year heatmap, week comparison.
 - [ ] On the devices: widget look (light/dark, Android 12+ and older), predictive back (Android 14+),
       the "Soll erreicht" notification (Android) and balloon (Windows), the arc's pulse.
 
+### Trip dialog: order, notes, clearer dates (requested by the user 2026-11-13)
+- [x] Departure and return are one heading each ("Abreise", "Rückkehr") with a date and a time
+      field side by side (`_WhenFields` in `trips_screen.dart`), right after the place; the cross
+      at "Rückkehr" leaves the trip open. Before, "Abreise" labelled two look-alike rows.
+- [x] Order the trip is billed through (data-model §9 `order_kind` `mo`/`ga`/`sa`, `order_number`;
+      core `TripOrderKind`, `Trip.orderLabel` = `GA 4711`): section "Auftrag" with MO/GA/SA and the
+      number. Shown in the trip list, the travel report's destination column, the expense report
+      (first figure) and the expense PDF's file name. Separate from the project's order number.
+- [x] Notes (`note`, already in data-model §9, now mapped): multi-line field at the end of the
+      dialog; its first line shows in the trip list. Not in the reports.
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -674,3 +685,5 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-10, Claude Code: Android 12+ launcher icon background in the wallpaper's dark accent tone; bold Windows taskbar icon at 32–64 px (branding/README.md); release v0.7.2.
 - 2026-11-10, Claude Code: six picked ideas (vacation countdown, target reminder, day arc and target
   moment, predictive back and shared axis, Material You widget, pattern hints); release v0.8.0.
+- 2026-11-13, Claude Code: trip dialog with date/time pairs per end, order (MO/GA/SA + number,
+  in list and reports) and notes. 332 core, 115 app tests green.

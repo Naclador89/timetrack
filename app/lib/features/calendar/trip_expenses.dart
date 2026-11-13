@@ -39,6 +39,12 @@ Future<void> openTripExpenses(
   final project = ref.read(projectByIdProvider)[trip.projectId];
   final now = ref.read(clockProvider)();
   final first = e.perDiem.first.date;
+  final fileName = [
+    'Reisekostenabrechnung',
+    '$first',
+    trip.destination.isEmpty ? trip.country : trip.destination,
+    if (trip.orderLabel.isNotEmpty) trip.orderLabel.replaceAll(' ', ''),
+  ].join('_');
   await Navigator.of(context).push(
     MaterialPageRoute<void>(
       builder: (_) => ReportPreviewScreen(
@@ -61,9 +67,7 @@ Future<void> openTripExpenses(
               await exportBytes(
                 context,
                 bytes,
-                'Reisekostenabrechnung_${first}_'
-                    '${trip.destination.isEmpty ? trip.country : trip.destination}'
-                    '.pdf',
+                '$fileName.pdf',
                 'application/pdf',
               );
             },

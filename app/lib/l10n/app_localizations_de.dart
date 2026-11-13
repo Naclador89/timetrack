@@ -2456,4 +2456,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get patternAllBreaksKept => 'Alle Pausen eingehalten – weiter so!';
+
+  @override
+  String get dateLabel => 'Datum';
+
+  @override
+  String get timeLabel => 'Uhrzeit';
+
+  @override
+  String get returnOpen => 'Noch unterwegs: Rückkehr offen lassen';
+
+  @override
+  String get tripOrder => 'Auftrag';
+
+  @override
+  String get tripOrderHint => 'Über diesen Auftrag wird die Reise abgerechnet';
+
+  @override
+  String get tripOrderInstallation => 'Montageauftrag';
+
+  @override
+  String get tripOrderWarranty => 'Gewährleistungsauftrag';
+
+  @override
+  String get tripOrderService => 'Serviceauftrag';
+
+  @override
+  String get tripNote => 'Notizen';
+
+  @override
+  String get tripNoteHint => 'Zusatzinfos zur Reise';
 }

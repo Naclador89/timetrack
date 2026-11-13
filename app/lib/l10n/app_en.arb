@@ -1703,5 +1703,15 @@
       }
     }
   },
-  "patternAllBreaksKept": "Every break kept – well done!"
+  "patternAllBreaksKept": "Every break kept – well done!",
+  "dateLabel": "Date",
+  "timeLabel": "Time",
+  "returnOpen": "Still travelling: leave the return open",
+  "tripOrder": "Order",
+  "tripOrderHint": "The trip is billed through this order",
+  "tripOrderInstallation": "Installation order",
+  "tripOrderWarranty": "Warranty order",
+  "tripOrderService": "Service order",
+  "tripNote": "Notes",
+  "tripNoteHint": "Anything else about the trip"
 }
