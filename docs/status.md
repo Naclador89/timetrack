@@ -5,7 +5,7 @@ _Last updated: 2026-11-09 by Claude Code._
 
 ## Where things stand (read this first)
 
-- **Latest release: `v0.8.2`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.2+18`. All planned
+- **Latest release: `v0.8.3`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.3+19`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
 - **Tests**: core 352, app 121 tests; CI green on `main`.
@@ -191,6 +191,9 @@ _Last updated: 2026-11-09 by Claude Code._
   times side by side, the order (MO/GA/SA + number) in list and reports, notes.
 - `v0.8.2` (2026-11-13): "Planer" tab for trips and absences (summary, one list, year overview,
   absence blocks); "Akzeptieren" for notices.
+- `v0.8.3` (2026-11-13): vacation ranges mark every date but count only workdays; Heiligabend and
+  Silvester as half days (setting); school holidays of the state in the planner; range picker in
+  the absence dialog; fixes from the code review.
 
 ### M5: Android quick access (done)
 - [x] Design: Kotlin (`android/.../QuickAccess.kt`) draws notification, tile and widget from one
@@ -766,3 +769,4 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-13, Claude Code: fixes from the code review (day reason order, block counting, duplicate
   bookings, quota and bridge days on half days, timesheet notes, school holiday years and state).
   352 core, 121 app tests green.
+- 2026-11-13, Claude Code: release v0.8.3.
