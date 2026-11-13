@@ -2483,4 +2483,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickTripEnd => 'Tap the return day';
+
+  @override
+  String get acceptNotice => 'Accept';
+
+  @override
+  String get noticeAccepted => 'Notice accepted; it won\'t be reported again';
+
+  @override
+  String acceptedCount(String count) {
+    return '$count accepted';
+  }
+
+  @override
+  String get acceptAllHidden => 'Accept hidden notices';
+
+  @override
+  String get acceptAllHiddenHint =>
+      'They also leave the calendar and the day view';
+
+  @override
+  String get restoreAccepted => 'Report accepted notices again';
 }

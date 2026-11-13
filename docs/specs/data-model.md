@@ -126,5 +126,8 @@ Since 2026-11-08.
 ## §14 dismissed_notices
 A notice card the user closed for good (calculations §12). **Row id = `noticeKey`**
 (`YYYY-MM-DD/<review kind>[/<arbzg kind>][/<ref id>]`), so dismissals from two devices merge.
-`date` date ✓. Undo / "show again" deletes the row (tombstone). Since 2026-11-08.
+`date` date ✓, `accepted` bool (default `false`; since 2026-11-13): the user accepted the finding,
+so it is reported nowhere any more (calculations §12); older versions just treat it as dismissed.
+Undo / "show again" / "report again" deletes the row (tombstone); undoing an accept of a dismissed
+notice sets `accepted` back to `false`. Since 2026-11-08.
 

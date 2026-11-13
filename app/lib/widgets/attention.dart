@@ -26,7 +26,8 @@ typedef AttentionItem = ({
 });
 
 /// The notices of [from]–[to] with their fixes: the [shown] ones (category
-/// on, not dismissed; calculations §12) and the [hidden] ones. [watch]
+/// on, not dismissed; calculations §12) and the [hidden] ones; accepted
+/// ones are in neither. [watch]
 /// rebuilds the caller on changes; the review flow reads instead.
 ({List<AttentionItem> shown, List<ReviewItem> hidden}) attentionItems(
   BuildContext context,
@@ -54,6 +55,7 @@ typedef AttentionItem = ({
     items,
     shows: (c) => settings.showsNotice(c.wireName),
     dismissed: get(dismissedNoticesProvider),
+    accepted: get(acceptedNoticesProvider),
   );
   return (
     shown: [
@@ -84,8 +86,9 @@ typedef AttentionItem = ({
 ///
 /// Which categories appear is a setting; a card closed with × is dismissed
 /// for good (synced, data-model §14) and only leaves the marker in the
-/// calendar. With [showHidden] (day view) the hidden ones are listed small
-/// below, and dismissed ones can be brought back.
+/// calendar; an accepted one leaves nothing. With [showHidden] (day view)
+/// the hidden ones are listed small below, and dismissed ones can be
+/// brought back or accepted.
 class AttentionCards extends ConsumerWidget {
   /// Creates the cards for the days [from]–[to].
   const AttentionCards({
@@ -152,6 +155,7 @@ class AttentionCards extends ConsumerWidget {
           actionLabel: a.actionLabel,
           onAction: () => unawaited(a.onAction()),
           onDismiss: () => dismissNotice(context, ref, a.item),
+          onAccept: () => acceptNotice(context, ref, a.item),
         ),
     ];
     if (includeTrip &&
@@ -211,6 +215,39 @@ Future<void> dismissNotice(
         action: SnackBarAction(
           label: context.l10n.undo,
           onPressed: () => repo.delete('dismissed_notices', key),
+        ),
+      ),
+    );
+}
+
+/// Accepts [item] for good (synced, calculations §12): the rule is still
+/// broken, but it is reported nowhere any more. Undo puts it back the way
+/// it was (shown, or dismissed).
+Future<void> acceptNotice(
+  BuildContext context,
+  WidgetRef ref,
+  ReviewItem item,
+) async {
+  final repo = ref.read(repositoryProvider);
+  final key = noticeKey(item);
+  final wasDismissed = ref.read(dismissedNoticesProvider).contains(key);
+  await repo.write('dismissed_notices', key, {
+    'date': '${item.date}',
+    'accepted': true,
+    'deleted': false,
+  });
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.noticeAccepted),
+        persist: false,
+        action: SnackBarAction(
+          label: context.l10n.undo,
+          onPressed: () => wasDismissed
+              ? repo.write('dismissed_notices', key, {'accepted': false})
+              : repo.delete('dismissed_notices', key),
         ),
       ),
     );
@@ -347,7 +384,8 @@ Future<void> assignUnassigned(
 }
 
 /// Hidden notices of a day, small and folded: dismissed ones can be shown
-/// again; switched-off categories say where to turn them on.
+/// again; switched-off categories say where to turn them on. Each can be
+/// accepted, which takes it off this list and the calendar.
 class _HiddenNotices extends ConsumerStatefulWidget {
   const _HiddenNotices({required this.items, required this.dismissed});
 
@@ -385,17 +423,25 @@ class _HiddenNoticesState extends ConsumerState<_HiddenNotices> {
               dense: true,
               leading: const Icon(Icons.info_outline, size: 18),
               title: Text(noticeText(context, item)),
-              subtitle: widget.dismissed.contains(noticeKey(item))
-                  ? null
-                  : Text(l.noticeCategoryOff, style: theme.textTheme.bodySmall),
-              trailing: widget.dismissed.contains(noticeKey(item))
-                  ? TextButton(
+              subtitle: Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (widget.dismissed.contains(noticeKey(item)))
+                    TextButton(
                       onPressed: () => ref
                           .read(repositoryProvider)
                           .delete('dismissed_notices', noticeKey(item)),
                       child: Text(l.showAgain),
                     )
-                  : null,
+                  else
+                    Text(l.noticeCategoryOff, style: theme.textTheme.bodySmall),
+                  TextButton(
+                    onPressed: () => acceptNotice(context, ref, item),
+                    child: Text(l.acceptNotice),
+                  ),
+                ],
+              ),
             ),
       ],
     );
@@ -410,6 +456,7 @@ class _AttentionCard extends StatelessWidget {
     required this.actionLabel,
     required this.onAction,
     this.onDismiss,
+    this.onAccept,
   });
 
   final IconData icon;
@@ -417,6 +464,9 @@ class _AttentionCard extends StatelessWidget {
   final String actionLabel;
   final VoidCallback onAction;
   final VoidCallback? onDismiss;
+
+  /// Accepts the finding: not reported any more (calculations §12).
+  final VoidCallback? onAccept;
 
   @override
   Widget build(BuildContext context) {
@@ -442,14 +492,30 @@ class _AttentionCard extends StatelessWidget {
                     style: TextStyle(color: scheme.onTertiaryContainer),
                   ),
                   const SizedBox(height: 4),
-                  FilledButton.tonal(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      backgroundColor: scheme.surface.withValues(alpha: 0.6),
-                    ),
-                    onPressed: onAction,
-                    child: Text(actionLabel),
+                  Wrap(
+                    spacing: 4,
+                    children: [
+                      FilledButton.tonal(
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 36),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          backgroundColor: scheme.surface.withValues(
+                            alpha: 0.6,
+                          ),
+                        ),
+                        onPressed: onAction,
+                        child: Text(actionLabel),
+                      ),
+                      if (onAccept != null)
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size(0, 36),
+                            foregroundColor: scheme.onTertiaryContainer,
+                          ),
+                          onPressed: onAccept,
+                          child: Text(context.l10n.acceptNotice),
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -614,11 +680,11 @@ class _WeekSummary extends ConsumerWidget {
   }
 }
 
-enum _Step { fix, hide, skip }
+enum _Step { fix, hide, accept, skip }
 
 /// Steps through the open notices of [from]–[to] one at a time, each with
-/// its fix, "hide for good" and "skip" (calculations §12, checking a week or
-/// month). [startAt] begins with that day. A fix that only opens the day
+/// its fix, "hide for good", "accept" and "skip" (calculations §12, checking
+/// a week or month). [startAt] begins with that day. A fix that only opens the day
 /// ends the flow there.
 Future<void> runReviewFlow(
   BuildContext context,
@@ -668,6 +734,8 @@ Future<void> runReviewFlow(
         await current.onAction();
       case _Step.hide:
         await dismissNotice(context, ref, current.item);
+      case _Step.accept:
+        await acceptNotice(context, ref, current.item);
       case _Step.skip:
         skipped.add(current.key);
         continue;
@@ -717,7 +785,7 @@ Future<void> _showDone(BuildContext context, int skipped) => showDialog<void>(
   },
 );
 
-/// One notice of the review flow: its day, text and the three choices.
+/// One notice of the review flow: its day, text and the four choices.
 class _FlowStep extends StatelessWidget {
   const _FlowStep({
     required this.title,
@@ -765,6 +833,10 @@ class _FlowStep extends StatelessWidget {
         TextButton(
           onPressed: () => Navigator.pop(context, _Step.hide),
           child: Text(l.hideNotice),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _Step.accept),
+          child: Text(l.acceptNotice),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, _Step.skip),

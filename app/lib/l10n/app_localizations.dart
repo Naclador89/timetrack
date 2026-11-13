@@ -4285,6 +4285,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap the return day'**
   String get pickTripEnd;
+
+  /// No description provided for @acceptNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptNotice;
+
+  /// No description provided for @noticeAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice accepted; it won\'t be reported again'**
+  String get noticeAccepted;
+
+  /// No description provided for @acceptedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} accepted'**
+  String acceptedCount(String count);
+
+  /// No description provided for @acceptAllHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept hidden notices'**
+  String get acceptAllHidden;
+
+  /// No description provided for @acceptAllHiddenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'They also leave the calendar and the day view'**
+  String get acceptAllHiddenHint;
+
+  /// No description provided for @restoreAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report accepted notices again'**
+  String get restoreAccepted;
 }
 
 class _AppLocalizationsDelegate

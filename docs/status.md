@@ -8,7 +8,7 @@ _Last updated: 2026-11-09 by Claude Code._
 - **Latest release: `v0.8.1`** (2026-11-13), `app/pubspec.yaml` `version: 0.8.1+17`. All planned
   milestones are done; work now comes as feedback from the user (German, often with screenshots
   from the Windows work PC or the Android phone).
-- **Tests**: core 332, app 116 tests; CI green on `main`.
+- **Tests**: core 334, app 117 tests; CI green on `main`.
 - **Nothing is in progress.** No half-done branch.
 - **To do**: nothing open.
 - **Waiting for the user to test on real devices** (can't be tested here; fix what they report):
@@ -551,6 +551,16 @@ mini window, balance planner, year heatmap, week comparison.
 - [x] Notes (`note`, already in data-model §9, now mapped): multi-line field at the end of the
       dialog; its first line shows in the trip list. Not in the reports.
 
+### Accepting notices (requested by the user 2026-11-13; calculations §12, §23, data-model §14)
+- [x] "Akzeptieren" next to the fix on every notice card, in the week/month check, and on each
+      hidden notice in the day view (so earlier dismissed ones can be accepted too). Stored as
+      `dismissed_notices` row with `accepted: true` (`acceptNotice` in `widgets/attention.dart`,
+      core `acceptedNoticeKeys`, `splitNotices(accepted:)`). An accepted item is no card, no hidden
+      notice, no calendar marker (`noticeDaysProvider`) and doesn't count in the pattern hints
+      (`monthPatterns(accepted:)`); accepting the missing break covers "über 6 Std. ohne Pause".
+      Snack bar undo restores the previous state. Einstellungen → Hinweise: counts, "Ausgeblendete
+      Hinweise akzeptieren" (all at once) and "Akzeptierte Hinweise wieder melden".
+
 ## Project time as duration with summary (requested by the user 2026-11-07, done in v0.2.0)
 
 1. **Project time mainly as a duration.** The user mostly wants to record *how long* they worked on a
@@ -695,3 +705,5 @@ mini window, balance planner, year heatmap, week comparison.
 - 2026-11-13, Claude Code: trip dates in one calendar that closes on the second tap; times side by
   side. 332 core, 116 app tests green.
 - 2026-11-13, Claude Code: release v0.8.1.
+- 2026-11-13, Claude Code: "Akzeptieren" for notices (no card, marker or hidden entry, not in the
+  pattern hints). 334 core, 117 app tests green.

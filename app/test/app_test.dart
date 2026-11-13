@@ -541,6 +541,55 @@ void main() {
     expect(find.text('1 hidden notices'), findsOneWidget);
   });
 
+  testWidgets('§12 accepted notices: no card, no marker, not hidden', (
+    tester,
+  ) async {
+    final router = buildRouter();
+    final (store, repo) = await pumpApp(tester, router: router);
+    Finder marker() => find.byWidgetPredicate(
+      (w) => w is Icon && w.semanticLabel == 'Has notices',
+    );
+    await repo.write('work_sessions', 's1', {
+      'start_utc': '2026-11-03T07:00:00Z',
+      'end_utc': '2026-11-03T12:00:00Z',
+      'location': 'office',
+    });
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Accept'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('without a project'), findsNothing);
+    expect(
+      store.rowsOf('dismissed_notices')['2026-11-03/unassigned']!.fields,
+      containsPair('accepted', true),
+    );
+    await tester.tap(find.text('Calendar').last);
+    await tester.pumpAndSettle();
+    expect(marker(), findsNothing);
+    router.go('/calendar/day/2026-11-03');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('hidden notices'), findsNothing);
+
+    // One dismissed earlier can be accepted from the day view.
+    await repo.write('work_sessions', 's2', {
+      'start_utc': '2026-11-02T07:00:00Z',
+      'end_utc': '2026-11-02T12:00:00Z',
+      'location': 'office',
+    });
+    await repo.write('dismissed_notices', '2026-11-02/unassigned', {
+      'date': '2026-11-02',
+    });
+    router.go('/calendar/day/2026-11-02');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('1 hidden notices'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Accept'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('hidden notices'), findsNothing);
+    router.go('/calendar');
+    await tester.pumpAndSettle();
+    expect(marker(), findsNothing);
+  });
+
   testWidgets('booking sheet fits a phone', (tester) async {
     final (_, repo) = await pumpApp(tester);
     tester.view.physicalSize = const Size(412, 860);

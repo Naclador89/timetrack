@@ -2494,4 +2494,26 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pickTripEnd => 'Rückkehrtag antippen';
+
+  @override
+  String get acceptNotice => 'Akzeptieren';
+
+  @override
+  String get noticeAccepted =>
+      'Hinweis akzeptiert, er wird nicht mehr gemeldet';
+
+  @override
+  String acceptedCount(String count) {
+    return '$count akzeptiert';
+  }
+
+  @override
+  String get acceptAllHidden => 'Ausgeblendete Hinweise akzeptieren';
+
+  @override
+  String get acceptAllHiddenHint =>
+      'Sie verschwinden auch aus Kalender und Tagesansicht';
+
+  @override
+  String get restoreAccepted => 'Akzeptierte Hinweise wieder melden';
 }

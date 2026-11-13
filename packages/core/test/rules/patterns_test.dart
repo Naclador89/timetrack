@@ -34,7 +34,10 @@ final schedule = WorkSchedule(
 );
 
 /// Patterns of November 2026 with "today" Monday 30 Nov, 23:00.
-Map<PatternKind, List<LocalDate>> patterns(List<WorkSession> sessions) {
+Map<PatternKind, List<LocalDate>> patterns(
+  List<WorkSession> sessions, {
+  Set<String> accepted = const {},
+}) {
   final ledger = Ledger(
     data: LedgerData(schedules: [schedule], sessions: sessions),
     zone: berlin,
@@ -43,7 +46,8 @@ Map<PatternKind, List<LocalDate>> patterns(List<WorkSession> sessions) {
     nowMinute: epochMinute(at(d('2026-11-30'), '23:00')),
   );
   return {
-    for (final p in monthPatterns(ledger, d('2026-11-01'))) p.kind: p.days,
+    for (final p in monthPatterns(ledger, d('2026-11-01'), accepted: accepted))
+      p.kind: p.days,
   };
 }
 
@@ -116,5 +120,27 @@ void main() {
     );
     final p = patterns([for (final x in days) ...goodDay(x)]);
     expect(p.keys, [PatternKind.allBreaksKept]);
+  });
+
+  test('§23 accepted findings (§12) do not count', () {
+    final sessions = [
+      for (final x in ['2026-11-02', '2026-11-03', '2026-11-04'])
+        work(x, '08:00', '16:00'),
+      // 11 h: over 10 h and a missing break.
+      work('2026-11-05', '07:00', '18:00'),
+    ];
+    expect(patterns(sessions)[PatternKind.missingBreak], hasLength(4));
+    // Accepting the break notice covers "over 6 h without a break" too.
+    final p = patterns(
+      sessions,
+      accepted: {
+        '2026-11-02/arbzg/breakMissing',
+        '2026-11-03/arbzg/breakMissing',
+        '2026-11-04/arbzg/breakMissing',
+        '2026-11-05/arbzg/over10h',
+      },
+    );
+    expect(p[PatternKind.missingBreak], isNull, reason: 'one day is too few');
+    expect(p[PatternKind.longDays], isNull);
   });
 }

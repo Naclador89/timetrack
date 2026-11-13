@@ -697,5 +697,11 @@
   "tripDates": "Reisezeitraum",
   "tripDatesFrom": "ab {date}",
   "pickTripStart": "Abreisetag antippen",
-  "pickTripEnd": "Rückkehrtag antippen"
+  "pickTripEnd": "Rückkehrtag antippen",
+  "acceptNotice": "Akzeptieren",
+  "noticeAccepted": "Hinweis akzeptiert, er wird nicht mehr gemeldet",
+  "acceptedCount": "{count} akzeptiert",
+  "acceptAllHidden": "Ausgeblendete Hinweise akzeptieren",
+  "acceptAllHiddenHint": "Sie verschwinden auch aus Kalender und Tagesansicht",
+  "restoreAccepted": "Akzeptierte Hinweise wieder melden"
 }

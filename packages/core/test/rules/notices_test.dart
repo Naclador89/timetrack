@@ -71,6 +71,36 @@ void main() {
     expect(noticeKey(unassigned), '2026-11-04/unassigned');
   });
 
+  test('§12 accepted notices are neither cards nor hidden', () async {
+    final all = items();
+    final breaks = all.firstWhere(
+      (i) => i.arbzg == ArbzgWarningKind.breakMissing,
+    );
+    await repo.write('dismissed_notices', noticeKey(breaks), {
+      'date': '$wed',
+      'accepted': true,
+    });
+    final rows = store.allRows.values;
+    expect(acceptedNoticeKeys(rows), {'2026-11-04/arbzg/breakMissing'});
+    final split = splitNotices(
+      all,
+      shows: (_) => true,
+      dismissed: dismissedNoticeKeys(rows),
+      accepted: acceptedNoticeKeys(rows),
+    );
+    expect(split.shown.map(NoticeCategory.of), [NoticeCategory.unassigned]);
+    expect(
+      split.hidden,
+      isEmpty,
+      reason: 'accepting the missing break covers "over 6 h" too',
+    );
+    // Dismissed only: hidden, as before (data-model §14).
+    await repo.write('dismissed_notices', noticeKey(breaks), {
+      'accepted': false,
+    });
+    expect(acceptedNoticeKeys(store.allRows.values), isEmpty);
+  });
+
   test('settings: threshold and switches with defaults', () async {
     expect(AppSettings.fromRows(const []).noticeUnassignedMinMinutes, 30);
     await saveSetting(repo, SettingKeys.noticeUnassignedMin, 120);

@@ -130,8 +130,13 @@ class _Tiles {
           '${NoticeCategory.values.where((c) => s.showsNotice(c.wireName)).length}',
           '${NoticeCategory.values.length}',
         ),
-        if (ref.watch(dismissedNoticesProvider) case final d when d.isNotEmpty)
+        if (ref
+                .watch(dismissedNoticesProvider)
+                .difference(ref.watch(acceptedNoticesProvider))
+            case final d when d.isNotEmpty)
           l.dismissedCount('${d.length}'),
+        if (ref.watch(acceptedNoticesProvider) case final a when a.isNotEmpty)
+          l.acceptedCount('${a.length}'),
       ].join(' · '),
       SettingsSection.app => [
         '${l.appearance}: ${switch (ref.watch(appearanceProvider).mode) {
@@ -600,9 +605,11 @@ class _Tiles {
   );
 
   /// Which notices appear as cards (calculations §12); a dismissed card
-  /// stays away and only leaves the marker in the calendar.
+  /// stays away and only leaves the marker in the calendar, an accepted one
+  /// leaves nothing.
   List<Widget> notices() {
-    final dismissed = ref.watch(dismissedNoticesProvider);
+    final accepted = ref.watch(acceptedNoticesProvider);
+    final dismissed = ref.watch(dismissedNoticesProvider).difference(accepted);
     return [
       ListTile(
         leading: const Icon(Icons.work_off_outlined),
@@ -634,7 +641,31 @@ class _Tiles {
         enabled: dismissed.isNotEmpty,
         onTap: () async {
           final repo = ref.read(repositoryProvider);
-          for (final key in ref.read(dismissedNoticesProvider)) {
+          for (final key in dismissed) {
+            await repo.delete('dismissed_notices', key);
+          }
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.done_all),
+        title: Text(l.acceptAllHidden),
+        subtitle: Text(l.acceptAllHiddenHint),
+        enabled: dismissed.isNotEmpty,
+        onTap: () async {
+          final repo = ref.read(repositoryProvider);
+          for (final key in dismissed) {
+            await repo.write('dismissed_notices', key, {'accepted': true});
+          }
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.restart_alt),
+        title: Text(l.restoreAccepted),
+        subtitle: Text(l.acceptedCount('${accepted.length}')),
+        enabled: accepted.isNotEmpty,
+        onTap: () async {
+          final repo = ref.read(repositoryProvider);
+          for (final key in accepted) {
             await repo.delete('dismissed_notices', key);
           }
         },

@@ -240,9 +240,15 @@ final dayTemplatesProvider = Provider<List<DayTemplate>>(
   ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
 );
 
-/// Keys of notices the user dismissed for good (data-model §14).
+/// Keys of notices the user dismissed for good (data-model §14), accepted
+/// ones included.
 final dismissedNoticesProvider = Provider<Set<String>>(
   (ref) => dismissedNoticeKeys(ref.watch(_rows)),
+);
+
+/// Keys of notices the user accepted: reported nowhere (calculations §12).
+final acceptedNoticesProvider = Provider<Set<String>>(
+  (ref) => acceptedNoticeKeys(ref.watch(_rows)),
 );
 
 /// The Review items of a `(from, to)` range that show up somewhere (cards
@@ -279,14 +285,21 @@ final openNoticesProvider =
         ref.watch(noticesProvider(range)),
         shows: (c) => settings.showsNotice(c.wireName),
         dismissed: ref.watch(dismissedNoticesProvider),
+        accepted: ref.watch(acceptedNoticesProvider),
       ).shown;
     });
 
-/// The days of a `(from, to)` range with notices, shown or hidden: the
-/// small marker in the calendar.
+/// The days of a `(from, to)` range with notices, shown or hidden but not
+/// accepted: the small marker in the calendar.
 final noticeDaysProvider =
     Provider.family<Set<LocalDate>, (LocalDate, LocalDate)>(
       (ref, range) => {
-        for (final i in ref.watch(noticesProvider(range))) i.date,
+        for (final i in splitNotices(
+          ref.watch(noticesProvider(range)),
+          shows: (_) => true,
+          dismissed: const {},
+          accepted: ref.watch(acceptedNoticesProvider),
+        ).shown)
+          i.date,
       },
     );

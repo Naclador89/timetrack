@@ -390,6 +390,13 @@ dismissed items still put a small marker on their day in the calendar, and the d
 ("n hidden notices", dismissed ones can be shown again). "More than 6 h without a break" is not shown
 when the same day has the missing-break item (one fix covers both).
 
+**Accepted** (user request 2026-11-13): a card, a hidden notice in the day view and a step of the
+check also offer **Akzeptieren**: the finding stays a rule violation, but the user accepts it. The
+key is written to `dismissed_notices` with `accepted = true` (data-model §14). An accepted item is
+neither a card nor a hidden notice, puts no marker on its day and doesn't count in the pattern hints
+(§23). Settings → Hinweise counts them, can accept all dismissed ones at once and can report all
+accepted ones again.
+
 **Checking a week or month** (user request 2026-11-08): a range is **complete** when it has no
 shown items (category on, not dismissed) up to today. The week view sums its items in one card
 ("5 Hinweise an 3 Tagen", a line per day) with **Woche prüfen**, or shows "Woche vollständig"; the
@@ -711,7 +718,10 @@ Working Hours Act findings (§4, §5); none is a new rule or a notice:
 | `shortRest` | a §5 finding: under 11 h rest before the day | 1 day |
 | `sundayWork` | work on a Sunday or public holiday | 1 day |
 | `lateFinish` | the last worked span ends after 20:00 (today only once finished) | 3 days |
-| `allBreaksKept` | positive: at least 10 days with work and no `missingBreak` day | — |
+| `allBreaksKept` | positive: at least 10 days with work and no break finding (accepted or not) | — |
+
+A finding whose notice was accepted (§12) doesn't count; for the break findings that is the day's
+break notice (the missing break if the day has one, else "over 6 h without a break").
 
 A hint opens the first day it counts (in the Berichte tab); the positive one opens nothing. The card
 is hidden when no hint applies.

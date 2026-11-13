@@ -87,20 +87,33 @@ enum NoticeCategory {
 String noticeKey(ReviewItem item) =>
     ['${item.date}', item.kind.name, ?item.arbzg?.name, ?item.refId].join('/');
 
-/// The keys of dismissed notices in [rows] (`dismissed_notices`).
+/// The keys of dismissed notices in [rows] (`dismissed_notices`),
+/// accepted ones included.
 Set<String> dismissedNoticeKeys(Iterable<StoredRow> rows) => {
   for (final r in rows)
     if (r.table == 'dismissed_notices' && !r.isDeleted) r.id,
 };
 
+/// The keys of accepted notices in [rows]: dismissed with `accepted`
+/// (data-model §14), so they are reported nowhere any more.
+Set<String> acceptedNoticeKeys(Iterable<StoredRow> rows) => {
+  for (final r in rows)
+    if (r.table == 'dismissed_notices' &&
+        !r.isDeleted &&
+        r.fields['accepted'] == true)
+      r.id,
+};
+
 /// Splits [items] into the cards to show and the rest (calculations §12):
 /// a category switched off ([shows] false) or a dismissed key hides an
-/// item. "More than 6 h without a break" is dropped when the same day has
-/// the missing-break item (one fix for both).
+/// item; an [accepted] key drops it from both lists. "More than 6 h without
+/// a break" is dropped when the same day has the missing-break item (one
+/// fix for both, so accepting that one covers both too).
 ({List<ReviewItem> shown, List<ReviewItem> hidden}) splitNotices(
   List<ReviewItem> items, {
   required bool Function(NoticeCategory) shows,
   required Set<String> dismissed,
+  Set<String> accepted = const {},
 }) {
   final missingBreak = {
     for (final i in items)
@@ -112,6 +125,7 @@ Set<String> dismissedNoticeKeys(Iterable<StoredRow> rows) => {
         missingBreak.contains(i.date)) {
       continue;
     }
+    if (accepted.contains(noticeKey(i))) continue;
     final visible =
         shows(NoticeCategory.of(i)) && !dismissed.contains(noticeKey(i));
     (visible ? shown : hidden).add(i);

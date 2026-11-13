@@ -1,6 +1,8 @@
 import '../time/local_date.dart';
 import 'arbzg.dart';
 import 'ledger.dart';
+import 'notices.dart';
+import 'review.dart';
 
 /// Kinds of pattern hints in the month report (spec: calculations.md §23).
 enum PatternKind {
@@ -28,22 +30,39 @@ typedef MonthPattern = ({PatternKind kind, List<LocalDate> days});
 
 /// The pattern hints of the month starting [month], up to today
 /// (spec: calculations.md §23). Only existing day results and their
-/// Working Hours Act findings count; nothing is a new rule.
-List<MonthPattern> monthPatterns(Ledger ledger, LocalDate month) {
+/// Working Hours Act findings count; nothing is a new rule. A finding whose
+/// notice key is in [accepted] (calculations §12) doesn't count.
+List<MonthPattern> monthPatterns(
+  Ledger ledger,
+  LocalDate month, {
+  Set<String> accepted = const {},
+}) {
   final first = month.startOfMonth;
   final next = first.addDays(31).startOfMonth;
   final today = ledger.today;
   final found = {for (final k in PatternKind.values) k: <LocalDate>[]};
   var workdays = 0;
+  var breakFindings = 0;
   for (var d = first; d.isBefore(next) && !d.isAfter(today); d = d.addDays(1)) {
     final day = ledger.day(d);
     final spans = day.work.working.spans;
     if (spans.isEmpty) continue;
     workdays++;
-    final kinds = {for (final w in day.warnings) w.kind};
-    if (kinds.contains(ArbzgWarningKind.breakMissing) ||
-        kinds.contains(ArbzgWarningKind.workOver6hWithoutBreak)) {
-      found[PatternKind.missingBreak]!.add(d);
+    final all = {for (final w in day.warnings) w.kind};
+    bool isAccepted(ArbzgWarningKind k) => accepted.contains(
+      noticeKey(ReviewItem(date: d, kind: ReviewKind.arbzg, arbzg: k)),
+    );
+    final kinds = all.where((k) => !isAccepted(k)).toSet();
+    // One notice for both break findings: the missing break if the day has
+    // it (calculations §12), so accepting it covers the other one too.
+    final breakFinding = all.contains(ArbzgWarningKind.breakMissing)
+        ? ArbzgWarningKind.breakMissing
+        : all.contains(ArbzgWarningKind.workOver6hWithoutBreak)
+        ? ArbzgWarningKind.workOver6hWithoutBreak
+        : null;
+    if (breakFinding != null) {
+      breakFindings++;
+      if (!isAccepted(breakFinding)) found[PatternKind.missingBreak]!.add(d);
     }
     if (kinds.contains(ArbzgWarningKind.over10h)) {
       found[PatternKind.longDays]!.add(d);
@@ -61,7 +80,8 @@ List<MonthPattern> monthPatterns(Ledger ledger, LocalDate month) {
       found[PatternKind.lateFinish]!.add(d);
     }
   }
-  if (workdays >= 10 && found[PatternKind.missingBreak]!.isEmpty) {
+  // Accepted or not, a day without its break isn't "every break kept".
+  if (workdays >= 10 && breakFindings == 0) {
     found[PatternKind.allBreaksKept]!.add(first);
   }
   return [

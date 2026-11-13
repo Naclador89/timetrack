@@ -140,7 +140,11 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             sheet: sheet,
             ledger: ledger,
             projects: projects,
-            patterns: monthPatterns(ledger, month),
+            patterns: monthPatterns(
+              ledger,
+              month,
+              accepted: ref.watch(acceptedNoticesProvider),
+            ),
           ),
           _section(context, l.timesheet, [
             Wrap(

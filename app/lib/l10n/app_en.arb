@@ -1722,5 +1722,18 @@
     }
   },
   "pickTripStart": "Tap the departure day",
-  "pickTripEnd": "Tap the return day"
+  "pickTripEnd": "Tap the return day",
+  "acceptNotice": "Accept",
+  "noticeAccepted": "Notice accepted; it won't be reported again",
+  "acceptedCount": "{count} accepted",
+  "@acceptedCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "acceptAllHidden": "Accept hidden notices",
+  "acceptAllHiddenHint": "They also leave the calendar and the day view",
+  "restoreAccepted": "Report accepted notices again"
 }
